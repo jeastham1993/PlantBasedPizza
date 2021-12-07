@@ -1,0 +1,15 @@
+version: "3.7"
+services:
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    environment:
+      - PUID=1000
+      - PGID=1000
+    ports:
+      - 27017:27017
+  plant-based-pizza-api:
+    image: plant-based-pizza
+    container_name: plant-based-pizza
+    ports:
+      - 5113:80
