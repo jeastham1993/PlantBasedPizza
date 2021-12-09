@@ -1,3 +1,8 @@
+using Amazon;
+using Amazon.CloudWatch;
+using Amazon.XRay.Recorder.Core;
+using Amazon.XRay.Recorder.Handlers.AwsSdk;
+using Amazon.XRay.Recorder.Handlers.System.Net;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,7 +16,14 @@ namespace PlantBasedPizza.Shared
         public static IServiceCollection AddSharedInfrastructure(this IServiceCollection services,
             IConfiguration configuration)
         {
+            AWSXRayRecorder.RegisterLogger(LoggingOptions.Console);
+            AWSXRayRecorder.InitializeInstance(configuration);
+            AWSSDKHandler.RegisterXRayForAllServices();
+            
             Logger.Init();
+
+            services.AddSingleton(new AmazonCloudWatchClient());
+            services.AddTransient<IObservabilityService, ObservabiityService>();
 
             return services;
         }

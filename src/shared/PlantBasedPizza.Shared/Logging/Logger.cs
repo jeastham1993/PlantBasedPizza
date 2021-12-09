@@ -1,3 +1,4 @@
+using System;
 using Serilog;
 
 namespace PlantBasedPizza.Shared.Logging
@@ -14,6 +15,16 @@ namespace PlantBasedPizza.Shared.Logging
         public static void Info(string message)
         {
             Log.Information(message);
+        }
+        
+        public static void Warn(Exception ex, string message)
+        {
+            Log.Warning(ex, message);
+        }
+        
+        public static void Error(Exception ex, string message)
+        {
+            Log.Error(ex, message);
         }
     }
 }
