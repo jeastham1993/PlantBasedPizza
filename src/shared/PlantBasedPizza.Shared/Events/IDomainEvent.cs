@@ -9,5 +9,7 @@ namespace PlantBasedPizza.Shared.Events
         string EventId { get; }
         
         DateTime EventDate { get; }
+        
+        string CorrelationId { get; set; }
     }
 }

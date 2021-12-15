@@ -38,7 +38,7 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
                 return existingOrder;
             }
             
-            var order = Order.Create(request.OrderIdentifier, request.OrderType, request.CustomerIdentifier);
+            var order = Order.Create(request.OrderIdentifier, request.OrderType, request.CustomerIdentifier, null, this.Request.Headers["CorrelationId"]);
 
             await this._orderRepository.Add(order);
 
@@ -63,7 +63,7 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
                 AddressLine4 = request.AddressLine4,
                 AddressLine5 = request.AddressLine5,
                 Postcode = request.Postcode,
-            });
+            }, this.Request.Headers["CorrelationId"]);
 
             await this._orderRepository.Add(order);
 

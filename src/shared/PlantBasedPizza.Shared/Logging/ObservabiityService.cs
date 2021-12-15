@@ -5,6 +5,7 @@ using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
 using Amazon.XRay.Recorder.Core;
 using Serilog;
+using Serilog.Context;
 
 namespace PlantBasedPizza.Shared.Logging
 {
@@ -17,9 +18,11 @@ namespace PlantBasedPizza.Shared.Logging
             this._cloudWatchClient = cloudWatchClient;
         }
 
-        public void StartTraceSegment(string segmentName)
+        public void StartTraceSegment(string segmentName, string correlationId = "")
         {
             AWSXRayRecorder.Instance.BeginSegment(segmentName);
+            
+            AWSXRayRecorder.Instance.AddAnnotation("CorrelationId", correlationId);
         }
 
         public void EndTraceSegment()
@@ -69,6 +72,10 @@ namespace PlantBasedPizza.Shared.Logging
             }
         }
 
+        public void AddCorrelationId(string correlationId)
+        {
+        }
+        
         public TResult TraceMethod<TResult>(string methodName, Func<TResult> method)
         {
             return AWSXRayRecorder.Instance.TraceMethod<TResult>(methodName, method);
@@ -95,19 +102,21 @@ namespace PlantBasedPizza.Shared.Logging
             return await AWSXRayRecorder.Instance.TraceMethodAsync<TResult>(methodName, method);
         }
 
-        public void Info(string message)
+        public void Info(string correlationId, string message)
         {
-            Log.Information(message);
+            using (LogContext.PushProperty("CorrelationId", correlationId))
+                Log.Information(message);
         }
         
-        public void Warn(Exception ex, string message)
+        public void Warn(string correlationId, Exception ex, string message)
         {
-            Log.Warning(ex, message);
+            using (LogContext.PushProperty("CorrelationId", correlationId))
+                Log.Warning(ex, message);
         }
         
-        public void Error(Exception ex, string message)
+        public void Error(string correlationId, Exception ex, string message)
         {
-            Log.Error(ex, message);
+            Log.Error(correlationId, ex, message);
         }
     }
 }

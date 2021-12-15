@@ -34,38 +34,50 @@ namespace PlantBasedPizza.Kitchen.Core.Entities
         
         public List<RecipeAdapter> Recipes { get; private set; }
 
-        public void Preparing()
+        public void Preparing(string correlationId = "")
         {
             this.OrderState = OrderState.PREPARING;
 
-            DomainEvents.Raise(new OrderPreparingEvent(this.OrderIdentifier));
+            DomainEvents.Raise(new OrderPreparingEvent(this.OrderIdentifier)
+            {
+                CorrelationId = correlationId
+            });
         }
 
-        public void PrepComplete()
+        public void PrepComplete(string correlationId = "")
         {
             this.OrderState = OrderState.BAKING;
             
             this.PrepCompleteOn = DateTime.Now;
             
-            DomainEvents.Raise(new OrderPrepCompleteEvent(this.OrderIdentifier));
+            DomainEvents.Raise(new OrderPrepCompleteEvent(this.OrderIdentifier)
+            {
+                CorrelationId = correlationId
+            });
         }
 
-        public void BakeComplete()
+        public void BakeComplete(string correlationId = "")
         {
             this.OrderState = OrderState.QUALITYCHECK;
             
             this.BakeCompleteOn = DateTime.Now;
             
-            DomainEvents.Raise(new OrderBakedEvent(this.OrderIdentifier));
+            DomainEvents.Raise(new OrderBakedEvent(this.OrderIdentifier)
+            {
+                CorrelationId = correlationId
+            });
         }
 
-        public async Task QualityCheckComplete()
+        public async Task QualityCheckComplete(string correlationId = "")
         {
             this.OrderState = OrderState.DONE;
             
             this.QualithCheckCompleteOn = DateTime.Now;
 
-            await DomainEvents.Raise(new OrderQualityCheckedEvent(this.OrderIdentifier));
+            await DomainEvents.Raise(new OrderQualityCheckedEvent(this.OrderIdentifier)
+            {
+                CorrelationId = correlationId
+            });
         }
     }
 }

@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PlantBasedPizza.Shared.Logging;
 using Serilog;
+using Serilog.Formatting.Json;
 
 namespace PlantBasedPizza.Shared
 {
@@ -20,10 +21,11 @@ namespace PlantBasedPizza.Shared
             AWSXRayRecorder.InitializeInstance(configuration);
             AWSSDKHandler.RegisterXRayForAllServices();
             
-            Logger.Init();
+            ApplicationLogger.Init();
 
             services.AddSingleton(new AmazonCloudWatchClient());
             services.AddTransient<IObservabilityService, ObservabiityService>();
+            services.AddHttpContextAccessor();
 
             return services;
         }
@@ -31,7 +33,9 @@ namespace PlantBasedPizza.Shared
         public static WebApplicationBuilder AddSharedInfrastructure(this WebApplicationBuilder builder)
         {
             builder.Host.UseSerilog((ctx, lc) => lc
-                .WriteTo.Console());
+                .Enrich.FromLogContext()
+                .WriteTo.Console()
+                .WriteTo.File(new JsonFormatter(), "logs/myapp-{Date}.json"));
 
             return builder;
         }

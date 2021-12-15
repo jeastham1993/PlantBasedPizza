@@ -21,5 +21,6 @@ namespace PlantBasedPizza.Events
         public string EventId => this._eventId;
 
         public DateTime EventDate { get; }
+        public string CorrelationId { get; set; }
     }
 }

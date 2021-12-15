@@ -33,13 +33,14 @@ namespace PlantBasedPizza.Shared.Events
 
         public async static Task Raise<T>(T evt) where T : IDomainEvent
         {
-            Logger.Info($"[EVENT MANAGER] Raising event {evt.EventName}");
-            
             if (Container != null)
             {
+                var observability = Container.GetService<IObservabilityService>();
+                observability.Info(evt.CorrelationId, $"[EVENT MANAGER] Raising event {evt.EventName}");
+                
                 foreach (var handler in Container.GetServices<Handles<T>>())
                 {
-                    Logger.Info($"[EVENT MANAGER] Handling event with handler ${handler.GetType().Name}");
+                    observability.Info(evt.CorrelationId, $"[EVENT MANAGER] Handling event with handler {handler.GetType().Name}");
                     await handler.Handle(evt);
                 }
             }

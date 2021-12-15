@@ -18,7 +18,8 @@ namespace PlantBasedPizza.Events
         public string EventId { get; }
         
         public DateTime EventDate { get; }
-        
+        public string CorrelationId { get; set; }
+
         public string OrderIdentifier { get; private set; }
         
         public string DriverName { get; private set; }

@@ -4,15 +4,16 @@ using Microsoft.Extensions.Logging;
 using PlantBasedPizza.Deliver.Core.Entities;
 using PlantBasedPizza.Events;
 using PlantBasedPizza.Shared.Events;
+using PlantBasedPizza.Shared.Logging;
 
 namespace PlantBasedPizza.Deliver.Core.Handlers
 {
     public class OrderReadyForDeliveryEventHandler : Handles<OrderReadyForDeliveryEvent>
     {
         private readonly IDeliveryRequestRepository _deliveryRequestRepository;
-        private readonly ILogger<OrderReadyForDeliveryEventHandler> _logger;
+        private readonly IObservabilityService _logger;
 
-        public OrderReadyForDeliveryEventHandler(IDeliveryRequestRepository deliveryRequestRepository, ILogger<OrderReadyForDeliveryEventHandler> logger)
+        public OrderReadyForDeliveryEventHandler(IDeliveryRequestRepository deliveryRequestRepository, IObservabilityService logger)
         {
             _deliveryRequestRepository = deliveryRequestRepository;
             _logger = logger;
@@ -30,7 +31,7 @@ namespace PlantBasedPizza.Deliver.Core.Handlers
 
             if (existingDeliveryRequestForOrder != null)
             {
-                this._logger.LogInformation("Delivery request for order received, skipping");
+                this._logger.Info(evt.CorrelationId, "Delivery request for order received, skipping");
                 return;
             }
 

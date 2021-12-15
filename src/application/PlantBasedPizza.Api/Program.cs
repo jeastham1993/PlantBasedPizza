@@ -1,7 +1,3 @@
-using System.Timers;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using PlantBasedPizza.OrderManager.Infrastructure;
 using PlantBasedPizza.Recipes.Infrastructure;
 using PlantBasedPizza.Kitchen.Infrastructure;
@@ -41,15 +37,42 @@ DomainEvents.Container = app.Services;
 
 app.Use(async (context, next) =>
 {
+    var observability = app.Services.GetService<IObservabilityService>();
+    
+    var correlationId = string.Empty;
+    
+    if (context.Request.Headers.ContainsKey("X-Amzn-Trace-Id"))
+    {
+        observability.Info(string.Empty, "Trace id found");
+        
+        correlationId = context.Request.Headers["X-Amzn-Trace-Id"].ToString();
+        
+        context.Request.Headers.Add("CorrelationId", correlationId);
+    }
+    else if (context.Request.Headers.ContainsKey("CorrelationId"))
+    {
+        observability.Info(string.Empty, "Header correlation id found");
+        
+        correlationId = context.Request.Headers["CorrelationId"].ToString();
+    }
+    else
+    {
+        observability.Info(string.Empty, "Generating new correlation id");
+        
+        correlationId = Guid.NewGuid().ToString();
+        
+        context.Request.Headers.Add("CorrelationId", correlationId);
+    }
+    
     var timer = new System.Timers.Timer();
     
     timer.Start();
     
-    var observability = app.Services.GetService<IObservabilityService>();
+    observability.Info(correlationId, $"Request received to {context.Request.Path.Value}");
     
-    observability.Info($"Request received to {context.Request.Path.Value}");
-    
-    observability.StartTraceSegment(context.Request.Path.Value);
+    observability.StartTraceSegment(context.Request.Path.Value, correlationId);
+
+    context.Response.Headers.Add("CorrelationId", correlationId);
     
     // Do work that doesn't write to the Response.
     await next.Invoke();

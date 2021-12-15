@@ -1,6 +1,7 @@
 using System;
 using Serilog;
 using Serilog.Context;
+using Serilog.Core;
 using Serilog.Formatting.Compact;
 using Serilog.Formatting.Json;
 
@@ -8,33 +9,32 @@ namespace PlantBasedPizza.Shared.Logging
 {
     public static class ApplicationLogger
     {
-        private static ApplicationLogger _applicationLogger;
+        private static Logger _logger;
         
         public static void Init()
         {
-            var logger = new LoggerConfiguration()
-                .Enrich.WithCorrelationId()
+            _logger = new LoggerConfiguration()
                 .WriteTo.Console(new JsonFormatter())
                 .WriteTo.File(new JsonFormatter(), "logs/myapp-{Date}.json")
-                .CreateLogger();    
+                .CreateLogger();
         }
         
         public static void Info(string correlationId, string message)
         {
             using (LogContext.PushProperty("CorrelationId", correlationId))
-                Log.ForContext(typeof(ApplicationLogger)).Information(message);
+                _logger.Information(message);
         }
         
         public static void Warn(string correlationId, Exception ex, string message)
         {
             using (LogContext.PushProperty("CorrelationId", correlationId))
-                Log.ForContext(typeof(ApplicationLogger)).Warning(ex, message);
+                _logger.Warning(ex, message);
         }
         
         public static void Error(string correlationId, Exception ex, string message)
         {
             using (LogContext.PushProperty("CorrelationId", correlationId))
-                Log.ForContext(typeof(ApplicationLogger)).Error(ex, message);
+                _logger.Error(ex, message);
         }
     }
 }

@@ -26,7 +26,7 @@ namespace PlantBasedPizza.Kitchen.Infrastructure.Controllers
         {
             var kitchenRequest = await this._kitchenRequestRepository.Retrieve(orderIdentifier);
 
-            kitchenRequest.Preparing();
+            kitchenRequest.Preparing(this.Request.Headers["CorrelationId"].ToString());
 
             await this._kitchenRequestRepository.Update(kitchenRequest);
 
@@ -44,7 +44,7 @@ namespace PlantBasedPizza.Kitchen.Infrastructure.Controllers
         {
             var kitchenRequest = await this._kitchenRequestRepository.Retrieve(orderIdentifier);
 
-            kitchenRequest.PrepComplete();
+            kitchenRequest.PrepComplete(this.Request.Headers["CorrelationId"].ToString());
 
             await this._kitchenRequestRepository.Update(kitchenRequest);
 
@@ -62,7 +62,7 @@ namespace PlantBasedPizza.Kitchen.Infrastructure.Controllers
         {
             var kitchenRequest = await this._kitchenRequestRepository.Retrieve(orderIdentifier);
 
-            kitchenRequest.BakeComplete();
+            kitchenRequest.BakeComplete(this.Request.Headers["CorrelationId"].ToString());
 
             await this._kitchenRequestRepository.Update(kitchenRequest);
 
@@ -74,7 +74,7 @@ namespace PlantBasedPizza.Kitchen.Infrastructure.Controllers
         {
             var kitchenRequest = await this._kitchenRequestRepository.Retrieve(orderIdentifier);
 
-            await kitchenRequest.QualityCheckComplete();
+            await kitchenRequest.QualityCheckComplete(this.Request.Headers["CorrelationId"].ToString());
 
             await this._kitchenRequestRepository.Update(kitchenRequest);
 

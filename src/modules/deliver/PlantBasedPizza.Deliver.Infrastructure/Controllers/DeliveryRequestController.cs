@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using PlantBasedPizza.Deliver.Core.Commands;
 using PlantBasedPizza.Deliver.Core.Entities;
+using PlantBasedPizza.Shared.Logging;
 
 namespace PlantBasedPizza.Deliver.Infrastructure.Controllers
 {
@@ -11,9 +12,9 @@ namespace PlantBasedPizza.Deliver.Infrastructure.Controllers
     public class DeliveryRequestController : ControllerBase 
     {
         private readonly IDeliveryRequestRepository _deliveryRequestRepository;
-        private readonly ILogger<DeliveryRequestController> _logger;
+        private readonly IObservabilityService _logger;
 
-        public DeliveryRequestController(IDeliveryRequestRepository deliveryRequestRepository, ILogger<DeliveryRequestController> logger)
+        public DeliveryRequestController(IDeliveryRequestRepository deliveryRequestRepository, IObservabilityService logger)
         {
             _deliveryRequestRepository = deliveryRequestRepository;
             _logger = logger;
@@ -28,6 +29,9 @@ namespace PlantBasedPizza.Deliver.Infrastructure.Controllers
         [HttpGet("delivery/awaiting-collection")]
         public async Task<List<DeliveryRequest>> GetAwaitingCollection()
         {
+            this._logger.Info(this.Request.Headers["CorrelationId"],
+                "Received request to get orders awaiting collection");
+            
             return await this._deliveryRequestRepository.GetAwaitingDriver();
         }
 
@@ -41,7 +45,7 @@ namespace PlantBasedPizza.Deliver.Infrastructure.Controllers
                 return this.NotFound();
             }
 
-            await existingDeliveryRequest.ClaimDelivery(request.DriverName);
+            await existingDeliveryRequest.ClaimDelivery(request.DriverName, this.Request.Headers["CorrelationId"].ToString());
 
             await this._deliveryRequestRepository.UpdateDeliveryRequest(existingDeliveryRequest);
 
@@ -58,7 +62,7 @@ namespace PlantBasedPizza.Deliver.Infrastructure.Controllers
                 return this.NotFound();
             }
 
-            await existingDeliveryRequest.Deliver();
+            await existingDeliveryRequest.Deliver(this.Request.Headers["CorrelationId"].ToString());
             
             await this._deliveryRequestRepository.UpdateDeliveryRequest(existingDeliveryRequest);
 

@@ -16,6 +16,7 @@ namespace PlantBasedPizza.Recipes.Core.Events
         public string EventName => "recipes.recipe-created";
         public string EventId { get; }
         public DateTime EventDate { get; }
+        public string CorrelationId { get; set; }
         public Recipe Recipe { get; }
     }
 }

@@ -27,7 +27,7 @@ namespace PlantBasedPizza.OrderManager.Core.Entites
             this._history = new List<OrderHistory>();
         }
 
-        public static Order Create(string orderIdentifier, OrderType type, string customerIdentifier, DeliveryDetails deliveryDetails = null)
+        public static Order Create(string orderIdentifier, OrderType type, string customerIdentifier, DeliveryDetails deliveryDetails = null, string correlationId = "")
         {
             Guard.AgainstNullOrEmpty(customerIdentifier, nameof(customerIdentifier));
             Guard.AgainstNullOrEmpty(orderIdentifier, nameof(orderIdentifier));
@@ -49,7 +49,10 @@ namespace PlantBasedPizza.OrderManager.Core.Entites
 
             order.AddHistory("Order created");
 
-            DomainEvents.Raise(new OrderCreatedEvent(orderIdentifier));
+            DomainEvents.Raise(new OrderCreatedEvent(orderIdentifier)
+            {
+                CorrelationId = correlationId
+            });
 
             return order;
         }
@@ -158,7 +161,7 @@ namespace PlantBasedPizza.OrderManager.Core.Entites
             }
         }
 
-        public void SubmitOrder()
+        public void SubmitOrder(string correlationId = "")
         {
             if (!this._items.Any())
             {
@@ -169,24 +172,30 @@ namespace PlantBasedPizza.OrderManager.Core.Entites
             
             this.AddHistory($"Submitted order.");
 
-            DomainEvents.Raise(new OrderSubmittedEvent(OrderIdentifier)).Wait();
+            DomainEvents.Raise(new OrderSubmittedEvent(OrderIdentifier)
+            {
+                CorrelationId = correlationId
+            }).Wait();
         }
 
-        public void IsAwaitingCollection()
+        public void IsAwaitingCollection(string correlationId = "")
         {
             this.AwaitingCollection = true;
 
             this.AddHistory("Order awaiting collection");
         }
 
-        public void CompleteOrder()
+        public void CompleteOrder(string correlationId = "")
         {
             this.OrderCompletedOn = DateTime.Now;
             this.AwaitingCollection = false;
             
             this.AddHistory($"Order completed.");
 
-            DomainEvents.Raise(new OrderCompletedEvent(this.OrderIdentifier));
+            DomainEvents.Raise(new OrderCompletedEvent(this.OrderIdentifier)
+            {
+                CorrelationId = correlationId
+            });
         }
     }
 }
