@@ -30,24 +30,24 @@ namespace PlantBasedPizza.Kitchen.Core.Handlers
         {
             Guard.AgainstNull(evt, nameof(evt));
 
-            this._logger.Info(evt.CorrelationId, "[KITCHEN] Logging order submitted event");
+            this._logger.Info("[KITCHEN] Logging order submitted event");
 
             var recipes = new List<RecipeAdapter>();
             
             var order = await this._orderManagerService.GetOrderDetails(evt.OrderIdentifier);
             
-            this._logger.Info(evt.CorrelationId, $"[KITCHEN] Order has {order.Items.Count} item(s)");
+            this._logger.Info($"[KITCHEN] Order has {order.Items.Count} item(s)");
 
             foreach (var recipe in order.Items)
             {
-                this._logger.Info(evt.CorrelationId, $"[KITCHEN] Addig item {recipe.ItemName}");
+                this._logger.Info($"[KITCHEN] Addig item {recipe.ItemName}");
                 
                 recipes.Add(await this._recipeService.GetRecipe(recipe.RecipeIdentifier));
             }
 
             var kitchenRequest = new KitchenRequest(evt.OrderIdentifier, recipes);
 
-            this._logger.Info(evt.CorrelationId, "[KITCHEN] Storing kitchen request");
+            this._logger.Info("[KITCHEN] Storing kitchen request");
 
             await this._kitchenRequestRepository.AddNew(kitchenRequest);
         }

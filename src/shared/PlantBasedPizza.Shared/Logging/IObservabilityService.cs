@@ -5,7 +5,7 @@ namespace PlantBasedPizza.Shared.Logging
 {
     public interface IObservabilityService
     {
-        void StartTraceSegment(string segmentName, string correlationId = "");
+        void StartTraceSegment(string segmentName);
 
         void EndTraceSegment();
 
@@ -23,10 +23,10 @@ namespace PlantBasedPizza.Shared.Logging
         
         Task<TResult> TraceMethodAsync<TResult>(string methodName, Func<Task<TResult>> method);
 
-        void Info(string correlationId, string message);
+        void Info(string message);
 
-        void Warn(string correlationId, Exception ex, string message);
+        void Warn(Exception ex, string message);
 
-        void Error(string correlationId, Exception ex, string message);
+        void Error(Exception ex, string message);
     }
 }

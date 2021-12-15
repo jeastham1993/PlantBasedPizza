@@ -29,8 +29,7 @@ namespace PlantBasedPizza.Deliver.Infrastructure.Controllers
         [HttpGet("delivery/awaiting-collection")]
         public async Task<List<DeliveryRequest>> GetAwaitingCollection()
         {
-            this._logger.Info(this.Request.Headers["CorrelationId"],
-                "Received request to get orders awaiting collection");
+            this._logger.Info("Received request to get orders awaiting collection");
             
             return await this._deliveryRequestRepository.GetAwaitingDriver();
         }

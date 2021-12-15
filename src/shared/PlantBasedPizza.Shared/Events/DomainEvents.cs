@@ -36,12 +36,18 @@ namespace PlantBasedPizza.Shared.Events
             if (Container != null)
             {
                 var observability = Container.GetService<IObservabilityService>();
-                observability.Info(evt.CorrelationId, $"[EVENT MANAGER] Raising event {evt.EventName}");
+                
+                observability.Info($"[EVENT MANAGER] Raising event {evt.EventName}");
                 
                 foreach (var handler in Container.GetServices<Handles<T>>())
                 {
-                    observability.Info(evt.CorrelationId, $"[EVENT MANAGER] Handling event with handler {handler.GetType().Name}");
+                    observability.StartTraceSubsegment(handler.GetType().Name);
+                    
+                    observability.Info($"[EVENT MANAGER] Handling event with handler {handler.GetType().Name}");
+                    
                     await handler.Handle(evt);
+                    
+                    observability.EndTraceSubsegment();
                 }
             }
 

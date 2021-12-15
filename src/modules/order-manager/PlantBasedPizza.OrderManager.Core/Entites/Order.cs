@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using PlantBasedPizza.Events;
 using PlantBasedPizza.Shared.Events;
 using PlantBasedPizza.Shared.Guards;
+using PlantBasedPizza.Shared.Logging;
+using Serilog;
 
 namespace PlantBasedPizza.OrderManager.Core.Entites
 {
@@ -37,6 +39,8 @@ namespace PlantBasedPizza.OrderManager.Core.Entites
                 throw new ArgumentException("If order type is delivery a delivery address must be specified",
                     nameof(deliveryDetails));
             }
+            
+            ApplicationLogger.Info($"Creating a new order with type {type}");
 
             var order = new Order()
             {
@@ -85,6 +89,7 @@ namespace PlantBasedPizza.OrderManager.Core.Entites
         {
             if (this.OrderSubmittedOn.HasValue)
             {
+                ApplicationLogger.Warn("Attempting to add an order item to an order that has already been submitted, skipping");
                 return;
             }
             

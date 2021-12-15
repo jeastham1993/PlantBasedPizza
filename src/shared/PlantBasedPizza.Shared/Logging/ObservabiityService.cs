@@ -18,11 +18,11 @@ namespace PlantBasedPizza.Shared.Logging
             this._cloudWatchClient = cloudWatchClient;
         }
 
-        public void StartTraceSegment(string segmentName, string correlationId = "")
+        public void StartTraceSegment(string segmentName)
         {
             AWSXRayRecorder.Instance.BeginSegment(segmentName);
             
-            AWSXRayRecorder.Instance.AddAnnotation("CorrelationId", correlationId);
+            AWSXRayRecorder.Instance.AddAnnotation("CorrelationId", CorrelationContext.GetCorrelationId());
         }
 
         public void EndTraceSegment()
@@ -71,10 +71,6 @@ namespace PlantBasedPizza.Shared.Logging
             {
             }
         }
-
-        public void AddCorrelationId(string correlationId)
-        {
-        }
         
         public TResult TraceMethod<TResult>(string methodName, Func<TResult> method)
         {
@@ -102,21 +98,19 @@ namespace PlantBasedPizza.Shared.Logging
             return await AWSXRayRecorder.Instance.TraceMethodAsync<TResult>(methodName, method);
         }
 
-        public void Info(string correlationId, string message)
+        public void Info(string message)
         {
-            using (LogContext.PushProperty("CorrelationId", correlationId))
-                Log.Information(message);
+            ApplicationLogger.Info(message);
         }
         
-        public void Warn(string correlationId, Exception ex, string message)
+        public void Warn(Exception ex, string message)
         {
-            using (LogContext.PushProperty("CorrelationId", correlationId))
-                Log.Warning(ex, message);
+            ApplicationLogger.Warn(ex, message);
         }
         
-        public void Error(string correlationId, Exception ex, string message)
+        public void Error(Exception ex, string message)
         {
-            Log.Error(correlationId, ex, message);
+            ApplicationLogger.Error(ex, message);
         }
     }
 }

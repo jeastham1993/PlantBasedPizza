@@ -31,7 +31,7 @@ namespace PlantBasedPizza.Deliver.Core.Handlers
 
             if (existingDeliveryRequestForOrder != null)
             {
-                this._logger.Info(evt.CorrelationId, "Delivery request for order received, skipping");
+                this._logger.Info("Delivery request for order received, skipping");
                 return;
             }
 

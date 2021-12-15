@@ -42,37 +42,33 @@ app.Use(async (context, next) =>
     var correlationId = string.Empty;
     
     if (context.Request.Headers.ContainsKey("X-Amzn-Trace-Id"))
-    {
-        observability.Info(string.Empty, "Trace id found");
-        
+    {   
         correlationId = context.Request.Headers["X-Amzn-Trace-Id"].ToString();
         
-        context.Request.Headers.Add("CorrelationId", correlationId);
+        context.Request.Headers.Add(CorrelationContext.DefaultRequestHeaderName, correlationId);
     }
-    else if (context.Request.Headers.ContainsKey("CorrelationId"))
+    else if (context.Request.Headers.ContainsKey(CorrelationContext.DefaultRequestHeaderName))
     {
-        observability.Info(string.Empty, "Header correlation id found");
-        
-        correlationId = context.Request.Headers["CorrelationId"].ToString();
+        correlationId = context.Request.Headers[CorrelationContext.DefaultRequestHeaderName].ToString();
     }
     else
     {
-        observability.Info(string.Empty, "Generating new correlation id");
-        
         correlationId = Guid.NewGuid().ToString();
         
-        context.Request.Headers.Add("CorrelationId", correlationId);
+        context.Request.Headers.Add(CorrelationContext.DefaultRequestHeaderName, correlationId);
     }
     
     var timer = new System.Timers.Timer();
     
     timer.Start();
     
-    observability.Info(correlationId, $"Request received to {context.Request.Path.Value}");
+    CorrelationContext.SetCorrelationId(correlationId);
     
-    observability.StartTraceSegment(context.Request.Path.Value, correlationId);
+    observability.Info($"Request received to {context.Request.Path.Value}");
+    
+    observability.StartTraceSegment(context.Request.Path.Value);
 
-    context.Response.Headers.Add("CorrelationId", correlationId);
+    context.Response.Headers.Add(CorrelationContext.DefaultRequestHeaderName, correlationId);
     
     // Do work that doesn't write to the Response.
     await next.Invoke();

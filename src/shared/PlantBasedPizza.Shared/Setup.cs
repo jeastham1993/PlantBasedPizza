@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PlantBasedPizza.Shared.Logging;
 using Serilog;
+using Serilog.Events;
 using Serilog.Formatting.Json;
 
 namespace PlantBasedPizza.Shared
@@ -33,6 +34,8 @@ namespace PlantBasedPizza.Shared
         public static WebApplicationBuilder AddSharedInfrastructure(this WebApplicationBuilder builder)
         {
             builder.Host.UseSerilog((ctx, lc) => lc
+                .MinimumLevel.Debug()
+                .MinimumLevel.Override("Microsoft", LogEventLevel.Error)
                 .Enrich.FromLogContext()
                 .WriteTo.Console()
                 .WriteTo.File(new JsonFormatter(), "logs/myapp-{Date}.json"));
