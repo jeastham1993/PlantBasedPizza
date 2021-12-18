@@ -1,3 +1,5 @@
+using Amazon;
+using Amazon.DynamoDBv2;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Bson.Serialization;
@@ -27,11 +29,11 @@ namespace PlantBasedPizza.Deliver.Infrastructure
                 map.SetIgnoreExtraElements(true);
                 map.SetIgnoreExtraElementsIsInherited(true);
             });
-            
-            // or use a connection string
-            var client = new MongoClient(configuration["DatabaseConnection"]);
 
-            services.AddSingleton<MongoClient>(client);
+            services.AddSingleton<AmazonDynamoDBClient>(new AmazonDynamoDBClient(new AmazonDynamoDBConfig()
+            {
+                RegionEndpoint = RegionEndpoint.EUWest1,
+            }));
             
             services.AddTransient<IDeliveryRequestRepository, DeliveryRequestRepository>();
             services.AddTransient<Handles<OrderReadyForDeliveryEvent>, OrderReadyForDeliveryEventHandler>();

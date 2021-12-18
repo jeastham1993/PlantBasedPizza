@@ -13,3 +13,10 @@ services:
     container_name: plant-based-pizza
     ports:
       - 5113:80
+  localstack:
+    container_name: localstack
+    image: localstack/localstack
+    environment:
+      - SERVICES=dynamodb
+    ports:
+      - "4566:4566"

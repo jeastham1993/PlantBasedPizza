@@ -1,17 +1,21 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Amazon.DynamoDBv2;
 using MongoDB.Driver;
 using PlantBasedPizza.Kitchen.Core.Entities;
+using PlantBasedPizza.Shared.Logging;
 
 public class KitchenRequestRepository : IKitchenRequestRepository
 {
     private readonly IMongoDatabase _database;
     private readonly IMongoCollection<KitchenRequest> _kitchenRequests;
+    private readonly AmazonDynamoDBClient _dynamoDbClient;
+    private readonly IObservabilityService _observability;
 
-    public KitchenRequestRepository(MongoClient client)
+    public KitchenRequestRepository(AmazonDynamoDBClient dynamoDbClient, IObservabilityService observability)
     {
-        this._database = client.GetDatabase("PlantBasedPizza");
-        this._kitchenRequests = this._database.GetCollection<KitchenRequest>("kitchen");
+        _dynamoDbClient = dynamoDbClient;
+        _observability = observability;
     }
 
     public async Task AddNew(KitchenRequest kitchenRequest)
