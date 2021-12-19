@@ -10,13 +10,13 @@ public static class DeliveryRequestExtensions
     {
         var attributeMap = new Dictionary<string, AttributeValue>(4)
         {
-            { "PK", new AttributeValue($"DELIVERY#{request.OrderIdentifier.ToUpper()}") },
+            { "PK", new AttributeValue($"ORDER#{request.OrderIdentifier.ToUpper()}") },
             { "SK", new AttributeValue($"DELIVERY#{request.OrderIdentifier.ToUpper()}") },
             { "Type", new AttributeValue("DeliveryRequest") },
             { "Data", new AttributeValue(JsonConvert.SerializeObject(request)) },
         };
 
-        if (string.IsNullOrEmpty(request.Driver))
+        if (!string.IsNullOrEmpty(request.Driver))
         {
             attributeMap.Add("GSI1PK", new AttributeValue($"DRIVER#{request.Driver.ToUpper()}"));
             attributeMap.Add("GSI1SK", new AttributeValue($"DRIVER#{request.Driver.ToUpper()}"));

@@ -1,7 +1,14 @@
+using Newtonsoft.Json;
+
 namespace PlantBasedPizza.Deliver.Core.Entities
 {
     public class Address
     {
+        [JsonConstructor]
+        private Address()
+        {
+        }
+        
         public Address(string addressLine1, string postcode) : this(addressLine1, string.Empty, string.Empty, string.Empty, string.Empty, postcode)
         {
         }
@@ -16,16 +23,22 @@ namespace PlantBasedPizza.Deliver.Core.Entities
             Postcode = postcode;
         }
 
+        [JsonProperty]
         public string AddressLine1 { get; private set; }
         
+        [JsonProperty]
         public string AddressLine2 { get; private set; }
         
+        [JsonProperty]
         public string AddressLine3 { get; private set; }
         
+        [JsonProperty]
         public string AddressLine4 { get; private set; }
         
+        [JsonProperty]
         public string AddressLine5 { get; private set; }
         
+        [JsonProperty]
         public string Postcode { get; private set; }
         
         

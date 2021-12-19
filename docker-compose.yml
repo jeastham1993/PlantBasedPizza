@@ -11,12 +11,10 @@ services:
   plant-based-pizza-api:
     image: plant-based-pizza
     container_name: plant-based-pizza
+    environment:
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION}
+      - TABLE_NAME=${TABLE_NAME}
     ports:
       - 5113:80
-  localstack:
-    container_name: localstack
-    image: localstack/localstack
-    environment:
-      - SERVICES=dynamodb
-    ports:
-      - "4566:4566"

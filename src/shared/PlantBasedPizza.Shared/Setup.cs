@@ -1,5 +1,6 @@
 using Amazon;
 using Amazon.CloudWatch;
+using Amazon.Runtime;
 using Amazon.XRay.Recorder.Core;
 using Amazon.XRay.Recorder.Handlers.AwsSdk;
 using Amazon.XRay.Recorder.Handlers.System.Net;
@@ -24,7 +25,17 @@ namespace PlantBasedPizza.Shared
             
             ApplicationLogger.Init();
 
-            services.AddSingleton(new AmazonCloudWatchClient());
+            if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("ENV")))
+            {
+                services.AddSingleton(new AmazonCloudWatchClient(
+                    new BasicAWSCredentials(Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID"),
+                        Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY")), RegionEndpoint.EUWest1));
+            }
+            else
+            {
+                services.AddSingleton(new AmazonCloudWatchClient());
+            }
+            
             services.AddTransient<IObservabilityService, ObservabiityService>();
             services.AddHttpContextAccessor();
 
@@ -34,7 +45,7 @@ namespace PlantBasedPizza.Shared
         public static WebApplicationBuilder AddSharedInfrastructure(this WebApplicationBuilder builder)
         {
             builder.Host.UseSerilog((ctx, lc) => lc
-                .MinimumLevel.Debug()
+                .MinimumLevel.Information()
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Error)
                 .Enrich.FromLogContext()
                 .WriteTo.Console()

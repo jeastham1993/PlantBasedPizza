@@ -15,34 +15,52 @@ namespace PlantBasedPizza.Shared.Logging
         public static void Init()
         {
             _logger = new LoggerConfiguration()
-                .MinimumLevel.Debug()
+                .MinimumLevel.Information()
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Error)
                 .Enrich.FromLogContext()
                 .WriteTo.Console()
-                .WriteTo.File(new JsonFormatter(), "logs/myapp-{Date}.json")
                 .CreateLogger();
         }
         
         public static void Info(string message)
         {
+            if (_logger == null)
+            {
+                ApplicationLogger.Init();
+            }
             using (LogContext.PushProperty("CorrelationId", CorrelationContext.GetCorrelationId()))
                 _logger.Information(message);
         }
         
         public static void Warn(Exception ex, string message)
         {
+            if (_logger == null)
+            {
+                ApplicationLogger.Init();
+            }
+            
             using (LogContext.PushProperty("CorrelationId", CorrelationContext.GetCorrelationId()))
                 _logger.Warning(ex, message);
         }
         
         public static void Warn(string message)
         {
+            if (_logger == null)
+            {
+                ApplicationLogger.Init();
+            }
+            
             using (LogContext.PushProperty("CorrelationId", CorrelationContext.GetCorrelationId()))
                 _logger.Warning(message);
         }
         
         public static void Error(Exception ex, string message)
         {
+            if (_logger == null)
+            {
+                ApplicationLogger.Init();
+            }
+            
             using (LogContext.PushProperty("CorrelationId", CorrelationContext.GetCorrelationId()))
                 _logger.Error(ex, message);
         }

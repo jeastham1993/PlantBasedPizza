@@ -113,7 +113,7 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
 
             if (existingOrder == null)
             {
-                this._logger.LogInformation("Existing order not found, returning");
+                this._logger.LogInformation($"Existing order ({request.OrderIdentifier}) not found, returning");
                 
                 return existingOrder;
             }

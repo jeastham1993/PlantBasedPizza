@@ -35,13 +35,13 @@ namespace PlantBasedPizza.Deliver.Infrastructure
             var getResult = await this._dynamoDbClient.GetItemAsync(InfrastructureConstants.TableName,
                 new Dictionary<string, AttributeValue>(2)
                 {
-                    { "PK", new AttributeValue($"DELIVERY#{orderIdentifier.ToUpper()}") },
+                    { "PK", new AttributeValue($"ORDER#{orderIdentifier.ToUpper()}") },
                     { "SK", new AttributeValue($"DELIVERY#{orderIdentifier.ToUpper()}") },
                 });
 
             if (!getResult.IsItemSet)
             {
-                throw new Exception("Order not found");
+                return null;
             }
             
             var result = JsonConvert.DeserializeObject<DeliveryRequest>(getResult.Item["Data"].S);
