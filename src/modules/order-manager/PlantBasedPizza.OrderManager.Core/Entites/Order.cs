@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using PlantBasedPizza.Events;
 using PlantBasedPizza.Shared.Events;
 using PlantBasedPizza.Shared.Guards;
@@ -16,7 +17,8 @@ namespace PlantBasedPizza.OrderManager.Core.Entites
 
         private List<OrderItem> _items;
         private List<OrderHistory> _history;
-
+        
+        [JsonConstructor]
         internal Order(string orderNumber = null)
         {
             if (string.IsNullOrEmpty(orderNumber))
@@ -61,28 +63,40 @@ namespace PlantBasedPizza.OrderManager.Core.Entites
             return order;
         }
 
+        [JsonProperty]
         public string OrderIdentifier { get; private set; }
         
+        [JsonProperty]
         public string OrderNumber { get; private set; }
 
+        [JsonProperty]
         public DateTime OrderDate { get; private set; }
         
+        [JsonProperty]
         public bool AwaitingCollection { get; private set; }
 
+        [JsonProperty]
         public DateTime? OrderSubmittedOn { get; private set; }
 
+        [JsonProperty]
         public DateTime? OrderCompletedOn { get; private set; }
 
+        [JsonProperty("items")]
         public IReadOnlyCollection<OrderItem> Items => this._items;
 
+        [JsonProperty("history")]
         public IReadOnlyCollection<OrderHistory> History => this._history?.OrderBy(p => p.HistoryDate).ToList();
 
+        [JsonProperty]
         public OrderType OrderType { get; private set; }
 
+        [JsonProperty]
         public string CustomerIdentifier { get; private set; }
 
+        [JsonProperty]
         public decimal TotalPrice { get; private set; }
 
+        [JsonProperty]
         public DeliveryDetails DeliveryDetails { get; private set; }
 
         public void AddOrderItem(string recipeIdentifier, string itemName, int quantity, decimal price)

@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
 using PlantBasedPizza.IntegrationTests.Drivers;
@@ -22,6 +23,8 @@ namespace PlantBasedPizza.IntegrationTests.Steps
         [Then(@"an order with identifier (.*) should be added to the new kitchen requests")]
         public async Task ThenAnOrderWithIdentifierOrdShouldBeAddedToTheNewKitchenRequests(string p0)
         {
+            await Task.Delay(TimeSpan.FromSeconds(5));
+            
             var newKitchenRequests = await this._kitchenDriver.GetNew();
 
             newKitchenRequests.Any(p => p.OrderIdentifier == p0).Should().BeTrue();
@@ -71,6 +74,8 @@ namespace PlantBasedPizza.IntegrationTests.Steps
         [Then(@"order (.*) should appear in the baking queue")]
         public async Task ThenOrderOrdShouldAppearInTheBakingQueueQueue(string p0)
         {
+            await Task.Delay(TimeSpan.FromSeconds(5));
+            
             var requests = await this._kitchenDriver.GetBaking();
 
             requests.Any(p => p.OrderIdentifier == p0).Should().BeTrue();

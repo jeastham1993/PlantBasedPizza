@@ -16,6 +16,11 @@ public static class DeliveryRequestExtensions
             { "Data", new AttributeValue(JsonConvert.SerializeObject(request)) },
         };
 
+        if (request.DeliveredOn.HasValue)
+        {
+            return attributeMap;
+        }
+
         if (!string.IsNullOrEmpty(request.Driver))
         {
             attributeMap.Add("GSI1PK", new AttributeValue($"DRIVER#{request.Driver.ToUpper()}"));

@@ -13,7 +13,7 @@ namespace PlantBasedPizza.Deliver.Infrastructure
     {
         private readonly AmazonDynamoDBClient _dynamoDbClient;
 
-        public DeliveryRequestRepository(MongoClient client, AmazonDynamoDBClient dynamoDbClient)
+        public DeliveryRequestRepository(AmazonDynamoDBClient dynamoDbClient)
         {
             this._dynamoDbClient = dynamoDbClient;
         }

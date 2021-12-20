@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -35,6 +36,8 @@ namespace PlantBasedPizza.IntegrationTests.Steps
         [Then(@"order (.*) should appear in a list of (.*) deliveries")]
         public async Task ThenOrderDeliverShouldAppearInAListOfJamesDeliveries(string p0, string p1)
         {
+            await Task.Delay(TimeSpan.FromSeconds(5));
+            
             var ordersForDriver = await this._driver.GetAssignedDeliveriesForDriver(p1);
 
             ordersForDriver.Any(p => p.OrderIdentifier == p0).Should().BeTrue();

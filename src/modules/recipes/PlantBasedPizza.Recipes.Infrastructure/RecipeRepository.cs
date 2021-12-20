@@ -1,67 +1,76 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Amazon.DynamoDBv2;
+using Amazon.DynamoDBv2.Model;
+using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
+using Newtonsoft.Json;
 using PlantBasedPizza.Recipes.Core.Entities;
+using PlantBasedPizza.Recipes.Infrastructure;
+using PlantBasedPizza.Recipes.Infrastructure.Extensions;
 using PlantBasedPizza.Shared.Logging;
 
 public class RecipeRepository : IRecipeRepository
 {
-    private readonly IMongoDatabase _database;
-    private readonly IMongoCollection<Recipe> _recipes;
+    private readonly AmazonDynamoDBClient _dynamoDbClient;
     private readonly IObservabilityService _observability;
 
-    public RecipeRepository(MongoClient client, IObservabilityService observability)
+    public RecipeRepository(IObservabilityService observability, AmazonDynamoDBClient dynamoDbClient)
     {
         _observability = observability;
-        this._database = client.GetDatabase("PlantBasedPizza");
-        this._recipes = this._database.GetCollection<Recipe>("recipes");
+        _dynamoDbClient = dynamoDbClient;
     }
     
     public async Task<Recipe> Retrieve(string recipeIdentifier)
     {
-        var queryBuilder = Builders<Recipe>.Filter.Eq(p => p.RecipeIdentifier, recipeIdentifier);
+        var getResult = await this._dynamoDbClient.GetItemAsync(InfrastructureConstants.TableName,
+            new Dictionary<string, AttributeValue>(2)
+            {
+                { "PK", new AttributeValue($"RECIPES") },
+                { "SK", new AttributeValue($"RECIPE#{recipeIdentifier.ToUpper()}") },
+            });
 
-        this._observability.StartTraceSubsegment("Database query");
+        if (!getResult.IsItemSet)
+        {
+            return null;
+        }
+            
+        var result = JsonConvert.DeserializeObject<Recipe>(getResult.Item["Data"].S);
 
-        var recipe = await this._observability.TraceMethodAsync("Find Recipe Database Search",
-            async () => await this._recipes.Find(queryBuilder).FirstOrDefaultAsync());
-
-        this._observability.EndTraceSubsegment();
-        
-        return recipe;
+        return result;
     }
 
     public async Task<IEnumerable<Recipe>> List()
     {
-        this._observability.StartTraceSubsegment("Database query");
+        var results = new List<Recipe>();
+        
+        var queryResults = await this._dynamoDbClient.QueryAsync(new QueryRequest()
+        {
+            TableName = InfrastructureConstants.TableName,
+            IndexName = "GSI1",
+            KeyConditionExpression = "GSI1PK = :PK and GSI1SK = :SK",
+            ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
+                {":PK", new AttributeValue { S =  $"RECIPES" }},
+            }
+        });
 
-        var recipes = await this._observability.TraceMethodAsync("Find Recipes Database Search",
-            async () => await this._recipes.Find(p => true).ToListAsync());
+        foreach (var queryResult in queryResults.Items)
+        {
+            results.Add(JsonConvert.DeserializeObject<Recipe>(queryResult["Data"].S));
+        }
 
-        this._observability.EndTraceSubsegment();
-
-        return recipes;
+        return results;
     }
 
     public async Task Add(Recipe recipe)
     {
-        this._observability.StartTraceSubsegment("Database query");this._observability.StartTraceSubsegment("Database query");
-
-        await this._observability.TraceMethodAsync("Add Recipe",
-            async () => await this._recipes.InsertOneAsync(recipe).ConfigureAwait(false));
-
-        this._observability.EndTraceSubsegment();
+        await this._dynamoDbClient.PutItemAsync(Environment.GetEnvironmentVariable("TABLE_NAME"),
+            recipe.AsAttributeMap());
     }
 
     public async Task Update(Recipe recipe)
     {
-        this._observability.StartTraceSubsegment("Database query");
-        
-        var queryBuilder = Builders<Recipe>.Filter.Eq(ord => ord.RecipeIdentifier, recipe.RecipeIdentifier);
-
-        await this._observability.TraceMethodAsync("Update Recipe",
-            async () => await this._recipes.ReplaceOneAsync(queryBuilder, recipe));
-
-        this._observability.EndTraceSubsegment();
+        await this._dynamoDbClient.PutItemAsync(Environment.GetEnvironmentVariable("TABLE_NAME"),
+            recipe.AsAttributeMap());
     }
 }

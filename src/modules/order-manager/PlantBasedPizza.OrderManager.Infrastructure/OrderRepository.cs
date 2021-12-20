@@ -1,48 +1,75 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using MongoDB.Bson.Serialization;
-using MongoDB.Driver;
+using Amazon.DynamoDBv2;
+using Amazon.DynamoDBv2.Model;
+using Newtonsoft.Json;
 using PlantBasedPizza.OrderManager.Core.Entites;
 using PlantBasedPizza.OrderManager.Infrastructure;
+using PlantBasedPizza.OrderManager.Infrastructure.Extensions;
+using PlantBasedPizza.Shared.Logging;
 
 public class OrderRepository : IOrderRepository
 {
-    private readonly IMongoDatabase _database;
-    private readonly IMongoCollection<Order> _orders;
+    private readonly IObservabilityService _logger;
+    private readonly AmazonDynamoDBClient _dynamoDbClient;
 
-    public OrderRepository(MongoClient client)
+    public OrderRepository(IObservabilityService logger, AmazonDynamoDBClient dynamoDbClient)
     {
-        this._database = client.GetDatabase("PlantBasedPizza");
-        this._orders = this._database.GetCollection<Order>("orders");
+        this._logger = logger;
+        this._dynamoDbClient = dynamoDbClient;
     }
 
     public async Task Add(Order order)
     {
-        await this._orders.InsertOneAsync(order).ConfigureAwait(false);
+        await this._dynamoDbClient.PutItemAsync(Environment.GetEnvironmentVariable("TABLE_NAME"),
+            order.AsAttributeMap());
     }
 
     public async Task<Order> Retrieve(string orderIdentifier)
     {
-        var queryBuilder = Builders<Order>.Filter.Eq(p => p.OrderIdentifier, orderIdentifier);
+        var getResult = await this._dynamoDbClient.GetItemAsync(InfrastructureConstants.TableName,
+            new Dictionary<string, AttributeValue>(2)
+            {
+                { "PK", new AttributeValue($"ORDER#{orderIdentifier.ToUpper()}") },
+                { "SK", new AttributeValue($"ORDER#{orderIdentifier.ToUpper()}") },
+            });
 
-        var order = await this._orders.Find(queryBuilder).FirstOrDefaultAsync().ConfigureAwait(false);
+        if (!getResult.IsItemSet)
+        {
+            return null;
+        }
+            
+        var result = JsonConvert.DeserializeObject<Order>(getResult.Item["Data"].S);
 
-        return order;
+        return result;
     }
 
     public async Task<List<Order>> GetAwaitingCollection()
     {
-        var queryBuilder = Builders<Order>.Filter.Eq(p => p.OrderType, OrderType.PICKUP);
+        var results = new List<Order>();
+        
+        var queryResults = await this._dynamoDbClient.QueryAsync(new QueryRequest()
+        {
+            TableName = InfrastructureConstants.TableName,
+            IndexName = "GSI1",
+            KeyConditionExpression = "GSI1PK = :PK and GSI1SK = :SK",
+            ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
+                {":PK", new AttributeValue { S =  $"PICKUPAWAITINGCOLLECTION" }},
+                {":SK", new AttributeValue { S =  $"PICKUPAWAITINGCOLLECTION" }},
+            }
+        });
 
-        var order = await this._orders.Find(p => p.OrderType == OrderType.PICKUP && p.AwaitingCollection == true).ToListAsync();
+        foreach (var queryResult in queryResults.Items)
+        {
+            results.Add(JsonConvert.DeserializeObject<Order>(queryResult["Data"].S));
+        }
 
-        return order;
+        return results;
     }
 
     public async Task Update(Order order)
     {
-        var queryBuilder = Builders<Order>.Filter.Eq(ord => ord.OrderIdentifier, order.OrderIdentifier);
-
-        await this._orders.ReplaceOneAsync(queryBuilder, order);
+        await this._dynamoDbClient.PutItemAsync(Environment.GetEnvironmentVariable("TABLE_NAME"),
+            order.AsAttributeMap());
     }
 }

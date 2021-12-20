@@ -12,8 +12,6 @@ using PlantBasedPizza.Shared.Logging;
 
 public class KitchenRequestRepository : IKitchenRequestRepository
 {
-    private readonly IMongoDatabase _database;
-    private readonly IMongoCollection<KitchenRequest> _kitchenRequests;
     private readonly AmazonDynamoDBClient _dynamoDbClient;
     private readonly IObservabilityService _observability;
 

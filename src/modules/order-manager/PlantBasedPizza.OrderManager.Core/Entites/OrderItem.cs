@@ -1,7 +1,14 @@
+using Newtonsoft.Json;
+
 namespace PlantBasedPizza.OrderManager.Core.Entites
 {
     public class OrderItem
     {
+        [JsonConstructor]
+        private OrderItem()
+        {
+        }
+        
         internal OrderItem(string recipeIdentifier, string itemName, int quantity, decimal price)
         {
             this.RecipeIdentifier = recipeIdentifier;
@@ -10,12 +17,16 @@ namespace PlantBasedPizza.OrderManager.Core.Entites
             this.Price = price;
         }
         
+        [JsonProperty]
         public string RecipeIdentifier { get; private set; }
         
+        [JsonProperty]
         public string ItemName { get; private set; }
         
+        [JsonProperty]
         public int Quantity { get; private set; }
         
+        [JsonProperty]
         public decimal Price { get; private set; }
     }
 }
