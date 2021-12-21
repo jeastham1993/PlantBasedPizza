@@ -17,7 +17,7 @@ namespace PlantBasedPizza.IntegrationTests.Drivers
 
         public DeliveryDriver()
         {
-            BaseUrl = Environment.GetEnvironmentVariable("TEST_URL") ?? @"http://localhost:5113";
+            BaseUrl = Environment.GetEnvironmentVariable("TEST_URL") ?? @"http://plant-publi-1ce809ri0ilmj-684717832.eu-west-1.elb.amazonaws.com";
 
             this._httpClient = new HttpClient();
         }

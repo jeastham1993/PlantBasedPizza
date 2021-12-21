@@ -15,7 +15,10 @@ namespace PlantBasedPizza.OrderManager.Core.Entites
     {
         private const decimal DefaultDeliveryPrice = 3.50M;
 
+        [JsonProperty("items")]
         private List<OrderItem> _items;
+        
+        [JsonProperty("history")]
         private List<OrderHistory> _history;
         
         [JsonConstructor]
@@ -81,10 +84,10 @@ namespace PlantBasedPizza.OrderManager.Core.Entites
         [JsonProperty]
         public DateTime? OrderCompletedOn { get; private set; }
 
-        [JsonProperty("items")]
+        [JsonIgnore]
         public IReadOnlyCollection<OrderItem> Items => this._items;
-
-        [JsonProperty("history")]
+        
+        [JsonIgnore]
         public IReadOnlyCollection<OrderHistory> History => this._history?.OrderBy(p => p.HistoryDate).ToList();
 
         [JsonProperty]

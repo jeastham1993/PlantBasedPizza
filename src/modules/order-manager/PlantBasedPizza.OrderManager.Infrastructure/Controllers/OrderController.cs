@@ -5,6 +5,7 @@ using Microsoft.Extensions.Logging;
 using PlantBasedPizza.OrderManager.Core.Command;
 using PlantBasedPizza.OrderManager.Core.Entites;
 using PlantBasedPizza.OrderManager.Core.Services;
+using PlantBasedPizza.Shared.Logging;
 
 namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
 {
@@ -13,9 +14,9 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
     {
         private readonly IOrderRepository _orderRepository;
         private readonly IRecipeService _recipeService;
-        private readonly ILogger<OrderController> _logger;
+        private readonly IObservabilityService _logger;
 
-        public OrderController(IOrderRepository orderRepository, IRecipeService recipeService, ILogger<OrderController> logger)
+        public OrderController(IOrderRepository orderRepository, IRecipeService recipeService, IObservabilityService logger)
         {
             _orderRepository = orderRepository;
             _recipeService = recipeService;
@@ -107,31 +108,35 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
         [HttpPost("order/collected")]
         public async Task<Order> OrderCollected([FromBody] CollectOrderRequest request)
         {
-            this._logger.LogInformation($"Received {request}");
+            this._logger.Info($"Received {request}");
             
             var existingOrder = await this._orderRepository.Retrieve(request.OrderIdentifier);
 
             if (existingOrder == null)
             {
-                this._logger.LogInformation($"Existing order ({request.OrderIdentifier}) not found, returning");
+                this._logger.Info($"Existing order ({request.OrderIdentifier}) not found, returning");
                 
                 return existingOrder;
             }
             
-            this._logger.LogInformation($"Order is type {existingOrder.OrderType} and is awaiting collection {existingOrder.AwaitingCollection}");
+            this._logger.Info($"Order is type {existingOrder.OrderType} and is awaiting collection {existingOrder.AwaitingCollection}");
 
             if (existingOrder.OrderType == OrderType.DELIVERY || existingOrder.AwaitingCollection == false)
             {
-                this._logger.LogInformation("Returning");
+                this._logger.Info("Returning");
                 
                 return existingOrder;
             }
+            
+            this._logger.Info("Order is ready to be completed, marking completed!");
 
             existingOrder.AddHistory("Order collected");
 
             existingOrder.CompleteOrder();
 
             await this._orderRepository.Update(existingOrder).ConfigureAwait(false);
+
+            this._logger.Info("Updated!");
 
             return existingOrder;
         }
