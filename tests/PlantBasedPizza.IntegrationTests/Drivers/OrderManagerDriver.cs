@@ -11,14 +11,12 @@ namespace PlantBasedPizza.IntegrationTests.Drivers
 {
     public class OrderManagerDriver
     {
-        private static string BaseUrl;
+        private static string BaseUrl = TestConstants.DefaultTestUrl;
 
         private readonly HttpClient _httpClient;
 
         public OrderManagerDriver()
         {
-            BaseUrl = Environment.GetEnvironmentVariable("TEST_URL") ?? @"http://plant-publi-1ce809ri0ilmj-684717832.eu-west-1.elb.amazonaws.com";
-
             this._httpClient = new HttpClient();
         }
 
@@ -79,7 +77,7 @@ namespace PlantBasedPizza.IntegrationTests.Drivers
 
         public async Task<Order> GetOrder(string orderIdentifier)
         {
-            var result = await this._httpClient.GetAsync(new Uri($"{BaseUrl}/order/order/{orderIdentifier}"))
+            var result = await this._httpClient.GetAsync(new Uri($"{BaseUrl}/order/order/{orderIdentifier}/detail"))
                 .ConfigureAwait(false);
 
             var order = JsonConvert.DeserializeObject<Order>(await result.Content.ReadAsStringAsync());

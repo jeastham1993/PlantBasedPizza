@@ -11,14 +11,12 @@ namespace PlantBasedPizza.IntegrationTests.Drivers
 {
     public class DeliveryDriver
     {
-        private static string BaseUrl;
+        private static string BaseUrl = TestConstants.DefaultTestUrl;
 
         private readonly HttpClient _httpClient;
 
         public DeliveryDriver()
         {
-            BaseUrl = Environment.GetEnvironmentVariable("TEST_URL") ?? @"http://plant-publi-1ce809ri0ilmj-684717832.eu-west-1.elb.amazonaws.com";
-
             this._httpClient = new HttpClient();
         }
 
@@ -69,7 +67,7 @@ namespace PlantBasedPizza.IntegrationTests.Drivers
 
         public async Task<List<DeliveryRequest>> GetAssignedDeliveriesForDriver(string driverName)
         {
-            var result = await this._httpClient.GetAsync(new Uri($"{BaseUrl}/delivery/delivery/driver/{driverName}"))
+            var result = await this._httpClient.GetAsync(new Uri($"{BaseUrl}/delivery/delivery/driver/{driverName}/orders"))
                 .ConfigureAwait(false);
 
             var deliveryRequests =

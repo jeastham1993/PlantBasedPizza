@@ -22,6 +22,8 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+app.UseXRay("PlantBasedPizza.Api");
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -75,11 +77,21 @@ app.Use(async (context, next) =>
     
     timer.Stop();
 
-    var pathRoute = context.Request.Path.Value.Split('/')[1];
+    var routesToIgnore = new string[3]
+    {
+        "health",
+        "faivcon.ico",
+        "swagger"
+    };
 
-    observability.PutMetric(pathRoute, $"{context.Request.Path.Value.Replace('/', '-')}-Latency", timer.Interval).Wait();
+    var pathRoute = context.Request.Path.Value.Split('/');
+
+    if (routesToIgnore.Contains(pathRoute[1]) == false)
+    {
+        observability.PutMetric(pathRoute[1], $"{pathRoute[^1]}-Latency", timer.Interval).Wait();
     
-    observability.EndTraceSegment();
+        observability.EndTraceSegment();
+    }
 });
 
 app.Run();

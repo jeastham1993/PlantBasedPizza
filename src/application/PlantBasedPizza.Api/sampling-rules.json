@@ -1,6 +1,14 @@
 {
   "version": 2,
   "rules": [
+    {
+      "description": "Order API.",
+      "host": "*",
+      "http_method": "*",
+      "url_path": "/order/*",
+      "fixed_target": 0,
+      "rate": 0.05
+    }
   ],
   "default": {
     "fixed_target": 1,

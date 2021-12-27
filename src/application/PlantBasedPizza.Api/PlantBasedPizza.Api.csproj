@@ -22,4 +22,8 @@
     <ProjectReference Include="..\..\shared\PlantBasedPizza.Shared\PlantBasedPizza.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="logs\myapp-{Date}.json" />
+  </ItemGroup>
+
 </Project>

@@ -31,7 +31,9 @@ Resources:
               - dynamodb:Delete*
               - dynamodb:Update*
               - dynamodb:PutItem
-            Resource: arn:aws:dynamodb:eu-west-1:469909854323:table/plant-based-pizza
+            Resource:
+              - arn:aws:dynamodb:eu-west-1:469909854323:table/plant-based-pizza
+              - arn:aws:dynamodb:eu-west-1:469909854323:table/plant-based-pizza/*
           - Sid: PutMetrics
             Effect: Allow
             Action:

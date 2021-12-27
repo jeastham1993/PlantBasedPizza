@@ -23,7 +23,7 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
             _logger = logger;
         }
 
-        [HttpGet("order/{orderIdentifier}")]
+        [HttpGet("order/{orderIdentifier}/detail")]
         public async Task<Order> Get(string orderIdentifier)
         {
             return await this._orderRepository.Retrieve(orderIdentifier).ConfigureAwait(false);

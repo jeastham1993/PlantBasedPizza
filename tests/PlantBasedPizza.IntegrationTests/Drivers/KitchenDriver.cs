@@ -11,14 +11,12 @@ namespace PlantBasedPizza.IntegrationTests.Drivers
 {
     public class KitchenDriver
     {
-        private static string BaseUrl;
+        private static string BaseUrl = TestConstants.DefaultTestUrl;
 
         private readonly HttpClient _httpClient;
 
         public KitchenDriver()
         {
-            BaseUrl = Environment.GetEnvironmentVariable("TEST_URL") ?? @"http://plant-publi-1ce809ri0ilmj-684717832.eu-west-1.elb.amazonaws.com";
-            
             this._httpClient = new HttpClient();
         }
         

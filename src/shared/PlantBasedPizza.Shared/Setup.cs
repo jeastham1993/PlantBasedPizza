@@ -47,8 +47,9 @@ namespace PlantBasedPizza.Shared
             builder.Host.UseSerilog((ctx, lc) => lc
                 .MinimumLevel.Information()
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Error)
+                .MinimumLevel.Override(" Amazon.XRay", LogEventLevel.Error)
                 .Enrich.FromLogContext()
-                .WriteTo.Console()
+                .WriteTo.Console(new JsonFormatter())
                 .WriteTo.File(new JsonFormatter(), "logs/myapp-{Date}.json"));
 
             return builder;

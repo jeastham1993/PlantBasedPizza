@@ -20,7 +20,7 @@ namespace PlantBasedPizza.Deliver.Infrastructure.Controllers
             _logger = logger;
         }
 
-        [HttpGet("delivery/{orderIdentifier}")]
+        [HttpGet("delivery/{orderIdentifier}/status")]
         public async Task<DeliveryRequest?> Get(string orderIdentifier)
         {
             return await this._deliveryRequestRepository.GetDeliveryStatusForOrder(orderIdentifier);
@@ -68,7 +68,7 @@ namespace PlantBasedPizza.Deliver.Infrastructure.Controllers
             return this.Ok(existingDeliveryRequest);
         }
 
-        [HttpGet("delivery/driver/{driverName}")]
+        [HttpGet("delivery/driver/{driverName}/orders")]
         public async Task<List<DeliveryRequest>> GetForDriver(string driverName)
         {
             return await this._deliveryRequestRepository.GetOrdersWithDriver(driverName);
