@@ -1,4 +1,3 @@
-using System;
 using PlantBasedPizza.Shared.Events;
 
 namespace PlantBasedPizza.Events

@@ -4,7 +4,6 @@ using Saunter.Attributes;
 
 namespace PlantBasedPizza.Events
 {
-    [AsyncApi]
     public class DriverCollectedOrderEvent : IDomainEvent
     {
         public DriverCollectedOrderEvent(string orderIdentifier, string driverName)

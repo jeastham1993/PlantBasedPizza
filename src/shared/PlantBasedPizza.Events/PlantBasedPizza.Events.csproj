@@ -11,6 +11,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="CloudNative.CloudEvents" Version="2.1.1" />
+    <PackageReference Include="CloudNative.CloudEvents.AspNetCore" Version="2.1.1" />
+    <PackageReference Include="CloudNative.CloudEvents.NewtonsoftJson" Version="2.1.1" />
     <PackageReference Include="Saunter" Version="0.9.1" />
   </ItemGroup>
 
