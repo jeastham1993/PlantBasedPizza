@@ -21,8 +21,12 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
             _dynamoDbClient = dynamoDbClient;
         }
 
+        /// <summary>
+        /// Check the status of the system.
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("health")]
-        public async Task<IActionResult> Get(string orderIdentifier)
+        public async Task<IActionResult> Get()
         {
             var tableDetails = await this._dynamoDbClient.DescribeTableAsync(InfrastructureConstants.TableName);
 

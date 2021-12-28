@@ -15,12 +15,21 @@ namespace PlantBasedPizza.Kitchen.Infrastructure.Controllers
             _kitchenRequestRepository = kitchenRequestRepository;
         }
 
+        /// <summary>
+        /// Get a list of all new kitchen requests.
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("kitchen/new")]
         public async Task<IEnumerable<KitchenRequest>> GetNew()
         {
             return await this._kitchenRequestRepository.GetNew().ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Mark an order has being prepared.
+        /// </summary>
+        /// <param name="orderIdentifier">The order identifier.</param>
+        /// <returns></returns>
         [HttpPut("kitchen/{orderIdentifier}/preparing")]
         public async Task<KitchenRequest> Preparing(string orderIdentifier)
         {
@@ -33,12 +42,21 @@ namespace PlantBasedPizza.Kitchen.Infrastructure.Controllers
             return kitchenRequest;
         }
 
+        /// <summary>
+        /// List all orders that are currently being prepared.
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("kitchen/prep")]
         public async Task<IEnumerable<KitchenRequest>> GetPrep()
         {
             return await this._kitchenRequestRepository.GetPrep().ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Mark an order as being prepared.
+        /// </summary>
+        /// <param name="orderIdentifier">The order identifier.</param>
+        /// <returns></returns>
         [HttpPut("kitchen/{orderIdentifier}/prep-complete")]
         public async Task<KitchenRequest> PrepComplete(string orderIdentifier)
         {
@@ -51,12 +69,21 @@ namespace PlantBasedPizza.Kitchen.Infrastructure.Controllers
             return kitchenRequest;
         }
 
+        /// <summary>
+        /// List all orders currently baking.
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("kitchen/baking")]
         public async Task<IEnumerable<KitchenRequest>> GetBaking()
         {
             return await this._kitchenRequestRepository.GetBaking().ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Mark an order as bake complete.
+        /// </summary>
+        /// <param name="orderIdentifier">The order identifier.</param>
+        /// <returns></returns>
         [HttpPut("kitchen/{orderIdentifier}/bake-complete")]
         public async Task<KitchenRequest> BakeComplete(string orderIdentifier)
         {
@@ -69,6 +96,11 @@ namespace PlantBasedPizza.Kitchen.Infrastructure.Controllers
             return kitchenRequest;
         }
 
+        /// <summary>
+        /// Mark an order as quality check completed.
+        /// </summary>
+        /// <param name="orderIdentifier">The order identifier.</param>
+        /// <returns></returns>
         [HttpPut("kitchen/{orderIdentifier}/quality-check")]
         public async Task<KitchenRequest> QualityCheckComplete(string orderIdentifier)
         {
@@ -81,6 +113,10 @@ namespace PlantBasedPizza.Kitchen.Infrastructure.Controllers
             return kitchenRequest;
         }
 
+        /// <summary>
+        /// List all orders awaiting quality check.
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("kitchen/quality-check")]
         public async Task<IEnumerable<KitchenRequest>> GetAwaitingQualityCheck()
         {

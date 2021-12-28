@@ -20,6 +20,10 @@ namespace PlantBasedPizza.Recipes.Infrastructure.Controllers
             _observability = observability;
         }
 
+        /// <summary>
+        /// List all recipes.
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("recipes")]
         public async Task<IEnumerable<Recipe>> List()
         {
@@ -27,13 +31,23 @@ namespace PlantBasedPizza.Recipes.Infrastructure.Controllers
                 async () => await this._recipeRepository.List());
         }
 
+        /// <summary>
+        /// Get a specific recipe.
+        /// </summary>
+        /// <param name="recipeIdentifier">The identifier of the recipe to get.</param>
+        /// <returns></returns>
         [HttpGet("recipes/{recipeIdentifier}")]
         public async Task<Recipe> Get(string recipeIdentifier)
         {
             return await this._observability.TraceMethodAsync("Get Recipes",
                 async () => await this._recipeRepository.Retrieve(recipeIdentifier));
         }
-
+        
+        /// <summary>
+        /// Create a new recipe.
+        /// </summary>
+        /// <param name="request">The <see cref="CreateRecipeCommand"/> request.</param>
+        /// <returns></returns>
         [HttpPost("recipes")]
         public async Task<Recipe> Create([FromBody] CreateRecipeCommand request)
         {

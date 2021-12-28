@@ -1,3 +1,4 @@
+using System.Reflection;
 using PlantBasedPizza.OrderManager.Infrastructure;
 using PlantBasedPizza.Recipes.Infrastructure;
 using PlantBasedPizza.Kitchen.Infrastructure;
@@ -5,6 +6,7 @@ using PlantBasedPizza.Deliver.Infrastructure;
 using PlantBasedPizza.Shared.Events;
 using PlantBasedPizza.Shared;
 using PlantBasedPizza.Shared.Logging;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,18 +20,37 @@ builder.Services.AddSharedInfrastructure(builder.Configuration);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Version = "v1",
+        Title = "Plant Based Pizza API",
+        Description = "The API for the Plant Based Pizza API",
+        Contact = new OpenApiContact
+        {
+            Name = "James Eastham",
+            Url = new Uri("https://jameseastham.co.uk")
+        },
+    });
+
+    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "PlantBasedPizza.Deliver.Infrastructure.xml"));
+    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "PlantBasedPizza.Kitchen.Infrastructure.xml"));
+    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "PlantBasedPizza.OrderManager.Infrastructure.xml"));
+    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "PlantBasedPizza.Recipes.Infrastructure.xml"));
+});
 
 var app = builder.Build();
 
 app.UseXRay("PlantBasedPizza.Api");
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+app.UseSwagger();
+
+app.UseSwaggerUI(options =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+    options.RoutePrefix = string.Empty;
+});
 
 app.UseAuthorization();
 

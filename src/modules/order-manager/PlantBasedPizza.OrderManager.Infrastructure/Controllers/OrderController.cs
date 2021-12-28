@@ -23,12 +23,22 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
             _logger = logger;
         }
 
+        /// <summary>
+        /// Get the details of a given order.
+        /// </summary>
+        /// <param name="orderIdentifier">The order identifier.</param>
+        /// <returns></returns>
         [HttpGet("order/{orderIdentifier}/detail")]
         public async Task<Order> Get(string orderIdentifier)
         {
             return await this._orderRepository.Retrieve(orderIdentifier).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Create a new order for pickup.
+        /// </summary>
+        /// <param name="request">The <see cref="CreatePickupOrderCommand"/> command contents.</param>
+        /// <returns></returns>
         [HttpPost("order/pickup")]
         public async Task<Order> Create([FromBody] CreatePickupOrderCommand request)
         {
@@ -46,6 +56,11 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
             return order;
         }
 
+        /// <summary>
+        /// Create a new delivery order.
+        /// </summary>
+        /// <param name="request">The <see cref="CreateDeliveryOrder"/> request.</param>
+        /// <returns></returns>
         [HttpPost("order/deliver")]
         public async Task<Order> Create([FromBody] CreateDeliveryOrder request)
         {
@@ -71,6 +86,11 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
             return order;
         }
 
+        /// <summary>
+        /// Add an item to the order.
+        /// </summary>
+        /// <param name="request">the <see cref="AddItemToOrderCommand"/> request.</param>
+        /// <returns></returns>
         [HttpPost("order/{orderIdentifier}/items")]
         public async Task<Order> AddItemToOrder([FromBody] AddItemToOrderCommand request)
         {
@@ -84,7 +104,12 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
 
             return order;
         }
-
+        
+        /// <summary>
+        /// Submit an order.
+        /// </summary>
+        /// <param name="orderIdentifier">The order to submit.</param>
+        /// <returns></returns>
         [HttpPost("order/{orderIdentifier}/submit")]
         public async Task<Order> SubmitOrder(string orderIdentifier)
         {
@@ -97,6 +122,10 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
             return order;
         }
 
+        /// <summary>
+        /// List all orders awaiting collection.
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("order/awaiting-collection")]
         public async Task<List<Order>> GetAwaitingCollection()
         {
@@ -105,6 +134,11 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
             return awaitingCollection;
         }
 
+        /// <summary>
+        /// Mark an order as being collected.
+        /// </summary>
+        /// <param name="request">The <see cref="CollectOrderRequest"/> request.</param>
+        /// <returns></returns>
         [HttpPost("order/collected")]
         public async Task<Order> OrderCollected([FromBody] CollectOrderRequest request)
         {
