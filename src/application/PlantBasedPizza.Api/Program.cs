@@ -1,4 +1,5 @@
 using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
 using PlantBasedPizza.OrderManager.Infrastructure;
 using PlantBasedPizza.Recipes.Infrastructure;
 using PlantBasedPizza.Kitchen.Infrastructure;
@@ -7,6 +8,13 @@ using PlantBasedPizza.Shared.Events;
 using PlantBasedPizza.Shared;
 using PlantBasedPizza.Shared.Logging;
 using Microsoft.OpenApi.Models;
+using PlantBasedPizza.Deliver.Core.Entities;
+using PlantBasedPizza.Events;
+using PlantBasedPizza.Kitchen.Core.Entities;
+using PlantBasedPizza.OrderManager.Core.Entites;
+using PlantBasedPizza.OrderManager.Core.ViewModels;
+using Saunter;
+using Saunter.AsyncApiSchema.v2;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -45,6 +53,23 @@ builder.Services.AddSwaggerGen(options =>
     options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "PlantBasedPizza.Recipes.Infrastructure.xml"));
 });
 
+builder.Services.AddAsyncApiSchemaGeneration(options =>
+{
+    // Specify example type(s) from assemblies to scan.
+    options.AssemblyMarkerTypes = new[] {typeof(DriverCollectedOrderEvent), typeof(Order), typeof(DeliveryRequest), typeof(KitchenRequest)};
+
+    // Build as much (or as little) of the AsyncApi document as you like.
+    // Saunter will generate Channels, Operations, Messages, etc, but you
+    // may want to specify Info here.
+    options.AsyncApi = new AsyncApiDocument
+    {
+        Info = new Info("Plant Based Pizza API", "1.0.0")
+        {
+            Description = "The Plant Based Pizza event messages..",
+        },
+    };
+});
+
 var app = builder.Build();
 
 app.UseXRay("PlantBasedPizza.Api");
@@ -57,7 +82,15 @@ app.UseSwaggerUI(options =>
     options.RoutePrefix = string.Empty;
 });
 
+app.UseRouting();
+
 app.UseAuthorization();
+
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapAsyncApiDocuments();
+    endpoints.MapAsyncApiUi();
+});
 
 app.MapControllers();
 

@@ -10,4 +10,8 @@
     <ProjectReference Include="..\PlantBasedPizza.Shared\PlantBasedPizza.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Saunter" Version="0.9.1" />
+  </ItemGroup>
+
 </Project>

@@ -3,9 +3,11 @@ using PlantBasedPizza.Events;
 using PlantBasedPizza.OrderManager.Core.Entites;
 using PlantBasedPizza.Shared.Events;
 using PlantBasedPizza.Shared.Logging;
+using Saunter.Attributes;
 
 namespace PlantBasedPizza.OrderManager.Core.Handlers
 {
+    [AsyncApi]
     public class DriverDeliveredOrderEventHandler : Handles<OrderDeliveredEvent>
     {
         private readonly IOrderRepository _orderRepository;
@@ -17,6 +19,8 @@ namespace PlantBasedPizza.OrderManager.Core.Handlers
             _observabilityService = observabilityService;
         }
 
+        [Channel("delivery.order-delivered")] // Creates a Channel
+        [SubscribeOperation(typeof(OrderDeliveredEvent), Summary = "Handle an order delivered event.", OperationId = "delivery.order-delivered")]
         public async Task Handle(OrderDeliveredEvent evt)
         {
             this._observabilityService.Info($"Processing an Order delivered event for {evt.OrderIdentifier}");

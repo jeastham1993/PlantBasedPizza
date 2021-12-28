@@ -1,8 +1,10 @@
 using System;
 using PlantBasedPizza.Shared.Events;
+using Saunter.Attributes;
 
 namespace PlantBasedPizza.Events
 {
+    [AsyncApi]
     public class OrderBakedEvent : IDomainEvent
     {
         public OrderBakedEvent(string orderIdentifier)

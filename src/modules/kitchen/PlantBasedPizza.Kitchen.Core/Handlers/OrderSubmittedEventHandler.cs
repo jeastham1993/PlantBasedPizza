@@ -8,9 +8,11 @@ using PlantBasedPizza.Kitchen.Core.Services;
 using PlantBasedPizza.Shared.Events;
 using PlantBasedPizza.Shared.Guards;
 using PlantBasedPizza.Shared.Logging;
+using Saunter.Attributes;
 
 namespace PlantBasedPizza.Kitchen.Core.Handlers
 {
+    [AsyncApi]
     public class OrderSubmittedEventHandler : Handles<OrderSubmittedEvent>
     {
         private IKitchenRequestRepository _kitchenRequestRepository;
@@ -26,6 +28,8 @@ namespace PlantBasedPizza.Kitchen.Core.Handlers
             _orderManagerService = orderManagerService;
         }
         
+        [Channel("order-manager.order-submitted")] // Creates a Channel
+        [SubscribeOperation(typeof(OrderSubmittedEvent), Summary = "Handle an order submitted event.", OperationId = "order-manager.order-submitted")]
         public async Task Handle(OrderSubmittedEvent evt)
         {
             Guard.AgainstNull(evt, nameof(evt));

@@ -2,9 +2,11 @@ using System.Threading.Tasks;
 using PlantBasedPizza.Events;
 using PlantBasedPizza.OrderManager.Core.Entites;
 using PlantBasedPizza.Shared.Events;
+using Saunter.Attributes;
 
 namespace PlantBasedPizza.OrderManager.Core.Handlers
 {
+    [AsyncApi]
     public class OrderQualityCheckedEventHandler : Handles<OrderQualityCheckedEvent>
     {
         private readonly IOrderRepository _orderRepository;
@@ -14,6 +16,8 @@ namespace PlantBasedPizza.OrderManager.Core.Handlers
             _orderRepository = orderRepository;
         }
 
+        [Channel("kitchen.quality-checked")] // Creates a Channel
+        [SubscribeOperation(typeof(OrderQualityCheckedEvent), Summary = "Handle an order quality event.", OperationId = "kitchen.quality-checked")]
         public async Task Handle(OrderQualityCheckedEvent evt)
         {
             var order = await this._orderRepository.Retrieve(evt.OrderIdentifier);

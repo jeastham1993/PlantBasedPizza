@@ -7,7 +7,6 @@ using PlantBasedPizza.Events;
 using PlantBasedPizza.Shared.Events;
 using PlantBasedPizza.Shared.Guards;
 using PlantBasedPizza.Shared.Logging;
-using Serilog;
 
 namespace PlantBasedPizza.OrderManager.Core.Entites
 {

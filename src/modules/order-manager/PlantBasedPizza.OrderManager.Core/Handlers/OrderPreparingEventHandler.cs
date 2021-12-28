@@ -3,9 +3,11 @@ using Microsoft.Extensions.Logging;
 using PlantBasedPizza.Events;
 using PlantBasedPizza.OrderManager.Core.Entites;
 using PlantBasedPizza.Shared.Events;
+using Saunter.Attributes;
 
 namespace PlantBasedPizza.OrderManager.Core.Handlers
 {
+    [AsyncApi]
     public class OrderPreparingEventHandler : Handles<OrderPreparingEvent>
     {
         private readonly IOrderRepository _orderRepository;
@@ -17,6 +19,8 @@ namespace PlantBasedPizza.OrderManager.Core.Handlers
             _logger = logger;
         }
 
+        [Channel("kitchen.prep-started")] // Creates a Channel
+        [SubscribeOperation(typeof(OrderPreparingEvent), Summary = "Handle an order prep started event.", OperationId = "kitchen.prep-started")]
         public async Task Handle(OrderPreparingEvent evt)
         {
             this._logger.LogInformation($"[ORDER-MANAGER] Handling order preparing event");
