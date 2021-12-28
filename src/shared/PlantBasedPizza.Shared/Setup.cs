@@ -19,7 +19,6 @@ namespace PlantBasedPizza.Shared
         public static IServiceCollection AddSharedInfrastructure(this IServiceCollection services,
             IConfiguration configuration)
         {
-            AWSXRayRecorder.RegisterLogger(LoggingOptions.Console);
             AWSXRayRecorder.InitializeInstance(configuration);
             AWSSDKHandler.RegisterXRayForAllServices();
             
@@ -40,19 +39,6 @@ namespace PlantBasedPizza.Shared
             services.AddHttpContextAccessor();
 
             return services;
-        }
-        
-        public static WebApplicationBuilder AddSharedInfrastructure(this WebApplicationBuilder builder)
-        {
-            builder.Host.UseSerilog((ctx, lc) => lc
-                .MinimumLevel.Information()
-                .MinimumLevel.Override("Microsoft", LogEventLevel.Error)
-                .MinimumLevel.Override(" Amazon.XRay", LogEventLevel.Error)
-                .Enrich.FromLogContext()
-                .WriteTo.Console(new JsonFormatter())
-                .WriteTo.File(new JsonFormatter(), "logs/myapp-{Date}.json"));
-
-            return builder;
         }
     }
 }
