@@ -48,7 +48,7 @@ public class RecipeRepository : IRecipeRepository
         {
             TableName = InfrastructureConstants.TableName,
             IndexName = "GSI1",
-            KeyConditionExpression = "GSI1PK = :PK and GSI1SK = :SK",
+            KeyConditionExpression = "GSI1PK = :PK",
             ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
                 {":PK", new AttributeValue { S =  $"RECIPES" }},
             }

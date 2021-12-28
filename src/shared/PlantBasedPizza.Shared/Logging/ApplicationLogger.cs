@@ -10,17 +10,22 @@ namespace PlantBasedPizza.Shared.Logging
 {
     public static class ApplicationLogger
     {
-        private static Logger _logger;
+        private static Logger? _logger;
         
         public static void Init()
         {
-            _logger = new LoggerConfiguration()
+            _logger = BuildLoggerConfiguration()
+                .CreateLogger();
+        }
+
+        public static LoggerConfiguration BuildLoggerConfiguration()
+        {
+            return new LoggerConfiguration()
                 .MinimumLevel.Information()
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Error)
                 .MinimumLevel.Override(" Amazon.XRay", LogEventLevel.Error)
                 .Enrich.FromLogContext()
-                .WriteTo.Console(new JsonFormatter())
-                .CreateLogger();
+                .WriteTo.Console(new JsonFormatter());
         }
         
         public static void Info(string message)
@@ -30,7 +35,7 @@ namespace PlantBasedPizza.Shared.Logging
                 ApplicationLogger.Init();
             }
             using (LogContext.PushProperty("CorrelationId", CorrelationContext.GetCorrelationId()))
-                _logger.Information(message);
+                _logger?.Information(message);
         }
         
         public static void Warn(Exception ex, string message)
@@ -41,7 +46,7 @@ namespace PlantBasedPizza.Shared.Logging
             }
             
             using (LogContext.PushProperty("CorrelationId", CorrelationContext.GetCorrelationId()))
-                _logger.Warning(ex, message);
+                _logger?.Warning(ex, message);
         }
         
         public static void Warn(string message)
@@ -52,7 +57,7 @@ namespace PlantBasedPizza.Shared.Logging
             }
             
             using (LogContext.PushProperty("CorrelationId", CorrelationContext.GetCorrelationId()))
-                _logger.Warning(message);
+                _logger?.Warning(message);
         }
         
         public static void Error(Exception ex, string message)
@@ -63,7 +68,7 @@ namespace PlantBasedPizza.Shared.Logging
             }
             
             using (LogContext.PushProperty("CorrelationId", CorrelationContext.GetCorrelationId()))
-                _logger.Error(ex, message);
+                _logger?.Error(ex, message);
         }
     }
 }

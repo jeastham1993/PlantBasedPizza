@@ -23,6 +23,6 @@ public static class CorrelationContext
 
     public static string GetCorrelationId()
     {
-        return _correlationId.Value;
+        return _correlationId.Value ?? string.Empty;
     }
 }

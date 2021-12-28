@@ -27,6 +27,8 @@ namespace PlantBasedPizza.Recipes.Infrastructure.Controllers
         [HttpGet("recipes")]
         public async Task<IEnumerable<Recipe>> List()
         {
+            this._observability.Info("Retrieved request to list recipes");
+            
             return await this._observability.TraceMethodAsync("List Recipes",
                 async () => await this._recipeRepository.List());
         }

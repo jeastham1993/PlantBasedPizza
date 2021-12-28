@@ -7,10 +7,15 @@ using PlantBasedPizza.Shared.Events;
 using PlantBasedPizza.Shared;
 using PlantBasedPizza.Shared.Logging;
 using Microsoft.OpenApi.Models;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.AddSharedInfrastructure();
+builder.Host.UseSerilog((ctx, lc) =>
+{
+    lc = ApplicationLogger.BuildLoggerConfiguration();
+});
+
 // Add services to the container.
 builder.Services.AddOrderManagerInfrastructure(builder.Configuration);
 builder.Services.AddRecipeInfrastructure(builder.Configuration);
