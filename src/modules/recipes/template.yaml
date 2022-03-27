@@ -55,6 +55,8 @@ Resources:
       Policies:
         - AWSSecretsManagerGetSecretValuePolicy:
             SecretArn: !Ref DatabaseSecretArn
+        - EventBridgePutEventsPolicy:
+            EventBusName: "default"
         - Statement:
             - Sid: PutMetrics
               Effect: Allow
@@ -78,6 +80,8 @@ Resources:
       Policies:
         - AWSSecretsManagerGetSecretValuePolicy:
             SecretArn: !Ref DatabaseSecretArn
+        - EventBridgePutEventsPolicy:
+            EventBusName: "default"
         - Statement:
             - Sid: PutMetrics
               Effect: Allow
@@ -101,6 +105,8 @@ Resources:
       Policies:
         - AWSSecretsManagerGetSecretValuePolicy:
             SecretArn: !Ref DatabaseSecretArn
+        - EventBridgePutEventsPolicy:
+            EventBusName: "default"
         - Statement:
             - Sid: PutMetrics
               Effect: Allow

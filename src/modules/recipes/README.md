@@ -1,3 +1,1 @@
 # Recipe Service
-
-sam deploy --region eu-west-1 --parameter-overrides 'ParameterKey=DatabaseSecretArn,ParameterValue=arn:aws:secretsmanager:eu-west-1:935833345960:secret:/recipes/recipedb/masteruser-RSDape ParameterKey=PrivateSubnet1,ParameterValue=subnet-0cc5d64b081cfccec ParameterKey=PrivateSubnet2,ParameterValue=subnet-01ad7f045e68b221a ParameterKey=SecurityGroup,ParameterValue=sg-02eaee53fc39478fd'

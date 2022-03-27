@@ -18,6 +18,30 @@ namespace PlantBasedPizza.Shared.Logging
             this._cloudWatchClient = cloudWatchClient;
         }
 
+        public void AddCorrelationContext(IDictionary<string, string> headers)
+        {
+            var correlationId = string.Empty;
+
+            if (headers.ContainsKey("X-Amzn-Trace-Id"))
+            {
+                correlationId = headers["X-Amzn-Trace-Id"].ToString();
+
+                headers.Add(CorrelationContext.DefaultRequestHeaderName, correlationId);
+            }
+            else if (headers.ContainsKey(CorrelationContext.DefaultRequestHeaderName))
+            {
+                correlationId = headers[CorrelationContext.DefaultRequestHeaderName].ToString();
+            }
+            else
+            {
+                correlationId = Guid.NewGuid().ToString();
+
+                headers.Add(CorrelationContext.DefaultRequestHeaderName, correlationId);
+            }
+
+            CorrelationContext.SetCorrelationId(correlationId);
+        }
+
         public void StartTraceSegment(string segmentName)
         {
             AWSXRayRecorder.Instance.BeginSegment(segmentName);

@@ -1,6 +1,7 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Driver;
 using PlantBasedPizza.Recipes.Core.Entities;
+using PlantBasedPizza.Shared.Events;
 using PlantBasedPizza.Shared.Logging;
 
 public class RecipeRepository : IRecipeRepository
@@ -10,9 +11,9 @@ public class RecipeRepository : IRecipeRepository
 
     public RecipeRepository(IObservabilityService observability, MongoClient mongoClient)
     {
-        _observability = observability;
-        var database = mongoClient.GetDatabase(Environment.GetEnvironmentVariable("DATABASE_NAME"));
+        this._observability = observability;
 
+        var database = mongoClient.GetDatabase(Environment.GetEnvironmentVariable("DATABASE_NAME"));
         this._collection = database.GetCollection<Recipe>("recipes");
     }
     

@@ -26,10 +26,9 @@ builder.Host.UseSerilog((ctx, lc) =>
 
 // Add services to the container.
 builder.Services.AddOrderManagerInfrastructure(builder.Configuration);
-builder.Services.AddRecipeInfrastructure(builder.Configuration);
 builder.Services.AddKitchenInfrastructure(builder.Configuration);
 builder.Services.AddDeliveryModuleInfrastructure(builder.Configuration);
-builder.Services.AddSharedInfrastructure(builder.Configuration);
+builder.Services.AddSharedInfrastructure();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -50,7 +49,6 @@ builder.Services.AddSwaggerGen(options =>
     options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "PlantBasedPizza.Deliver.Infrastructure.xml"));
     options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "PlantBasedPizza.Kitchen.Infrastructure.xml"));
     options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "PlantBasedPizza.OrderManager.Infrastructure.xml"));
-    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, "PlantBasedPizza.Recipes.Infrastructure.xml"));
 });
 
 builder.Services.AddAsyncApiSchemaGeneration(options =>

@@ -12,6 +12,8 @@ using PlantBasedPizza.Recipes.Core.Entities;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text.Json;
 using PlantBasedPizza.Recipes.Core.Commands;
+using PlantBasedPizza.Shared.Events;
+using PlantBasedPizza.Recipes.Core.Events;
 
 namespace PlantBasedPizza.Recipes.Serverless
 {
@@ -19,6 +21,7 @@ namespace PlantBasedPizza.Recipes.Serverless
     {
         private readonly IObservabilityService _observability;
         private readonly IRecipeRepository _recipeRepository;
+        private readonly IEventBus _eventBus;
 
         public CreateRecipe()
         {
@@ -26,19 +29,30 @@ namespace PlantBasedPizza.Recipes.Serverless
 
             this._observability = Startup.Services.GetRequiredService<IObservabilityService>();
             this._recipeRepository = Startup.Services.GetRequiredService<IRecipeRepository>();
+            this._eventBus = Startup.Services.GetRequiredService<IEventBus>();
         }
 
         public async Task<APIGatewayProxyResponse> FunctionHandler(APIGatewayProxyRequest apiRequest, ILambdaContext context)
         {
+            this._observability.AddCorrelationContext(apiRequest.Headers);
+
+            this._observability.Info("Received request to create a recipce");
+
             return await this._observability.TraceMethodAsync("Get Recipes",
                 async () =>
                 {
                     var request = JsonSerializer.Deserialize<CreateRecipeCommand>(apiRequest.Body);
 
+                    this._observability.Info("Checking if recipe exists");
+
                     var existingRecipe = await this._recipeRepository.Retrieve(request.RecipeIdentifier);
 
                     if (existingRecipe != null)
                     {
+                        this._observability.Info("Recipe exists, returning");
+
+                        await this._observability.PutMetric("Recipes", "DuplicateRecipeCreation", 1);
+
                         return new APIGatewayProxyResponse()
                         {
                             StatusCode = (int)HttpStatusCode.OK,
@@ -47,6 +61,9 @@ namespace PlantBasedPizza.Recipes.Serverless
                         {
                             {
                                 "Content-Type", "application/json"
+                            },
+                            {
+                                CorrelationContext.DefaultRequestHeaderName, CorrelationContext.GetCorrelationId()
                             }
                         }
                         };
@@ -59,7 +76,11 @@ namespace PlantBasedPizza.Recipes.Serverless
                         recipe.AddIngredient(item.Name, item.Quantity);
                     }
 
+                    this._observability.Info("Creating recipe");
+
                     await this._recipeRepository.Add(recipe);
+
+                    await this._eventBus.Publish(new RecipeCreatedEvent(recipe));
 
                     return new APIGatewayProxyResponse()
                     {
@@ -69,6 +90,9 @@ namespace PlantBasedPizza.Recipes.Serverless
                         {
                             {
                                 "Content-Type", "application/json"
+                            },
+                            {
+                                CorrelationContext.DefaultRequestHeaderName, CorrelationContext.GetCorrelationId()
                             }
                         }
                     };

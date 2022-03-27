@@ -29,6 +29,10 @@ namespace PlantBasedPizza.Recipes.Serverless
 
         public async Task<APIGatewayProxyResponse> FunctionHandler(APIGatewayProxyRequest request, ILambdaContext context)
         {
+            this._observability.AddCorrelationContext(request.Headers);
+
+            this._observability.Info("Received request to get a recipce");
+
             return await this._observability.TraceMethodAsync("Get Recipes",
                 async () =>
                 {
@@ -42,6 +46,9 @@ namespace PlantBasedPizza.Recipes.Serverless
                         {
                             {
                                 "Content-Type", "application/json"
+                            },
+                            {
+                                CorrelationContext.DefaultRequestHeaderName, CorrelationContext.GetCorrelationId()
                             }
                         }
                     };

@@ -5,6 +5,8 @@ namespace PlantBasedPizza.Shared.Logging
 {
     public interface IObservabilityService
     {
+        void AddCorrelationContext(IDictionary<string, string> headers);
+
         void StartTraceSegment(string segmentName);
 
         void EndTraceSegment();
