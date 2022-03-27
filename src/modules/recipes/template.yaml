@@ -1,0 +1,119 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Globals:
+  Function:
+    MemorySize: 1024
+    Architectures: ["arm64"]
+    Runtime: dotnet6
+    Timeout: 30
+    Tracing: Active
+    Environment:
+        Variables:
+            SERVICE: recipes
+            DATABASE_SECRET_ARN: !Ref DatabaseSecretArn
+            DATABASE_NAME: recipes
+            ENV: dev
+    VpcConfig:
+        SubnetIds:
+          - !Ref PrivateSubnet1
+          - !Ref PrivateSubnet2
+          - !Ref PrivateSubnet3
+        SecurityGroupIds:
+          - !Ref SecurityGroup
+
+Parameters:
+  DatabaseSecretArn:
+    Type: String
+  PrivateSubnet1:
+    Description: 'Required. Private subnet 1. Output from cdk deploy'
+    Type: 'String'
+  PrivateSubnet2:
+    Description: 'Required. Private subnet 2. Output from cdk deploy'
+    Type: 'String'
+  PrivateSubnet3:
+    Description: 'Required. Private subnet 2. Output from cdk deploy'
+    Type: 'String'
+  SecurityGroup:
+    Description: 'Required. Security group. Output from cdk deploy'
+    Type: 'String'
+
+Resources:
+  ListRecipesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./PlantBasedPizza.Recipes.Serverless/
+      Handler: PlantBasedPizza.Recipes.Serverless::PlantBasedPizza.Recipes.Serverless.ListRecipes::FunctionHandler
+      Events:
+        ReserveBookingApi:
+          Type: Api
+          Properties:
+            Path: /recipes
+            Method: get
+            RestApiId:
+              Ref: RecipeApi
+      Policies:
+        - AWSSecretsManagerGetSecretValuePolicy:
+            SecretArn: !Ref DatabaseSecretArn
+        - Statement:
+            - Sid: PutMetrics
+              Effect: Allow
+              Action:
+                - cloudwatch:PutMetricData
+              Resource: '*'
+
+  GetRecipeFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./PlantBasedPizza.Recipes.Serverless/
+      Handler: PlantBasedPizza.Recipes.Serverless::PlantBasedPizza.Recipes.Serverless.GetRecipe::FunctionHandler
+      Events:
+        ReserveBookingApi:
+          Type: Api
+          Properties:
+            Path: /recipes/{recipeIdentifier}
+            Method: get
+            RestApiId:
+              Ref: RecipeApi
+      Policies:
+        - AWSSecretsManagerGetSecretValuePolicy:
+            SecretArn: !Ref DatabaseSecretArn
+        - Statement:
+            - Sid: PutMetrics
+              Effect: Allow
+              Action:
+                - cloudwatch:PutMetricData
+              Resource: '*'
+
+  CreateRecipeFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./PlantBasedPizza.Recipes.Serverless/
+      Handler: PlantBasedPizza.Recipes.Serverless::PlantBasedPizza.Recipes.Serverless.CreateRecipe::FunctionHandler
+      Events:
+        ReserveBookingApi:
+          Type: Api
+          Properties:
+            Path: /recipes
+            Method: post
+            RestApiId:
+              Ref: RecipeApi
+      Policies:
+        - AWSSecretsManagerGetSecretValuePolicy:
+            SecretArn: !Ref DatabaseSecretArn
+        - Statement:
+            - Sid: PutMetrics
+              Effect: Allow
+              Action:
+                - cloudwatch:PutMetricData
+              Resource: '*'
+
+  RecipeApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: prod
+
+Outputs:
+  RecipeApi:
+    Description: "API Gateway endpoint URL for Prod stage for reserving bookings"
+    Value: !Sub "https://${RecipeApi}.execute-api.${AWS::Region}.amazonaws.com/Prod"

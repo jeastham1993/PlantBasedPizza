@@ -1,76 +1,53 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.Model;
-using Microsoft.AspNetCore.Mvc;
+﻿using MongoDB.Bson;
 using MongoDB.Driver;
-using Newtonsoft.Json;
 using PlantBasedPizza.Recipes.Core.Entities;
-using PlantBasedPizza.Recipes.Infrastructure;
-using PlantBasedPizza.Recipes.Infrastructure.Extensions;
 using PlantBasedPizza.Shared.Logging;
 
 public class RecipeRepository : IRecipeRepository
 {
-    private readonly AmazonDynamoDBClient _dynamoDbClient;
+    private readonly IMongoCollection<Recipe> _collection;
     private readonly IObservabilityService _observability;
 
-    public RecipeRepository(IObservabilityService observability, AmazonDynamoDBClient dynamoDbClient)
+    public RecipeRepository(IObservabilityService observability, MongoClient mongoClient)
     {
         _observability = observability;
-        _dynamoDbClient = dynamoDbClient;
+        var database = mongoClient.GetDatabase(Environment.GetEnvironmentVariable("DATABASE_NAME"));
+
+        this._collection = database.GetCollection<Recipe>("recipes");
     }
     
     public async Task<Recipe> Retrieve(string recipeIdentifier)
     {
-        var getResult = await this._dynamoDbClient.GetItemAsync(InfrastructureConstants.TableName,
-            new Dictionary<string, AttributeValue>(2)
-            {
-                { "PK", new AttributeValue($"RECIPES") },
-                { "SK", new AttributeValue($"RECIPE#{recipeIdentifier.ToUpper()}") },
-            });
+        var filter = Builders<Recipe>.Filter.Eq(p => p.RecipeIdentifier, recipeIdentifier);
 
-        if (!getResult.IsItemSet)
+        var getResult = await this._collection.Find(filter).ToListAsync();
+
+        if (!getResult.Any())
         {
             return null;
         }
-            
-        var result = JsonConvert.DeserializeObject<Recipe>(getResult.Item["Data"].S);
+
+        var result = getResult.FirstOrDefault();
 
         return result;
     }
 
     public async Task<IEnumerable<Recipe>> List()
     {
-        var results = new List<Recipe>();
-        
-        var queryResults = await this._dynamoDbClient.QueryAsync(new QueryRequest()
-        {
-            TableName = InfrastructureConstants.TableName,
-            IndexName = "GSI1",
-            KeyConditionExpression = "GSI1PK = :PK",
-            ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
-                {":PK", new AttributeValue { S =  $"RECIPES" }},
-            }
-        });
+        var queryResults = await this._collection.Find(new BsonDocument()).ToListAsync();
 
-        foreach (var queryResult in queryResults.Items)
-        {
-            results.Add(JsonConvert.DeserializeObject<Recipe>(queryResult["Data"].S));
-        }
-
-        return results;
+        return queryResults;
     }
 
     public async Task Add(Recipe recipe)
     {
-        await this._dynamoDbClient.PutItemAsync(Environment.GetEnvironmentVariable("TABLE_NAME"),
-            recipe.AsAttributeMap());
+        await this._collection.InsertOneAsync(recipe);
     }
 
     public async Task Update(Recipe recipe)
     {
-        await this._dynamoDbClient.PutItemAsync(Environment.GetEnvironmentVariable("TABLE_NAME"),
-            recipe.AsAttributeMap());
+        var filter = Builders<Recipe>.Filter.Eq(p => p.RecipeIdentifier, recipe.RecipeIdentifier);
+
+        await this._collection.FindOneAndReplaceAsync(filter, recipe);
     }
 }
