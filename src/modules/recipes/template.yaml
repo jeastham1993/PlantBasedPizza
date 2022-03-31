@@ -50,8 +50,6 @@ Resources:
           Properties:
             Path: /recipes
             Method: get
-            RestApiId:
-              Ref: RecipeApi
       Policies:
         - AWSSecretsManagerGetSecretValuePolicy:
             SecretArn: !Ref DatabaseSecretArn
@@ -75,8 +73,29 @@ Resources:
           Properties:
             Path: /recipes/{recipeIdentifier}
             Method: get
-            RestApiId:
-              Ref: RecipeApi
+      Policies:
+        - AWSSecretsManagerGetSecretValuePolicy:
+            SecretArn: !Ref DatabaseSecretArn
+        - EventBridgePutEventsPolicy:
+            EventBusName: "default"
+        - Statement:
+            - Sid: PutMetrics
+              Effect: Allow
+              Action:
+                - cloudwatch:PutMetricData
+              Resource: '*'
+
+  UpdateRecipeFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./PlantBasedPizza.Recipes.Serverless/
+      Handler: PlantBasedPizza.Recipes.Serverless::PlantBasedPizza.Recipes.Serverless.UpdateRecipe::FunctionHandler
+      Events:
+        ReserveBookingApi:
+          Type: Api
+          Properties:
+            Path: /recipes
+            Method: put
       Policies:
         - AWSSecretsManagerGetSecretValuePolicy:
             SecretArn: !Ref DatabaseSecretArn
@@ -100,8 +119,6 @@ Resources:
           Properties:
             Path: /recipes
             Method: post
-            RestApiId:
-              Ref: RecipeApi
       Policies:
         - AWSSecretsManagerGetSecretValuePolicy:
             SecretArn: !Ref DatabaseSecretArn
@@ -114,12 +131,7 @@ Resources:
                 - cloudwatch:PutMetricData
               Resource: '*'
 
-  RecipeApi:
-    Type: AWS::Serverless::Api
-    Properties:
-      StageName: prod
-
 Outputs:
   RecipeApi:
     Description: "API Gateway endpoint URL for Prod stage for reserving bookings"
-    Value: !Sub "https://${RecipeApi}.execute-api.${AWS::Region}.amazonaws.com/Prod"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod"

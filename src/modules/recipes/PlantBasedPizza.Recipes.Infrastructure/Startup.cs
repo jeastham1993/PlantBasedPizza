@@ -12,6 +12,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using PlantBasedPizza.Recipes.Core.Commands;
 
 namespace PlantBasedPizza.Recipes.Infrastructure
 {
@@ -26,6 +27,7 @@ namespace PlantBasedPizza.Recipes.Infrastructure
             collection.ConfigureDatabase();
 
             collection.AddTransient<IRecipeRepository, RecipeRepository>();
+            collection.AddTransient<CreateRecipeCommandHandler>();
 
             Shared.Setup.AddSharedInfrastructure(collection);
 

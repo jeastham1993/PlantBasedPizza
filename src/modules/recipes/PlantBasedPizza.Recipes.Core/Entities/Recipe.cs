@@ -35,13 +35,31 @@ namespace PlantBasedPizza.Recipes.Core.Entities
         [JsonProperty("ingredients")]
         public IReadOnlyCollection<Ingredient> Ingredients => this._ingredients;
 
+        public void UpdateFrom(string recipeName, decimal price, IEnumerable<Ingredient> ingredients = null)
+        {
+            this.Name = recipeName;
+            this.Price = price;
+
+            if (ingredients == null || ingredients.Any() == false)
+            {
+                return;
+            }
+
+            this._ingredients = new List<Ingredient>();
+
+            foreach (var ingredient in ingredients)
+            {
+                this.AddIngredient(ingredient.Name, ingredient.Quantity);
+            }
+        }
+
         public void AddIngredient(string name, int quantity)
         {
             if (this._ingredients == null)
             {
                 this._ingredients = new List<Ingredient>();
             }
-            
+
             this._ingredients.Add(new Ingredient(name, quantity));
         }
     }

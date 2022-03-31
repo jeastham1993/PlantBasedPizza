@@ -31,7 +31,7 @@ namespace PlantBasedPizza.Recipes.Serverless
         {
             this._observability.AddCorrelationContext(request.Headers);
 
-            this._observability.Info("Received request to get a recipce");
+            this._observability.Info("Received request to get a recipe");
 
             return await this._observability.TraceMethodAsync("Get Recipes",
                 async () =>

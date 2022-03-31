@@ -18,29 +18,29 @@ using PlantBasedPizza.Recipes.Core.Exceptions;
 
 namespace PlantBasedPizza.Recipes.Serverless
 {
-    public class CreateRecipe
+    public class UpdateRecipe
     {
         private readonly IObservabilityService _observability;
-        private readonly CreateRecipeCommandHandler _commandHandler;
+        private readonly UpdateRecipeCommandHandler _commandHandler;
 
-        public CreateRecipe()
+        public UpdateRecipe()
         {
             Startup.Configure();
 
             this._observability = Startup.Services.GetRequiredService<IObservabilityService>();
-            this._commandHandler = Startup.Services.GetRequiredService<CreateRecipeCommandHandler>();
+            this._commandHandler = Startup.Services.GetRequiredService<UpdateRecipeCommandHandler>();
         }
 
         public async Task<APIGatewayProxyResponse> FunctionHandler(APIGatewayProxyRequest apiRequest, ILambdaContext context)
         {
             this._observability.AddCorrelationContext(apiRequest.Headers);
 
-            this._observability.Info("Received request to create a recipe");
+            this._observability.Info("Received request to update a recipe");
 
-            return await this._observability.TraceMethodAsync("Create Recipe",
+            return await this._observability.TraceMethodAsync("Update Recipe",
                 async () =>
                 {
-                    var request = JsonSerializer.Deserialize<CreateRecipeCommand>(apiRequest.Body);
+                    var request = JsonSerializer.Deserialize<UpdateRecipeCommand>(apiRequest.Body);
 
                     await this._commandHandler.Handle(request);
                     
@@ -60,12 +60,12 @@ namespace PlantBasedPizza.Recipes.Serverless
                             }
                         };
                     }
-                    catch (RecipeExistsException e)
+                    catch (RecipeNotFoundException e)
                     {
                         return new APIGatewayProxyResponse()
                         {
                             StatusCode = (int)HttpStatusCode.OK,
-                            Body = JsonSerializer.Serialize(e.ExistingRecipe),
+                            Body = JsonSerializer.Serialize(e.RecipeIdentifier),
                             Headers = new Dictionary<string, string>()
                             {
                                 {
