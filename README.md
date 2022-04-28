@@ -6,4 +6,4 @@ A base repository for toying around with various different architectural pattern
 - Microservice architecture
 - Serverless Architecture
 
-The intent is both peronal (for me to try new architectural patterns) and informative (with corresponding blog posts/live streams whilst adding new patterns).
+The intent is both personal (for me to try new architectural patterns) and informative (with corresponding blog posts/live streams whilst adding new patterns).

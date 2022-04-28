@@ -32,7 +32,7 @@ namespace PlantBasedPizza.UnitTest
         {
             var driverName = "";
             
-            DomainEvents.Register<DriverCollectedOrderEvent>((evt) =>
+            EventManager.Register<DriverCollectedOrderEvent>((evt) =>
             {
                 driverName = evt.DriverName;
             });

@@ -57,7 +57,7 @@ namespace PlantBasedPizza.OrderManager.Core.Entites
 
             order.AddHistory("Order created");
 
-            DomainEvents.Raise(new OrderCreatedEvent(orderIdentifier)
+            EventManager.Raise(new OrderCreatedEvent(orderIdentifier)
             {
                 CorrelationId = correlationId
             });
@@ -193,7 +193,7 @@ namespace PlantBasedPizza.OrderManager.Core.Entites
             
             this.AddHistory($"Submitted order.");
 
-            DomainEvents.Raise(new OrderSubmittedEvent(OrderIdentifier)
+            EventManager.Raise(new OrderSubmittedEvent(OrderIdentifier)
             {
                 CorrelationId = correlationId
             }).Wait();
@@ -213,7 +213,7 @@ namespace PlantBasedPizza.OrderManager.Core.Entites
             
             this.AddHistory($"Order completed.");
 
-            DomainEvents.Raise(new OrderCompletedEvent(this.OrderIdentifier)
+            EventManager.Raise(new OrderCompletedEvent(this.OrderIdentifier)
             {
                 CorrelationId = correlationId
             });

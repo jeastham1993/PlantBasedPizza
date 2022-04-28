@@ -11,11 +11,8 @@ namespace PlantBasedPizza.Shared.Events
         }
 
         public string CorrelationId { get; set; }
-
         public DateTime EventDate { get; set; }
-
         public string Service { get; set; }
-
         public string EventName { get; }
 
         public string EventId { get; }

@@ -92,7 +92,7 @@ app.UseEndpoints(endpoints =>
 
 app.MapControllers();
 
-DomainEvents.Container = app.Services;
+EventManager.Container = app.Services;
 
 app.Use(async (context, next) =>
 {

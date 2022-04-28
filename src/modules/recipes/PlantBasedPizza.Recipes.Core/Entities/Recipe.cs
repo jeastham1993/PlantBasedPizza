@@ -20,7 +20,7 @@ namespace PlantBasedPizza.Recipes.Core.Entities
             this.Name = name;
             this.Price = price;
 
-            DomainEvents.Raise(new RecipeCreatedEvent(this));
+            EventManager.Raise(new RecipeCreatedEvent(this));
         }
         
         [JsonProperty]

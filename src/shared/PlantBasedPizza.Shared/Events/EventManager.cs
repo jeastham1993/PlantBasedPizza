@@ -12,7 +12,7 @@ using PlantBasedPizza.Shared.Logging;
 
 namespace PlantBasedPizza.Shared.Events
 {
-    public static class DomainEvents
+    public static class EventManager
     {
         [ThreadStatic] private static List<Delegate>? _actions;
         
@@ -48,6 +48,7 @@ namespace PlantBasedPizza.Shared.Events
             if (Container != null)
             {
                 var observability = Container.GetService<IObservabilityService>();
+                var eventBus = Container.GetService<IEventBus>();
                 
                 observability?.Info($"[EVENT MANAGER] Raising event {evt.EventName}");
 
@@ -61,6 +62,8 @@ namespace PlantBasedPizza.Shared.Events
                     
                     observability?.EndTraceSubsegment();
                 }
+                
+                observability?.Info("[EVENT MANAGER] Publishing public event");
             }
 
             if (_actions != null)

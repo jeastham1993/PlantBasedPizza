@@ -55,7 +55,7 @@ namespace PlantBasedPizza.Kitchen.Core.Entities
         {
             this.OrderState = OrderState.PREPARING;
 
-            DomainEvents.Raise(new OrderPreparingEvent(this.OrderIdentifier)
+            EventManager.Raise(new OrderPreparingEvent(this.OrderIdentifier)
             {
                 CorrelationId = correlationId
             });
@@ -67,7 +67,7 @@ namespace PlantBasedPizza.Kitchen.Core.Entities
             
             this.PrepCompleteOn = DateTime.Now;
             
-            DomainEvents.Raise(new OrderPrepCompleteEvent(this.OrderIdentifier)
+            EventManager.Raise(new OrderPrepCompleteEvent(this.OrderIdentifier)
             {
                 CorrelationId = correlationId
             });
@@ -79,7 +79,7 @@ namespace PlantBasedPizza.Kitchen.Core.Entities
             
             this.BakeCompleteOn = DateTime.Now;
             
-            DomainEvents.Raise(new OrderBakedEvent(this.OrderIdentifier)
+            EventManager.Raise(new OrderBakedEvent(this.OrderIdentifier)
             {
                 CorrelationId = correlationId
             });
@@ -91,7 +91,7 @@ namespace PlantBasedPizza.Kitchen.Core.Entities
             
             this.QualithCheckCompleteOn = DateTime.Now;
 
-            await DomainEvents.Raise(new OrderQualityCheckedEvent(this.OrderIdentifier)
+            await EventManager.Raise(new OrderQualityCheckedEvent(this.OrderIdentifier)
             {
                 CorrelationId = correlationId
             });
