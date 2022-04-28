@@ -1,0 +1,41 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Globals:
+  Function:
+    MemorySize: 512
+    Architectures: ["arm64"]
+    Runtime: dotnet6
+    Timeout: 30
+    Tracing: Active
+    Environment:
+        Variables:
+            SERVICE: order-manager
+            ENV: dev
+
+Resources:
+  GetOrderFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./PlantBasedPizza.OrderManager.Serverless/
+      Handler: PlantBasedPizza.OrderManager.Serverless::PlantBasedPizza.OrderManager.Serverless.GetOrder::FunctionHandler
+      Events:
+        OrderManagerApi:
+          Type: Api
+          Properties:
+            Path: /order/{orderIdentifier}/detail
+            Method: get
+      Policies:
+        - EventBridgePutEventsPolicy:
+            EventBusName: "default"
+        - Statement:
+            - Sid: PutMetrics
+              Effect: Allow
+              Action:
+                - cloudwatch:PutMetricData
+              Resource: '*'
+
+Outputs:
+  OrderManagerApi:
+    Description: "API Gateway endpoint URL for Prod stage for order management."
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod"
