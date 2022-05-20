@@ -1,0 +1,38 @@
+Parameters:
+  App:
+    Type: String
+    Description: Your application's name.
+  Env:
+    Type: String
+    Description: The environment name your service, job, or workflow is being deployed to.
+  Name:
+    Type: String
+    Description: The name of the service, job, or workflow being deployed.
+
+Resources:
+  ApiConfigurationAccessPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Sid: SecretsManagerAccess
+            Effect: Allow
+            Action:
+              - sqs:SendMessage
+              - ssm:GetParameter
+            Resource:
+              - arn:aws:ssm:*:*:parameter/plant-based-pizza/kitchen/queue-url
+              - arn:aws:sqs:*:*:KitchenQueue.fifo'
+          - Sid: PutMetric
+            Effect: Allow
+            Action:
+              - cloudwatch:PutMetricData
+            Resource:
+              - '*  '
+
+Outputs:
+  # 1. You need to output the IAM ManagedPolicy so that Copilot can add it as a managed policy to your ECS task role.
+  ApiConfigurationAccessPolicyArn:
+    Description: "The ARN of the ManagedPolicy to attach to the task role."
+    Value: !Ref ApiConfigurationAccessPolicy

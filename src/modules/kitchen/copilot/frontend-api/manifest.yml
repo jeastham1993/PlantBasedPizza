@@ -1,0 +1,20 @@
+name: frontend-api
+type: Load Balanced Web Service
+
+http:
+  path: '/'
+  healthcheck:
+    path: '/health'
+    success_codes: '200'
+    interval: 15s
+    timeout: 10s
+    grace_period: 45s
+
+image:
+  build: PlantBasedPizza.Kitchen.Api/Dockerfile
+  port: 80
+
+cpu: 256
+memory: 512
+count: 1
+exec: true
