@@ -60,6 +60,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlantBasedPizza.Recipes.Ser
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.OrderManager.Serverless", "src\modules\order-manager\PlantBasedPizza.OrderManager.Serverless\PlantBasedPizza.OrderManager.Serverless.csproj", "{D960D286-2684-4FE7-915E-8914DA5B5D86}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Kitchen.Api", "src\modules\kitchen\PlantBasedPizza.Kitchen.Api\PlantBasedPizza.Kitchen.Api.csproj", "{6BB3D704-136D-4326-885B-6CF29CBF0870}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KitchenServiceInfrastructure", "src\modules\kitchen\KitchenServiceInfrastructure\src\KitchenServiceInfrastructure\KitchenServiceInfrastructure.csproj", "{0C8815CA-6E0E-459D-B6F4-1F4232305A45}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -126,6 +130,14 @@ Global
 		{D960D286-2684-4FE7-915E-8914DA5B5D86}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D960D286-2684-4FE7-915E-8914DA5B5D86}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D960D286-2684-4FE7-915E-8914DA5B5D86}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6BB3D704-136D-4326-885B-6CF29CBF0870}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6BB3D704-136D-4326-885B-6CF29CBF0870}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6BB3D704-136D-4326-885B-6CF29CBF0870}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6BB3D704-136D-4326-885B-6CF29CBF0870}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C8815CA-6E0E-459D-B6F4-1F4232305A45}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C8815CA-6E0E-459D-B6F4-1F4232305A45}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C8815CA-6E0E-459D-B6F4-1F4232305A45}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C8815CA-6E0E-459D-B6F4-1F4232305A45}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -150,6 +162,8 @@ Global
 		{62ECA03B-0345-4D4D-B71E-C2B216F3FAF7} = {E630CA1B-339D-4697-9FFF-AB9D64C9507D}
 		{F5F1B6C7-AE8B-4E75-AD41-0339C057B1FD} = {58236992-81BC-446A-814B-95D5D101A705}
 		{D960D286-2684-4FE7-915E-8914DA5B5D86} = {4F6B9B90-B516-4E61-860E-6B2F3F90B2B6}
+		{6BB3D704-136D-4326-885B-6CF29CBF0870} = {22DC111E-0E05-48BD-B40C-24B6848075C2}
+		{0C8815CA-6E0E-459D-B6F4-1F4232305A45} = {22DC111E-0E05-48BD-B40C-24B6848075C2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F2A09ED9-EEF6-4445-829D-D362E9F655DB}
