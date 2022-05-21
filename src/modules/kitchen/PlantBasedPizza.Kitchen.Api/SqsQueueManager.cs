@@ -24,9 +24,13 @@ public class SqsQueueManager : IQueueManager
     }
     public async Task StoreToQueue(KitchenRequest message)
     {
+        var queueUrl = this._settings.QueueUrls[message.LocationCode];
+        
+        this._logger.LogInformation($"Publishing to {queueUrl}");
+        
         var result = await this._sqsClient.SendMessageAsync(new SendMessageRequest()
         {
-            QueueUrl = this._settings.QueueUrl,
+            QueueUrl = queueUrl,
             MessageBody = JsonSerializer.Serialize(new QueuedMessage()
             {
                 Payload = message,
@@ -37,11 +41,14 @@ public class SqsQueueManager : IQueueManager
 
     public async Task CheckQueueStatus()
     {
-        var attributes = await this._sqsClient.GetQueueAttributesAsync(this._settings.QueueUrl, new List<string>());
-
-        if (attributes.HttpStatusCode != HttpStatusCode.OK)
+        foreach (var queue in this._settings.QueueUrls)
         {
-            throw new Exception("SQS queue offline");
+            var attributes = await this._sqsClient.GetQueueAttributesAsync(queue.Value, new List<string>());
+        
+            if (attributes.HttpStatusCode != HttpStatusCode.OK)
+            {
+                throw new Exception("SQS queue offline");
+            }   
         }
     }
 }

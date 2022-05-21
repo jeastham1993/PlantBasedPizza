@@ -16,5 +16,5 @@ image:
 
 cpu: 256
 memory: 512
-count: 1
+count: 0
 exec: true

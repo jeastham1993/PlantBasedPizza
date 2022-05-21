@@ -23,8 +23,8 @@ Resources:
               - ssm:GetParameter
               - sqs:GetQueueAttributes
             Resource:
-              - arn:aws:ssm:*:*:parameter/plant-based-pizza/kitchen/queue-url
-              - arn:aws:sqs:*:*:InboundKitchenRequestQueue
+              - arn:aws:ssm:*:*:parameter/plant-based-pizza/kitchen/*
+              - arn:aws:sqs:*:*:InboundKitchenRequestQueue-*
           - Sid: PutMetric
             Effect: Allow
             Action:

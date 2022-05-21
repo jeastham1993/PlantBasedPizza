@@ -68,6 +68,7 @@ namespace PlantBasedPizzaKitchenWorkflow.Constructs
                     Environment = this._environmentVariables,
                     Tracing = Tracing.ACTIVE,
                     LogRetention = RetentionDays.ONE_DAY,
+                    Timeout = Duration.Seconds(30)
                 });
 
             foreach (var source in this._sources)

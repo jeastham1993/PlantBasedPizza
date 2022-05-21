@@ -20,12 +20,25 @@ builder.Services.AddSingleton(new AmazonCloudWatchClient());
 builder.Services.AddTransient<IMetrics, CloudWatchMetrics>();
 
 var systemsManager = new AmazonSimpleSystemsManagementClient();
-var queueUrl = systemsManager.GetParameterAsync(new GetParameterRequest()
+builder.Services.AddSingleton(systemsManager);
+
+var activeKitchens = systemsManager.GetParameterAsync(new GetParameterRequest()
 {
-    Name = builder.Configuration["SettingName"]
+    Name = builder.Configuration["ActiveLocationsParameterName"]
 }).Result.Parameter.Value;
 
-builder.Services.AddSingleton<Settings>(new Settings(queueUrl));
+var queueUrls = new Dictionary<string, string>();
+
+foreach (var location in activeKitchens.Split(','))
+{
+    queueUrls.Add(location, systemsManager.GetParameterAsync(new GetParameterRequest()
+    {
+        Name = $"{builder.Configuration["SettingName"]}/{location}"
+    }).Result.Parameter.Value);
+}
+
+builder.Services.AddSingleton<Settings>(new Settings(queueUrls));
+builder.Services.AddHostedService<CheckActiveLocationsWorker>();
 
 var app = builder.Build();
 

@@ -5,6 +5,7 @@ using Amazon.DynamoDBv2.Model;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using PlantBasedPizza.Kitchen.Core.Entities;
+using PlantBasedPizza.Kitchen.Core.Errors;
 using PlantBasedPizza.Kitchen.Infrastructure;
 using PlantBasedPizza.Kitchen.Infrastructure.Extensions;
 
@@ -21,8 +22,19 @@ public class KitchenRequestRepository : IKitchenRequestRepository
 
     public async Task AddNew(KitchenRequest kitchenRequest)
     {
-        await this._dynamoDbClient.PutItemAsync(Environment.GetEnvironmentVariable("TABLE_NAME"),
-            kitchenRequest.AsAttributeMap());
+        try
+        {
+            await this._dynamoDbClient.PutItemAsync(new PutItemRequest()
+            {
+                TableName = Environment.GetEnvironmentVariable("TABLE_NAME"),
+                Item = kitchenRequest.AsAttributeMap(),
+                ConditionExpression = "attribute_not_exists(PK)"
+            });
+        }
+        catch (ConditionalCheckFailedException e)
+        {
+            throw new OrderExistsException(kitchenRequest.OrderIdentifier);
+        }
     }
 
     public async Task Update(KitchenRequest kitchenRequest)
@@ -42,7 +54,7 @@ public class KitchenRequestRepository : IKitchenRequestRepository
 
         if (!getResult.IsItemSet)
         {
-            throw new Exception($"Order {orderIdentifier} not found");
+            throw new OrderExistsException(orderIdentifier);
         }
             
         var result = JsonConvert.DeserializeObject<KitchenRequest>(getResult.Item["Data"].S);

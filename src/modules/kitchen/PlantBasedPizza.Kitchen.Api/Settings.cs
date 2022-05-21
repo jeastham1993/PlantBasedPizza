@@ -2,10 +2,10 @@
 
 public class Settings
 {
-    public Settings(string queueUrl)
+    public Settings(Dictionary<string, string> queueUrls)
     {
-        this.QueueUrl = queueUrl;
+        this.QueueUrls = queueUrls;
     }
     
-    public string QueueUrl { get; set; }
+    public Dictionary<string, string> QueueUrls { get; set; }
 }

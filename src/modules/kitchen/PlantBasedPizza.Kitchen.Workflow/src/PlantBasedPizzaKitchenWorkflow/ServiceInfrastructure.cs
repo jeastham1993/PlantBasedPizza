@@ -11,11 +11,11 @@ namespace PlantBasedPizzaKitchenWorkflow
         public readonly Table KitchenRequestTable;
         public readonly Queue InboundOrderStorageQueue;
 
-        public ServiceInfrastructure(Construct scope, string id) : base(scope, id)
+        public ServiceInfrastructure(Construct scope, string id, string cell) : base(scope, id)
         {
-            var table = new Table(this, "KitchenTable", new TableProps()
+            var table = new Table(this, $"KitchenTable-{cell}", new TableProps()
             {
-                TableName = "KitchenTable",
+                TableName = $"KitchenTable-{cell}",
                 BillingMode = BillingMode.PAY_PER_REQUEST,
                 PartitionKey = new Attribute()
                 {
@@ -30,14 +30,14 @@ namespace PlantBasedPizzaKitchenWorkflow
             });
             
             
-            var queue = new Queue(this, "InboundKitchenRequestQueue", new QueueProps()
+            var queue = new Queue(this, $"InboundKitchenRequestQueue-{cell}", new QueueProps()
             {
-                QueueName = "InboundKitchenRequestQueue",
+                QueueName = $"InboundKitchenRequestQueue-{cell}",
             });
             
-            var secret = new StringParameter(this, "InboundKitchenRequestQueueParameter", new StringParameterProps()
+            var secret = new StringParameter(this, $"InboundKitchenRequestQueueParameter-{cell}", new StringParameterProps()
             {
-                ParameterName = $"/plant-based-pizza/kitchen/queue-url",
+                ParameterName = $"/plant-based-pizza/kitchen/queue-url/{cell}",
                 Description = "Kitchen Queue URL",
                 StringValue = queue.QueueUrl
             });
