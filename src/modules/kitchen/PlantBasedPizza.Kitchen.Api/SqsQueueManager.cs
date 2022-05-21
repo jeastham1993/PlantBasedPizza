@@ -32,8 +32,6 @@ public class SqsQueueManager : IQueueManager
                 Payload = message,
                 CorrelationId = this._correlationContext.CorrelationContext.CorrelationId
             }),
-            MessageGroupId = "inbound-orders",
-            MessageDeduplicationId = message.OrderNumber
         });
     }
 

@@ -1,11 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
-using PlantBasedPizza.Events;
 using PlantBasedPizza.Kitchen.Core.Adapters;
-using PlantBasedPizza.Shared.Events;
-using PlantBasedPizza.Shared.Guards;
 
 namespace PlantBasedPizza.Kitchen.Core.Entities
 {
@@ -18,10 +12,8 @@ namespace PlantBasedPizza.Kitchen.Core.Entities
         
         public KitchenRequest(string orderIdentifier, List<RecipeAdapter> recipes)
         {
-            Guard.AgainstNullOrEmpty(orderIdentifier, nameof(orderIdentifier));
-            
             this.KitchenRequestId = Guid.NewGuid().ToString();
-            this.OrderIdentifier = orderIdentifier;
+            this.OrderIdentifier = orderIdentifier ?? throw new ArgumentNullException(nameof(orderIdentifier));
             this.OrderReceivedOn = DateTime.Now;
             this.OrderState = OrderState.NEW;
             this.Recipes = recipes;
@@ -54,11 +46,6 @@ namespace PlantBasedPizza.Kitchen.Core.Entities
         public void Preparing(string correlationId = "")
         {
             this.OrderState = OrderState.PREPARING;
-
-            EventManager.Raise(new OrderPreparingEvent(this.OrderIdentifier)
-            {
-                CorrelationId = correlationId
-            });
         }
 
         public void PrepComplete(string correlationId = "")
@@ -66,11 +53,6 @@ namespace PlantBasedPizza.Kitchen.Core.Entities
             this.OrderState = OrderState.BAKING;
             
             this.PrepCompleteOn = DateTime.Now;
-            
-            EventManager.Raise(new OrderPrepCompleteEvent(this.OrderIdentifier)
-            {
-                CorrelationId = correlationId
-            });
         }
 
         public void BakeComplete(string correlationId = "")
@@ -78,11 +60,6 @@ namespace PlantBasedPizza.Kitchen.Core.Entities
             this.OrderState = OrderState.QUALITYCHECK;
             
             this.BakeCompleteOn = DateTime.Now;
-            
-            EventManager.Raise(new OrderBakedEvent(this.OrderIdentifier)
-            {
-                CorrelationId = correlationId
-            });
         }
 
         public async Task QualityCheckComplete(string correlationId = "")
@@ -90,11 +67,6 @@ namespace PlantBasedPizza.Kitchen.Core.Entities
             this.OrderState = OrderState.DONE;
             
             this.QualithCheckCompleteOn = DateTime.Now;
-
-            await EventManager.Raise(new OrderQualityCheckedEvent(this.OrderIdentifier)
-            {
-                CorrelationId = correlationId
-            });
         }
     }
 }

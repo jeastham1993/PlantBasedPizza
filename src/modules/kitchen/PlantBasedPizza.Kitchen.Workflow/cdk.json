@@ -1,5 +1,5 @@
 {
-  "app": "dotnet run --project src/KitchenServiceInfrastructure/KitchenServiceInfrastructure.csproj",
+  "app": "dotnet run --project src/PlantBasedPizzaKitchenWorkflow/PlantBasedPizzaKitchenWorkflow.csproj",
   "watch": {
     "include": [
       "**"

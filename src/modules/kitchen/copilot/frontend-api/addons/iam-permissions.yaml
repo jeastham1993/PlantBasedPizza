@@ -21,15 +21,16 @@ Resources:
             Action:
               - sqs:SendMessage
               - ssm:GetParameter
+              - sqs:GetQueueAttributes
             Resource:
               - arn:aws:ssm:*:*:parameter/plant-based-pizza/kitchen/queue-url
-              - arn:aws:sqs:*:*:KitchenQueue.fifo'
+              - arn:aws:sqs:*:*:InboundKitchenRequestQueue
           - Sid: PutMetric
             Effect: Allow
             Action:
               - cloudwatch:PutMetricData
             Resource:
-              - '*  '
+              - '*'
 
 Outputs:
   # 1. You need to output the IAM ManagedPolicy so that Copilot can add it as a managed policy to your ECS task role.

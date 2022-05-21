@@ -3,14 +3,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace KitchenServiceInfrastructure
+namespace PlantBasedPizzaKitchenWorkflow
 {
     sealed class Program
     {
         public static void Main(string[] args)
         {
             var app = new App();
-            new KitchenServiceInfrastructureStack(app, "KitchenServiceInfrastructureStack", new StackProps
+            new PlantBasedPizzaKitchenWorkflowStack(app, "PlantBasedPizzaKitchenWorkflowStack", new StackProps
             {
                 // If you don't specify 'env', this stack will be environment-agnostic.
                 // Account/Region-dependent features and context lookups will not work,
