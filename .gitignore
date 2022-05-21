@@ -10,6 +10,9 @@
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
+.aws-sam
+cdk.out
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
@@ -24,6 +27,7 @@ bld/
 [Ll]ogs/
 [Dd]ist/
 
+.aws-sam/*
 # Visual Studio 2015 cache/options directory
 .vs/
 # Uncomment if you have tasks that create the project's static files in wwwroot
@@ -246,5 +250,3 @@ paket-files/
 # JetBrains Rider
 .idea/
 *.sln.iml
-/test/Traveltek.Inbound.UnitTest/coverage.json
-test/Traveltek.Inbound.UnitTest/coverage.cobertura.xml

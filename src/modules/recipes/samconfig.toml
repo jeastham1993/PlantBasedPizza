@@ -1,0 +1,12 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "recipe-service"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-1fnjlt254wi4o"
+s3_prefix = "recipe-service"
+region = "eu-west-1"
+confirm_changeset = false
+capabilities = "CAPABILITY_IAM"
+parameter_overrides = "DatabaseSecretArn=\"\" PrivateSubnet1=\"\" PrivateSubnet2=\"\" SecurityGroup=\"\""
+image_repositories = []

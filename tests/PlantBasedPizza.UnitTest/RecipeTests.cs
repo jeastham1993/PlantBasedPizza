@@ -13,7 +13,7 @@ public class RecipeTests
     {
         Recipe createdRecipe = null;
         
-        DomainEvents.Register<RecipeCreatedEvent>((evt) =>
+        EventManager.Register<RecipeCreatedEvent>((evt) =>
         {
             createdRecipe = evt.Recipe;
         });

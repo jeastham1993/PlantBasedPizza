@@ -1,0 +1,60 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Kitchen.Api", "PlantBasedPizza.Kitchen.Api\PlantBasedPizza.Kitchen.Api.csproj", "{4D92B84B-029E-4105-8CB1-17C208854853}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Kitchen.Core", "PlantBasedPizza.Kitchen.Workflow\src\PlantBasedPizza.Kitchen.Core\PlantBasedPizza.Kitchen.Core.csproj", "{3394F477-88B9-4CD2-A3D8-48804B2CF800}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Kitchen.Infrastructure", "PlantBasedPizza.Kitchen.Workflow\src\PlantBasedPizza.Kitchen.Infrastructure\PlantBasedPizza.Kitchen.Infrastructure.csproj", "{4208868E-4C19-439A-B394-6F8096CD0B56}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "copilot", "copilot", "{007E6CCA-FB4B-43C1-8F8E-17E81294A6EF}"
+	ProjectSection(SolutionItems) = preProject
+		copilot\frontend-api\manifest.yml = copilot\frontend-api\manifest.yml
+		copilot\frontend-api\addons\iam-permissions.yaml = copilot\frontend-api\addons\iam-permissions.yaml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PlantBasedPizza.Kitchen.Workflow", "PlantBasedPizza.Kitchen.Workflow", "{050EC7B6-5356-4E25-89C8-7E480479EEF0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizzaKitchenWorkflow", "PlantBasedPizza.Kitchen.Workflow\src\PlantBasedPizzaKitchenWorkflow\PlantBasedPizzaKitchenWorkflow.csproj", "{9F4C96A0-B387-4B84-8AF4-25C72842981E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Kitchen.Handlers", "PlantBasedPizza.Kitchen.Workflow\src\PlantBasedPizza.Kitchen.Handlers\PlantBasedPizza.Kitchen.Handlers.csproj", "{77FB29CB-13FD-4456-80DB-E6BE0B0D236B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4D92B84B-029E-4105-8CB1-17C208854853}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D92B84B-029E-4105-8CB1-17C208854853}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4D92B84B-029E-4105-8CB1-17C208854853}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4D92B84B-029E-4105-8CB1-17C208854853}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3394F477-88B9-4CD2-A3D8-48804B2CF800}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3394F477-88B9-4CD2-A3D8-48804B2CF800}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3394F477-88B9-4CD2-A3D8-48804B2CF800}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3394F477-88B9-4CD2-A3D8-48804B2CF800}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4208868E-4C19-439A-B394-6F8096CD0B56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4208868E-4C19-439A-B394-6F8096CD0B56}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4208868E-4C19-439A-B394-6F8096CD0B56}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4208868E-4C19-439A-B394-6F8096CD0B56}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9F4C96A0-B387-4B84-8AF4-25C72842981E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9F4C96A0-B387-4B84-8AF4-25C72842981E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9F4C96A0-B387-4B84-8AF4-25C72842981E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9F4C96A0-B387-4B84-8AF4-25C72842981E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77FB29CB-13FD-4456-80DB-E6BE0B0D236B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77FB29CB-13FD-4456-80DB-E6BE0B0D236B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77FB29CB-13FD-4456-80DB-E6BE0B0D236B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77FB29CB-13FD-4456-80DB-E6BE0B0D236B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{9F4C96A0-B387-4B84-8AF4-25C72842981E} = {050EC7B6-5356-4E25-89C8-7E480479EEF0}
+		{3394F477-88B9-4CD2-A3D8-48804B2CF800} = {050EC7B6-5356-4E25-89C8-7E480479EEF0}
+		{4208868E-4C19-439A-B394-6F8096CD0B56} = {050EC7B6-5356-4E25-89C8-7E480479EEF0}
+		{77FB29CB-13FD-4456-80DB-E6BE0B0D236B} = {050EC7B6-5356-4E25-89C8-7E480479EEF0}
+	EndGlobalSection
+EndGlobal

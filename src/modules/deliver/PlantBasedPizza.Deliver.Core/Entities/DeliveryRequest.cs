@@ -41,7 +41,7 @@ namespace PlantBasedPizza.Deliver.Core.Entities
             this.Driver = driverName;
             this.DriverCollectedOn = DateTime.Now;
 
-            await DomainEvents.Raise(new DriverCollectedOrderEvent(this.OrderIdentifier, driverName)
+            await EventManager.Raise(new DriverCollectedOrderEvent(this.OrderIdentifier, driverName)
             {
                 CorrelationId = correlationId
             });
@@ -51,7 +51,7 @@ namespace PlantBasedPizza.Deliver.Core.Entities
         {
             this.DeliveredOn = DateTime.Now;
 
-            await DomainEvents.Raise(new OrderDeliveredEvent(this.OrderIdentifier)
+            await EventManager.Raise(new OrderDeliveredEvent(this.OrderIdentifier)
             {
                 CorrelationId = correlationId
             });

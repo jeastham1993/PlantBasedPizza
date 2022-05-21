@@ -4,9 +4,9 @@ using PlantBasedPizza.Shared.Events;
 
 namespace PlantBasedPizza.Recipes.Core.Events
 {
-    public class RecipeCreatedEvent : IDomainEvent
+    public class RecipeCreatedEvent : BaseEvent, IDomainEvent
     {
-        public RecipeCreatedEvent(Recipe recipe)
+        public RecipeCreatedEvent(Recipe recipe) : base()
         {
             this.Recipe = recipe;
             this.EventId = Guid.NewGuid().ToString();

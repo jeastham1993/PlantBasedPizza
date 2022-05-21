@@ -16,7 +16,7 @@ public class OrderManagerTests
     {
         string createdOrder = null;
         
-        DomainEvents.Register<OrderCreatedEvent>((evt) =>
+        EventManager.Register<OrderCreatedEvent>((evt) =>
         {
             createdOrder = evt.OrderIdentifier;
         });
@@ -125,7 +125,7 @@ public class OrderManagerTests
     {
         string submittedOrder = null;
         
-        DomainEvents.Register<OrderSubmittedEvent>((evt) =>
+        EventManager.Register<OrderSubmittedEvent>((evt) =>
         {
             submittedOrder = evt.OrderIdentifier;
             evt.EventDate.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(5));
@@ -168,7 +168,7 @@ public class OrderManagerTests
     {
         string completedOrder = null;
         
-        DomainEvents.Register<OrderCompletedEvent>((evt) =>
+        EventManager.Register<OrderCompletedEvent>((evt) =>
         {
             completedOrder = evt.OrderIdentifier;
         });
