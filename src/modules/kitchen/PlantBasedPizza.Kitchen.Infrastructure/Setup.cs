@@ -1,8 +1,6 @@
 using Amazon.DynamoDBv2;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using MongoDB.Bson.Serialization;
-using MongoDB.Driver;
 using PlantBasedPizza.Events;
 using PlantBasedPizza.Kitchen.Core.Entities;
 using PlantBasedPizza.Kitchen.Core.Handlers;
@@ -17,17 +15,10 @@ namespace PlantBasedPizza.Kitchen.Infrastructure
         public static IServiceCollection AddKitchenInfrastructure(this IServiceCollection services,
             IConfiguration configuration)
         {
-            BsonClassMap.RegisterClassMap<KitchenRequest>(map =>
-            {
-                map.AutoMap();
-                map.SetIgnoreExtraElements(true);
-                map.SetIgnoreExtraElementsIsInherited(true);
-            });
-
-            services.AddTransient<IRecipeService, RecipeService>();
-            services.AddTransient<IOrderManagerService, OrderManagerService>();
-            services.AddTransient<Handles<OrderSubmittedEvent>, OrderSubmittedEventHandler>();
-            services.AddTransient<IKitchenRequestRepository, KitchenRequestRepository>();
+            services.AddSingleton<IRecipeService, RecipeService>();
+            services.AddSingleton<IOrderManagerService, OrderManagerService>();
+            services.AddSingleton<Handles<OrderSubmittedEvent>, OrderSubmittedEventHandler>();
+            services.AddSingleton<IKitchenRequestRepository, KitchenRequestRepository>();
 
             return services;
         }

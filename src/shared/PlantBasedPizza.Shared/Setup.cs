@@ -26,7 +26,7 @@ namespace PlantBasedPizza.Shared
 
             services.AddSingleton(new AmazonCloudWatchClient());
             
-            services.AddTransient<IObservabilityService, ObservabiityService>();
+            services.AddSingleton<IObservabilityService, ObservabiityService>();
             services.AddHttpContextAccessor();
 
             return services;

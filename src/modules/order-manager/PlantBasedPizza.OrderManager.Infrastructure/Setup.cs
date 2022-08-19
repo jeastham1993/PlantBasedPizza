@@ -13,14 +13,14 @@ namespace PlantBasedPizza.OrderManager.Infrastructure
         public static IServiceCollection AddOrderManagerInfrastructure(this IServiceCollection services,
             IConfiguration configuration)
         {
-            services.AddTransient<IOrderRepository, OrderRepository>();
-            services.AddTransient<IRecipeService, RecipeService>();
-            services.AddTransient<Handles<OrderPreparingEvent>, OrderPreparingEventHandler>();
-            services.AddTransient<Handles<OrderPrepCompleteEvent>, OrderPrepCompleteEventHandler>();
-            services.AddTransient<Handles<OrderBakedEvent>, OrderBakedEventHandler>();
-            services.AddTransient<Handles<OrderQualityCheckedEvent>, OrderQualityCheckedEventHandler>();
-            services.AddTransient<Handles<OrderDeliveredEvent>, DriverDeliveredOrderEventHandler>();
-            services.AddTransient<Handles<DriverCollectedOrderEvent>, DriverCollectedOrderEventHandler>();
+            services.AddSingleton<IOrderRepository, OrderRepository>();
+            services.AddSingleton<IRecipeService, RecipeService>();
+            services.AddSingleton<Handles<OrderPreparingEvent>, OrderPreparingEventHandler>();
+            services.AddSingleton<Handles<OrderPrepCompleteEvent>, OrderPrepCompleteEventHandler>();
+            services.AddSingleton<Handles<OrderBakedEvent>, OrderBakedEventHandler>();
+            services.AddSingleton<Handles<OrderQualityCheckedEvent>, OrderQualityCheckedEventHandler>();
+            services.AddSingleton<Handles<OrderDeliveredEvent>, DriverDeliveredOrderEventHandler>();
+            services.AddSingleton<Handles<DriverCollectedOrderEvent>, DriverCollectedOrderEventHandler>();
 
             return services;
         }

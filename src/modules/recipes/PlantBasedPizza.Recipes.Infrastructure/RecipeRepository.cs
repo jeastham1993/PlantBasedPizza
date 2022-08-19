@@ -1,9 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Amazon.DynamoDBv2;
+﻿using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
-using Microsoft.AspNetCore.Mvc;
-using MongoDB.Driver;
 using Newtonsoft.Json;
 using PlantBasedPizza.Recipes.Core.Entities;
 using PlantBasedPizza.Recipes.Infrastructure;

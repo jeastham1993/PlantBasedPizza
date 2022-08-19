@@ -1,13 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Amazon.DynamoDBv2;
+﻿using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
-using MongoDB.Driver;
 using Newtonsoft.Json;
 using PlantBasedPizza.Kitchen.Core.Entities;
 using PlantBasedPizza.Kitchen.Infrastructure;
 using PlantBasedPizza.Kitchen.Infrastructure.Extensions;
-using PlantBasedPizza.OrderManager.Core.Entites;
 using PlantBasedPizza.Shared.Logging;
 
 public class KitchenRequestRepository : IKitchenRequestRepository

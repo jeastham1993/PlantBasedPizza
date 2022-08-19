@@ -1,0 +1,14 @@
+config:
+  target: "{{ $processEnvironment.API_URL }}"
+  http:
+    timeout : 60
+  phases:
+    - duration: 600
+      arrivalRate: 100
+
+scenarios:
+  - name: "Healthcheck"
+    weight: 2
+    flow:
+      - get:
+          url: "/health"
