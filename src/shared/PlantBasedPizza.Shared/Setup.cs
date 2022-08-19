@@ -24,16 +24,7 @@ namespace PlantBasedPizza.Shared
             
             ApplicationLogger.Init();
 
-            if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("ENV")))
-            {
-                services.AddSingleton(new AmazonCloudWatchClient(
-                    new BasicAWSCredentials(Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID"),
-                        Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY")), RegionEndpoint.EUWest1));
-            }
-            else
-            {
-                services.AddSingleton(new AmazonCloudWatchClient());
-            }
+            services.AddSingleton(new AmazonCloudWatchClient());
             
             services.AddTransient<IObservabilityService, ObservabiityService>();
             services.AddHttpContextAccessor();

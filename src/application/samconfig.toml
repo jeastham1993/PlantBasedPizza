@@ -1,0 +1,10 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "lambdalith"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-1bb5unt6m9r3a"
+s3_prefix = "lambdalith"
+region = "eu-west-1"
+capabilities = "CAPABILITY_IAM"
+image_repositories = []

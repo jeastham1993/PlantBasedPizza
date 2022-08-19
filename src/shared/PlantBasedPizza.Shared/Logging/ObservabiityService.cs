@@ -18,18 +18,6 @@ namespace PlantBasedPizza.Shared.Logging
             this._cloudWatchClient = cloudWatchClient;
         }
 
-        public void StartTraceSegment(string segmentName)
-        {
-            AWSXRayRecorder.Instance.BeginSegment(segmentName);
-            
-            AWSXRayRecorder.Instance.AddAnnotation("CorrelationId", CorrelationContext.GetCorrelationId());
-        }
-
-        public void EndTraceSegment()
-        {
-            AWSXRayRecorder.Instance.EndSegment();
-        }
-
         public void StartTraceSubsegment(string subsegmentName)
         {
             AWSXRayRecorder.Instance.BeginSubsegment(subsegmentName, DateTime.Now);

@@ -31,16 +31,7 @@ namespace PlantBasedPizza.Deliver.Infrastructure
                 map.SetIgnoreExtraElementsIsInherited(true);
             });
 
-            if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("ENV")))
-            {
-                services.AddSingleton(new AmazonDynamoDBClient(
-                    new BasicAWSCredentials(Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID"),
-                        Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY")), RegionEndpoint.EUWest1));
-            }
-            else
-            {
-                services.AddSingleton(new AmazonDynamoDBClient());
-            }
+            services.AddSingleton(new AmazonDynamoDBClient());
             
             services.AddTransient<IDeliveryRequestRepository, DeliveryRequestRepository>();
             services.AddTransient<Handles<OrderReadyForDeliveryEvent>, OrderReadyForDeliveryEventHandler>();

@@ -1,0 +1,81 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+
+Globals:
+  Function:
+    MemorySize: 1024
+    Architectures: ["arm64"]
+    Runtime: dotnet6
+    Timeout: 5
+    Tracing: Active
+    Environment:
+      Variables:
+        TABLE_NAME: !Ref PlantBasedPizzaTable
+
+Resources:
+  ApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./PlantBasedPizza.Api
+      Handler: PlantBasedPizza.Api::PlantBasedPizza.Api.LambdaEntryPoint::FunctionHandlerAsync
+      Events:
+        Api:
+          Type: HttpApi
+          Properties:
+            Path: /{proxy+}
+            Method: ALL
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref PlantBasedPizzaTable
+        - CloudWatchPutMetricPolicy: {}
+        - Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action: xray:PutTraceSegments
+              Resource: "*"
+
+  PlantBasedPizzaTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: plant-based-pizza
+      AttributeDefinitions:
+        - AttributeName: PK
+          AttributeType: S
+        - AttributeName: SK
+          AttributeType: S
+        - AttributeName: GSI1PK
+          AttributeType: S
+        - AttributeName: GSI1SK
+          AttributeType: S
+        - AttributeName: GSI2PK
+          AttributeType: S
+        - AttributeName: GSI2SK
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      KeySchema:
+        - AttributeName: PK
+          KeyType: HASH
+        - AttributeName: SK
+          KeyType: RANGE
+      GlobalSecondaryIndexes:
+        - IndexName: GSI1
+          KeySchema:
+            - AttributeName: GSI1PK
+              KeyType: HASH
+            - AttributeName: GSI1SK
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+        - IndexName: GSI2
+          KeySchema:
+            - AttributeName: GSI2PK
+              KeyType: HASH
+            - AttributeName: GSI2SK
+              KeyType: RANGE
+          Projection:
+            ProjectionType: ALL
+
+Outputs:
+  ApiUrl:
+    Description: "API Gateway endpoint URL"
+    Value: !Sub "https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com/"

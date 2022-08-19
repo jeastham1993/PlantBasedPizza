@@ -5,10 +5,6 @@ namespace PlantBasedPizza.Shared.Logging
 {
     public interface IObservabilityService
     {
-        void StartTraceSegment(string segmentName);
-
-        void EndTraceSegment();
-
         void StartTraceSubsegment(string subSegmentName);
 
         void EndTraceSubsegment();
