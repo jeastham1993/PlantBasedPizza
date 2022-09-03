@@ -1,7 +1,4 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using PlantBasedPizza.OrderManager.Core.Command;
 using PlantBasedPizza.OrderManager.Core.Entites;
 using PlantBasedPizza.OrderManager.Core.Services;

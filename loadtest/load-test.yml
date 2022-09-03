@@ -2,13 +2,22 @@ config:
   target: "{{ $processEnvironment.API_URL }}"
   http:
     timeout : 60
+  processor: "generator.js"
   phases:
     - duration: 600
-      arrivalRate: 100
+      arrivalRate: 50
 
 scenarios:
-  - name: "Healthcheck"
-    weight: 2
+  - name: "Generate orders"
+    weight: 8
     flow:
-      - get:
-          url: "/health"
+      - function: "generateCustomer"
+      - post:
+          url: "/order/order/pickup"
+          headers:
+            Content-Type: "application/json"
+          json:
+            OrderIdentifier: "{{ Id }}"
+            CustomerIdentifier: "{{ Customer }}"
+            AddressLine1: "My test address"
+            Postcode: "TY1 9PO"
