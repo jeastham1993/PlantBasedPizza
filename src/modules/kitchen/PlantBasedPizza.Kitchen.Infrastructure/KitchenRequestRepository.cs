@@ -19,13 +19,13 @@ public class KitchenRequestRepository : IKitchenRequestRepository
 
     public async Task AddNew(KitchenRequest kitchenRequest)
     {
-        await this._dynamoDbClient.PutItemAsync(Environment.GetEnvironmentVariable("TABLE_NAME"),
+        await this._dynamoDbClient.PutItemAsync(InfrastructureConstants.TableName,
             kitchenRequest.AsAttributeMap());
     }
 
     public async Task Update(KitchenRequest kitchenRequest)
     {
-        await this._dynamoDbClient.PutItemAsync(Environment.GetEnvironmentVariable("TABLE_NAME"),
+        await this._dynamoDbClient.PutItemAsync(InfrastructureConstants.TableName,
             kitchenRequest.AsAttributeMap());
     }
 
@@ -59,7 +59,7 @@ public class KitchenRequestRepository : IKitchenRequestRepository
             results.Add(JsonConvert.DeserializeObject<KitchenRequest>(queryResult["Data"].S));
         }
 
-        return results;
+        return results!;
     }
 
     public async Task<IEnumerable<KitchenRequest>> GetPrep()

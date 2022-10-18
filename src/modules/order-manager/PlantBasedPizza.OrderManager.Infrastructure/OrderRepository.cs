@@ -21,7 +21,7 @@ public class OrderRepository : IOrderRepository
 
     public async Task Add(Order order)
     {
-        await this._dynamoDbClient.PutItemAsync(Environment.GetEnvironmentVariable("TABLE_NAME"),
+        await this._dynamoDbClient.PutItemAsync(InfrastructureConstants.TableName,
             order.AsAttributeMap());
     }
 
@@ -69,7 +69,7 @@ public class OrderRepository : IOrderRepository
 
     public async Task Update(Order order)
     {
-        await this._dynamoDbClient.PutItemAsync(Environment.GetEnvironmentVariable("TABLE_NAME"),
+        await this._dynamoDbClient.PutItemAsync(InfrastructureConstants.TableName,
             order.AsAttributeMap());
     }
 }

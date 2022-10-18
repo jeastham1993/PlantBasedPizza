@@ -60,13 +60,13 @@ public class RecipeRepository : IRecipeRepository
 
     public async Task Add(Recipe recipe)
     {
-        await this._dynamoDbClient.PutItemAsync(Environment.GetEnvironmentVariable("TABLE_NAME"),
+        await this._dynamoDbClient.PutItemAsync(InfrastructureConstants.TableName,
             recipe.AsAttributeMap());
     }
 
     public async Task Update(Recipe recipe)
     {
-        await this._dynamoDbClient.PutItemAsync(Environment.GetEnvironmentVariable("TABLE_NAME"),
+        await this._dynamoDbClient.PutItemAsync(InfrastructureConstants.TableName,
             recipe.AsAttributeMap());
     }
 }

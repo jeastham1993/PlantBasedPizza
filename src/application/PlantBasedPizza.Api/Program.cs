@@ -1,48 +1,92 @@
+using PlantBasedPizza.Api;
+using PlantBasedPizza.Deliver.Infrastructure;
+using PlantBasedPizza.Kitchen.Infrastructure;
+using PlantBasedPizza.OrderManager.Infrastructure;
+using PlantBasedPizza.Recipes.Infrastructure;
+using PlantBasedPizza.Shared;
+using PlantBasedPizza.Shared.Events;
 using PlantBasedPizza.Shared.Logging;
-using Serilog;
 
-namespace PlantBasedPizza.Api
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddAWSLambdaHosting(LambdaEventSource.HttpApi, new SourceGeneratorLambdaJsonSerializer<ApiSerializationContext>(options =>
 {
-    /// <summary>
-    /// Main program entrypoint.
-    /// </summary>
-    public static class Program
+    options.PropertyNameCaseInsensitive = true;
+}));
+
+builder.Services.AddOrderManagerInfrastructure(builder.Configuration);
+builder.Services.AddRecipeInfrastructure(builder.Configuration);
+builder.Services.AddKitchenInfrastructure(builder.Configuration);
+builder.Services.AddDeliveryModuleInfrastructure(builder.Configuration);
+builder.Services.AddSharedInfrastructure(builder.Configuration);
+
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.AddContext<ApiSerializationContext>();
+});
+
+var app = builder.Build();
+
+DomainEvents.Container = app.Services;
+
+app.Map("/health", () =>
+{
+    return "OK";
+});
+
+app.Use(async (context, next) =>
+{
+    var observability = app.Services.GetService<IObservabilityService>();
+
+    var correlationId = string.Empty;
+
+    if (context.Request.Headers.ContainsKey("X-Amzn-Trace-Id"))
     {
-        /// <summary>
-        /// Main program entrypoint.
-        /// </summary>
-        /// <param name="args">Application startup arguments.</param>
-        public static void Main(string[] args)
-        {
-            if (args is null)
-            {
-                throw new ArgumentNullException(nameof(args));
-            }
+        correlationId = context.Request.Headers["X-Amzn-Trace-Id"].ToString();
 
-            CreateHostBuilder(args).Build().Run();
-        }
-
-        /// <summary>
-        /// Create a new web host.
-        /// </summary>
-        /// <param name="args">Application startup arguments.</param>
-        /// <returns>A <see cref="IHostBuilder"/>.</returns>
-        public static IHostBuilder CreateHostBuilder(string[] args)
-        {
-            if (args is null)
-            {
-                throw new ArgumentNullException(nameof(args));
-            }
-
-            return Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
-                // .UseSerilog((ctx, lc) =>
-                // {
-                //     lc = ApplicationLogger.BuildLoggerConfiguration();
-                // });
-        }
+        context.Request.Headers.Add(CorrelationContext.DefaultRequestHeaderName, correlationId);
     }
-}
+    else if (context.Request.Headers.ContainsKey(CorrelationContext.DefaultRequestHeaderName))
+    {
+        correlationId = context.Request.Headers[CorrelationContext.DefaultRequestHeaderName].ToString();
+    }
+    else
+    {
+        correlationId = Guid.NewGuid().ToString();
+
+        context.Request.Headers.Add(CorrelationContext.DefaultRequestHeaderName, correlationId);
+    }
+
+    var timer = new System.Timers.Timer();
+
+    timer.Start();
+
+    CorrelationContext.SetCorrelationId(correlationId);
+
+    observability.Info($"Request received to {context.Request.Path.Value}");
+
+    context.Response.Headers.Add(CorrelationContext.DefaultRequestHeaderName, correlationId);
+
+    // Do work that doesn't write to the Response.
+    await next.Invoke();
+
+    timer.Stop();
+
+    var routesToIgnore = new string[3]
+    {
+        "health",
+        "faivcon.ico",
+        "swagger"
+    };
+
+    var pathRoute = context.Request.Path.Value.Split('/');
+
+    if (routesToIgnore.Contains(pathRoute[1]) == false)
+    {
+        observability.PutMetric(pathRoute[1], $"{pathRoute[^1]}-Latency", timer.Interval).Wait();
+    }
+});
+
+app.MapControllers();
+
+app.Run();
