@@ -24,10 +24,25 @@ namespace PlantBasedPizza.IntegrationTests.Steps
         public async Task ThenAnOrderWithIdentifierOrdShouldBeAddedToTheNewKitchenRequests(string p0)
         {
             await Task.Delay(TimeSpan.FromSeconds(5));
-            
-            var newKitchenRequests = await this._kitchenDriver.GetNew();
 
-            newKitchenRequests.Any(p => p.OrderIdentifier == p0).Should().BeTrue();
+            var retries = 3;
+
+            var foundRequests = 0;
+
+            while (retries > 0)
+            {
+                var newKitchenRequests = await this._kitchenDriver.GetNew();
+
+                foundRequests = newKitchenRequests.Count(p => p.OrderIdentifier == p0);
+
+                if (foundRequests == 0)
+                {
+                    retries--;
+                    await Task.Delay(TimeSpan.FromSeconds(5));
+                }
+            }
+
+            foundRequests.Should().Be(1);
         }
 
         [When(@"order (.*) is processed by the kitchen")]

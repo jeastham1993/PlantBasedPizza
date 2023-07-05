@@ -21,6 +21,7 @@ namespace PlantBasedPizza.OrderManager.Infrastructure
             services.AddSingleton<Handles<OrderQualityCheckedEvent>, OrderQualityCheckedEventHandler>();
             services.AddSingleton<Handles<OrderDeliveredEvent>, DriverDeliveredOrderEventHandler>();
             services.AddSingleton<Handles<DriverCollectedOrderEvent>, DriverCollectedOrderEventHandler>();
+            services.AddSingleton<Handles<OrderSubmittedEvent>, OrderSubmittedIntegrationEventPublisher>();
 
             return services;
         }

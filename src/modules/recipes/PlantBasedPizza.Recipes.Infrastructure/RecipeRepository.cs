@@ -1,6 +1,6 @@
-﻿using Amazon.DynamoDBv2;
+﻿using System.Text.Json;
+using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
-using Newtonsoft.Json;
 using PlantBasedPizza.Recipes.Core.Entities;
 using PlantBasedPizza.Recipes.Infrastructure;
 using PlantBasedPizza.Recipes.Infrastructure.Extensions;
@@ -31,7 +31,7 @@ public class RecipeRepository : IRecipeRepository
             return null;
         }
             
-        var result = JsonConvert.DeserializeObject<Recipe>(getResult.Item["Data"].S);
+        var result = JsonSerializer.Deserialize<Recipe>(getResult.Item["Data"].S);
 
         return result;
     }
@@ -52,7 +52,7 @@ public class RecipeRepository : IRecipeRepository
 
         foreach (var queryResult in queryResults.Items)
         {
-            results.Add(JsonConvert.DeserializeObject<Recipe>(queryResult["Data"].S));
+            results.Add(JsonSerializer.Deserialize<Recipe>(queryResult["Data"].S));
         }
 
         return results;

@@ -11,4 +11,8 @@
     <ProjectReference Include="..\..\..\shared\PlantBasedPizza.Shared\PlantBasedPizza.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Events\" />
+  </ItemGroup>
+
 </Project>

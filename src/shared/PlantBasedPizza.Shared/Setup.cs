@@ -1,5 +1,6 @@
 using Amazon;
 using Amazon.CloudWatch;
+using Amazon.EventBridge;
 using Amazon.Runtime;
 using Amazon.Runtime.CredentialManagement;
 using Amazon.XRay.Recorder.Core;
@@ -8,6 +9,7 @@ using Amazon.XRay.Recorder.Handlers.System.Net;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using PlantBasedPizza.Shared.Events;
 using PlantBasedPizza.Shared.Logging;
 using Serilog;
 using Serilog.Events;
@@ -30,14 +32,17 @@ namespace PlantBasedPizza.Shared
             
             if (chain.TryGetAWSCredentials("dev", out awsCredentials))
             {
-                services.AddSingleton(new AmazonCloudWatchClient(awsCredentials, RegionEndpoint.EUWest1));   
+                services.AddSingleton(new AmazonCloudWatchClient(awsCredentials, RegionEndpoint.EUWest1));
+                services.AddSingleton(new AmazonEventBridgeClient(awsCredentials, RegionEndpoint.EUWest1));
             }
             else
             {
                 services.AddSingleton(new AmazonCloudWatchClient());
+                services.AddSingleton(new AmazonEventBridgeClient());
             }
 
             services.AddSingleton<IObservabilityService, ObservabiityService>();
+            services.AddSingleton<IEventBus, EventBridgeEventBus>();
             services.AddHttpContextAccessor();
 
             return services;

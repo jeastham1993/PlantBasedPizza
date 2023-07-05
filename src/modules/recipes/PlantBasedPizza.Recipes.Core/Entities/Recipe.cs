@@ -1,7 +1,8 @@
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 using PlantBasedPizza.Recipes.Core.Events;
 using PlantBasedPizza.Shared.Events;
+using ThirdParty.Json.LitJson;
 
 namespace PlantBasedPizza.Recipes.Core.Entities
 {
@@ -32,7 +33,7 @@ namespace PlantBasedPizza.Recipes.Core.Entities
         [JsonProperty]
         public decimal Price { get; private set; }
 
-        [JsonProperty("ingredients")]
+        [JsonPropertyName("ingredients")]
         public IReadOnlyCollection<Ingredient> Ingredients => this._ingredients;
 
         public void AddIngredient(string name, int quantity)

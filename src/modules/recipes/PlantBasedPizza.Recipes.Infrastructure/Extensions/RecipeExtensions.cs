@@ -1,5 +1,5 @@
+using System.Text.Json;
 using Amazon.DynamoDBv2.Model;
-using Newtonsoft.Json;
 using PlantBasedPizza.Recipes.Core.Entities;
 
 namespace PlantBasedPizza.Recipes.Infrastructure.Extensions;
@@ -13,7 +13,7 @@ public static class RecipeExtensions
             { "PK", new AttributeValue($"RECIPES") },
             { "SK", new AttributeValue($"RECIPE#{request.RecipeIdentifier.ToUpper()}") },
             { "Type", new AttributeValue("Recipe") },
-            { "Data", new AttributeValue(JsonConvert.SerializeObject(request)) },
+            { "Data", new AttributeValue(JsonSerializer.Serialize(request)) },
         };
 
         return attributeMap;

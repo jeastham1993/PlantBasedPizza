@@ -1,13 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.ComponentModel.Design;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
+using System.Text.Json;
 using CloudNative.CloudEvents;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using PlantBasedPizza.Shared.Logging;
 
 namespace PlantBasedPizza.Shared.Events
@@ -42,7 +35,7 @@ namespace PlantBasedPizza.Shared.Events
                 Time = evt.EventDate,
                 DataContentType = "application/json",
                 Id = evt.EventId,
-                Data = JsonConvert.SerializeObject(evt),
+                Data = JsonSerializer.Serialize(evt),
             };
 
             if (Container != null)
@@ -65,7 +58,7 @@ namespace PlantBasedPizza.Shared.Events
 
             if (_actions != null)
             {
-                Console.WriteLine(JsonConvert.SerializeObject(cloudEvent));
+                Console.WriteLine(JsonSerializer.Serialize(cloudEvent));
                 foreach (var action in _actions)
                 {
                     if (action is Action<T>)
