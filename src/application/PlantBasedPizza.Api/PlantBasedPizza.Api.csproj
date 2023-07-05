@@ -5,10 +5,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
     <PublishReadyToRun>true</PublishReadyToRun>
-    <PublishAot>true</PublishAot>
-    <AssemblyName>bootstrap</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,9 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\aws-lambda-dotnet\Libraries\src\Amazon.Lambda.Annotations.SourceGenerator\Amazon.Lambda.Annotations.SourceGenerator.csproj" />
-    <ProjectReference Include="..\..\..\..\aws-lambda-dotnet\Libraries\src\Amazon.Lambda.APIGatewayEvents\Amazon.Lambda.APIGatewayEvents.csproj" />
-    <ProjectReference Include="..\..\..\..\aws-lambda-dotnet\Libraries\src\Amazon.Lambda.AspNetCoreServer.Hosting\Amazon.Lambda.AspNetCoreServer.Hosting.csproj" />
     <ProjectReference Include="..\..\modules\deliver\PlantBasedPizza.Deliver.Core\PlantBasedPizza.Deliver.Core.csproj" />
     <ProjectReference Include="..\..\modules\deliver\PlantBasedPizza.Deliver.Core\PlantBasedPizza.Deliver.Core.csproj" />
     <ProjectReference Include="..\..\modules\deliver\PlantBasedPizza.Deliver.Infrastructure\PlantBasedPizza.Deliver.Infrastructure.csproj" />
@@ -33,10 +27,6 @@
 
   <ItemGroup>
     <_ContentIncludedByDefault Remove="logs\myapp-{Date}.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <RdXmlFile Include="rd.xml" />
   </ItemGroup>
 
 </Project>

@@ -1,6 +1,7 @@
 using Amazon;
 using Amazon.CloudWatch;
 using Amazon.Runtime;
+using Amazon.Runtime.CredentialManagement;
 using Amazon.XRay.Recorder.Core;
 using Amazon.XRay.Recorder.Handlers.AwsSdk;
 using Amazon.XRay.Recorder.Handlers.System.Net;
@@ -23,9 +24,19 @@ namespace PlantBasedPizza.Shared
             AWSSDKHandler.RegisterXRayForAllServices();
             
             ApplicationLogger.Init();
-
-            services.AddSingleton(new AmazonCloudWatchClient());
             
+            var chain = new CredentialProfileStoreChain();
+            AWSCredentials awsCredentials;
+            
+            if (chain.TryGetAWSCredentials("dev", out awsCredentials))
+            {
+                services.AddSingleton(new AmazonCloudWatchClient(awsCredentials, RegionEndpoint.EUWest1));   
+            }
+            else
+            {
+                services.AddSingleton(new AmazonCloudWatchClient());
+            }
+
             services.AddSingleton<IObservabilityService, ObservabiityService>();
             services.AddHttpContextAccessor();
 

@@ -1,4 +1,3 @@
-using PlantBasedPizza.Api;
 using PlantBasedPizza.Deliver.Infrastructure;
 using PlantBasedPizza.Kitchen.Infrastructure;
 using PlantBasedPizza.OrderManager.Infrastructure;
@@ -9,21 +8,13 @@ using PlantBasedPizza.Shared.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddAWSLambdaHosting(LambdaEventSource.HttpApi, new SourceGeneratorLambdaJsonSerializer<ApiSerializationContext>(options =>
-{
-    options.PropertyNameCaseInsensitive = true;
-}));
-
 builder.Services.AddOrderManagerInfrastructure(builder.Configuration);
 builder.Services.AddRecipeInfrastructure(builder.Configuration);
 builder.Services.AddKitchenInfrastructure(builder.Configuration);
 builder.Services.AddDeliveryModuleInfrastructure(builder.Configuration);
 builder.Services.AddSharedInfrastructure(builder.Configuration);
 
-builder.Services.AddControllers().AddJsonOptions(options =>
-{
-    options.JsonSerializerOptions.AddContext<ApiSerializationContext>();
-});
+builder.Services.AddControllers();
 
 var app = builder.Build();
 
