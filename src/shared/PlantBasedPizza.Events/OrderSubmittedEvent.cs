@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using PlantBasedPizza.Shared.Events;
 
 namespace PlantBasedPizza.Events
@@ -13,6 +14,7 @@ namespace PlantBasedPizza.Events
             this.OrderIdentifier = orderIdentifier;
         }
 
+        [JsonPropertyName("orderIdentifier")]
         public string OrderIdentifier { get; private set; }
         
         public string EventName => "order-manager.order-submitted";
