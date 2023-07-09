@@ -36,7 +36,7 @@ namespace PlantBasedPizza.IntegrationTests.Drivers
                 }), Encoding.UTF8, "application/json")).ConfigureAwait(false);
         }
 
-        public async Task AddNewOrder(string orderIdentifier)
+        public async Task AddNewOrderForCollection(string orderIdentifier)
         {
             await this._httpClient.PostAsync(new Uri($"{BaseUrl}/order/order/pickup"), new StringContent(
                 JsonConvert.SerializeObject(new CreatePickupOrderCommand()

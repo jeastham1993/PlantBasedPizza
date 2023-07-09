@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -58,22 +59,42 @@ namespace PlantBasedPizza.IntegrationTests.Drivers
 
         public async Task Preparing(string orderIdentifier)
         {
-            await this._httpClient.PutAsync(new Uri($"{BaseUrl}/kitchen/{orderIdentifier}/preparing"), new StringContent(string.Empty, Encoding.UTF8)).ConfigureAwait(false);
+            var result = await this._httpClient.PutAsync(new Uri($"{BaseUrl}/kitchen/{orderIdentifier}/preparing"), new StringContent(string.Empty, Encoding.UTF8)).ConfigureAwait(false);
+
+            if (result.StatusCode != HttpStatusCode.OK)
+            {
+                throw new Exception("HTTP request failed");
+            }
         }
         
         public async Task PrepComplete(string orderIdentifier)
         {
-            await this._httpClient.PutAsync(new Uri($"{BaseUrl}/kitchen/{orderIdentifier}/prep-complete"), new StringContent(string.Empty, Encoding.UTF8)).ConfigureAwait(false);
+            var result = await this._httpClient.PutAsync(new Uri($"{BaseUrl}/kitchen/{orderIdentifier}/prep-complete"), new StringContent(string.Empty, Encoding.UTF8)).ConfigureAwait(false);
+
+            if (result.StatusCode != HttpStatusCode.OK)
+            {
+                throw new Exception("HTTP request failed");
+            }
         }
         
         public async Task BakeComplete(string orderIdentifier)
         {
-            await this._httpClient.PutAsync(new Uri($"{BaseUrl}/kitchen/{orderIdentifier}/bake-complete"), new StringContent(string.Empty, Encoding.UTF8)).ConfigureAwait(false);
+            var result = await this._httpClient.PutAsync(new Uri($"{BaseUrl}/kitchen/{orderIdentifier}/bake-complete"), new StringContent(string.Empty, Encoding.UTF8)).ConfigureAwait(false);
+
+            if (result.StatusCode != HttpStatusCode.OK)
+            {
+                throw new Exception("HTTP request failed");
+            }
         }
         
         public async Task QualityChecked(string orderIdentifier)
         {
-            await this._httpClient.PutAsync(new Uri($"{BaseUrl}/kitchen/{orderIdentifier}/quality-check"), new StringContent(string.Empty, Encoding.UTF8)).ConfigureAwait(false);
+            var result = await this._httpClient.PutAsync(new Uri($"{BaseUrl}/kitchen/{orderIdentifier}/quality-check"), new StringContent(string.Empty, Encoding.UTF8)).ConfigureAwait(false);
+
+            if (result.StatusCode != HttpStatusCode.OK)
+            {
+                throw new Exception("HTTP request failed");
+            }
         }
     }
 }

@@ -35,6 +35,8 @@ namespace PlantBasedPizza.OrderManager.Core.Handlers
             }
             else
             {
+                order.AddHistory("Marking order ready for collection");
+                
                 order.IsAwaitingCollection();
             }
 

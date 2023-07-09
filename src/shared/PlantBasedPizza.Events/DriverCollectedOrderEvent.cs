@@ -4,7 +4,7 @@ using Saunter.Attributes;
 
 namespace PlantBasedPizza.Events
 {
-    public class DriverCollectedOrderEvent : IDomainEvent
+    public class DriverCollectedOrderEvent : IntegrationEvent, IDomainEvent
     {
         public DriverCollectedOrderEvent(string orderIdentifier, string driverName)
         {
@@ -14,7 +14,7 @@ namespace PlantBasedPizza.Events
             this.DriverName = driverName;
         }
         
-        public string EventName => "delivery.driver-collected";
+        public override string EventName => "delivery.driver-collected";
         
         public string EventId { get; }
         

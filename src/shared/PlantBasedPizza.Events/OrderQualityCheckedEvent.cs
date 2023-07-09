@@ -3,7 +3,7 @@ using PlantBasedPizza.Shared.Events;
 
 namespace PlantBasedPizza.Events
 {
-    public class OrderQualityCheckedEvent : IDomainEvent
+    public class OrderQualityCheckedEvent : IntegrationEvent, IDomainEvent
     {
         public OrderQualityCheckedEvent(string orderIdentifier)
         {
@@ -12,7 +12,7 @@ namespace PlantBasedPizza.Events
             this.OrderIdentifier = orderIdentifier;
         }
         
-        public string EventName => "kitchen.quality-checked";
+        public override string EventName => "kitchen.quality-checked";
         
         public string EventId { get; }
         

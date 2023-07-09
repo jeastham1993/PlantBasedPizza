@@ -3,7 +3,7 @@ using PlantBasedPizza.Shared.Events;
 
 namespace PlantBasedPizza.Events
 {
-    public class OrderPreparingEvent : IDomainEvent
+    public class OrderPreparingEvent : IntegrationEvent, IDomainEvent
     {
         public OrderPreparingEvent(string orderIdentifier)
         {
@@ -12,7 +12,7 @@ namespace PlantBasedPizza.Events
             this.OrderIdentifier = orderIdentifier;
         }
         
-        public string EventName => "kitchen.prep-started";
+        public override string EventName => "kitchen.prep-started";
         
         public string EventId { get; }
         

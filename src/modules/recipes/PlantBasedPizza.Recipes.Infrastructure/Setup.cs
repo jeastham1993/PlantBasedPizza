@@ -1,6 +1,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PlantBasedPizza.Recipes.Core.Entities;
+using PlantBasedPizza.Recipes.Core.Events;
+using PlantBasedPizza.Shared.Events;
 
 namespace PlantBasedPizza.Recipes.Infrastructure
 {
@@ -10,6 +12,8 @@ namespace PlantBasedPizza.Recipes.Infrastructure
             IConfiguration configuration)
         {            
             services.AddSingleton<IRecipeRepository, RecipeRepository>();
+
+            services.AddSingleton<Handles<RecipeCreatedEvent>, IntegrationEventPublisher>();
 
             return services;
         }

@@ -1,35 +1,32 @@
-using System.Text.Json.Serialization;
-using Amazon.EventBridge.Model;
+using System.Text.Json;
 using Amazon.SQS;
 using Amazon.SQS.Model;
 using Microsoft.Extensions.Hosting;
-using Newtonsoft.Json;
-using PlantBasedPizza.Events;
-using PlantBasedPizza.Kitchen.Core.Handlers;
 using PlantBasedPizza.Shared.Events;
 using PlantBasedPizza.Shared.Logging;
-using JsonSerializer = System.Text.Json.JsonSerializer;
 
-namespace PlantBasedPizza.Kitchen.Infrastructure;
+namespace PlantBasedPizza.OrderManager.Infrastructure;
 
-public class OrderSubmittedQueueProcessor : BackgroundService
+public class InboundEventQueueProcessor<TEvent, THandler>
+    where THandler : Handles<TEvent>
+    where TEvent : IDomainEvent 
 {
     private readonly IObservabilityService _observabilityService;
     private readonly AmazonSQSClient _sqsClient;
-    private readonly OrderSubmittedEventHandler _handler;
+    private readonly THandler _handler;
 
-    public OrderSubmittedQueueProcessor(IObservabilityService observabilityService, AmazonSQSClient sqsClient, OrderSubmittedEventHandler handler)
+    public InboundEventQueueProcessor(IObservabilityService observabilityService, AmazonSQSClient sqsClient, THandler handler)
     {
         _observabilityService = observabilityService;
         _sqsClient = sqsClient;
         _handler = handler;
     }
     
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    public async Task ProcessAsync(string queueUrl, CancellationToken stoppingToken)
     {
         while (!stoppingToken.IsCancellationRequested)
         {
-            var messages = await this._sqsClient.ReceiveMessageAsync(InfrastructureConstants.OrderSubmittedQueueUrl);
+            var messages = await this._sqsClient.ReceiveMessageAsync(queueUrl);
 
             var processedMessages = new List<DeleteMessageBatchRequestEntry>();
             
@@ -37,11 +34,15 @@ public class OrderSubmittedQueueProcessor : BackgroundService
             {
                 try
                 {
-                    var evt = JsonSerializer.Deserialize<EventBridgeEvent<OrderSubmittedEvent>>(message.Body);
+                    var evt = JsonSerializer.Deserialize<EventBridgeEvent<TEvent>>(message.Body);
 
                     await this._handler.Handle(evt.Detail);
-                    
+
                     processedMessages.Add(new DeleteMessageBatchRequestEntry(message.MessageId, message.ReceiptHandle));
+                }
+                catch (AmazonSQSException e)
+                {
+                    this._observabilityService.Error(e, $"SQS Error. Queue URL is {queueUrl}");
                 }
                 catch (Exception e)
                 {
@@ -52,7 +53,7 @@ public class OrderSubmittedQueueProcessor : BackgroundService
             if (processedMessages.Any())
             {
                 await this._sqsClient.DeleteMessageBatchAsync(
-                    new DeleteMessageBatchRequest(InfrastructureConstants.OrderSubmittedQueueUrl, processedMessages));   
+                    new DeleteMessageBatchRequest(queueUrl, processedMessages));   
             }
 
             await Task.Delay(TimeSpan.FromSeconds(5));

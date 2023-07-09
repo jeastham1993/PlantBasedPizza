@@ -25,6 +25,10 @@ namespace PlantBasedPizza.Kitchen.Infrastructure
             services.AddSingleton<IOrderManagerService, OrderManagerService>();
             services.AddSingleton<IKitchenRequestRepository, KitchenRequestRepository>();
             services.AddSingleton<OrderSubmittedEventHandler>();
+            services.AddSingleton<Handles<OrderBakedEvent>, IntegrationEventPublisher>();
+            services.AddSingleton<Handles<OrderQualityCheckedEvent>, IntegrationEventPublisher>();
+            services.AddSingleton<Handles<OrderPreparingEvent>, IntegrationEventPublisher>();
+            services.AddSingleton<Handles<OrderPrepCompleteEvent>, IntegrationEventPublisher>();
             
             var chain = new CredentialProfileStoreChain();
             AWSCredentials awsCredentials;

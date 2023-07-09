@@ -1,29 +1,25 @@
 using System;
+using System.Text.Json.Serialization;
 using PlantBasedPizza.Shared.Events;
 
 namespace PlantBasedPizza.Events
 {
-    public class OrderReadyForDeliveryEvent : IDomainEvent
+    public class OrderReadyForDeliveryEvent : IntegrationEvent, IDomainEvent
     {
-        public OrderReadyForDeliveryEvent(string orderIdentifier, string addressLine1, string addressLine2, string addressLine3, string addressLine4, string addressLine5, string postcode)
+        private string _eventId;
+        
+        public OrderReadyForDeliveryEvent(string orderIdentifier, string deliveryAddressLine1, string deliveryAddressLine2, string deliveryAddressLine3, string deliveryAddressLine4, string deliveryAddressLine5, string postcode)
         {
-            this.EventId = Guid.NewGuid().ToString();
+            this._eventId = Guid.NewGuid().ToString();
             this.EventDate = DateTime.Now;
             this.OrderIdentifier = orderIdentifier;
-            this.DeliveryAddressLine1 = addressLine1;
-            this.DeliveryAddressLine2 = addressLine2;
-            this.DeliveryAddressLine3 = addressLine3;
-            this.DeliveryAddressLine4 = addressLine4;
-            this.DeliveryAddressLine5 = addressLine5;
+            this.DeliveryAddressLine1 = deliveryAddressLine1;
+            this.DeliveryAddressLine2 = deliveryAddressLine2;
+            this.DeliveryAddressLine3 = deliveryAddressLine3;
+            this.DeliveryAddressLine4 = deliveryAddressLine4;
+            this.DeliveryAddressLine5 = deliveryAddressLine5;
             this.Postcode = postcode;
         }
-        
-        public string EventName => "order-manager.ready-for-delivery";
-        
-        public string EventId { get; }
-        
-        public DateTime EventDate { get; }
-        public string CorrelationId { get; set; }
 
         public string OrderIdentifier { get; private set; }
         
@@ -38,5 +34,13 @@ namespace PlantBasedPizza.Events
         public string DeliveryAddressLine5 { get; private set; }
         
         public string Postcode { get; private set; }
+        
+        public override string EventName => "order-manager.ready-for-delivery";
+
+        public string EventId => _eventId;
+        
+        public DateTime EventDate { get; }
+        
+        public string CorrelationId { get; set; }
     }
 }

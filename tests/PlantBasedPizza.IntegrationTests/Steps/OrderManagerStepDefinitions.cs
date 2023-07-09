@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Newtonsoft.Json;
 using PlantBasedPizza.IntegrationTests.Drivers;
+using PlantBasedPizza.IntegrationTests.ViewModels;
 using TechTalk.SpecFlow;
 
 namespace PlantBasedPizza.IntegrationTests.Steps
@@ -25,7 +26,7 @@ namespace PlantBasedPizza.IntegrationTests.Steps
         [Given(@"a new order is created with identifier (.*)")]
         public async Task GivenANewOrderIsCreatedWithIdentifierOrd(string p0)
         {
-            await this._driver.AddNewOrder(p0).ConfigureAwait(false);
+            await this._driver.AddNewOrderForCollection(p0).ConfigureAwait(false);
         }
 
         [When(@"a (.*) is added to order (.*)")]
@@ -45,13 +46,34 @@ namespace PlantBasedPizza.IntegrationTests.Steps
         [When(@"order (.*) is submitted")]
         public async Task WhenOrderOrdIsSubmitted(string p0)
         {
+            await Task.Delay(TimeSpan.FromSeconds(10));
+            
             await this._driver.SubmitOrder(p0);
         }
 
         [Then(@"order (.*) should be marked as (.*)")]
         public async Task ThenOrderOrdShouldBeMarkedAsCompleted(string p0, string p1)
         {
-            var order = await this._driver.GetOrder(p0).ConfigureAwait(false);
+            var retries = 10;
+
+            var foundRequests = 0;
+            
+            Order order = null;
+
+            while (retries > 0)
+            {
+                order = await this._driver.GetOrder(p0).ConfigureAwait(false);
+
+                if (order.OrderCompletedOn == null)
+                {
+                    retries--;
+                    await Task.Delay(TimeSpan.FromSeconds(10));
+                }
+                else
+                {
+                    break;
+                }
+            }
 
             order.OrderCompletedOn.Should().NotBeNull();
         }
@@ -59,7 +81,26 @@ namespace PlantBasedPizza.IntegrationTests.Steps
         [Then(@"order (.*) should contain a (.*) event")]
         public async Task ThenOrderOrdShouldContainAOrderQualityCheckedEvent(string p0, string p1)
         {
-            var order = await this._driver.GetOrder(p0).ConfigureAwait(false);
+            var retries = 10;
+
+            var foundRequests = 0;
+            
+            Order order = null;
+
+            while (retries > 0)
+            {
+                order = await this._driver.GetOrder(p0).ConfigureAwait(false);
+
+                if (!order.History.Any(p => p.Description == p1))
+                {
+                    retries--;
+                    await Task.Delay(TimeSpan.FromSeconds(10));
+                }
+                else
+                {
+                    break;
+                }
+            }
 
             order.History.Any(p => p.Description == p1).Should().BeTrue();
         }
@@ -67,7 +108,26 @@ namespace PlantBasedPizza.IntegrationTests.Steps
         [Then(@"order (.*) should be awaiting collection")]
         public async Task ThenOrderOrdShouldBeAwaitingCollection(string p0)
         {
-            var order = await this._driver.GetOrder(p0).ConfigureAwait(false);
+            var retries = 10;
+
+            var foundRequests = 0;
+            
+            Order order = null;
+
+            while (retries > 0)
+            {
+                order = await this._driver.GetOrder(p0).ConfigureAwait(false);
+
+                if (order.AwaitingCollection == false)
+                {
+                    retries--;
+                    await Task.Delay(TimeSpan.FromSeconds(10));
+                }
+                else
+                {
+                    break;
+                }
+            }
 
             order.AwaitingCollection.Should().BeTrue();
         }
@@ -75,12 +135,16 @@ namespace PlantBasedPizza.IntegrationTests.Steps
         [When(@"order (.*) is collected")]
         public async Task WhenOrderOrdIsCollected(string p0)
         {
+            await Task.Delay(TimeSpan.FromSeconds(10));
+            
             await this._driver.CollectOrder(p0).ConfigureAwait(false);
         }
 
         [Given(@"a new delivery order is created with identifier (.*)")]
         public async Task GivenANewDeliveryOrderIsCreatedWithIdentifierDeliver(string p0)
         {
+            await Task.Delay(TimeSpan.FromSeconds(10));
+            
             await this._driver.AddNewDeliveryOrder(p0);
         }
     }

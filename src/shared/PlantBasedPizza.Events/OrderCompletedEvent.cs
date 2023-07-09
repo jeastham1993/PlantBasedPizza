@@ -3,7 +3,7 @@ using PlantBasedPizza.Shared.Events;
 
 namespace PlantBasedPizza.Events
 {
-    public class OrderCompletedEvent : IDomainEvent
+    public class OrderCompletedEvent : IntegrationEvent, IDomainEvent
     {
         private string _eventId;
 
@@ -16,7 +16,7 @@ namespace PlantBasedPizza.Events
 
         public string OrderIdentifier { get; private set; }
         
-        public string EventName => "order-manager.order-completed";
+        public override string EventName => "order-manager.order-completed";
 
         public string EventId => this._eventId;
 

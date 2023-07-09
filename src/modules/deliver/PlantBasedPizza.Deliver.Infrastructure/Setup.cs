@@ -2,6 +2,7 @@ using Amazon;
 using Amazon.DynamoDBv2;
 using Amazon.Runtime;
 using Amazon.Runtime.CredentialManagement;
+using Amazon.SQS;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PlantBasedPizza.Deliver.Core.Entities;
@@ -19,17 +20,29 @@ namespace PlantBasedPizza.Deliver.Infrastructure
             var chain = new CredentialProfileStoreChain();
             AWSCredentials awsCredentials;
             
+            AmazonSQSClient sqsClient = null;
+            
             if (chain.TryGetAWSCredentials("dev", out awsCredentials))
             {
+                sqsClient = new AmazonSQSClient(awsCredentials, RegionEndpoint.EUWest1);
                 services.AddSingleton(new AmazonDynamoDBClient(awsCredentials, RegionEndpoint.EUWest1));   
             }
             else
             {
+                sqsClient = new AmazonSQSClient();
                 services.AddSingleton(new AmazonDynamoDBClient());
             }
 
+            InfrastructureConstants.OrderReadyForDeliveryQueue = sqsClient.GetQueueUrlAsync(InfrastructureConstants.OrderReadyForDeliveryQueueName).GetAwaiter()
+                .GetResult().QueueUrl;
+
+            services.AddSingleton<Handles<OrderDeliveredEvent>, IntegrationEventPublisher>();
+            services.AddSingleton<Handles<DriverCollectedOrderEvent>, IntegrationEventPublisher>();
+            
             services.AddSingleton<IDeliveryRequestRepository, DeliveryRequestRepository>();
-            services.AddSingleton<Handles<OrderReadyForDeliveryEvent>, OrderReadyForDeliveryEventHandler>();
+            
+            services.AddSingleton<OrderReadyForDeliveryEventHandler>();
+            services.AddHostedService<OrderReadyForDeliveryQueueProcessor>();
 
             return services;
         }

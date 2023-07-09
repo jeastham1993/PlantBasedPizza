@@ -5,7 +5,7 @@ using Saunter.Attributes;
 namespace PlantBasedPizza.Events
 {
     [AsyncApi]
-    public class OrderBakedEvent : IDomainEvent
+    public class OrderBakedEvent : IntegrationEvent, IDomainEvent
     {
         public OrderBakedEvent(string orderIdentifier)
         {
@@ -14,7 +14,7 @@ namespace PlantBasedPizza.Events
             this.OrderIdentifier = orderIdentifier;
         }
         
-        public string EventName => "kitchen.baked";
+        public override string EventName => "kitchen.baked";
         
         public string EventId { get; }
         

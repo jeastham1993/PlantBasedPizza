@@ -4,7 +4,7 @@ using PlantBasedPizza.Shared.Events;
 
 namespace PlantBasedPizza.Recipes.Core.Events
 {
-    public class RecipeCreatedEvent : IDomainEvent
+    public class RecipeCreatedEvent : IntegrationEvent, IDomainEvent
     {
         public RecipeCreatedEvent(Recipe recipe)
         {
@@ -13,7 +13,7 @@ namespace PlantBasedPizza.Recipes.Core.Events
             this.EventDate = DateTime.Now;
         }
         
-        public string EventName => "recipes.recipe-created";
+        public override string EventName => "recipes.recipe-created";
         public string EventId { get; }
         public DateTime EventDate { get; }
         public string CorrelationId { get; set; }
