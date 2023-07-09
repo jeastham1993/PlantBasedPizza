@@ -32,8 +32,8 @@ Resources:
               - dynamodb:Update*
               - dynamodb:PutItem
             Resource:
-              - arn:aws:dynamodb:eu-west-1:469909854323:table/plant-based-pizza
-              - arn:aws:dynamodb:eu-west-1:469909854323:table/plant-based-pizza/*
+              - arn:aws:dynamodb:eu-west-1:*:table/plant-based-pizza
+              - arn:aws:dynamodb:eu-west-1:*:table/plant-based-pizza/*
           - Sid: PutMetrics
             Effect: Allow
             Action:
@@ -43,6 +43,19 @@ Resources:
             Effect: Allow
             Action:
               - xray:PutTraceSegments
+            Resource: "*"
+          - Sid: SQSDeleteAndReceive
+            Effect: Allow
+            Action:
+              - sqs:SendMessage
+              - sqs:ReceiveMessage
+              - sqs:DeleteMessage
+              - sqs:ListQueues
+              - sqs:GetQueueUrl
+              - sqs:ChangeMessageVisibility
+              - sqs:SendMessageBatch
+              - sqs:GetQueueAttributes
+              - sqs:DeleteMessageBatch
             Resource: "*"
 
 Outputs:

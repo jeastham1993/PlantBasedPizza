@@ -52,6 +52,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Events", "s
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.IntegrationTests", "tests\PlantBasedPizza.IntegrationTests\PlantBasedPizza.IntegrationTests.csproj", "{62ECA03B-0345-4D4D-B71E-C2B216F3FAF7}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "copilot", "copilot", "{7E2B8651-86B1-45F3-B7E6-31E3097A2202}"
+	ProjectSection(SolutionItems) = preProject
+		copilot\api\manifest.yml = copilot\api\manifest.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "addons", "addons", "{6A730792-BE72-4F78-BE90-E8F4BBE6E79B}"
+	ProjectSection(SolutionItems) = preProject
+		copilot\api\addons\iam.yaml = copilot\api\addons\iam.yaml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -78,6 +88,8 @@ Global
 		{256FCDB5-2230-492A-BE42-58E57DDCCE09} = {22DC111E-0E05-48BD-B40C-24B6848075C2}
 		{3A09684B-8D40-44A0-8CD1-0BEE41F0FB07} = {93B400D7-1E45-435D-935F-7DE6F032070A}
 		{62ECA03B-0345-4D4D-B71E-C2B216F3FAF7} = {E630CA1B-339D-4697-9FFF-AB9D64C9507D}
+		{7E2B8651-86B1-45F3-B7E6-31E3097A2202} = {3A26A029-7C47-4975-AA1F-52384C345FCD}
+		{6A730792-BE72-4F78-BE90-E8F4BBE6E79B} = {7E2B8651-86B1-45F3-B7E6-31E3097A2202}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{179E35BF-4F04-4660-8F82-413DA572E7F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
