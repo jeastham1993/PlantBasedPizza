@@ -1,10 +1,10 @@
-using System.Collections.Generic;
-using Newtonsoft.Json;
-using PlantBasedPizza.Recipes.Core.Events;
-using PlantBasedPizza.Shared.Events;
+using System.Text.Json.Serialization;
 
 namespace PlantBasedPizza.Recipes.Core.Entities
 {
+    using PlantBasedPizza.Recipes.Core.Events;
+    using PlantBasedPizza.Shared.Events;
+
     public class Recipe
     {
         private List<Ingredient> _ingredients;
@@ -23,16 +23,16 @@ namespace PlantBasedPizza.Recipes.Core.Entities
             DomainEvents.Raise(new RecipeCreatedEvent(this));
         }
         
-        [JsonProperty]
+        [JsonPropertyName("recipeIdentifier")]
         public string RecipeIdentifier { get; private set; }
         
-        [JsonProperty]
+        [JsonPropertyName("name")]
         public string Name { get; private set; }
         
-        [JsonProperty]
+        [JsonPropertyName("price")]
         public decimal Price { get; private set; }
 
-        [JsonProperty("ingredients")]
+        [JsonPropertyName("ingredients")]
         public IReadOnlyCollection<Ingredient> Ingredients => this._ingredients;
 
         public void AddIngredient(string name, int quantity)

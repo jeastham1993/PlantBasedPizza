@@ -1,41 +1,38 @@
-using Amazon;
-using Amazon.CloudWatch;
-using Amazon.Runtime;
-using Amazon.Runtime.CredentialManagement;
-using Amazon.XRay.Recorder.Core;
-using Amazon.XRay.Recorder.Handlers.AwsSdk;
-using Amazon.XRay.Recorder.Handlers.System.Net;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PlantBasedPizza.Shared.Logging;
-using Serilog;
-using Serilog.Events;
-using Serilog.Formatting.Json;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 
 namespace PlantBasedPizza.Shared
 {
+    using OpenTelemetry.Exporter;
+
     public static class Setup
     {
+        private const string APPLICATION_NAME = "PlantBasedPizza";
+        
         public static IServiceCollection AddSharedInfrastructure(this IServiceCollection services,
             IConfiguration configuration)
         {
-            AWSXRayRecorder.InitializeInstance(configuration);
-            AWSSDKHandler.RegisterXRayForAllServices();
-            
             ApplicationLogger.Init();
             
-            var chain = new CredentialProfileStoreChain();
-            AWSCredentials awsCredentials;
+            var otel = services.AddOpenTelemetry();
+            otel.ConfigureResource(resource => resource
+                .AddService(serviceName: APPLICATION_NAME));
             
-            if (chain.TryGetAWSCredentials("dev", out awsCredentials))
+            otel.WithTracing(tracing =>
             {
-                services.AddSingleton(new AmazonCloudWatchClient(awsCredentials, RegionEndpoint.EUWest1));   
-            }
-            else
-            {
-                services.AddSingleton(new AmazonCloudWatchClient());
-            }
+                tracing.AddAspNetCoreInstrumentation();
+                tracing.AddHttpClientInstrumentation();
+                tracing.AddSource(APPLICATION_NAME);
+                tracing.AddOtlpExporter(otlpOptions =>
+                {
+                    otlpOptions.Endpoint = new Uri(configuration["OtlpEndpoint"]);
+                    otlpOptions.Protocol = OtlpExportProtocol.HttpProtobuf;
+                });
+                tracing.AddConsoleExporter();
+            });
 
             services.AddSingleton<IObservabilityService, ObservabiityService>();
             services.AddHttpContextAccessor();

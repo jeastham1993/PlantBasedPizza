@@ -23,7 +23,6 @@ namespace PlantBasedPizza.Shared.Logging
             return new LoggerConfiguration()
                 .MinimumLevel.Information()
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Error)
-                .MinimumLevel.Override(" Amazon.XRay", LogEventLevel.Error)
                 .Enrich.FromLogContext()
                 .WriteTo.Console(new JsonFormatter());
         }

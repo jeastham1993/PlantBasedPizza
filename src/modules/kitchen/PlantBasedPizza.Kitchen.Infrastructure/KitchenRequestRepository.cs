@@ -1,121 +1,71 @@
-﻿using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.Model;
-using Newtonsoft.Json;
+﻿using MongoDB.Driver;
 using PlantBasedPizza.Kitchen.Core.Entities;
-using PlantBasedPizza.Kitchen.Infrastructure;
-using PlantBasedPizza.Kitchen.Infrastructure.Extensions;
-using PlantBasedPizza.Shared.Logging;
 
 public class KitchenRequestRepository : IKitchenRequestRepository
 {
-    private readonly AmazonDynamoDBClient _dynamoDbClient;
-    private readonly IObservabilityService _observability;
+    private readonly IMongoDatabase _database;
+    private readonly IMongoCollection<KitchenRequest> _kitchenRequests;
 
-    public KitchenRequestRepository(AmazonDynamoDBClient dynamoDbClient, IObservabilityService observability)
+    public KitchenRequestRepository(MongoClient client)
     {
-        _dynamoDbClient = dynamoDbClient;
-        _observability = observability;
+        this._database = client.GetDatabase("PlantBasedPizza");
+        this._kitchenRequests = this._database.GetCollection<KitchenRequest>("kitchen");
     }
 
     public async Task AddNew(KitchenRequest kitchenRequest)
     {
-        await this._dynamoDbClient.PutItemAsync(InfrastructureConstants.TableName,
-            kitchenRequest.AsAttributeMap());
+        await this._kitchenRequests.InsertOneAsync(kitchenRequest).ConfigureAwait(false);
     }
 
     public async Task Update(KitchenRequest kitchenRequest)
     {
-        await this._dynamoDbClient.PutItemAsync(InfrastructureConstants.TableName,
-            kitchenRequest.AsAttributeMap());
+        var queryBuilder = Builders<KitchenRequest>.Filter.Eq(req => req.OrderIdentifier, kitchenRequest.OrderIdentifier);
+
+        await this._kitchenRequests.ReplaceOneAsync(queryBuilder, kitchenRequest);
     }
 
     public async Task<KitchenRequest> Retrieve(string orderIdentifier)
     {
-        var getResult = await this._dynamoDbClient.GetItemAsync(InfrastructureConstants.TableName,
-            new Dictionary<string, AttributeValue>(2)
-            {
-                { "PK", new AttributeValue($"ORDER#{orderIdentifier.ToUpper()}") },
-                { "SK", new AttributeValue($"KITCHEN#{orderIdentifier.ToUpper()}") },
-            });
+        var queryBuilder = Builders<KitchenRequest>.Filter.Eq(p => p.OrderIdentifier, orderIdentifier);
 
-        if (!getResult.IsItemSet)
-        {
-            throw new Exception($"Order {orderIdentifier} not found");
-        }
-            
-        var result = JsonConvert.DeserializeObject<KitchenRequest>(getResult.Item["Data"].S);
+        var kitchenRequest = await this._kitchenRequests.Find(queryBuilder).FirstOrDefaultAsync().ConfigureAwait(false);
 
-        return result;
+        return kitchenRequest;
     }
 
     public async Task<IEnumerable<KitchenRequest>> GetNew()
     {
-        var queryResults = await this.queryByState(OrderState.NEW);
+        var queryBuilder = Builders<KitchenRequest>.Filter.Eq(p => p.OrderState, OrderState.NEW);
 
-        var results = new List<KitchenRequest>();
+        var kitchenRequests = await this._kitchenRequests.FindAsync(queryBuilder).ConfigureAwait(false);
 
-        foreach (var queryResult in queryResults.Items)
-        {
-            results.Add(JsonConvert.DeserializeObject<KitchenRequest>(queryResult["Data"].S));
-        }
-
-        return results!;
+        return await kitchenRequests.ToListAsync();
     }
 
     public async Task<IEnumerable<KitchenRequest>> GetPrep()
     {
-        var queryResults = await this.queryByState(OrderState.PREPARING);
+        var queryBuilder = Builders<KitchenRequest>.Filter.Eq(p => p.OrderState, OrderState.PREPARING);
 
-        var results = new List<KitchenRequest>();
+        var kitchenRequests = await this._kitchenRequests.FindAsync(queryBuilder).ConfigureAwait(false);
 
-        foreach (var queryResult in queryResults.Items)
-        {
-            results.Add(JsonConvert.DeserializeObject<KitchenRequest>(queryResult["Data"].S));
-        }
-
-        return results;
+        return await kitchenRequests.ToListAsync();
     }
 
     public async Task<IEnumerable<KitchenRequest>> GetBaking()
     {
-        var queryResults = await this.queryByState(OrderState.BAKING);
+        var queryBuilder = Builders<KitchenRequest>.Filter.Eq(p => p.OrderState, OrderState.BAKING);
 
-        var results = new List<KitchenRequest>();
+        var kitchenRequests = await this._kitchenRequests.FindAsync(queryBuilder).ConfigureAwait(false);
 
-        foreach (var queryResult in queryResults.Items)
-        {
-            results.Add(JsonConvert.DeserializeObject<KitchenRequest>(queryResult["Data"].S));
-        }
-
-        return results;
+        return await kitchenRequests.ToListAsync();
     }
 
     public async Task<IEnumerable<KitchenRequest>> GetAwaitingQualityCheck()
     {
-        var queryResults = await this.queryByState(OrderState.QUALITYCHECK);
+        var queryBuilder = Builders<KitchenRequest>.Filter.Eq(p => p.OrderState, OrderState.QUALITYCHECK);
 
-        var results = new List<KitchenRequest>();
+        var kitchenRequests = await this._kitchenRequests.FindAsync(queryBuilder).ConfigureAwait(false);
 
-        foreach (var queryResult in queryResults.Items)
-        {
-            results.Add(JsonConvert.DeserializeObject<KitchenRequest>(queryResult["Data"].S));
-        }
-
-        return results;
-    }
-
-    private async Task<QueryResponse> queryByState(OrderState state)
-    {
-        return await this._dynamoDbClient.QueryAsync(new QueryRequest()
-        {
-            TableName = InfrastructureConstants.TableName,
-            IndexName = "GSI1",
-            KeyConditionExpression = "GSI1PK = :PK and GSI1SK = :SK",
-            ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
-                {":PK", new AttributeValue { S =  $"KITCHEN{state.ToString()}" }},
-                {":SK", new AttributeValue { S =  $"KITCHEN{state.ToString()}" }},
-            }
-        });
-        
+        return await kitchenRequests.ToListAsync();
     }
 }

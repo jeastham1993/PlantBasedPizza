@@ -12,9 +12,14 @@ services:
     image: plant-based-pizza
     container_name: plant-based-pizza
     environment:
-      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-      - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION}
-      - TABLE_NAME=${TABLE_NAME}
+      - DatabaseConnection=mongodb://mongodb:27017
+      - OtlpEndpoint=http://jaeger:4317
     ports:
-      - 5113:80
+      - 5000:8080
+  jaeger:
+    image: jaegertracing/opentelemetry-all-in-one:latest
+    ports:
+      - 16686:16686
+      - 13133:13133
+      - 4317:4317
+      - 4318:4318

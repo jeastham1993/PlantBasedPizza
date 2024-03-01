@@ -11,7 +11,22 @@ public class KitchenRequestDTO
     public KitchenRequestDTO(KitchenRequest request)
     {
         this.KitchenRequestId = request.KitchenRequestId;
+        this.OrderIdentifier = request.OrderIdentifier;
+        this.OrderReceivedOn = request.OrderReceivedOn;
+        this.PrepCompleteOn = request.PrepCompleteOn;
+        this.BakeCompleteOn = request.BakeCompleteOn;
+        this.QualithCheckCompleteOn = request.QualithCheckCompleteOn;
     }
 
     public string KitchenRequestId { get; set; }
+    
+    public string OrderIdentifier { get; set; }
+    
+    public DateTime OrderReceivedOn { get; set; }
+        
+    public DateTime? PrepCompleteOn { get; set; }
+        
+    public DateTime? BakeCompleteOn { get; set; }
+        
+    public DateTime? QualithCheckCompleteOn { get; set; }
 }

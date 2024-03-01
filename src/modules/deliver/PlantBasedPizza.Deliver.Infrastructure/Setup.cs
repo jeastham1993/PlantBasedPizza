@@ -1,7 +1,3 @@
-using Amazon;
-using Amazon.DynamoDBv2;
-using Amazon.Runtime;
-using Amazon.Runtime.CredentialManagement;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PlantBasedPizza.Deliver.Core.Entities;
@@ -11,23 +7,28 @@ using PlantBasedPizza.Shared.Events;
 
 namespace PlantBasedPizza.Deliver.Infrastructure
 {
+    using MongoDB.Bson.Serialization;
+    using MongoDB.Driver;
+
     public static class Setup
     {
         public static IServiceCollection AddDeliveryModuleInfrastructure(this IServiceCollection services,
             IConfiguration configuration)
         {
-            var chain = new CredentialProfileStoreChain();
-            AWSCredentials awsCredentials;
+            BsonClassMap.RegisterClassMap<DeliveryRequest>(map =>
+            {
+                map.AutoMap();
+                map.SetIgnoreExtraElements(true);
+                map.SetIgnoreExtraElementsIsInherited(true);
+            });
             
-            if (chain.TryGetAWSCredentials("dev", out awsCredentials))
+            BsonClassMap.RegisterClassMap<Address>(map =>
             {
-                services.AddSingleton(new AmazonDynamoDBClient(awsCredentials, RegionEndpoint.EUWest1));   
-            }
-            else
-            {
-                services.AddSingleton(new AmazonDynamoDBClient());
-            }
-
+                map.AutoMap();
+                map.SetIgnoreExtraElements(true);
+                map.SetIgnoreExtraElementsIsInherited(true);
+            });
+            
             services.AddSingleton<IDeliveryRequestRepository, DeliveryRequestRepository>();
             services.AddSingleton<Handles<OrderReadyForDeliveryEvent>, OrderReadyForDeliveryEventHandler>();
 

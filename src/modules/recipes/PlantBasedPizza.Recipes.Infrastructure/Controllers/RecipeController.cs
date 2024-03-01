@@ -28,9 +28,8 @@ namespace PlantBasedPizza.Recipes.Infrastructure.Controllers
         public async Task<IEnumerable<Recipe>> List()
         {
             this._observability.Info("Retrieved request to list recipes");
-            
-            return await this._observability.TraceMethodAsync("List Recipes",
-                async () => await this._recipeRepository.List());
+
+            return await this._recipeRepository.List();
         }
 
         /// <summary>
@@ -41,8 +40,7 @@ namespace PlantBasedPizza.Recipes.Infrastructure.Controllers
         [HttpGet("recipes/{recipeIdentifier}")]
         public async Task<Recipe> Get(string recipeIdentifier)
         {
-            return await this._observability.TraceMethodAsync("Get Recipes",
-                async () => await this._recipeRepository.Retrieve(recipeIdentifier));
+            return await this._recipeRepository.Retrieve(recipeIdentifier);
         }
         
         /// <summary>

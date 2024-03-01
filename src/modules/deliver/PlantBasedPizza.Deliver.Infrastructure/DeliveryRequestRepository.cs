@@ -1,95 +1,52 @@
-using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.Model;
-using Newtonsoft.Json;
+using MongoDB.Driver;
 using PlantBasedPizza.Deliver.Core.Entities;
-using PlantBasedPizza.Deliver.Infrastructure.Extensions;
 
 namespace PlantBasedPizza.Deliver.Infrastructure
 {
     public class DeliveryRequestRepository : IDeliveryRequestRepository
     {
-        private readonly AmazonDynamoDBClient _dynamoDbClient;
+        private readonly IMongoDatabase _database;
+        private readonly IMongoCollection<DeliveryRequest> _collection;
 
-        public DeliveryRequestRepository(AmazonDynamoDBClient dynamoDbClient)
+        public DeliveryRequestRepository(MongoClient client)
         {
-            this._dynamoDbClient = dynamoDbClient;
+            this._database = client.GetDatabase("PlantBasedPizza");
+            this._collection = this._database.GetCollection<DeliveryRequest>("DeliveryRequests");
         }
         
         public async Task AddNewDeliveryRequest(DeliveryRequest request)
         {
-            await this._dynamoDbClient.PutItemAsync(InfrastructureConstants.TableName,
-                request.AsAttributeMap());
+            await this._collection.InsertOneAsync(request).ConfigureAwait(false);
         }
 
         public async Task UpdateDeliveryRequest(DeliveryRequest request)
         {
-            await this._dynamoDbClient.PutItemAsync(InfrastructureConstants.TableName,
-                request.AsAttributeMap());
+            var queryBuilder = Builders<DeliveryRequest>.Filter.Eq(ord => ord.OrderIdentifier, request.OrderIdentifier);
+
+            await this._collection.ReplaceOneAsync(queryBuilder, request);
         }
 
         public async Task<DeliveryRequest?> GetDeliveryStatusForOrder(string orderIdentifier)
         {
-            var getResult = await this._dynamoDbClient.GetItemAsync(InfrastructureConstants.TableName,
-                new Dictionary<string, AttributeValue>(2)
-                {
-                    { "PK", new AttributeValue($"ORDER#{orderIdentifier.ToUpper()}") },
-                    { "SK", new AttributeValue($"DELIVERY#{orderIdentifier.ToUpper()}") },
-                });
+            var queryBuilder = Builders<DeliveryRequest>.Filter.Eq(p => p.OrderIdentifier, orderIdentifier);
 
-            if (!getResult.IsItemSet)
-            {
-                return null;
-            }
-            
-            var result = JsonConvert.DeserializeObject<DeliveryRequest>(getResult.Item["Data"].S);
+            var request = await this._collection.Find(queryBuilder).FirstOrDefaultAsync().ConfigureAwait(false);
 
-            return result;
+            return request;
         }
 
         public async Task<List<DeliveryRequest>> GetAwaitingDriver()
         {
-            var queryResults = await this._dynamoDbClient.QueryAsync(new QueryRequest()
-            {
-                TableName = InfrastructureConstants.TableName,
-                IndexName = "GSI2",
-                KeyConditionExpression = "GSI2PK = :PK and GSI2SK = :SK",
-                ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
-                    {":PK", new AttributeValue { S =  "AWAITINGCOLLECTION" }},
-                    {":SK", new AttributeValue { S = "AWAITINGCOLLECTION" }}
-                }
-            });
+            var requests = await this._collection.Find(p => p.DriverCollectedOn == null).ToListAsync();
 
-            var results = new List<DeliveryRequest>();
-
-            foreach (var queryResult in queryResults.Items)
-            {
-                results.Add(JsonConvert.DeserializeObject<DeliveryRequest>(queryResult["Data"].S));
-            }
-
-            return results;
+            return requests;
         }
 
         public async Task<List<DeliveryRequest>> GetOrdersWithDriver(string driverName)
         {
-            var queryResults = await this._dynamoDbClient.QueryAsync(new QueryRequest()
-            {
-                TableName = InfrastructureConstants.TableName,
-                IndexName = "GSI1",
-                KeyConditionExpression = "GSI1PK = :PK and GSI1SK = :SK",
-                ExpressionAttributeValues = new Dictionary<string, AttributeValue> {
-                    {":PK", new AttributeValue { S =  $"DRIVER#{driverName.ToUpper()}" }},
-                    {":SK", new AttributeValue { S = $"DRIVER#{driverName.ToUpper()}" }}
-                }
-            });
+            var requests = await this._collection.Find(p => p.DeliveredOn == null && p.DriverCollectedOn != null && p.Driver == driverName).ToListAsync();
 
-            var results = new List<DeliveryRequest>();
-
-            foreach (var queryResult in queryResults.Items)
-            {
-                results.Add(JsonConvert.DeserializeObject<DeliveryRequest>(queryResult["Data"].S));
-            }
-
-            return results;
+            return requests;
         }
     }
 }
