@@ -1,14 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 using PlantBasedPizza.Events;
 using PlantBasedPizza.Shared.Events;
 using PlantBasedPizza.Shared.Guards;
 using PlantBasedPizza.Shared.Logging;
 
-namespace PlantBasedPizza.OrderManager.Core.Entites
+namespace PlantBasedPizza.OrderManager.Core.Entities
 {
     public class Order
     {

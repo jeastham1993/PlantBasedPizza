@@ -1,7 +1,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PlantBasedPizza.Events;
-using PlantBasedPizza.OrderManager.Core.Entites;
+using PlantBasedPizza.OrderManager.Core.Command;
+using PlantBasedPizza.OrderManager.Core.Entities;
 using PlantBasedPizza.OrderManager.Core.Handlers;
 using PlantBasedPizza.OrderManager.Core.Services;
 using PlantBasedPizza.Shared.Events;
@@ -39,6 +40,8 @@ namespace PlantBasedPizza.OrderManager.Infrastructure
             });
             
             services.AddSingleton<IOrderRepository, OrderRepository>();
+            services.AddSingleton<CollectOrderCommandHandler>();
+            services.AddSingleton<AddItemToOrderHandler>();
             services.AddSingleton<IRecipeService, RecipeService>();
             services.AddSingleton<Handles<OrderPreparingEvent>, OrderPreparingEventHandler>();
             services.AddSingleton<Handles<OrderPrepCompleteEvent>, OrderPrepCompleteEventHandler>();

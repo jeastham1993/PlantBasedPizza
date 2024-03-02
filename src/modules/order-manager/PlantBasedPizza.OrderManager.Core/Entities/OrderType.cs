@@ -1,4 +1,4 @@
-namespace PlantBasedPizza.OrderManager.Core.Entites
+namespace PlantBasedPizza.OrderManager.Core.Entities
 {
     public enum OrderType
     {

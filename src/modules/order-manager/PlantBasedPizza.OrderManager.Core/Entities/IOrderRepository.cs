@@ -1,8 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace PlantBasedPizza.OrderManager.Core.Entites
+namespace PlantBasedPizza.OrderManager.Core.Entities
 {
     public interface IOrderRepository
     {

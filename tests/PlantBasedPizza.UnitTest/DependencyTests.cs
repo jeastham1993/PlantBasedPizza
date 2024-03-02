@@ -3,7 +3,7 @@ using FluentAssertions;
 using NetArchTest.Rules;
 using PlantBasedPizza.Deliver.Core.Entities;
 using PlantBasedPizza.Kitchen.Core.Entities;
-using PlantBasedPizza.OrderManager.Core.Entites;
+using PlantBasedPizza.OrderManager.Core.Entities;
 using PlantBasedPizza.Recipes.Core.Entities;
 using Xunit;
 

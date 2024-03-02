@@ -1,5 +1,6 @@
-﻿using MongoDB.Driver;
-using PlantBasedPizza.OrderManager.Core.Entites;
+﻿using System.Diagnostics;
+using MongoDB.Driver;
+using PlantBasedPizza.OrderManager.Core.Entities;
 
 namespace PlantBasedPizza.OrderManager.Infrastructure;
 
@@ -23,6 +24,12 @@ public class OrderRepository : IOrderRepository
         var queryBuilder = Builders<Order>.Filter.Eq(p => p.OrderIdentifier, orderIdentifier);
 
         var order = await this._orders.Find(queryBuilder).FirstOrDefaultAsync().ConfigureAwait(false);
+
+        if (order == null)
+        {
+            Activity.Current?.AddTag("order.notFound", true);
+            throw new OrderNotFoundException(orderIdentifier);
+        }
 
         return order;
     }

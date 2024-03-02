@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using PlantBasedPizza.Kitchen.Core.Adapters;
 using PlantBasedPizza.Kitchen.Core.Services;
-using PlantBasedPizza.OrderManager.Core.Entites;
+using PlantBasedPizza.OrderManager.Core.Entities;
 
 namespace PlantBasedPizza.Kitchen.Infrastructure
 {

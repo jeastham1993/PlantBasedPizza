@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using FluentAssertions;
 using PlantBasedPizza.Events;
-using PlantBasedPizza.OrderManager.Core.Entites;
+using PlantBasedPizza.OrderManager.Core.Entities;
 using PlantBasedPizza.Shared.Events;
 using Xunit;
 

@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace PlantBasedPizza.OrderManager.Core.Entites
+namespace PlantBasedPizza.OrderManager.Core.Entities
 {
     public class DeliveryDetails
     {

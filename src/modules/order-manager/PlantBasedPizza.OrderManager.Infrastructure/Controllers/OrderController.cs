@@ -1,6 +1,7 @@
+using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using PlantBasedPizza.OrderManager.Core.Command;
-using PlantBasedPizza.OrderManager.Core.Entites;
+using PlantBasedPizza.OrderManager.Core.Entities;
 using PlantBasedPizza.OrderManager.Core.Services;
 using PlantBasedPizza.Shared.Logging;
 
@@ -10,14 +11,14 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
     public class OrderController : ControllerBase 
     {
         private readonly IOrderRepository _orderRepository;
-        private readonly IRecipeService _recipeService;
-        private readonly IObservabilityService _logger;
+        private readonly CollectOrderCommandHandler _collectOrderCommandHandler;
+        private readonly AddItemToOrderHandler _addItemToOrderHandler;
 
-        public OrderController(IOrderRepository orderRepository, IRecipeService recipeService, IObservabilityService logger)
+        public OrderController(IOrderRepository orderRepository, CollectOrderCommandHandler collectOrderCommandHandler, AddItemToOrderHandler addItemToOrderHandler)
         {
             _orderRepository = orderRepository;
-            _recipeService = recipeService;
-            _logger = logger;
+            _collectOrderCommandHandler = collectOrderCommandHandler;
+            _addItemToOrderHandler = addItemToOrderHandler;
         }
 
         /// <summary>
@@ -26,9 +27,21 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
         /// <param name="orderIdentifier">The order identifier.</param>
         /// <returns></returns>
         [HttpGet("order/{orderIdentifier}/detail")]
-        public async Task<Order> Get(string orderIdentifier)
+        public async Task<Order?> Get(string orderIdentifier)
         {
-            return await this._orderRepository.Retrieve(orderIdentifier).ConfigureAwait(false);
+            try
+            {
+                Activity.Current?.SetTag("orderIdentifier", orderIdentifier);
+                
+                return await this._orderRepository.Retrieve(orderIdentifier).ConfigureAwait(false);
+            }
+            catch (OrderNotFoundException)
+            {
+                this.Response.StatusCode = 404;
+                Activity.Current?.AddTag("order.notFound", true);
+
+                return null;
+            }
         }
 
         /// <summary>
@@ -89,17 +102,16 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
         /// <param name="request">the <see cref="AddItemToOrderCommand"/> request.</param>
         /// <returns></returns>
         [HttpPost("order/{orderIdentifier}/items")]
-        public async Task<Order> AddItemToOrder([FromBody] AddItemToOrderCommand request)
+        public async Task<Order?> AddItemToOrder([FromBody] AddItemToOrderCommand request)
         {
             request.AddToTelemetry();
-            
-            var recipe = await this._recipeService.GetRecipe(request.RecipeIdentifier);
-            
-            var order = await this._orderRepository.Retrieve(request.OrderIdentifier);
 
-            order.AddOrderItem(request.RecipeIdentifier, recipe.ItemName, request.Quantity, recipe.Price);
+            var order = await this._addItemToOrderHandler.Handle(request);
 
-            await this._orderRepository.Update(order);
+            if (order is null)
+            {
+                this.Response.StatusCode = 404;
+            }
 
             return order;
         }
@@ -141,37 +153,14 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
         [HttpPost("order/collected")]
         public async Task<Order?> OrderCollected([FromBody] CollectOrderRequest request)
         {
-            this._logger.Info($"Received {request}");
-            
-            var existingOrder = await this._orderRepository.Retrieve(request.OrderIdentifier);
+            var result = await this._collectOrderCommandHandler.Handle(request);
 
-            if (existingOrder == null)
+            if (result is null)
             {
-                this._logger.Info($"Existing order ({request.OrderIdentifier}) not found, returning");
-                
-                return existingOrder;
+                this.Response.StatusCode = 404;
             }
-            
-            this._logger.Info($"Order is type {existingOrder.OrderType} and is awaiting collection {existingOrder.AwaitingCollection}");
 
-            if (existingOrder.OrderType == OrderType.DELIVERY || !existingOrder.AwaitingCollection)
-            {
-                this._logger.Info("Returning");
-                
-                return existingOrder;
-            }
-            
-            this._logger.Info("Order is ready to be completed, marking completed!");
-
-            existingOrder.AddHistory("Order collected");
-
-            existingOrder.CompleteOrder();
-
-            await this._orderRepository.Update(existingOrder).ConfigureAwait(false);
-
-            this._logger.Info("Updated!");
-
-            return existingOrder;
+            return result;
         }
     }
 }

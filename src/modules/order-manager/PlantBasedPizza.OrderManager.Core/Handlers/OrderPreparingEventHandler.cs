@@ -1,7 +1,7 @@
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PlantBasedPizza.Events;
-using PlantBasedPizza.OrderManager.Core.Entites;
+using PlantBasedPizza.OrderManager.Core.Entities;
 using PlantBasedPizza.Shared.Events;
 using Saunter.Attributes;
 

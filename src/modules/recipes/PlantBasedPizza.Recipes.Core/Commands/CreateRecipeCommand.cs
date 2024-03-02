@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace PlantBasedPizza.Recipes.Core.Commands
 {
-    public class CreateRecipeCommand
+    public record CreateRecipeCommand
     {
         [JsonPropertyName("RecipeIdentifier")]
         public string RecipeIdentifier { get; init; } = "";
@@ -22,6 +22,6 @@ namespace PlantBasedPizza.Recipes.Core.Commands
     {
         public string Name { get; init; } = "";
 
-        public int Quantity => 0;
+        public int Quantity { get; init; }
     }
 }
