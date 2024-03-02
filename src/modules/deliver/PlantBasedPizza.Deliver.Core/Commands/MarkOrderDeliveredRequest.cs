@@ -1,7 +1,10 @@
+using System.Text.Json.Serialization;
+
 namespace PlantBasedPizza.Deliver.Core.Commands
 {
     public class MarkOrderDeliveredRequest
     {
-        public string OrderIdentifier { get; set; }
+        [JsonPropertyName("OrderIdentifier")]
+        public string OrderIdentifier { get; init; } = "";
     }
 }

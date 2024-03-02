@@ -15,10 +15,10 @@ namespace PlantBasedPizza.Kitchen.Core.Handlers
     [AsyncApi]
     public class OrderSubmittedEventHandler : Handles<OrderSubmittedEvent>
     {
-        private IKitchenRequestRepository _kitchenRequestRepository;
-        private IRecipeService _recipeService;
+        private readonly IKitchenRequestRepository _kitchenRequestRepository;
+        private readonly IRecipeService _recipeService;
         private readonly IOrderManagerService _orderManagerService;
-        private IObservabilityService _logger;
+        private readonly IObservabilityService _logger;
 
         public OrderSubmittedEventHandler(IKitchenRequestRepository kitchenRequestRepository, IRecipeService recipeService, IObservabilityService logger, IOrderManagerService orderManagerService)
         {

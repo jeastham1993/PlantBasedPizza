@@ -1,15 +1,17 @@
 ﻿using MongoDB.Driver;
 using PlantBasedPizza.Kitchen.Core.Entities;
+using PlantBasedPizza.Shared.Logging;
+
+namespace PlantBasedPizza.Kitchen.Infrastructure;
 
 public class KitchenRequestRepository : IKitchenRequestRepository
 {
-    private readonly IMongoDatabase _database;
     private readonly IMongoCollection<KitchenRequest> _kitchenRequests;
 
     public KitchenRequestRepository(MongoClient client)
     {
-        this._database = client.GetDatabase("PlantBasedPizza");
-        this._kitchenRequests = this._database.GetCollection<KitchenRequest>("kitchen");
+        var database = client.GetDatabase("PlantBasedPizza");
+        this._kitchenRequests = database.GetCollection<KitchenRequest>("kitchen");
     }
 
     public async Task AddNew(KitchenRequest kitchenRequest)
@@ -21,7 +23,9 @@ public class KitchenRequestRepository : IKitchenRequestRepository
     {
         var queryBuilder = Builders<KitchenRequest>.Filter.Eq(req => req.OrderIdentifier, kitchenRequest.OrderIdentifier);
 
-        await this._kitchenRequests.ReplaceOneAsync(queryBuilder, kitchenRequest);
+        var updateResult = await this._kitchenRequests.ReplaceOneAsync(queryBuilder, kitchenRequest);
+        
+        updateResult.AddToTelemetry();
     }
 
     public async Task<KitchenRequest> Retrieve(string orderIdentifier)

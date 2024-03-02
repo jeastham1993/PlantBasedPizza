@@ -9,6 +9,6 @@ namespace PlantBasedPizza.Kitchen.Core.Adapters
             this.Items = new List<OrderItemAdapter>();
         }
         
-        public List<OrderItemAdapter> Items { get; set; }
+        public List<OrderItemAdapter> Items { get; }
     }
 }

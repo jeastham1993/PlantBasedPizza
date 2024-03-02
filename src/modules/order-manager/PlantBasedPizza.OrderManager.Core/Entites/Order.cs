@@ -21,19 +21,21 @@ namespace PlantBasedPizza.OrderManager.Core.Entites
         private List<OrderHistory> _history;
         
         [JsonConstructor]
-        internal Order(string orderNumber = null)
+        internal Order(string? orderNumber = null)
         {
             if (string.IsNullOrEmpty(orderNumber))
             {
                 orderNumber = Guid.NewGuid().ToString();
             }
 
+            this.OrderIdentifier = "";
+            this.CustomerIdentifier = "";
             this.OrderNumber = orderNumber;
             this._items = new List<OrderItem>();
             this._history = new List<OrderHistory>();
         }
 
-        public static Order Create(string orderIdentifier, OrderType type, string customerIdentifier, DeliveryDetails deliveryDetails = null, string correlationId = "")
+        public static Order Create(string orderIdentifier, OrderType type, string customerIdentifier, DeliveryDetails? deliveryDetails = null, string correlationId = "")
         {
             Guard.AgainstNullOrEmpty(customerIdentifier, nameof(customerIdentifier));
             Guard.AgainstNullOrEmpty(orderIdentifier, nameof(orderIdentifier));
@@ -86,8 +88,10 @@ namespace PlantBasedPizza.OrderManager.Core.Entites
         [JsonIgnore]
         public IReadOnlyCollection<OrderItem> Items => this._items;
         
-        [JsonIgnore]
-        public IReadOnlyCollection<OrderHistory> History => this._history?.OrderBy(p => p.HistoryDate).ToList();
+        public IReadOnlyCollection<OrderHistory> History()
+        {
+            return this._history.OrderBy(p => p.HistoryDate).ToList();
+        }
 
         [JsonProperty]
         public OrderType OrderType { get; private set; }
@@ -99,7 +103,7 @@ namespace PlantBasedPizza.OrderManager.Core.Entites
         public decimal TotalPrice { get; private set; }
 
         [JsonProperty]
-        public DeliveryDetails DeliveryDetails { get; private set; }
+        public DeliveryDetails? DeliveryDetails { get; private set; }
 
         public void AddOrderItem(string recipeIdentifier, string itemName, int quantity, decimal price)
         {
@@ -114,7 +118,7 @@ namespace PlantBasedPizza.OrderManager.Core.Entites
                 this._items = new List<OrderItem>(1);
             }
             
-            var existingItem = this._items.FirstOrDefault(p =>
+            var existingItem = this._items.Find(p =>
                 p.RecipeIdentifier.Equals(recipeIdentifier, StringComparison.OrdinalIgnoreCase));
 
             if (existingItem != null)
@@ -137,7 +141,7 @@ namespace PlantBasedPizza.OrderManager.Core.Entites
                 return;
             }
 
-            var existingItem = this._items.FirstOrDefault(p =>
+            var existingItem = this._items.Find(p =>
                 p.RecipeIdentifier.Equals(recipeIdentifier, StringComparison.OrdinalIgnoreCase));
 
             if (existingItem == null)
@@ -186,7 +190,7 @@ namespace PlantBasedPizza.OrderManager.Core.Entites
         {
             if (!this._items.Any())
             {
-                throw new Exception("Cannot submit an order with no items");
+                throw new ArgumentException("Cannot submit an order with no items");
             }
             
             this.OrderSubmittedOn = DateTime.Now;

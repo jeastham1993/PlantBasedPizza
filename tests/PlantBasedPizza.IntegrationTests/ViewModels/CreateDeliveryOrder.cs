@@ -6,16 +6,16 @@ namespace PlantBasedPizza.IntegrationTests.ViewModels
         
         public string CustomerIdentifier { get; set; }
         
-        public string AddressLine1 { get; init; }
+        public string AddressLine1 { get;  set; }
         
-        public string AddressLine2 { get; init; }
+        public string AddressLine2 { get; set; }
         
-        public string AddressLine3 { get; init; }
+        public string AddressLine3 { get; set; }
         
-        public string AddressLine4 { get; init; }
+        public string AddressLine4 { get; set; }
         
-        public string AddressLine5 { get; init; }
+        public string AddressLine5 { get; set; }
         
-        public string Postcode { get; init; }
+        public string Postcode { get; set; }
     }
 }

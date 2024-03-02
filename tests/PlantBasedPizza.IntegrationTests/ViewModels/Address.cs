@@ -13,7 +13,5 @@ namespace PlantBasedPizza.IntegrationTests.ViewModels
         public string AddressLine5 { get; set; }
         
         public string Postcode { get; set; }
-        
-        
     }
 }

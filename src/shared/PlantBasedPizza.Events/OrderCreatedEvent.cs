@@ -5,7 +5,7 @@ namespace PlantBasedPizza.Events
 {
     public class OrderCreatedEvent : IDomainEvent
     {
-        private string _eventId;
+        private readonly string _eventId;
 
         public OrderCreatedEvent(string orderIdentifier)
         {
@@ -17,6 +17,8 @@ namespace PlantBasedPizza.Events
         public string OrderIdentifier { get; private set; }
         
         public string EventName => "order-manager.order-created";
+        
+        public string EventVersion => "v1";
 
         public string EventId => this._eventId;
 

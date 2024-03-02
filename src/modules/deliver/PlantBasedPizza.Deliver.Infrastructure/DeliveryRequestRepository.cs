@@ -1,17 +1,18 @@
+using System.Diagnostics;
 using MongoDB.Driver;
 using PlantBasedPizza.Deliver.Core.Entities;
+using PlantBasedPizza.Shared.Logging;
 
 namespace PlantBasedPizza.Deliver.Infrastructure
 {
     public class DeliveryRequestRepository : IDeliveryRequestRepository
     {
-        private readonly IMongoDatabase _database;
         private readonly IMongoCollection<DeliveryRequest> _collection;
 
         public DeliveryRequestRepository(MongoClient client)
         {
-            this._database = client.GetDatabase("PlantBasedPizza");
-            this._collection = this._database.GetCollection<DeliveryRequest>("DeliveryRequests");
+            var database = client.GetDatabase("PlantBasedPizza");
+            this._collection = database.GetCollection<DeliveryRequest>("DeliveryRequests");
         }
         
         public async Task AddNewDeliveryRequest(DeliveryRequest request)
@@ -23,7 +24,9 @@ namespace PlantBasedPizza.Deliver.Infrastructure
         {
             var queryBuilder = Builders<DeliveryRequest>.Filter.Eq(ord => ord.OrderIdentifier, request.OrderIdentifier);
 
-            await this._collection.ReplaceOneAsync(queryBuilder, request);
+            var replaceResult = await this._collection.ReplaceOneAsync(queryBuilder, request);
+            
+            replaceResult.AddToTelemetry();
         }
 
         public async Task<DeliveryRequest?> GetDeliveryStatusForOrder(string orderIdentifier)
@@ -39,12 +42,16 @@ namespace PlantBasedPizza.Deliver.Infrastructure
         {
             var requests = await this._collection.Find(p => p.DriverCollectedOn == null).ToListAsync();
 
+            Activity.Current?.AddTag("mongo.findCount", requests.Count);
+
             return requests;
         }
 
         public async Task<List<DeliveryRequest>> GetOrdersWithDriver(string driverName)
         {
             var requests = await this._collection.Find(p => p.DeliveredOn == null && p.DriverCollectedOn != null && p.Driver == driverName).ToListAsync();
+            
+            Activity.Current?.AddTag("mongo.findCount", requests.Count);
 
             return requests;
         }

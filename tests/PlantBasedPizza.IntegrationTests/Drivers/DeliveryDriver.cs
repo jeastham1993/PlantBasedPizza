@@ -2,9 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using PlantBasedPizza.IntegrationTests.Requests;
 using PlantBasedPizza.IntegrationTests.ViewModels;
 
 namespace PlantBasedPizza.IntegrationTests.Drivers
@@ -26,7 +25,7 @@ namespace PlantBasedPizza.IntegrationTests.Drivers
                 .ConfigureAwait(false);
 
             var deliveryRequests =
-                JsonConvert.DeserializeObject<List<DeliveryRequest>>(await result.Content.ReadAsStringAsync());
+                JsonSerializer.Deserialize<List<DeliveryRequest>>(await result.Content.ReadAsStringAsync());
 
             return deliveryRequests;
         }
@@ -37,7 +36,7 @@ namespace PlantBasedPizza.IntegrationTests.Drivers
             
             Console.WriteLine(url);
 
-            var content = JsonConvert.SerializeObject(new AssignDriverRequest()
+            var content = JsonSerializer.Serialize(new AssignDriverRequest()
             {
                 OrderIdentifier = orderIdentifier,
                 DriverName = driverName
@@ -57,7 +56,7 @@ namespace PlantBasedPizza.IntegrationTests.Drivers
             
             Console.WriteLine(url);
 
-            var content = JsonConvert.SerializeObject(new MarkOrderDeliveredRequest()
+            var content = JsonSerializer.Serialize(new MarkOrderDeliveredRequest()
             {
                 OrderIdentifier = orderIdentifier
             });
@@ -71,7 +70,7 @@ namespace PlantBasedPizza.IntegrationTests.Drivers
                 .ConfigureAwait(false);
 
             var deliveryRequests =
-                JsonConvert.DeserializeObject<List<DeliveryRequest>>(await result.Content.ReadAsStringAsync());
+                JsonSerializer.Deserialize<List<DeliveryRequest>>(await result.Content.ReadAsStringAsync());
 
             return deliveryRequests;
         }

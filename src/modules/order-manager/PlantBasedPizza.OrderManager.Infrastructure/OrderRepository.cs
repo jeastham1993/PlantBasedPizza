@@ -1,15 +1,16 @@
 ﻿using MongoDB.Driver;
 using PlantBasedPizza.OrderManager.Core.Entites;
 
+namespace PlantBasedPizza.OrderManager.Infrastructure;
+
 public class OrderRepository : IOrderRepository
 {
-    private readonly IMongoDatabase _database;
     private readonly IMongoCollection<Order> _orders;
 
     public OrderRepository(MongoClient client)
     {
-        this._database = client.GetDatabase("PlantBasedPizza");
-        this._orders = this._database.GetCollection<Order>("orders");
+        var database = client.GetDatabase("PlantBasedPizza");
+        this._orders = database.GetCollection<Order>("orders");
     }
 
     public async Task Add(Order order)
@@ -30,7 +31,7 @@ public class OrderRepository : IOrderRepository
     {
         var queryBuilder = Builders<Order>.Filter.Eq(p => p.OrderType, OrderType.PICKUP);
 
-        var order = await this._orders.Find(p => p.OrderType == OrderType.PICKUP && p.AwaitingCollection == true).ToListAsync();
+        var order = await this._orders.Find(p => p.OrderType == OrderType.PICKUP && p.AwaitingCollection).ToListAsync();
 
         return order;
     }

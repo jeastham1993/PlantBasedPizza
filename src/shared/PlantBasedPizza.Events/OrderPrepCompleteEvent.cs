@@ -14,6 +14,8 @@ namespace PlantBasedPizza.Events
         
         public string EventName => "kitchen.prep-complete";
         
+        public string EventVersion => "v1";
+        
         public string EventId { get; }
         
         public DateTime EventDate { get; }

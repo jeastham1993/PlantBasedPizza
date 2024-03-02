@@ -1,18 +1,16 @@
 ﻿using MongoDB.Driver;
 using PlantBasedPizza.Recipes.Core.Entities;
-using PlantBasedPizza.Shared.Logging;
+
+namespace PlantBasedPizza.Recipes.Infrastructure;
 
 public class RecipeRepository : IRecipeRepository
 {
-    private readonly IMongoDatabase _database;
     private readonly IMongoCollection<Recipe> _recipes;
-    private readonly IObservabilityService _observability;
 
-    public RecipeRepository(MongoClient client, IObservabilityService observability)
+    public RecipeRepository(MongoClient client)
     {
-        _observability = observability;
-        this._database = client.GetDatabase("PlantBasedPizza");
-        this._recipes = this._database.GetCollection<Recipe>("recipes");
+        var database = client.GetDatabase("PlantBasedPizza");
+        this._recipes = database.GetCollection<Recipe>("recipes");
     }
     
     public async Task<Recipe> Retrieve(string recipeIdentifier)

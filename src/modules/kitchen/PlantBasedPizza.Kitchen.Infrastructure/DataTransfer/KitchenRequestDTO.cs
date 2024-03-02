@@ -6,6 +6,8 @@ public class KitchenRequestDTO
 {
     public KitchenRequestDTO()
     {
+        this.KitchenRequestId = "";
+        this.OrderIdentifier = "";
     }
 
     public KitchenRequestDTO(KitchenRequest request)

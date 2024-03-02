@@ -46,7 +46,7 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
                 return existingOrder;
             }
             
-            var order = Order.Create(request.OrderIdentifier, request.OrderType, request.CustomerIdentifier, null, this.Request.Headers["CorrelationId"]);
+            var order = Order.Create(request.OrderIdentifier, request.OrderType, request.CustomerIdentifier, null, CorrelationContext.GetCorrelationId());
 
             await this._orderRepository.Add(order);
 
@@ -76,7 +76,7 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
                 AddressLine4 = request.AddressLine4,
                 AddressLine5 = request.AddressLine5,
                 Postcode = request.Postcode,
-            }, this.Request.Headers["CorrelationId"]);
+            }, CorrelationContext.GetCorrelationId());
 
             await this._orderRepository.Add(order);
 
@@ -91,6 +91,8 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
         [HttpPost("order/{orderIdentifier}/items")]
         public async Task<Order> AddItemToOrder([FromBody] AddItemToOrderCommand request)
         {
+            request.AddToTelemetry();
+            
             var recipe = await this._recipeService.GetRecipe(request.RecipeIdentifier);
             
             var order = await this._orderRepository.Retrieve(request.OrderIdentifier);
@@ -137,7 +139,7 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
         /// <param name="request">The <see cref="CollectOrderRequest"/> request.</param>
         /// <returns></returns>
         [HttpPost("order/collected")]
-        public async Task<Order> OrderCollected([FromBody] CollectOrderRequest request)
+        public async Task<Order?> OrderCollected([FromBody] CollectOrderRequest request)
         {
             this._logger.Info($"Received {request}");
             
@@ -152,7 +154,7 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
             
             this._logger.Info($"Order is type {existingOrder.OrderType} and is awaiting collection {existingOrder.AwaitingCollection}");
 
-            if (existingOrder.OrderType == OrderType.DELIVERY || existingOrder.AwaitingCollection == false)
+            if (existingOrder.OrderType == OrderType.DELIVERY || !existingOrder.AwaitingCollection)
             {
                 this._logger.Info("Returning");
                 

@@ -1,7 +1,5 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using PlantBasedPizza.Deliver.Core.Commands;
 using PlantBasedPizza.Deliver.Core.Entities;
 using PlantBasedPizza.Shared.Logging;
@@ -28,6 +26,8 @@ namespace PlantBasedPizza.Deliver.Infrastructure.Controllers
         [HttpGet("delivery/{orderIdentifier}/status")]
         public async Task<DeliveryRequest?> Get(string orderIdentifier)
         {
+            Activity.Current?.AddTag("orderIdentifier", orderIdentifier);
+            
             return await this._deliveryRequestRepository.GetDeliveryStatusForOrder(orderIdentifier);
         }
 
@@ -51,6 +51,8 @@ namespace PlantBasedPizza.Deliver.Infrastructure.Controllers
         [HttpPost("delivery/assign")]
         public async Task<IActionResult> Collect([FromBody] AssignDriverRequest request)
         {
+            request.AddToTelemetry();
+            
             var existingDeliveryRequest = await this._deliveryRequestRepository.GetDeliveryStatusForOrder(request.OrderIdentifier);
 
             if (existingDeliveryRequest == null)
@@ -73,6 +75,8 @@ namespace PlantBasedPizza.Deliver.Infrastructure.Controllers
         [HttpPost("delivery/delivered")]
         public async Task<IActionResult> MarkDelivered([FromBody] MarkOrderDeliveredRequest request)
         {
+            request.AddToTelemetry();
+            
             var existingDeliveryRequest = await this._deliveryRequestRepository.GetDeliveryStatusForOrder(request.OrderIdentifier);
 
             if (existingDeliveryRequest == null)
@@ -95,6 +99,8 @@ namespace PlantBasedPizza.Deliver.Infrastructure.Controllers
         [HttpGet("delivery/driver/{driverName}/orders")]
         public async Task<List<DeliveryRequest>> GetForDriver(string driverName)
         {
+            Activity.Current?.AddTag("driverName", driverName);
+            
             return await this._deliveryRequestRepository.GetOrdersWithDriver(driverName);
         }
     }

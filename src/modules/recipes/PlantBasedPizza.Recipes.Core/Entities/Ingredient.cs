@@ -14,9 +14,9 @@ namespace PlantBasedPizza.Recipes.Core.Entities
             this.Name = name;
             this.Quantity = quantity;
         }
-        
-        public string Name { get; }
-        
+
+        public string Name { get; } = "";
+
         public int Quantity { get; }
     }
 }

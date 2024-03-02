@@ -51,7 +51,7 @@ app.Use(async (context, next) =>
 
     CorrelationContext.SetCorrelationId(correlationId);
 
-    observability.Info($"Request received to {context.Request.Path.Value}");
+    observability?.Info($"Request received to {context.Request.Path.Value}");
 
     context.Response.Headers.Append(CorrelationContext.DefaultRequestHeaderName, correlationId);
 

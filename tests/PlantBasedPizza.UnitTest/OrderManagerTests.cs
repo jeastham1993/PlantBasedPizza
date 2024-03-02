@@ -6,6 +6,8 @@ using PlantBasedPizza.OrderManager.Core.Entites;
 using PlantBasedPizza.Shared.Events;
 using Xunit;
 
+namespace PlantBasedPizza.UnitTest;
+
 public class OrderManagerTests
 {
     internal const string DefaultCustomerIdentifier = "James";
@@ -14,7 +16,7 @@ public class OrderManagerTests
     [Fact]
     public void CanCreateNewOrder_ShouldSetDefaultFields()
     {
-        string createdOrder = null;
+        string? createdOrder = null;
         
         DomainEvents.Register<OrderCreatedEvent>((evt) =>
         {
@@ -39,7 +41,7 @@ public class OrderManagerTests
 
         order.AddHistory("Bake complete");
 
-        order.History.Count.Should().Be(2);
+        order.History().Count.Should().Be(2);
     }
     
     [Fact]
@@ -49,7 +51,7 @@ public class OrderManagerTests
 
         order.IsAwaitingCollection();
 
-        order.History.Count.Should().Be(2);
+        order.History().Count.Should().Be(2);
         order.AwaitingCollection.Should().BeTrue();
     }
     

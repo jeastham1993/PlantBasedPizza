@@ -1,9 +1,13 @@
+using System.Text.Json.Serialization;
+
 namespace PlantBasedPizza.Deliver.Core.Commands
 {
     public class AssignDriverRequest
     {
-        public string OrderIdentifier { get; set; }
+        [JsonPropertyName("OrderIdentifier")]
+        public string OrderIdentifier { get; init; } = "";
         
-        public string DriverName { get; set; }
+        [JsonPropertyName("DriverName")]
+        public string DriverName { get; init; } = "";
     }
 }

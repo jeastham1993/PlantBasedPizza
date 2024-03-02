@@ -1,9 +1,10 @@
-using PlantBasedPizza.OrderManager.Core.Entites;
+using System.Text.Json.Serialization;
 
 namespace PlantBasedPizza.OrderManager.Core.Command
 {
     public class CollectOrderRequest
     {
-        public string OrderIdentifier { get; set; }
+        [JsonPropertyName("OrderIdentifier")]
+        public string OrderIdentifier { get; init; } = "";
     }
 }

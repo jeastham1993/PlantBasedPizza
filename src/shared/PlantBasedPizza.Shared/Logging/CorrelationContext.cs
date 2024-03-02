@@ -4,7 +4,9 @@ public static class CorrelationContext
 {
     private static readonly AsyncLocal<string> _correlationId = new AsyncLocal<string>();
 
-    public static string DefaultRequestHeaderName = "X-Correlation-ID";
+    private const string __defaultRequestHeaderName = "X-Correlation-ID";
+
+    public static string DefaultRequestHeaderName => __defaultRequestHeaderName;
     
     public static void SetCorrelationId(string correlationId)
     {

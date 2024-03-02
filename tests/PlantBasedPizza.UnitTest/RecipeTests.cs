@@ -4,6 +4,8 @@ using PlantBasedPizza.Recipes.Core.Events;
 using PlantBasedPizza.Shared.Events;
 using Xunit;
 
+namespace PlantBasedPizza.UnitTest;
+
 public class RecipeTests
 {
     internal const string DefaultRecipeIdentifier = "MyRecipe";
@@ -11,7 +13,7 @@ public class RecipeTests
     [Fact]
     public void CanCreateNewOrder_ShouldSetDefaultFields()
     {
-        Recipe createdRecipe = null;
+        Recipe? createdRecipe = null;
         
         DomainEvents.Register<RecipeCreatedEvent>((evt) =>
         {

@@ -1,6 +1,3 @@
-using System;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using PlantBasedPizza.Deliver.Core.Entities;
 using PlantBasedPizza.Events;
 using PlantBasedPizza.Shared.Events;

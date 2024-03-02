@@ -19,7 +19,8 @@ namespace PlantBasedPizza.Events
         }
         
         public string EventName => "order-manager.ready-for-delivery";
-        
+        public string EventVersion => "v1";
+
         public string EventId { get; }
         
         public DateTime EventDate { get; }

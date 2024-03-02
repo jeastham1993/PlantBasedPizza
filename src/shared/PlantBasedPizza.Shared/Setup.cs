@@ -6,10 +6,9 @@ using OpenTelemetry.Trace;
 
 namespace PlantBasedPizza.Shared
 {
-    using OpenTelemetry.Exporter;
-
     public static class Setup
     {
+        private const string OTEL_DEFAULT_GRPC_ENDPOINT = "http://localhost:4317";
         private const string APPLICATION_NAME = "PlantBasedPizza";
         
         public static IServiceCollection AddSharedInfrastructure(this IServiceCollection services,
@@ -28,10 +27,8 @@ namespace PlantBasedPizza.Shared
                 tracing.AddSource(APPLICATION_NAME);
                 tracing.AddOtlpExporter(otlpOptions =>
                 {
-                    otlpOptions.Endpoint = new Uri(configuration["OtlpEndpoint"]);
-                    otlpOptions.Protocol = OtlpExportProtocol.HttpProtobuf;
+                    otlpOptions.Endpoint = new Uri(configuration["OtlpEndpoint"] ?? OTEL_DEFAULT_GRPC_ENDPOINT);
                 });
-                tracing.AddConsoleExporter();
             });
 
             services.AddSingleton<IObservabilityService, ObservabiityService>();

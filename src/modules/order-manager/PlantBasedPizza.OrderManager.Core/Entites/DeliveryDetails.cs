@@ -7,6 +7,12 @@ namespace PlantBasedPizza.OrderManager.Core.Entites
         [JsonConstructor]
         public DeliveryDetails()
         {
+            this.AddressLine1 = "";
+            this.AddressLine2 = "";
+            this.AddressLine3 = "";
+            this.AddressLine4 = "";
+            this.AddressLine5 = "";
+            this.Postcode = "";
         }
         
         [JsonProperty]

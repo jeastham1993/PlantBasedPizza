@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 
 using PlantBasedPizza.Shared.Logging;
@@ -29,6 +30,11 @@ namespace PlantBasedPizza.Shared.Events
         {
             if (Container != null)
             {
+                Activity.Current?.SetTag("events.eventId", evt.EventId);
+                Activity.Current?.SetTag("events.eventName", evt.EventName);
+                Activity.Current?.SetTag("events.eventVersion", evt.EventVersion);
+                Activity.Current?.SetTag("correlationId", evt.CorrelationId);
+                
                 var observability = Container.GetService<IObservabilityService>();
                 
                 observability?.Info($"[EVENT MANAGER] Raising event {evt.EventName}");
@@ -43,10 +49,9 @@ namespace PlantBasedPizza.Shared.Events
 
             if (_actions != null)
             {
-                foreach (var action in _actions)
+                foreach (var action in _actions.Where(action => action is Action<T>))
                 {
-                    if (action is Action<T>)
-                        ((Action<T>)action)(evt);
+                    ((Action<T>)action)(evt);
                 }
             }
         }

@@ -11,14 +11,10 @@ namespace PlantBasedPizza.IntegrationTests.Steps
     [Binding]
     public sealed class OrderManagerStepDefinitions
     {
-        // For additional details on SpecFlow step definitions see https://go.specflow.org/doc-stepdef
-
-        private readonly ScenarioContext _scenarioContext;
         private readonly OrderManagerDriver _driver;
 
         public OrderManagerStepDefinitions(ScenarioContext scenarioContext)
         {
-            _scenarioContext = scenarioContext;
             this._driver = new OrderManagerDriver();
         }
 
@@ -61,7 +57,7 @@ namespace PlantBasedPizza.IntegrationTests.Steps
         {
             var order = await this._driver.GetOrder(p0).ConfigureAwait(false);
 
-            order.History.Any(p => p.Description == p1).Should().BeTrue();
+            order.History.Exists(p => p.Description == p1).Should().BeTrue();
         }
 
         [Then(@"order (.*) should be awaiting collection")]

@@ -10,12 +10,10 @@ namespace PlantBasedPizza.IntegrationTests.Steps
     [Binding]
     public sealed class DeliveryStepDefinitions
     {
-        private readonly ScenarioContext _scenarioContext;
         private readonly DeliveryDriver _driver;
 
         public DeliveryStepDefinitions(ScenarioContext scenarioContext)
         {
-            _scenarioContext = scenarioContext;
             this._driver = new DeliveryDriver();
         }
 
@@ -24,7 +22,7 @@ namespace PlantBasedPizza.IntegrationTests.Steps
         {
             var ordersAwaitingDriver = await this._driver.GetAwaitingDriver();
 
-            ordersAwaitingDriver.Any(p => p.OrderIdentifier == p0).Should().BeTrue();
+            ordersAwaitingDriver.Exists(p => p.OrderIdentifier == p0).Should().BeTrue();
         }
 
         [When(@"order (.*) is assigned to a driver named (.*)")]
@@ -40,7 +38,7 @@ namespace PlantBasedPizza.IntegrationTests.Steps
             
             var ordersForDriver = await this._driver.GetAssignedDeliveriesForDriver(p1);
 
-            ordersForDriver.Any(p => p.OrderIdentifier == p0).Should().BeTrue();
+            ordersForDriver.Exists(p => p.OrderIdentifier == p0).Should().BeTrue();
         }
 
         [When(@"order (.*) is delivered")]
@@ -54,7 +52,7 @@ namespace PlantBasedPizza.IntegrationTests.Steps
         {
             var ordersForDriver = await this._driver.GetAssignedDeliveriesForDriver(p1);
 
-            ordersForDriver.Any(p => p.OrderIdentifier == p0).Should().BeFalse();
+            ordersForDriver.Exists(p => p.OrderIdentifier == p0).Should().BeFalse();
         }
     }
 }

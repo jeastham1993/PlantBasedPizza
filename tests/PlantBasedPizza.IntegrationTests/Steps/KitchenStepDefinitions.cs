@@ -10,13 +10,10 @@ namespace PlantBasedPizza.IntegrationTests.Steps
     [Binding]
     public sealed class KitchenStepDefinitions
     {
-        // For additional details on SpecFlow step definitions see https://go.specflow.org/doc-stepdef
-        private readonly ScenarioContext _scenarioContext;
         private readonly KitchenDriver _kitchenDriver;
 
         public KitchenStepDefinitions(ScenarioContext scenarioContext)
         {
-            _scenarioContext = scenarioContext;
             this._kitchenDriver = new KitchenDriver();
         }
 
@@ -27,7 +24,7 @@ namespace PlantBasedPizza.IntegrationTests.Steps
             
             var newKitchenRequests = await this._kitchenDriver.GetNew();
 
-            newKitchenRequests.Any(p => p.OrderIdentifier == p0).Should().BeTrue();
+            newKitchenRequests.Exists(p => p.OrderIdentifier == p0).Should().BeTrue();
         }
 
         [When(@"order (.*) is processed by the kitchen")]
@@ -68,7 +65,7 @@ namespace PlantBasedPizza.IntegrationTests.Steps
         {
             var requests = await this._kitchenDriver.GetPreparing();
 
-            requests.Any(p => p.OrderIdentifier == p0).Should().BeTrue();
+            requests.Exists(p => p.OrderIdentifier == p0).Should().BeTrue();
         }
 
         [Then(@"order (.*) should appear in the baking queue")]
@@ -78,7 +75,7 @@ namespace PlantBasedPizza.IntegrationTests.Steps
             
             var requests = await this._kitchenDriver.GetBaking();
 
-            requests.Any(p => p.OrderIdentifier == p0).Should().BeTrue();
+            requests.Exists(p => p.OrderIdentifier == p0).Should().BeTrue();
         }
 
         [Then(@"order (.*) should appear in the quality check queue")]
@@ -86,7 +83,7 @@ namespace PlantBasedPizza.IntegrationTests.Steps
         {
             var requests = await this._kitchenDriver.GetQualityChecked();
 
-            requests.Any(p => p.OrderIdentifier == p0).Should().BeTrue();
+            requests.Exists(p => p.OrderIdentifier == p0).Should().BeTrue();
         }
     }
 }

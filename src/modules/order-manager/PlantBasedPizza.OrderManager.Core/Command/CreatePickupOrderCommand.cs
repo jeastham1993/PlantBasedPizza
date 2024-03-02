@@ -1,12 +1,15 @@
+using System.Text.Json.Serialization;
 using PlantBasedPizza.OrderManager.Core.Entites;
 
 namespace PlantBasedPizza.OrderManager.Core.Command
 {
     public class CreatePickupOrderCommand
     {
-        public string OrderIdentifier { get; set; }
+        [JsonPropertyName("OrderIdentifier")]
+        public string OrderIdentifier { get; init; } = "";
         
-        public string CustomerIdentifier { get; set; }
+        [JsonPropertyName("CustomerIdentifier")]
+        public string CustomerIdentifier { get; init; } = "";
 
         public OrderType OrderType => OrderType.PICKUP;
     }

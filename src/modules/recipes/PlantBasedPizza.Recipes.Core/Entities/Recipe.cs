@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using PlantBasedPizza.Shared.Logging;
 
 namespace PlantBasedPizza.Recipes.Core.Entities
 {
@@ -12,6 +13,9 @@ namespace PlantBasedPizza.Recipes.Core.Entities
         [JsonConstructor]
         private Recipe()
         {
+            this.RecipeIdentifier = "";
+            this.Name = "";
+            this._ingredients = new List<Ingredient>();
         }
         
         public Recipe(string recipeIdentifier, string name, decimal price)
@@ -19,8 +23,9 @@ namespace PlantBasedPizza.Recipes.Core.Entities
             this.RecipeIdentifier = recipeIdentifier;
             this.Name = name;
             this.Price = price;
+            this._ingredients = new List<Ingredient>();
 
-            DomainEvents.Raise(new RecipeCreatedEvent(this));
+            DomainEvents.Raise(new RecipeCreatedEvent(this, CorrelationContext.GetCorrelationId()));
         }
         
         [JsonPropertyName("recipeIdentifier")]
