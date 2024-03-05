@@ -1,7 +1,6 @@
-using System.Diagnostics;
 using PlantBasedPizza.OrderManager.Core.Entities;
 
-namespace PlantBasedPizza.OrderManager.Core.Command;
+namespace PlantBasedPizza.OrderManager.Core.CollectOrder;
 
 public class CollectOrderCommandHandler
 {
@@ -12,22 +11,22 @@ public class CollectOrderCommandHandler
         _orderRepository = orderRepository;
     }
     
-    public async Task<Order?> Handle(CollectOrderRequest command)
+    public async Task<OrderDto?> Handle(CollectOrderRequest command)
     {
         try
         {
             var existingOrder = await this._orderRepository.Retrieve(command.OrderIdentifier);
             
-            if (existingOrder.OrderType == OrderType.DELIVERY || !existingOrder.AwaitingCollection)
+            if (existingOrder.OrderType == OrderType.Delivery || !existingOrder.AwaitingCollection)
             {
-                return existingOrder;
+                return new OrderDto(existingOrder);
             }
 
             existingOrder.CompleteOrder();
 
             await this._orderRepository.Update(existingOrder).ConfigureAwait(false);
 
-            return existingOrder;
+            return new OrderDto(existingOrder);
         }
         catch (OrderNotFoundException)
         {

@@ -24,7 +24,7 @@ namespace PlantBasedPizza.OrderManager.Core.Handlers
 
             order.AddHistory("Order quality checked");
 
-            if (order.OrderType == OrderType.DELIVERY)
+            if (order.OrderType == OrderType.Delivery)
             {
                 order.AddHistory("Sending for delivery");
 

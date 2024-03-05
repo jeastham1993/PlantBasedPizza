@@ -2,7 +2,7 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using PlantBasedPizza.Deliver.Core.Commands;
 using PlantBasedPizza.Deliver.Core.Entities;
-using PlantBasedPizza.Shared.Logging;
+using PlantBasedPizza.Deliver.Core.GetDelivery;
 
 namespace PlantBasedPizza.Deliver.Infrastructure.Controllers
 {
@@ -10,12 +10,12 @@ namespace PlantBasedPizza.Deliver.Infrastructure.Controllers
     public class DeliveryRequestController : ControllerBase 
     {
         private readonly IDeliveryRequestRepository _deliveryRequestRepository;
-        private readonly IObservabilityService _logger;
+        private readonly GetDeliveryQueryHandler _getDeliveryQueryHandler;
 
-        public DeliveryRequestController(IDeliveryRequestRepository deliveryRequestRepository, IObservabilityService logger)
+        public DeliveryRequestController(IDeliveryRequestRepository deliveryRequestRepository, GetDeliveryQueryHandler getDeliveryQueryHandler)
         {
             _deliveryRequestRepository = deliveryRequestRepository;
-            _logger = logger;
+            _getDeliveryQueryHandler = getDeliveryQueryHandler;
         }
 
         /// <summary>
@@ -23,23 +23,19 @@ namespace PlantBasedPizza.Deliver.Infrastructure.Controllers
         /// </summary>
         /// <param name="orderIdentifier">The identifier of the order.</param>
         /// <returns>A <see cref="DeliveryRequest"/>.</returns>
-        [HttpGet("delivery/{orderIdentifier}/status")]
-        public async Task<DeliveryRequest?> Get(string orderIdentifier)
+        [HttpGet("{orderIdentifier}/status")]
+        public async Task<DeliveryRequestDTO?> Get(string orderIdentifier)
         {
-            Activity.Current?.AddTag("orderIdentifier", orderIdentifier);
-            
-            return await this._deliveryRequestRepository.GetDeliveryStatusForOrder(orderIdentifier);
+            return await this._getDeliveryQueryHandler.Handle(new GetDeliveryQuery(orderIdentifier));
         }
 
         /// <summary>
         /// Get all of the orders currently awaiting collection by a driver.
         /// </summary>
         /// <returns>A list of all orders awaiting collection.</returns>
-        [HttpGet("delivery/awaiting-collection")]
+        [HttpGet("awaiting-collection")]
         public async Task<List<DeliveryRequest>> GetAwaitingCollection()
         {
-            this._logger.Info("Received request to get orders awaiting collection");
-            
             return await this._deliveryRequestRepository.GetAwaitingDriver();
         }
 
@@ -48,7 +44,7 @@ namespace PlantBasedPizza.Deliver.Infrastructure.Controllers
         /// </summary>
         /// <param name="request">The contents of the assignment request. A <see cref="AssignDriverRequest"/>.</param>
         /// <returns>The status.</returns>
-        [HttpPost("delivery/assign")]
+        [HttpPost("assign")]
         public async Task<IActionResult> Collect([FromBody] AssignDriverRequest request)
         {
             request.AddToTelemetry();
@@ -72,7 +68,7 @@ namespace PlantBasedPizza.Deliver.Infrastructure.Controllers
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        [HttpPost("delivery/delivered")]
+        [HttpPost("delivered")]
         public async Task<IActionResult> MarkDelivered([FromBody] MarkOrderDeliveredRequest request)
         {
             request.AddToTelemetry();
@@ -96,7 +92,7 @@ namespace PlantBasedPizza.Deliver.Infrastructure.Controllers
         /// </summary>
         /// <param name="driverName">The name of the driver to search for.</param>
         /// <returns></returns>
-        [HttpGet("delivery/driver/{driverName}/orders")]
+        [HttpGet("driver/{driverName}/orders")]
         public async Task<List<DeliveryRequest>> GetForDriver(string driverName)
         {
             Activity.Current?.AddTag("driverName", driverName);

@@ -2,7 +2,7 @@ namespace PlantBasedPizza.OrderManager.Core.Entities
 {
     public enum OrderType
     {
-        PICKUP,
-        DELIVERY
+        Pickup,
+        Delivery
     }
 }

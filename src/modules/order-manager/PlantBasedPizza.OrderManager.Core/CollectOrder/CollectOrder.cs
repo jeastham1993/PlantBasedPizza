@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace PlantBasedPizza.OrderManager.Core.Command
+namespace PlantBasedPizza.OrderManager.Core.CollectOrder
 {
     public class CollectOrderRequest
     {

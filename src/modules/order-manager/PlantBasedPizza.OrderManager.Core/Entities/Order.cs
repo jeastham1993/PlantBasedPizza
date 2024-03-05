@@ -36,7 +36,7 @@ namespace PlantBasedPizza.OrderManager.Core.Entities
             Guard.AgainstNullOrEmpty(customerIdentifier, nameof(customerIdentifier));
             Guard.AgainstNullOrEmpty(orderIdentifier, nameof(orderIdentifier));
             
-            if (type == OrderType.DELIVERY && deliveryDetails == null)
+            if (type == OrderType.Delivery && deliveryDetails == null)
             {
                 throw new ArgumentException("If order type is delivery a delivery address must be specified",
                     nameof(deliveryDetails));
@@ -176,7 +176,7 @@ namespace PlantBasedPizza.OrderManager.Core.Entities
         {
             this.TotalPrice = this._items.Sum(p => p.Quantity * p.Price);
 
-            if (this.OrderType == OrderType.DELIVERY)
+            if (this.OrderType == OrderType.Delivery)
             {
                 this.TotalPrice += DefaultDeliveryPrice;
             }

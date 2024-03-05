@@ -21,7 +21,7 @@ namespace PlantBasedPizza.Recipes.Infrastructure.Controllers
         /// List all recipes.
         /// </summary>
         /// <returns></returns>
-        [HttpGet("recipes")]
+        [HttpGet("")]
         public async Task<IEnumerable<Recipe>> List()
         {
             this._observability.Info("Retrieved request to list recipes");
@@ -34,7 +34,7 @@ namespace PlantBasedPizza.Recipes.Infrastructure.Controllers
         /// </summary>
         /// <param name="recipeIdentifier">The identifier of the recipe to get.</param>
         /// <returns></returns>
-        [HttpGet("recipes/{recipeIdentifier}")]
+        [HttpGet("{recipeIdentifier}")]
         public async Task<Recipe> Get(string recipeIdentifier)
         {
             return await this._recipeRepository.Retrieve(recipeIdentifier);
@@ -45,7 +45,7 @@ namespace PlantBasedPizza.Recipes.Infrastructure.Controllers
         /// </summary>
         /// <param name="request">The <see cref="CreateRecipeCommand"/> request.</param>
         /// <returns></returns>
-        [HttpPost("recipes")]
+        [HttpPost("")]
         public async Task<Recipe> Create([FromBody] CreateRecipeCommand request)
         {
             var existingRecipe = await this._recipeRepository.Retrieve(request.RecipeIdentifier);

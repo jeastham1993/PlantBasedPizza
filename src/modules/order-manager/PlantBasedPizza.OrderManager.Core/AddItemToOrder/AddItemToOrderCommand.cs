@@ -1,4 +1,4 @@
-namespace PlantBasedPizza.OrderManager.Core.Command
+namespace PlantBasedPizza.OrderManager.Core.AddItemToOrder
 {
     public class AddItemToOrderCommand
     {

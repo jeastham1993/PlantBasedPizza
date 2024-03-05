@@ -1,5 +1,5 @@
 using System.Diagnostics;
-using PlantBasedPizza.OrderManager.Core.Command;
+using PlantBasedPizza.OrderManager.Core.AddItemToOrder;
 
 namespace PlantBasedPizza.OrderManager.Infrastructure;
 

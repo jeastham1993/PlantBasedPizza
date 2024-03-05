@@ -23,13 +23,13 @@ public class OrderManagerTests
             createdOrder = evt.OrderIdentifier;
         });
         
-        var order = Order.Create(DefaultOrderIdentifier, OrderType.PICKUP, DefaultCustomerIdentifier);
+        var order = Order.Create(DefaultOrderIdentifier, OrderType.Pickup, DefaultCustomerIdentifier);
 
         order.Items.Should().NotBeNull();
         order.Items.Should().BeEmpty();
         order.OrderNumber.Should().NotBeNullOrEmpty();
         order.OrderDate.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(5));
-        order.OrderType.Should().Be(OrderType.PICKUP);
+        order.OrderType.Should().Be(OrderType.Pickup);
 
         createdOrder.Should().NotBeNull();
     }
@@ -37,7 +37,7 @@ public class OrderManagerTests
     [Fact]
     public void CanCreateOrderAndAddHistory_ShouldAddHistoryItem()
     {
-        var order = Order.Create(DefaultOrderIdentifier, OrderType.PICKUP, DefaultCustomerIdentifier);
+        var order = Order.Create(DefaultOrderIdentifier, OrderType.Pickup, DefaultCustomerIdentifier);
 
         order.AddHistory("Bake complete");
 
@@ -47,7 +47,7 @@ public class OrderManagerTests
     [Fact]
     public void CanSetIsAwaitingCollection_ShouldMarkAwaitingAndAddHistory()
     {
-        var order = Order.Create(DefaultOrderIdentifier, OrderType.PICKUP, DefaultCustomerIdentifier);
+        var order = Order.Create(DefaultOrderIdentifier, OrderType.Pickup, DefaultCustomerIdentifier);
 
         order.IsAwaitingCollection();
 
@@ -58,7 +58,7 @@ public class OrderManagerTests
     [Fact]
     public void CanCreateNewOrderAndAddItems_ShouldAddToItemArray()
     {
-        var order = Order.Create(DefaultOrderIdentifier, OrderType.PICKUP, DefaultCustomerIdentifier);
+        var order = Order.Create(DefaultOrderIdentifier, OrderType.Pickup, DefaultCustomerIdentifier);
 
         var recipeId = "PIZZA1";
         
@@ -74,7 +74,7 @@ public class OrderManagerTests
     [Fact]
     public void CanCreateNewOrderAndRemoveItems_ShouldRemove()
     {
-        var order = Order.Create(DefaultOrderIdentifier, OrderType.PICKUP, DefaultCustomerIdentifier);
+        var order = Order.Create(DefaultOrderIdentifier, OrderType.Pickup, DefaultCustomerIdentifier);
 
         var recipeId = "PIZZA1";
         
@@ -94,7 +94,7 @@ public class OrderManagerTests
     [Fact]
     public void CanCreateNewDeliveryOrder_ShouldGetDeliveryDetails()
     {
-        var order = Order.Create(DefaultOrderIdentifier, OrderType.DELIVERY, DefaultCustomerIdentifier, new DeliveryDetails()
+        var order = Order.Create(DefaultOrderIdentifier, OrderType.Delivery, DefaultCustomerIdentifier, new DeliveryDetails()
         {
             AddressLine1 = "TEST",
             Postcode = "XN6 7UY"
@@ -104,14 +104,14 @@ public class OrderManagerTests
         order.Items.Should().BeEmpty();
         order.OrderNumber.Should().NotBeNullOrEmpty();
         order.OrderDate.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(5));
-        order.OrderType.Should().Be(OrderType.DELIVERY);
+        order.OrderType.Should().Be(OrderType.Delivery);
         order.DeliveryDetails.AddressLine1.Should().Be("TEST");
     }
     
     [Fact]
     public void CanCreateNewDeliveryOrder_ShouldAddDeliveryCharge()
     {
-        var order = Order.Create(DefaultOrderIdentifier, OrderType.DELIVERY, DefaultCustomerIdentifier, new DeliveryDetails()
+        var order = Order.Create(DefaultOrderIdentifier, OrderType.Delivery, DefaultCustomerIdentifier, new DeliveryDetails()
         {
             AddressLine1 = "TEST",
             Postcode = "XN6 7UY"
@@ -133,7 +133,7 @@ public class OrderManagerTests
             evt.EventDate.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(5));
         });
         
-        var order = Order.Create(DefaultOrderIdentifier, OrderType.DELIVERY, DefaultCustomerIdentifier, new DeliveryDetails()
+        var order = Order.Create(DefaultOrderIdentifier, OrderType.Delivery, DefaultCustomerIdentifier, new DeliveryDetails()
         {
             AddressLine1 = "TEST",
             Postcode = "XN6 7UY"
@@ -150,7 +150,7 @@ public class OrderManagerTests
     [Fact]
     public void AddItemsToASubmittedOrder_ShouldNotAdd()
     {
-        var order = Order.Create(DefaultOrderIdentifier, OrderType.DELIVERY, DefaultCustomerIdentifier, new DeliveryDetails()
+        var order = Order.Create(DefaultOrderIdentifier, OrderType.Delivery, DefaultCustomerIdentifier, new DeliveryDetails()
         {
             AddressLine1 = "TEST",
             Postcode = "XN6 7UY"
@@ -175,7 +175,7 @@ public class OrderManagerTests
             completedOrder = evt.OrderIdentifier;
         });
         
-        var order = Order.Create(DefaultOrderIdentifier, OrderType.DELIVERY, DefaultCustomerIdentifier, new DeliveryDetails()
+        var order = Order.Create(DefaultOrderIdentifier, OrderType.Delivery, DefaultCustomerIdentifier, new DeliveryDetails()
         {
             AddressLine1 = "TEST",
             Postcode = "XN6 7UY"
@@ -195,9 +195,9 @@ public class OrderManagerTests
     [Fact]
     public void SubmitOrderWithNoItems_ShouldError()
     {
-        Assert.Throws<Exception>(() =>
+        Assert.Throws<ArgumentException>(() =>
         {
-            var order = Order.Create(DefaultOrderIdentifier, OrderType.PICKUP, DefaultCustomerIdentifier);
+            var order = Order.Create(DefaultOrderIdentifier, OrderType.Pickup, DefaultCustomerIdentifier);
             
             order.SubmitOrder();
         });
@@ -209,7 +209,7 @@ public class OrderManagerTests
     {
         Assert.Throws<ArgumentNullException>(() =>
         {
-            Order.Create(DefaultOrderIdentifier, OrderType.PICKUP, string.Empty);
+            Order.Create(DefaultOrderIdentifier, OrderType.Pickup, string.Empty);
         });
     }
     
@@ -219,7 +219,7 @@ public class OrderManagerTests
     {
         Assert.Throws<ArgumentException>(() =>
         {
-            Order.Create(DefaultOrderIdentifier, OrderType.DELIVERY, DefaultCustomerIdentifier);
+            Order.Create(DefaultOrderIdentifier, OrderType.Delivery, DefaultCustomerIdentifier);
         });
     }
 }

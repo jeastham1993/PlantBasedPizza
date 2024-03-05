@@ -1,35 +1,35 @@
 using System.Text.Json.Serialization;
 using PlantBasedPizza.OrderManager.Core.Entities;
 
-namespace PlantBasedPizza.OrderManager.Core.Command
+namespace PlantBasedPizza.OrderManager.Core.CreateDeliveryOrder
 {
     public class CreateDeliveryOrder
     {
-        [JsonPropertyName("OrderIdentifier")]
+        [JsonPropertyName("orderIdentifier")]
         public string OrderIdentifier { get; init; } = "";
 
-        [JsonPropertyName("CustomerIdentifier")]
+        [JsonPropertyName("customerIdentifier")]
         public string CustomerIdentifier { get; init; } = "";
 
-        [JsonPropertyName("OrderType")]
-        public OrderType OrderType => OrderType.DELIVERY;
+        [JsonPropertyName("orderType")]
+        public OrderType OrderType => OrderType.Delivery;
         
-        [JsonPropertyName("AddressLine1")]
+        [JsonPropertyName("addressLine1")]
         public string AddressLine1 { get; init; } = "";
         
-        [JsonPropertyName("AddressLine2")]
+        [JsonPropertyName("addressLine2")]
         public string AddressLine2 { get; init; } = "";
 
-        [JsonPropertyName("AddressLine3")]
+        [JsonPropertyName("addressLine3")]
         public string AddressLine3 { get; init; } = "";
 
-        [JsonPropertyName("AddressLine4")]
+        [JsonPropertyName("addressLine4")]
         public string AddressLine4 { get; init; } = "";
 
-        [JsonPropertyName("AddressLine5")]
+        [JsonPropertyName("addressLine5")]
         public string AddressLine5 { get; init; } = "";
 
-        [JsonPropertyName("Postcode")]
+        [JsonPropertyName("postcode")]
         public string Postcode { get; init; } = "";
     }
 }

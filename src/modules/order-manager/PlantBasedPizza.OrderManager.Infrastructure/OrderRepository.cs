@@ -36,9 +36,9 @@ public class OrderRepository : IOrderRepository
 
     public async Task<List<Order>> GetAwaitingCollection()
     {
-        var queryBuilder = Builders<Order>.Filter.Eq(p => p.OrderType, OrderType.PICKUP);
+        var queryBuilder = Builders<Order>.Filter.Eq(p => p.OrderType, OrderType.Pickup);
 
-        var order = await this._orders.Find(p => p.OrderType == OrderType.PICKUP && p.AwaitingCollection).ToListAsync();
+        var order = await this._orders.Find(p => p.OrderType == OrderType.Pickup && p.AwaitingCollection).ToListAsync();
 
         return order;
     }

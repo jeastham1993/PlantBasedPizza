@@ -1,8 +1,7 @@
-using System.Diagnostics;
 using PlantBasedPizza.OrderManager.Core.Entities;
 using PlantBasedPizza.OrderManager.Core.Services;
 
-namespace PlantBasedPizza.OrderManager.Core.Command;
+namespace PlantBasedPizza.OrderManager.Core.AddItemToOrder;
 
 public class AddItemToOrderHandler
 {

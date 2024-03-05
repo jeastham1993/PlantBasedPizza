@@ -21,7 +21,7 @@ namespace PlantBasedPizza.IntegrationTests.Drivers
 
         public async Task<List<DeliveryRequest>> GetAwaitingDriver()
         {
-            var result = await this._httpClient.GetAsync(new Uri($"{BaseUrl}/delivery/delivery/awaiting-collection"))
+            var result = await this._httpClient.GetAsync(new Uri($"{BaseUrl}/delivery/awaiting-collection"))
                 .ConfigureAwait(false);
 
             var deliveryRequests =
@@ -32,7 +32,7 @@ namespace PlantBasedPizza.IntegrationTests.Drivers
 
         public async Task AssignDriver(string orderIdentifier, string driverName)
         {
-            var url = $"{BaseUrl}/delivery/delivery/assign";
+            var url = $"{BaseUrl}/delivery/assign";
             
             Console.WriteLine(url);
 
@@ -52,7 +52,7 @@ namespace PlantBasedPizza.IntegrationTests.Drivers
 
         public async Task DeliverOrder(string orderIdentifier)
         {
-            var url = $"{BaseUrl}/delivery/delivery/delivered";
+            var url = $"{BaseUrl}/delivery/delivered";
             
             Console.WriteLine(url);
 
@@ -66,7 +66,7 @@ namespace PlantBasedPizza.IntegrationTests.Drivers
 
         public async Task<List<DeliveryRequest>> GetAssignedDeliveriesForDriver(string driverName)
         {
-            var result = await this._httpClient.GetAsync(new Uri($"{BaseUrl}/delivery/delivery/driver/{driverName}/orders"))
+            var result = await this._httpClient.GetAsync(new Uri($"{BaseUrl}/delivery/driver/{driverName}/orders"))
                 .ConfigureAwait(false);
 
             var deliveryRequests =
