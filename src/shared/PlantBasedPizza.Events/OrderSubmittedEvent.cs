@@ -1,4 +1,5 @@
 using PlantBasedPizza.Shared.Events;
+using PlantBasedPizza.Shared.Logging;
 
 namespace PlantBasedPizza.Events
 {
@@ -11,6 +12,7 @@ namespace PlantBasedPizza.Events
             this._eventId = Guid.NewGuid().ToString();
             this.EventDate = DateTime.Now;
             this.OrderIdentifier = orderIdentifier;
+            this.CorrelationId = CorrelationContext.GetCorrelationId();
         }
 
         public string OrderIdentifier { get; private set; }

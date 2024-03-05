@@ -15,9 +15,9 @@ public class DeliveryRequestDTO
         this.DeliveredOn = request.DeliveredOn;
     }
     
-    public string OrderIdentifier { get; set; };
+    public string OrderIdentifier { get; set; }
     
-    public string Driver { get; set; };
+    public string Driver { get; set; }
         
     public bool AwaitingCollection { get; set; }
     

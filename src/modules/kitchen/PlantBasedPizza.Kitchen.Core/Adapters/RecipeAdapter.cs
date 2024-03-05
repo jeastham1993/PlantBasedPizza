@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace PlantBasedPizza.Kitchen.Core.Adapters
 {
@@ -14,6 +14,7 @@ namespace PlantBasedPizza.Kitchen.Core.Adapters
             this.RecipeIdentifier = recipeIdentifier;
         }
         
-        public string RecipeIdentifier { get; set; }
+        [JsonPropertyName("recipeIdentifier")]
+        public string RecipeIdentifier { get; set; } = "";
     }
 }

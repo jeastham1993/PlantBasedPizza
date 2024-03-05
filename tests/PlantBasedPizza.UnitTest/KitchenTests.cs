@@ -25,7 +25,7 @@ namespace PlantBasedPizza.UnitTest
             request.BakeCompleteOn.Should().BeNull();
             request.OrderReceivedOn.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(5));
             request.PrepCompleteOn.Should().BeNull();
-            request.QualithCheckCompleteOn.Should().BeNull();
+            request.QualityCheckCompleteOn.Should().BeNull();
             request.KitchenRequestId.Should().NotBeNull();
         }
         
@@ -74,7 +74,7 @@ namespace PlantBasedPizza.UnitTest
             request.BakeComplete();
             await request.QualityCheckComplete();
 
-            request.QualithCheckCompleteOn.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(5));
+            request.QualityCheckCompleteOn.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(5));
         }
     }
 }

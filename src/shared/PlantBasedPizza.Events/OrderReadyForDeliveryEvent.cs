@@ -1,5 +1,6 @@
 using System;
 using PlantBasedPizza.Shared.Events;
+using PlantBasedPizza.Shared.Logging;
 
 namespace PlantBasedPizza.Events
 {
@@ -16,6 +17,7 @@ namespace PlantBasedPizza.Events
             this.DeliveryAddressLine4 = addressLine4;
             this.DeliveryAddressLine5 = addressLine5;
             this.Postcode = postcode;
+            this.CorrelationId = CorrelationContext.GetCorrelationId();
         }
         
         public string EventName => "order-manager.ready-for-delivery";

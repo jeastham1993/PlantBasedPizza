@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace PlantBasedPizza.Deliver.Core.Entities
 {
@@ -23,23 +23,23 @@ namespace PlantBasedPizza.Deliver.Core.Entities
             Postcode = postcode;
         }
 
-        [JsonProperty]
-        public string AddressLine1 { get; private set; }
+        [JsonPropertyName("addressLine1")]
+        public string AddressLine1 { get; private set; } = "";
         
-        [JsonProperty]
-        public string AddressLine2 { get; private set; }
+        [JsonPropertyName("addressLine2")]
+        public string AddressLine2 { get; private set; } = "";
         
-        [JsonProperty]
-        public string AddressLine3 { get; private set; }
+        [JsonPropertyName("addressLine3")]
+        public string AddressLine3 { get; private set; } = "";
         
-        [JsonProperty]
-        public string AddressLine4 { get; private set; }
+        [JsonPropertyName("addressLine4")]
+        public string AddressLine4 { get; private set; } = "";
         
-        [JsonProperty]
-        public string AddressLine5 { get; private set; }
+        [JsonPropertyName("addressLine5")]
+        public string AddressLine5 { get; private set; } = "";
         
-        [JsonProperty]
-        public string Postcode { get; private set; }
+        [JsonPropertyName("postcode")]
+        public string Postcode { get; private set; } = "";
         
         
     }

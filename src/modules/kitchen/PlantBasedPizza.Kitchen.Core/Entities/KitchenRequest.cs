@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 using PlantBasedPizza.Events;
 using PlantBasedPizza.Kitchen.Core.Adapters;
 using PlantBasedPizza.Shared.Events;
@@ -27,28 +24,28 @@ namespace PlantBasedPizza.Kitchen.Core.Entities
             this.Recipes = recipes;
         }
         
-        [JsonProperty]
+        [JsonPropertyName("kitchenRequestId")]
         public string KitchenRequestId { get; private set; }
         
-        [JsonProperty]
+        [JsonPropertyName("orderIdentifier")]
         public string OrderIdentifier { get; private set; }
         
-        [JsonProperty]
+        [JsonPropertyName("orderReceivedOn")]
         public DateTime OrderReceivedOn { get; private set; }
         
-        [JsonProperty]
+        [JsonPropertyName("orderState")]
         public OrderState OrderState { get; private set; }
         
-        [JsonProperty]
+        [JsonPropertyName("prepCompleteOn")]
         public DateTime? PrepCompleteOn { get; private set; }
         
-        [JsonProperty]
+        [JsonPropertyName("bakeCompleteOn")]
         public DateTime? BakeCompleteOn { get; private set; }
         
-        [JsonProperty]
-        public DateTime? QualithCheckCompleteOn { get; private set; }
+        [JsonPropertyName("qualityCheckCompleteOn")]
+        public DateTime? QualityCheckCompleteOn { get; private set; }
         
-        [JsonProperty]
+        [JsonPropertyName("recipes")]
         public List<RecipeAdapter> Recipes { get; private set; }
 
         public void Preparing(string correlationId = "")
@@ -89,7 +86,7 @@ namespace PlantBasedPizza.Kitchen.Core.Entities
         {
             this.OrderState = OrderState.DONE;
             
-            this.QualithCheckCompleteOn = DateTime.Now;
+            this.QualityCheckCompleteOn = DateTime.Now;
 
             await DomainEvents.Raise(new OrderQualityCheckedEvent(this.OrderIdentifier)
             {

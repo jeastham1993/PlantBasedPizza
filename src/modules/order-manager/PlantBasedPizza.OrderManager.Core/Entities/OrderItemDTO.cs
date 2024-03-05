@@ -5,10 +5,10 @@ namespace PlantBasedPizza.OrderManager.Core.Entities;
 public class OrderItemDto
 {
     [JsonPropertyName("recipeIdentifier")]
-    public string RecipeIdentifier { get; set; }
+    public string RecipeIdentifier { get; set; } = "";
         
     [JsonPropertyName("itemName")]
-    public string ItemName { get; set; }
+    public string ItemName { get; set; } = "";
         
     [JsonPropertyName("quantity")]
     public int Quantity { get; set; }

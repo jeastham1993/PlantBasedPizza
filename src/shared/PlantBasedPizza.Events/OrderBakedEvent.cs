@@ -1,5 +1,6 @@
 using System;
 using PlantBasedPizza.Shared.Events;
+using PlantBasedPizza.Shared.Logging;
 using Saunter.Attributes;
 
 namespace PlantBasedPizza.Events
@@ -12,6 +13,7 @@ namespace PlantBasedPizza.Events
             this.EventId = Guid.NewGuid().ToString();
             this.EventDate = DateTime.Now;
             this.OrderIdentifier = orderIdentifier;
+            this.CorrelationId = CorrelationContext.GetCorrelationId();
         }
         
         public string EventName => "kitchen.baked";

@@ -5,7 +5,7 @@ namespace PlantBasedPizza.OrderManager.Core.Entities;
 public record OrderHistoryDto
 {
     [JsonPropertyName("description")]
-    public string Description { get; set; }
+    public string Description { get; set; } = "";
         
     [JsonPropertyName("historyDate")]
     public DateTime HistoryDate { get; set; }

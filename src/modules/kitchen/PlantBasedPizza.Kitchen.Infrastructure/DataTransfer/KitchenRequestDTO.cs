@@ -17,7 +17,7 @@ public class KitchenRequestDTO
         this.OrderReceivedOn = request.OrderReceivedOn;
         this.PrepCompleteOn = request.PrepCompleteOn;
         this.BakeCompleteOn = request.BakeCompleteOn;
-        this.QualithCheckCompleteOn = request.QualithCheckCompleteOn;
+        this.QualityCheckCompleteOn = request.QualityCheckCompleteOn;
     }
 
     public string KitchenRequestId { get; set; }
@@ -30,5 +30,5 @@ public class KitchenRequestDTO
         
     public DateTime? BakeCompleteOn { get; set; }
         
-    public DateTime? QualithCheckCompleteOn { get; set; }
+    public DateTime? QualityCheckCompleteOn { get; set; }
 }

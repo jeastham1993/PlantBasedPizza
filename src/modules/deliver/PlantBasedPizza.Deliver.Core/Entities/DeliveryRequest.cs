@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 using PlantBasedPizza.Events;
 using PlantBasedPizza.Shared.Events;
 
@@ -17,21 +17,21 @@ namespace PlantBasedPizza.Deliver.Core.Entities
             this.DeliveryAddress = deliveryAddress;
         }
         
-        [JsonProperty]
-        public string OrderIdentifier { get; private set; }
+        [JsonPropertyName("orderIdentifier")]
+        public string OrderIdentifier { get; private set; } = "";
         
-        [JsonProperty]
-        public string Driver { get; private set; }
+        [JsonPropertyName("driver")]
+        public string Driver { get; private set; } = "";
         
         public bool AwaitingCollection => !this.DriverCollectedOn.HasValue;
         
-        [JsonProperty]
+        [JsonPropertyName("deliveryAddress")]
         public Address DeliveryAddress { get; private set; }
 
-        [JsonProperty]
+        [JsonPropertyName("driverCollectedOn")]
         public DateTime? DriverCollectedOn { get; private set; }
 
-        [JsonProperty]
+        [JsonPropertyName("deliveredOn")]
         public DateTime? DeliveredOn { get; private set; }
 
         public async Task ClaimDelivery(string driverName, string correlationId = "")
