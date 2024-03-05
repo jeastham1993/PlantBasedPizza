@@ -9,6 +9,14 @@ services:
     ports:
       - 27017:27017
 
+  jaeger:
+    image: jaegertracing/opentelemetry-all-in-one:latest
+    ports:
+      - 16686:16686
+      - 13133:13133
+      - 4317:4317
+      - 4318:4318
+
   # local.api:
   #   image: pizza-api
   #   container_name: local.pizza-api
@@ -25,14 +33,6 @@ services:
   #   environment:
   #     - OtlpEndpoint=http://jaeger:4317
   #     - Environment=local
-
-  # jaeger:
-  #   image: jaegertracing/opentelemetry-all-in-one:latest
-  #   ports:
-  #     - 16686:16686
-  #     - 13133:13133
-  #     - 4317:4317
-  #     - 4318:4318
   
   # reverse-proxy:
   #   image: nginx:latest
