@@ -57,6 +57,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Integration
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PlantBasedPizza.Api", "PlantBasedPizza.Api", "{07E71142-470D-4AAF-82A8-2BF9AFA34EA6}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PlantBasedPizza.LoyaltyPoints", "PlantBasedPizza.LoyaltyPoints", "{A58FCAD4-DD5B-4B39-B5C7-A1123CFEE5DD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.LoyaltyPoints", "src\PlantBasedPizza.LoyaltyPoints\application\PlantBasedPizza.LoyaltyPoints.csproj", "{7400815E-5023-408D-B452-2B403FB3E9D4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.LoyaltyPoints.UnitTest", "src\PlantBasedPizza.LoyaltyPoints\tests\PlantBasedPizza.LoyaltyPoints.UnitTest\PlantBasedPizza.LoyaltyPoints.UnitTest.csproj", "{EE3C33DB-1C7D-49FF-A85A-6CD1B499DFBC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -86,6 +92,8 @@ Global
 		{3A26A029-7C47-4975-AA1F-52384C345FCD} = {07E71142-470D-4AAF-82A8-2BF9AFA34EA6}
 		{682A9C61-5D3D-466E-9EAF-C1ABF01F99D8} = {07E71142-470D-4AAF-82A8-2BF9AFA34EA6}
 		{E630CA1B-339D-4697-9FFF-AB9D64C9507D} = {07E71142-470D-4AAF-82A8-2BF9AFA34EA6}
+		{7400815E-5023-408D-B452-2B403FB3E9D4} = {A58FCAD4-DD5B-4B39-B5C7-A1123CFEE5DD}
+		{EE3C33DB-1C7D-49FF-A85A-6CD1B499DFBC} = {A58FCAD4-DD5B-4B39-B5C7-A1123CFEE5DD}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{179E35BF-4F04-4660-8F82-413DA572E7F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -140,5 +148,13 @@ Global
 		{CFADAAB9-64E1-42A6-8F09-CE5A328F076F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CFADAAB9-64E1-42A6-8F09-CE5A328F076F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CFADAAB9-64E1-42A6-8F09-CE5A328F076F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7400815E-5023-408D-B452-2B403FB3E9D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7400815E-5023-408D-B452-2B403FB3E9D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7400815E-5023-408D-B452-2B403FB3E9D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7400815E-5023-408D-B452-2B403FB3E9D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE3C33DB-1C7D-49FF-A85A-6CD1B499DFBC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE3C33DB-1C7D-49FF-A85A-6CD1B499DFBC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE3C33DB-1C7D-49FF-A85A-6CD1B499DFBC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE3C33DB-1C7D-49FF-A85A-6CD1B499DFBC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

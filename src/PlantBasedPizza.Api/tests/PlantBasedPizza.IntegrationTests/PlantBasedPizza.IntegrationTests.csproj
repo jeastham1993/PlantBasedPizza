@@ -8,6 +8,7 @@
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
         <PackageReference Include="SpecFlow.Plus.LivingDocPlugin" Version="3.9.57" />
         <PackageReference Include="SpecFlow.xUnit" Version="3.9.74" />
+        <PackageReference Include="WireMock.Net" Version="1.5.48" />
         <PackageReference Include="xunit" Version="2.7.0" />
         <PackageReference Include="xunit.runner.visualstudio" Version="2.5.7">
             <PrivateAssets>all</PrivateAssets>
@@ -25,6 +26,12 @@
       </Compile>
       <Compile Update="Features\Delivery.feature.cs">
         <DependentUpon>Delivery.feature</DependentUpon>
+        <AutoGen>true</AutoGen>
+        <DesignTime>true</DesignTime>
+        <Visible>true</Visible>
+      </Compile>
+      <Compile Update="Features\Health.feature.cs">
+        <DependentUpon>Health.feature</DependentUpon>
         <AutoGen>true</AutoGen>
         <DesignTime>true</DesignTime>
         <Visible>true</Visible>

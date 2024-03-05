@@ -1,0 +1,6 @@
+@PlantBasedPizza.LoyaltyPoints_HostAddress = http://localhost:5271
+
+GET {{PlantBasedPizza.LoyaltyPoints_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
