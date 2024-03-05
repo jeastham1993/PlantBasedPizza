@@ -11,6 +11,7 @@ namespace PlantBasedPizza.Kitchen.Core.Entities
         [JsonConstructor]
         private KitchenRequest()
         {
+            this.Recipes = new List<RecipeAdapter>();
         }
         
         public KitchenRequest(string orderIdentifier, List<RecipeAdapter> recipes)
@@ -25,10 +26,10 @@ namespace PlantBasedPizza.Kitchen.Core.Entities
         }
         
         [JsonPropertyName("kitchenRequestId")]
-        public string KitchenRequestId { get; private set; }
+        public string KitchenRequestId { get; private set; } = "";
         
         [JsonPropertyName("orderIdentifier")]
-        public string OrderIdentifier { get; private set; }
+        public string OrderIdentifier { get; private set; } = "";
         
         [JsonPropertyName("orderReceivedOn")]
         public DateTime OrderReceivedOn { get; private set; }
