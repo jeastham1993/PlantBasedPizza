@@ -17,22 +17,24 @@ services:
       - 4317:4317
       - 4318:4318
 
-  # local.api:
-  #   image: pizza-api
-  #   container_name: local.pizza-api
-  #   environment:
-  #     - DatabaseConnection=mongodb://mongodb:27017
-  #     - OtlpEndpoint=http://jaeger:4317
-  #     - Environment=local
+  local.api:
+    image: pizza-api
+    container_name: local.pizza-api
+    ports:
+      - "5051:8080"
+    environment:
+      - DatabaseConnection=mongodb://mongodb:27017
+      - OtlpEndpoint=http://jaeger:4317
+      - Environment=local
 
-  # local.loyalty-api:
-  #   image: loyalty-api
-  #   container_name: local.loyalty-api
-  #   ports:
-  #     - "5050:8080"
-  #   environment:
-  #     - OtlpEndpoint=http://jaeger:4317
-  #     - Environment=local
+  local.loyalty-api:
+    image: loyalty-api
+    container_name: local.loyalty-api
+    ports:
+      - "5050:8080"
+    environment:
+      - OtlpEndpoint=http://jaeger:4317
+      - Environment=local
   
   # reverse-proxy:
   #   image: nginx:latest

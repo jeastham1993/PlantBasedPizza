@@ -48,6 +48,8 @@ namespace PlantBasedPizza.OrderManager.Infrastructure
             services.AddSingleton<CreateDeliveryOrderCommandHandler>();
             services.AddSingleton<CreatePickupOrderCommandHandler>();
             services.AddSingleton<IRecipeService, RecipeService>();
+            services.AddSingleton<ILoyaltyPointService, LoyaltyPointService>();
+            
             services.AddSingleton<Handles<OrderPreparingEvent>, OrderPreparingEventHandler>();
             services.AddSingleton<Handles<OrderPrepCompleteEvent>, OrderPrepCompleteEventHandler>();
             services.AddSingleton<Handles<OrderBakedEvent>, OrderBakedEventHandler>();

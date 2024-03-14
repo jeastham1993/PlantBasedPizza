@@ -10,7 +10,9 @@ using PlantBasedPizza.Shared.Events;
 using PlantBasedPizza.Shared.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Configuration.AddEnvironmentVariables();
+builder
+    .Configuration
+    .AddEnvironmentVariables();
 
 var client = new MongoClient(builder.Configuration["DatabaseConnection"]);
 
@@ -35,7 +37,7 @@ app.Map("/health", async () =>
 {
     try
     {
-        var res = await httpClient.GetAsync($"http://{app.Configuration["Environment"]}.loyalty-api:8080/loyalty/health");
+        var res = await httpClient.GetAsync($"{app.Configuration["Services:Loyalty"]}/loyalty/health");
 
         if (!res.IsSuccessStatusCode)
         {

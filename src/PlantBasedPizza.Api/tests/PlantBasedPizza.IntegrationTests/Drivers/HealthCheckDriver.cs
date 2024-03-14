@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
@@ -19,12 +20,16 @@ namespace PlantBasedPizza.IntegrationTests.Drivers
             this._httpClient = new HttpClient();
         }
 
-        public async Task<bool> HealthCheck()
+        public async Task<int> HealthCheck(bool loyalyPointSuccess = true)
         {
-            var result = await this._httpClient.GetAsync(new Uri($"{BaseUrl}/health"))
+            var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri($"{BaseUrl}/health"));
+            httpRequestMessage.Headers.Add("Response", loyalyPointSuccess ? "Success" : "Failure");
+            
+            var result = await this._httpClient
+                .SendAsync(httpRequestMessage)
                 .ConfigureAwait(false);
 
-            return result.IsSuccessStatusCode;
+            return (int)result.StatusCode;
         }
     }
 }

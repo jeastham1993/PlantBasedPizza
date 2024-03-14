@@ -68,11 +68,16 @@ namespace PlantBasedPizza.IntegrationTests.Drivers
 
         public async Task CollectOrder(string orderIdentifier)
         {
-            await this._httpClient.PostAsync(new Uri($"{BaseUrl}/order/collected"), new StringContent(
+            var res = await this._httpClient.PostAsync(new Uri($"{BaseUrl}/order/collected"), new StringContent(
                 JsonConvert.SerializeObject(new CollectOrderRequest()
                 {
                     OrderIdentifier = orderIdentifier
                 }), Encoding.UTF8, "application/json")).ConfigureAwait(false);
+
+            if (!res.IsSuccessStatusCode)
+            {
+                throw new Exception($"Collect order returned non 200 HTTP Status code: {res.StatusCode}");
+            }
         }
 
         public async Task<Order> GetOrder(string orderIdentifier)
