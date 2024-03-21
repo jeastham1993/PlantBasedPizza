@@ -19,13 +19,13 @@ public class LoyaltyPointService : ILoyaltyPointService
         _configuration = configuration;
         _logger = logger;
     }
-    
-    public async Task AddLoyaltyPoints(string customerId, decimal orderValue)
+
+    public async Task AddLoyaltyPoints(string customerId, string orderIdentifier, decimal orderValue)
     {
         try
         {
             var createLoyaltyPointsResult = await this._httpClient.PostAsync($"{_configuration["Services:Loyalty"]}/loyalty",
-                new StringContent(JsonSerializer.Serialize(new CreateLoyaltyPointRequest(customerId)), Encoding.UTF8, new MediaTypeHeaderValue("application/json")));
+                new StringContent(JsonSerializer.Serialize(new CreateLoyaltyPointRequest(customerId, orderIdentifier, orderValue)), Encoding.UTF8, new MediaTypeHeaderValue("application/json")));
 
             if (!createLoyaltyPointsResult.IsSuccessStatusCode)
             {
@@ -40,4 +40,4 @@ public class LoyaltyPointService : ILoyaltyPointService
     }
 }
 
-public record CreateLoyaltyPointRequest(string CustomerIdentifier);
+public record CreateLoyaltyPointRequest(string CustomerIdentifier, string OrderIdentifier, decimal OrderValue);

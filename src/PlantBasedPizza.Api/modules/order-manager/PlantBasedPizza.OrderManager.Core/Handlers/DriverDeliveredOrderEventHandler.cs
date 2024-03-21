@@ -27,7 +27,7 @@ namespace PlantBasedPizza.OrderManager.Core.Handlers
             order.CompleteOrder();
             
             await this._orderRepository.Update(order).ConfigureAwait(false);
-            await this._loyaltyPointService.AddLoyaltyPoints(order.CustomerIdentifier, order.TotalPrice);
+            await this._loyaltyPointService.AddLoyaltyPoints(order.CustomerIdentifier, evt.OrderIdentifier, order.TotalPrice);
         }
     }
 }

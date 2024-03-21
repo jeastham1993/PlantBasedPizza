@@ -27,7 +27,9 @@ public class CollectOrderCommandHandler
 
             existingOrder.CompleteOrder();
             
-            await this._loyaltyPointService.AddLoyaltyPoints(existingOrder.CustomerIdentifier,
+            await this._loyaltyPointService.AddLoyaltyPoints(
+                existingOrder.CustomerIdentifier,
+                existingOrder.OrderIdentifier,
                 existingOrder.TotalPrice);
 
             await this._orderRepository.Update(existingOrder).ConfigureAwait(false);
