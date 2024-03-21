@@ -1,0 +1,18 @@
+version: "3.7"
+services:
+  loyalty-mongodb:
+    image: mongo
+    container_name: loyalty-mongodb
+    environment:
+      - PUID=1000
+      - PGID=1000
+    ports:
+      - 27017:27017
+
+  jaeger:
+    image: jaegertracing/opentelemetry-all-in-one:latest
+    ports:
+      - 16686:16686
+      - 13133:13133
+      - 4317:4317
+      - 4318:4318
