@@ -1,7 +1,34 @@
 {
     "request": {
       "method": "POST",
-      "urlPath": "/loyalty"
+      "urlPath": "/loyalty",
+      "headers": {
+        "Content-Type": {
+          "equalTo": "application/json"
+        }
+      },
+      "bodyPatterns" : [ {
+        "matchesJsonSchema" : {
+          "type": "object",
+          "required": [
+            "CustomerIdentifier",
+            "OrderIdentifier",
+            "OrderValue"
+          ],
+          "properties": {
+            "CustomerIdentifier": {
+              "type": "string"
+            },
+            "OrderIdentifier": {
+              "type": "string"
+            },
+            "OrderValue": {
+              "type": "number"
+            }
+          }
+        },
+        "schemaVersion" : "V202012"
+      } ]
     },
     "response": {
       "status": 200

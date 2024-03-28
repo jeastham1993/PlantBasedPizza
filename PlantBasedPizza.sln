@@ -65,6 +65,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.LoyaltyPoin
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.LoyaltyPoints.IntegrationTest", "src\PlantBasedPizza.LoyaltyPoints\tests\PlantBasedPizza.LoyaltyPoints.IntegrationTest\PlantBasedPizza.LoyaltyPoints.IntegrationTest.csproj", "{58F2C75A-FC62-430C-BB64-974FDD005C90}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.E2ETests", "end-to-end-test\PlantBasedPizza.E2ETests\PlantBasedPizza.E2ETests.csproj", "{D5654890-AFE3-45CA-9475-5421C9BD0FA9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -163,5 +165,9 @@ Global
 		{58F2C75A-FC62-430C-BB64-974FDD005C90}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{58F2C75A-FC62-430C-BB64-974FDD005C90}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{58F2C75A-FC62-430C-BB64-974FDD005C90}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D5654890-AFE3-45CA-9475-5421C9BD0FA9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D5654890-AFE3-45CA-9475-5421C9BD0FA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D5654890-AFE3-45CA-9475-5421C9BD0FA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D5654890-AFE3-45CA-9475-5421C9BD0FA9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -7,4 +7,9 @@ public class AddLoyaltyPointsCommand
     public string OrderIdentifier { get; set; }
     
     public decimal OrderValue { get; set; }
+
+    public bool Validate()
+    {
+        return !string.IsNullOrEmpty(this.OrderIdentifier) && !string.IsNullOrEmpty(this.CustomerIdentifier);
+    }
 }

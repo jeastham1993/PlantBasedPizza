@@ -1,12 +1,12 @@
 using System.Text;
 using System.Text.Json;
-using PlantBasedPizza.LoyaltyPoints.IntegrationTest.ViewModels;
+using PlantBasedPizza.E2ETests.ViewModels;
 
-namespace PlantBasedPizza.LoyaltyPoints.IntegrationTest.Drivers;
+namespace PlantBasedPizza.E2ETests.Drivers;
 
 public class LoyaltyPointsDriver
     {
-        private static string BaseUrl = TestConstants.DefaultTestUrl;
+        private static string BaseUrl = TestConstants.LoyaltyTestUrl;
 
         private readonly HttpClient _httpClient;
 
@@ -28,13 +28,13 @@ public class LoyaltyPointsDriver
             }
         }
 
-        public async Task<LoyaltyPointsDTO?> GetLoyaltyPoints(string customerIdentifier)
+        public async Task<LoyaltyPointsDto?> GetLoyaltyPoints(string customerIdentifier)
         {
             var url = $"{BaseUrl}/loyalty/{customerIdentifier}";
             
             var getResult = await this._httpClient.GetAsync(new Uri(url)).ConfigureAwait(false);
 
-            return JsonSerializer.Deserialize<LoyaltyPointsDTO>(await getResult.Content.ReadAsStringAsync());
+            return JsonSerializer.Deserialize<LoyaltyPointsDto>(await getResult.Content.ReadAsStringAsync());
         }
 
         public async Task SpendLoyaltyPoints(string customerIdentifier, string orderIdentifier, int points)

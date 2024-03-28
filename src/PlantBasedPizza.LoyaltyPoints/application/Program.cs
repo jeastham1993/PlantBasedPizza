@@ -38,8 +38,13 @@ app.MapGet("/loyalty/health", () => "");
 app.MapPost("/loyalty", async ([FromBody] AddLoyaltyPointsCommand command) =>
 {
     command.AddToTrace();
+
+    if (!command.Validate())
+    {
+        return Results.BadRequest();
+    }
     
-    return await addLoyaltyPointsHandler.Handle(command);
+    return Results.Ok(await addLoyaltyPointsHandler.Handle(command));
 });
 
 app.MapPost("/loyalty/spend", async ([FromBody] SpendLoyaltyPointsCommand command) =>

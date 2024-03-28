@@ -7,13 +7,25 @@ config:
     - duration: 600
       arrivalRate: 50
 
+before:
+  flow:
+    - log: "Ensure recipe exists"
+    - post:
+        url: "/recipes"
+        json:
+          RecipeIdentifier: CREATEORDERTEST
+          Name: CREATEORDERTEST
+          Price: 5
+          Ingredients:
+            - Name: Pizza
+            - Quantity: 1
 scenarios:
   - name: "Generate orders"
     weight: 8
     flow:
       - function: "generateCustomer"
       - post:
-          url: "/order/order/pickup"
+          url: "/order/pickup"
           headers:
             Content-Type: "application/json"
           json:
@@ -21,3 +33,42 @@ scenarios:
             CustomerIdentifier: "{{ Customer }}"
             AddressLine1: "My test address"
             Postcode: "TY1 9PO"
+      - post:
+          url: "/order/{{ Id }}/items"
+          headers:
+            Content-Type: "application/json"
+          json:
+            OrderIdentifier: "{{ Id }}"
+            RecipeIdentifier: CREATEORDERTEST
+            Quantity: 1
+      - post:
+          url: "/order/{{ Id }}/submit"
+          headers:
+            Content-Type: "application/json"
+          json:
+      - put:
+          url: "/kitchen/{{ Id }}/preparing"
+          headers:
+            Content-Type: "application/json"
+          json:
+      - put:
+          url: "/kitchen/{{ Id }}/prep-complete"
+          headers:
+            Content-Type: "application/json"
+          json:
+      - put:
+          url: "/kitchen/{{ Id }}/bake-complete"
+          headers:
+            Content-Type: "application/json"
+          json:
+      - put:
+          url: "/kitchen/{{ Id }}/quality-check"
+          headers:
+            Content-Type: "application/json"
+          json:
+      - post:
+          url: "/order/collected"
+          headers:
+            Content-Type: "application/json"
+          json:
+            OrderIdentifier: "{{ ID }}"
