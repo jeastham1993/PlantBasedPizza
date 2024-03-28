@@ -7,9 +7,8 @@ public class LoyaltyService : Loyalty.LoyaltyBase
 {
     private readonly AddLoyaltyPointsCommandHandler _handler;
 
-    public LoyaltyService(ILogger<LoyaltyService> logger, AddLoyaltyPointsCommandHandler handler)
+    public LoyaltyService(AddLoyaltyPointsCommandHandler handler)
     {
-        _logger = logger;
         _handler = handler;
     }
 
