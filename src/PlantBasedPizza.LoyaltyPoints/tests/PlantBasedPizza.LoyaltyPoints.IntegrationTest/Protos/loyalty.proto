@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+option csharp_namespace = "PlantBasedPizza.LoyaltyPoints.IntegrationTest.LoyaltyClient";
+
+package loyalty;
+
+// The greeting service definition.
+service Loyalty {
+  // Sends a greeting
+  rpc AddLoyaltyPoints (AddLoyaltyPointsRequest) returns (AddLoyaltyPointsReply);
+}
+
+message AddLoyaltyPointsRequest {
+  string orderIdentifier = 1;
+  string customerIdentifier = 2;
+  double orderValue = 3;
+}
+
+message AddLoyaltyPointsReply {
+  string customerIdentifier = 1;
+  double totalPoints = 2;
+}

@@ -5,27 +5,13 @@ using MongoDB.Driver;
 using PlantBasedPizza.LoyaltyPoints;
 using PlantBasedPizza.LoyaltyPoints.Adapters;
 using PlantBasedPizza.LoyaltyPoints.Core;
+using PlantBasedPizza.LoyaltyPoints.Shared;
 using PlantBasedPizza.Shared;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddEnvironmentVariables();
 
-var client = new MongoClient(builder.Configuration["DatabaseConnection"]);
-
-builder.Services.AddSingleton(client);
-
-builder.Services.AddSingleton<ICustomerLoyaltyPointsRepository, CustomerLoyaltyPointRepository>();
-builder.Services.AddSingleton<AddLoyaltyPointsCommandHandler>();
-builder.Services.AddSingleton<SpendLoyaltyPointsCommandHandler>();
-
-BsonClassMap.RegisterClassMap<CustomerLoyaltyPoints>(map =>
-{
-    map.AutoMap();
-    map.SetIgnoreExtraElements(true);
-    map.SetIgnoreExtraElementsIsInherited(true);
-});
-
-builder.Services.AddSharedInfrastructure(builder.Configuration, "LoyaltyPoints");
+builder.Services.AddLoyaltyServices(builder.Configuration);
 
 var app = builder.Build();
 

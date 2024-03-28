@@ -34,7 +34,7 @@ public class CustomerLoyaltyPoints
             this.History = new List<LoyaltyPointsHistory>();
         }
 
-        if (this.History.Any(p => p.OrderIdentifier.Equals(orderIdentifier, StringComparison.OrdinalIgnoreCase)))
+        if (this.History.Exists(p => p.OrderIdentifier.Equals(orderIdentifier, StringComparison.OrdinalIgnoreCase)))
         {
             return;
         }
@@ -53,7 +53,7 @@ public class CustomerLoyaltyPoints
 
     public void SpendPoints(decimal points, string orderIdentifier)
     {
-        if (this.History.Any(p => p.OrderIdentifier.Equals(orderIdentifier, StringComparison.OrdinalIgnoreCase)))
+        if (this.History.Exists(p => p.OrderIdentifier.Equals(orderIdentifier, StringComparison.OrdinalIgnoreCase)))
         {
             return;
         }

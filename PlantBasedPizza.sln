@@ -59,13 +59,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PlantBasedPizza.Api", "Plan
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PlantBasedPizza.LoyaltyPoints", "PlantBasedPizza.LoyaltyPoints", "{A58FCAD4-DD5B-4B39-B5C7-A1123CFEE5DD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.LoyaltyPoints", "src\PlantBasedPizza.LoyaltyPoints\application\PlantBasedPizza.LoyaltyPoints.csproj", "{7400815E-5023-408D-B452-2B403FB3E9D4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.LoyaltyPoints", "src\PlantBasedPizza.LoyaltyPoints\application\PlantBasedPizza.LoyaltyPoints.Api\PlantBasedPizza.LoyaltyPoints.csproj", "{7400815E-5023-408D-B452-2B403FB3E9D4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.LoyaltyPoints.UnitTest", "src\PlantBasedPizza.LoyaltyPoints\tests\PlantBasedPizza.LoyaltyPoints.UnitTest\PlantBasedPizza.LoyaltyPoints.UnitTest.csproj", "{EE3C33DB-1C7D-49FF-A85A-6CD1B499DFBC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.LoyaltyPoints.IntegrationTest", "src\PlantBasedPizza.LoyaltyPoints\tests\PlantBasedPizza.LoyaltyPoints.IntegrationTest\PlantBasedPizza.LoyaltyPoints.IntegrationTest.csproj", "{58F2C75A-FC62-430C-BB64-974FDD005C90}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.E2ETests", "end-to-end-test\PlantBasedPizza.E2ETests\PlantBasedPizza.E2ETests.csproj", "{D5654890-AFE3-45CA-9475-5421C9BD0FA9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.LoyaltyPoints.Internal", "src\PlantBasedPizza.LoyaltyPoints\application\PlantBasedPizza.LoyaltyPoints.Internal\PlantBasedPizza.LoyaltyPoints.Internal.csproj", "{B3C4F0F2-DD63-4DFB-B1C7-73BF2C93E928}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{6B5B4B62-0D57-4C65-88DB-BFDA86E610E9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.LoyaltyPoints.Shared", "src\PlantBasedPizza.LoyaltyPoints\application\PlantBasedPizza.LoyaltyPoints.Shared\PlantBasedPizza.LoyaltyPoints.Shared.csproj", "{BEB6D543-0283-4AD1-9BF9-17224D211362}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -97,8 +103,11 @@ Global
 		{682A9C61-5D3D-466E-9EAF-C1ABF01F99D8} = {07E71142-470D-4AAF-82A8-2BF9AFA34EA6}
 		{E630CA1B-339D-4697-9FFF-AB9D64C9507D} = {07E71142-470D-4AAF-82A8-2BF9AFA34EA6}
 		{7400815E-5023-408D-B452-2B403FB3E9D4} = {A58FCAD4-DD5B-4B39-B5C7-A1123CFEE5DD}
-		{EE3C33DB-1C7D-49FF-A85A-6CD1B499DFBC} = {A58FCAD4-DD5B-4B39-B5C7-A1123CFEE5DD}
-		{58F2C75A-FC62-430C-BB64-974FDD005C90} = {A58FCAD4-DD5B-4B39-B5C7-A1123CFEE5DD}
+		{B3C4F0F2-DD63-4DFB-B1C7-73BF2C93E928} = {A58FCAD4-DD5B-4B39-B5C7-A1123CFEE5DD}
+		{6B5B4B62-0D57-4C65-88DB-BFDA86E610E9} = {A58FCAD4-DD5B-4B39-B5C7-A1123CFEE5DD}
+		{58F2C75A-FC62-430C-BB64-974FDD005C90} = {6B5B4B62-0D57-4C65-88DB-BFDA86E610E9}
+		{EE3C33DB-1C7D-49FF-A85A-6CD1B499DFBC} = {6B5B4B62-0D57-4C65-88DB-BFDA86E610E9}
+		{BEB6D543-0283-4AD1-9BF9-17224D211362} = {A58FCAD4-DD5B-4B39-B5C7-A1123CFEE5DD}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{179E35BF-4F04-4660-8F82-413DA572E7F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -169,5 +178,13 @@ Global
 		{D5654890-AFE3-45CA-9475-5421C9BD0FA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D5654890-AFE3-45CA-9475-5421C9BD0FA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D5654890-AFE3-45CA-9475-5421C9BD0FA9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3C4F0F2-DD63-4DFB-B1C7-73BF2C93E928}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3C4F0F2-DD63-4DFB-B1C7-73BF2C93E928}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3C4F0F2-DD63-4DFB-B1C7-73BF2C93E928}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3C4F0F2-DD63-4DFB-B1C7-73BF2C93E928}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BEB6D543-0283-4AD1-9BF9-17224D211362}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BEB6D543-0283-4AD1-9BF9-17224D211362}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BEB6D543-0283-4AD1-9BF9-17224D211362}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BEB6D543-0283-4AD1-9BF9-17224D211362}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

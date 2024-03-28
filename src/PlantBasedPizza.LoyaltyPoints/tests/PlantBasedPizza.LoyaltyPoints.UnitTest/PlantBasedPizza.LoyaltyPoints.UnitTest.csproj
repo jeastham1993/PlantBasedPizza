@@ -26,7 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\application\PlantBasedPizza.LoyaltyPoints.csproj" />
+    <ProjectReference Include="..\..\application\PlantBasedPizza.LoyaltyPoints.Shared\PlantBasedPizza.LoyaltyPoints.Shared.csproj" />
   </ItemGroup>
 
 </Project>
