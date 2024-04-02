@@ -27,12 +27,21 @@ services:
       - OtlpEndpoint=http://jaeger:4317
       - Environment=local
       - Services__Loyalty=http://local.loyalty-api:8080
+      - Services__LoyaltyInternal=http://local.loyalty-internal-api:8080
 
   local.loyalty-api:
     image: loyalty-api
     container_name: local.loyalty-api
     ports:
       - "5050:8080"
+    environment:
+      - DatabaseConnection=mongodb://mongodb:27017
+      - OtlpEndpoint=http://jaeger:4317
+      - Environment=local
+
+  local.loyalty-internal-api:
+    image: loyalty-internal-api
+    container_name: local.loyalty-internal-api
     environment:
       - DatabaseConnection=mongodb://mongodb:27017
       - OtlpEndpoint=http://jaeger:4317

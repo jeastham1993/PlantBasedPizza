@@ -1,3 +1,6 @@
+using Grpc.Core;
+using Grpc.Net.Client;
+using Grpc.Net.Client.Configuration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PlantBasedPizza.Events;
@@ -9,6 +12,9 @@ using PlantBasedPizza.OrderManager.Core.Entities;
 using PlantBasedPizza.OrderManager.Core.Handlers;
 using PlantBasedPizza.OrderManager.Core.Services;
 using PlantBasedPizza.Shared.Events;
+using Polly;
+using Polly.Contrib.WaitAndRetry;
+using Polly.Extensions.Http;
 
 namespace PlantBasedPizza.OrderManager.Infrastructure
 {
@@ -42,6 +48,29 @@ namespace PlantBasedPizza.OrderManager.Infrastructure
                 map.SetIgnoreExtraElementsIsInherited(true);
             });
             
+            // Add default gRPC retries
+            var defaultMethodConfig = new MethodConfig
+            {
+                Names = { MethodName.Default },
+                RetryPolicy = new RetryPolicy
+                {
+                    MaxAttempts = 5,
+                    InitialBackoff = TimeSpan.FromSeconds(1),
+                    MaxBackoff = TimeSpan.FromSeconds(5),
+                    BackoffMultiplier = 1.5,
+                    RetryableStatusCodes = { StatusCode.Unavailable }
+                }
+            };
+            
+            services.AddGrpcClient<Loyalty.LoyaltyClient>(o =>
+            {
+                o.Address = new Uri(configuration["Services:LoyaltyInternal"]);
+            })
+            .ConfigureChannel(channel =>
+            {
+                channel.ServiceConfig = new ServiceConfig() { MethodConfigs = { defaultMethodConfig } };
+            });
+            
             services.AddSingleton<IOrderRepository, OrderRepository>();
             services.AddSingleton<CollectOrderCommandHandler>();
             services.AddSingleton<AddItemToOrderHandler>();
@@ -57,7 +86,21 @@ namespace PlantBasedPizza.OrderManager.Infrastructure
             services.AddSingleton<Handles<OrderDeliveredEvent>, DriverDeliveredOrderEventHandler>();
             services.AddSingleton<Handles<DriverCollectedOrderEvent>, DriverCollectedOrderEventHandler>();
 
+            services.AddHttpClient<OrderManagerHealthChecks>()
+                .SetHandlerLifetime(TimeSpan.FromMinutes(5))
+                .AddPolicyHandler(GetRetryPolicy());
+
             return services;
+        }
+    
+        static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
+        {
+            var delay = Backoff.DecorrelatedJitterBackoffV2(medianFirstRetryDelay: TimeSpan.FromSeconds(1), retryCount: 5);
+            
+            return HttpPolicyExtensions
+                .HandleTransientHttpError()
+                .OrResult(msg => msg.StatusCode == System.Net.HttpStatusCode.NotFound)
+                .WaitAndRetryAsync(delay);
         }
     }
 }

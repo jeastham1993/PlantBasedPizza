@@ -3,7 +3,7 @@ using PlantBasedPizza.LoyaltyPoints.Shared;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddLoyaltyServices(builder.Configuration);
+builder.Services.AddLoyaltyServices(builder.Configuration, "LoyaltyPointsInternal");
 
 // Add services to the container.
 builder.Services.AddGrpc();

@@ -11,7 +11,7 @@ using PlantBasedPizza.Shared;
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddEnvironmentVariables();
 
-builder.Services.AddLoyaltyServices(builder.Configuration);
+builder.Services.AddLoyaltyServices(builder.Configuration, "LoyaltyPointsAPI");
 
 var app = builder.Build();
 

@@ -24,13 +24,11 @@ services:
     volumes:
       - ./mocks/loyalty-api:/home/wiremock
 
-  test.api:
-    image: plant-based-pizza-api
-    container_name: test.pizza-api
+  gripmock:
+    image: tkpd/gripmock:latest
     ports:
-      - "5051:8080"
-    environment:
-      - DatabaseConnection=mongodb://mongodb:27017
-      - OtlpEndpoint=http://jaeger:4317
-      - Environment=local
-      - Services__Loyalty=http://wiremock:8080
+      - 4770:4770
+      - 4771:4771
+    volumes:
+      - ./mocks/loyalty-api-internal:/proto
+    command: --stub=/proto/stubs /proto/loyalty.proto

@@ -9,25 +9,29 @@ namespace PlantBasedPizza.OrderManager.Infrastructure;
 
 public class LoyaltyPointService : ILoyaltyPointService
 {
-    private readonly HttpClient _httpClient;
-    private readonly IConfiguration _configuration;
+    private readonly Loyalty.LoyaltyClient _loyaltyClient;
     private readonly ILogger<LoyaltyPointService> _logger;
 
-    public LoyaltyPointService(HttpClient httpClient, IConfiguration configuration, ILogger<LoyaltyPointService> logger)
+    public LoyaltyPointService(ILogger<LoyaltyPointService> logger, Loyalty.LoyaltyClient loyaltyClient)
     {
-        _httpClient = httpClient;
-        _configuration = configuration;
         _logger = logger;
+        _loyaltyClient = loyaltyClient;
     }
 
     public async Task AddLoyaltyPoints(string customerId, string orderIdentifier, decimal orderValue)
     {
         try
         {
-            var createLoyaltyPointsResult = await this._httpClient.PostAsync($"{_configuration["Services:Loyalty"]}/loyalty",
-                new StringContent(JsonSerializer.Serialize(new CreateLoyaltyPointRequest(customerId, orderIdentifier, orderValue)), Encoding.UTF8, new MediaTypeHeaderValue("application/json")));
+            var createLoyaltyPointsResult = await this._loyaltyClient.AddLoyaltyPointsAsync(
+                new AddLoyaltyPointsRequest()
+                {
+                    CustomerIdentifier = customerId,
+                    OrderIdentifier = orderIdentifier,
+                    OrderValue = (double)orderValue,
 
-            if (!createLoyaltyPointsResult.IsSuccessStatusCode)
+                });
+
+            if (createLoyaltyPointsResult is null)
             {
                 throw new Exception("Failure sending loyalty points");
             }

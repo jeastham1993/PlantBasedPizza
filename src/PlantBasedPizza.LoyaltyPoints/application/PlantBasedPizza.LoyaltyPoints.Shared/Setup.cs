@@ -10,7 +10,7 @@ namespace PlantBasedPizza.LoyaltyPoints.Shared;
 
 public static class Setup
 {
-    public static IServiceCollection AddLoyaltyServices(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddLoyaltyServices(this IServiceCollection services, IConfiguration configuration, string serviceName)
     {
         var client = new MongoClient(configuration["DatabaseConnection"]);
 
@@ -27,7 +27,7 @@ public static class Setup
             map.SetIgnoreExtraElementsIsInherited(true);
         });
 
-        services.AddSharedInfrastructure(configuration, "LoyaltyPoints");
+        services.AddSharedInfrastructure(configuration, serviceName);
         
         return services;
     }
