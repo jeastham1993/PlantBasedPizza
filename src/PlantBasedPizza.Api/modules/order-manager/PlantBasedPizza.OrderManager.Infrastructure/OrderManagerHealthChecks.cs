@@ -1,19 +1,19 @@
 using System.Diagnostics;
 using Grpc.Net.Client;
-using Microsoft.Extensions.Configuration;
+using PlantBasedPizza.Shared.ServiceDiscovery;
 
 namespace PlantBasedPizza.OrderManager.Infrastructure;
 
 public class OrderManagerHealthChecks
 {
     private readonly HttpClient _httpClient;
-    private readonly IConfiguration _configuration;
     private readonly GrpcChannel _grpcChannel;
 
-    public OrderManagerHealthChecks(HttpClient client, IConfiguration configuration)
+    public OrderManagerHealthChecks(HttpClient client, IServiceRegistry serviceRegistry)
     {
-        this._configuration = configuration;
-        this._grpcChannel = GrpcChannel.ForAddress(configuration["Services:LoyaltyInternal"]);
+        var address = serviceRegistry.GetServiceAddress("PlantBasedPizza-LoyaltyPoints-Internal").GetAwaiter().GetResult();
+        this._grpcChannel = GrpcChannel.ForAddress(address);
+        
         this._httpClient = client;
     }
     
@@ -23,7 +23,7 @@ public class OrderManagerHealthChecks
         
         try
         {
-            var res = await _httpClient.GetAsync($"{_configuration["Services:Loyalty"]}/loyalty/health");
+            var res = await _httpClient.GetAsync("/loyalty/health");
 
             if (!res.IsSuccessStatusCode)
             {

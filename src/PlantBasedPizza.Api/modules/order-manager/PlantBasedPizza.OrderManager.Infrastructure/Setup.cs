@@ -12,6 +12,7 @@ using PlantBasedPizza.OrderManager.Core.Entities;
 using PlantBasedPizza.OrderManager.Core.Handlers;
 using PlantBasedPizza.OrderManager.Core.Services;
 using PlantBasedPizza.Shared.Events;
+using PlantBasedPizza.Shared.ServiceDiscovery;
 using Polly;
 using Polly.Contrib.WaitAndRetry;
 using Polly.Extensions.Http;
@@ -66,8 +67,9 @@ namespace PlantBasedPizza.OrderManager.Infrastructure
             {
                 o.Address = new Uri(configuration["Services:LoyaltyInternal"]);
             })
-            .ConfigureChannel(channel =>
+            .ConfigureChannel((provider, channel) =>
             {
+                channel.HttpHandler = provider.GetRequiredService<ServiceRegistryHttpMessageHandler>();
                 channel.ServiceConfig = new ServiceConfig() { MethodConfigs = { defaultMethodConfig } };
             });
             
@@ -86,9 +88,14 @@ namespace PlantBasedPizza.OrderManager.Infrastructure
             services.AddSingleton<Handles<OrderDeliveredEvent>, DriverDeliveredOrderEventHandler>();
             services.AddSingleton<Handles<DriverCollectedOrderEvent>, DriverCollectedOrderEventHandler>();
 
+            services.AddSingleton<OrderManagerHealthChecks>();
             services.AddHttpClient<OrderManagerHealthChecks>()
+                .ConfigureHttpClient(client => client.BaseAddress = new Uri(configuration["Services:Loyalty"]))
+                .AddHttpMessageHandler<ServiceRegistryHttpMessageHandler>()
                 .SetHandlerLifetime(TimeSpan.FromMinutes(5))
                 .AddPolicyHandler(GetRetryPolicy());
+            
+            services.AddLogging();
 
             return services;
         }

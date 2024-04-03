@@ -1,8 +1,11 @@
+using Consul;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using PlantBasedPizza.Shared.Logging;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using PlantBasedPizza.Shared.ServiceDiscovery;
 
 namespace PlantBasedPizza.Shared
 {
@@ -14,6 +17,8 @@ namespace PlantBasedPizza.Shared
             IConfiguration configuration, string applicationName)
         {
             ApplicationLogger.Init();
+
+            services.AddLogging();
             
             var otel = services.AddOpenTelemetry();
             otel.ConfigureResource(resource => resource
@@ -33,6 +38,19 @@ namespace PlantBasedPizza.Shared
 
             services.AddSingleton<IObservabilityService, ObservabiityService>();
             services.AddHttpContextAccessor();
+
+            var consulAddress = configuration.GetSection("ServiceDiscovery")["ConsulServiceEndpoint"];
+
+            if (!string.IsNullOrEmpty(consulAddress))
+            {
+                services.AddSingleton<IConsulClient, ConsulClient>(provider =>
+                    new ConsulClient(config => config.Address = new Uri(consulAddress)));
+
+                services.Configure<ServiceDiscoverySettings>(configuration.GetSection("ServiceDiscovery"));
+                services.AddSingleton<IHostedService, ConsulRegisterService>();
+                services.AddSingleton<IServiceRegistry, ConsulServiceRegistry>();
+                services.AddSingleton<ServiceRegistryHttpMessageHandler>();
+            }
 
             return services;
         }

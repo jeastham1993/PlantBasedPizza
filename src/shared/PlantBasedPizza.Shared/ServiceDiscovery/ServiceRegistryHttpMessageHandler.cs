@@ -1,0 +1,65 @@
+using System.Diagnostics;
+using Microsoft.Extensions.Logging;
+
+namespace PlantBasedPizza.Shared.ServiceDiscovery;
+
+public class ServiceRegistryHttpMessageHandler : DelegatingHandler
+{
+    private readonly IServiceRegistry _serviceRegistry;
+    private readonly Dictionary<string, string> _retrievedServices;
+    private DateTime? _lastRetrieved;
+
+    public ServiceRegistryHttpMessageHandler(IServiceRegistry serviceRegistry)
+    {
+        _serviceRegistry = serviceRegistry;
+        _retrievedServices = new Dictionary<string, string>();
+    }
+
+    protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+    {
+        using var serviceDiscoverySpan = Activity.Current?.Source.StartActivity("ServiceDiscovery");
+        
+        var current = request.RequestUri;
+
+        if (_retrievedServices.TryGetValue(current.Host, out var service))
+        {
+            serviceDiscoverySpan.AddTag("serviceDiscovery.inMemory", true);
+            
+            var address = new Uri($"{service}{request.RequestUri.AbsolutePath}");
+            
+            if (DateTime.UtcNow - _lastRetrieved.Value > TimeSpan.FromSeconds(10))
+            {
+                serviceDiscoverySpan.AddTag("serviceDiscovery.retrieved", true);
+                
+                var updatedAddress = await retrieveAddress(current, request);
+
+                address = new Uri($"{updatedAddress}{request.RequestUri.AbsolutePath}");
+            }
+            
+            request.RequestUri = address;
+            
+            // Stop the span before the HTTP request pipeline continues
+            serviceDiscoverySpan.Stop();
+            
+            return await base.SendAsync(request, cancellationToken);
+        }
+        
+        request.RequestUri = await retrieveAddress(current, request);
+        
+        serviceDiscoverySpan.AddTag("serviceDiscovery.retrieved", true);
+        
+        serviceDiscoverySpan.Stop();
+
+        return await base.SendAsync(request, cancellationToken);
+    }
+
+    private async Task<Uri> retrieveAddress(Uri current, HttpRequestMessage request)
+    {
+        var discoveredHost = await _serviceRegistry.GetServiceAddress(current.Host);
+        
+        _lastRetrieved = DateTime.UtcNow;
+        _retrievedServices[current.Host] = discoveredHost;
+
+        return new Uri($"{discoveredHost}{request.RequestUri.AbsolutePath}");
+    }
+}
