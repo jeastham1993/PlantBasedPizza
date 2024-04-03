@@ -73,6 +73,16 @@ namespace PlantBasedPizza.OrderManager.Infrastructure
                 channel.ServiceConfig = new ServiceConfig() { MethodConfigs = { defaultMethodConfig } };
             });
             
+            services.AddGrpcClient<Payment.PaymentClient>(o =>
+                {
+                    o.Address = new Uri(configuration["Services:PaymentInternal"]);
+                })
+                .ConfigureChannel((provider, channel) =>
+                {
+                    channel.HttpHandler = provider.GetRequiredService<ServiceRegistryHttpMessageHandler>();
+                    channel.ServiceConfig = new ServiceConfig() { MethodConfigs = { defaultMethodConfig } };
+                });
+            
             services.AddSingleton<IOrderRepository, OrderRepository>();
             services.AddSingleton<CollectOrderCommandHandler>();
             services.AddSingleton<AddItemToOrderHandler>();
@@ -80,6 +90,7 @@ namespace PlantBasedPizza.OrderManager.Infrastructure
             services.AddSingleton<CreatePickupOrderCommandHandler>();
             services.AddSingleton<IRecipeService, RecipeService>();
             services.AddSingleton<ILoyaltyPointService, LoyaltyPointService>();
+            services.AddSingleton<IPaymentService, PaymentService>();
             
             services.AddSingleton<Handles<OrderPreparingEvent>, OrderPreparingEventHandler>();
             services.AddSingleton<Handles<OrderPrepCompleteEvent>, OrderPrepCompleteEventHandler>();

@@ -5,6 +5,7 @@ using PlantBasedPizza.OrderManager.Core.CollectOrder;
 using PlantBasedPizza.OrderManager.Core.CreateDeliveryOrder;
 using PlantBasedPizza.OrderManager.Core.CreatePickupOrder;
 using PlantBasedPizza.OrderManager.Core.Entities;
+using PlantBasedPizza.OrderManager.Core.Services;
 
 namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
 {
@@ -12,18 +13,20 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
     public class OrderController : ControllerBase 
     {
         private readonly IOrderRepository _orderRepository;
+        private readonly IPaymentService _paymentService;
         private readonly CollectOrderCommandHandler _collectOrderCommandHandler;
         private readonly AddItemToOrderHandler _addItemToOrderHandler;
         private readonly CreateDeliveryOrderCommandHandler _createDeliveryOrderCommandHandler;
         private readonly CreatePickupOrderCommandHandler _createPickupOrderCommandHandler;
 
-        public OrderController(IOrderRepository orderRepository, CollectOrderCommandHandler collectOrderCommandHandler, AddItemToOrderHandler addItemToOrderHandler, CreateDeliveryOrderCommandHandler createDeliveryOrderCommandHandler, CreatePickupOrderCommandHandler createPickupOrderCommandHandler)
+        public OrderController(IOrderRepository orderRepository, CollectOrderCommandHandler collectOrderCommandHandler, AddItemToOrderHandler addItemToOrderHandler, CreateDeliveryOrderCommandHandler createDeliveryOrderCommandHandler, CreatePickupOrderCommandHandler createPickupOrderCommandHandler, IPaymentService paymentService)
         {
             _orderRepository = orderRepository;
             _collectOrderCommandHandler = collectOrderCommandHandler;
             _addItemToOrderHandler = addItemToOrderHandler;
             _createDeliveryOrderCommandHandler = createDeliveryOrderCommandHandler;
             _createPickupOrderCommandHandler = createPickupOrderCommandHandler;
+            _paymentService = paymentService;
         }
 
         /// <summary>
@@ -98,6 +101,8 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
         public async Task<OrderDto> SubmitOrder(string orderIdentifier)
         {
             var order = await this._orderRepository.Retrieve(orderIdentifier);
+
+            await this._paymentService.TakePaymentFor(order);
 
             order.SubmitOrder();
 

@@ -30,5 +30,5 @@ services:
       - 4770:4770
       - 4771:4771
     volumes:
-      - ./mocks/loyalty-api-internal:/proto
-    command: --stub=/proto/stubs /proto/loyalty.proto
+      - ./mocks/grpc-mocks:/proto
+    command: --stub=/proto/stubs /proto/loyalty.proto /proto/payment.proto

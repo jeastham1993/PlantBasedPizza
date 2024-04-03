@@ -35,6 +35,7 @@ services:
       - Environment=local
       - Services__Loyalty=http://LoyaltyApi
       - Services__LoyaltyInternal=http://LoyaltyInternalApi
+      - Services__PaymentInternal=http://PaymentApi
       - ServiceDiscovery__MyUrl=http://local.api:8080
       - ServiceDiscovery__ServiceName=Api
       - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
@@ -65,4 +66,16 @@ services:
       - Environment=local
       - ServiceDiscovery__MyUrl=http://local.loyalty-internal-api:8080
       - ServiceDiscovery__ServiceName=LoyaltyInternalApi
+      - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
+
+  local.payment-api:
+    image: payment-api
+    container_name: local.payment-api
+    depends_on:
+      - consul
+    environment:
+      - OtlpEndpoint=http://jaeger:4317
+      - Environment=local
+      - ServiceDiscovery__MyUrl=http://local.payment-api:8080
+      - ServiceDiscovery__ServiceName=PaymentApi
       - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500

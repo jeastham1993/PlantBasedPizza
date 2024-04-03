@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+option csharp_namespace = "PlantBasedPizza.OrderManager.Infrastructure";
+
+package payment;
+
+// The greeting service definition.
+service Payment {
+  // Sends a greeting
+  rpc TakePayment (TakePaymentRequest) returns (TakePaymentsReply);
+}
+
+message TakePaymentRequest {
+  string customerIdentifier = 1;
+  double paymentAmount = 2;
+}
+
+message TakePaymentsReply {
+  string paymentStatus = 1;
+  bool isSuccess = 2;
+}
