@@ -9,6 +9,11 @@ services:
     ports:
       - 27017:27017
 
+  consul:
+    image: hashicorp/consul:latest
+    ports:
+      - 8500:8500
+
   jaeger:
     image: jaegertracing/opentelemetry-all-in-one:latest
     ports:

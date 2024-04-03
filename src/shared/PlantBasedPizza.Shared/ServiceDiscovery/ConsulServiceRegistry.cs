@@ -15,12 +15,17 @@ public class ConsulServiceRegistry : IServiceRegistry
         _logger = logger;
     }
 
-    public async Task<string> GetServiceAddress(string serviceName)
+    public async Task<string?> GetServiceAddress(string serviceName)
     {
         var services = await _consulClient.Health.Service(serviceName);
         
         this._logger.LogInformation($"Found {services.Response.Length} service(s) for {serviceName}");
 
+        if (services.Response.Length == 0)
+        {
+            return null;
+        }
+        
         if (services.Response.Length == 1)
         {
             var singleService = services.Response[0];

@@ -1,23 +1,32 @@
 using System.Diagnostics;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace PlantBasedPizza.Shared.ServiceDiscovery;
 
 public class ServiceRegistryHttpMessageHandler : DelegatingHandler
 {
     private readonly IServiceRegistry _serviceRegistry;
+    private readonly ServiceDiscoverySettings _serviceDiscoverySettings;
     private readonly Dictionary<string, string> _retrievedServices;
     private DateTime? _lastRetrieved;
 
-    public ServiceRegistryHttpMessageHandler(IServiceRegistry serviceRegistry)
+    public ServiceRegistryHttpMessageHandler(IServiceRegistry serviceRegistry, IOptions<ServiceDiscoverySettings> serviceDiscoverySettings)
     {
         _serviceRegistry = serviceRegistry;
+        _serviceDiscoverySettings = serviceDiscoverySettings.Value;
         _retrievedServices = new Dictionary<string, string>();
     }
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
         using var serviceDiscoverySpan = Activity.Current?.Source.StartActivity("ServiceDiscovery");
+
+        if (string.IsNullOrEmpty(_serviceDiscoverySettings.ConsulServiceEndpoint))
+        {
+            return await base.SendAsync(request, cancellationToken);
+        }
         
         var current = request.RequestUri;
 
@@ -56,6 +65,14 @@ public class ServiceRegistryHttpMessageHandler : DelegatingHandler
     private async Task<Uri> retrieveAddress(Uri current, HttpRequestMessage request)
     {
         var discoveredHost = await _serviceRegistry.GetServiceAddress(current.Host);
+
+        if (discoveredHost is null)
+        {
+            _lastRetrieved = DateTime.UtcNow;
+            _retrievedServices[current.Host] = request.RequestUri.Host;
+            
+            return request.RequestUri;
+        }
         
         _lastRetrieved = DateTime.UtcNow;
         _retrievedServices[current.Host] = discoveredHost;

@@ -25,39 +25,44 @@ services:
   local.api:
     image: plant-based-pizza-api
     container_name: local.pizza-api
+    depends_on:
+      - consul
     ports:
       - "5051:8080"
     environment:
       - DatabaseConnection=mongodb://mongodb:27017
       - OtlpEndpoint=http://jaeger:4317
       - Environment=local
-      - Services__Loyalty=http://local.loyalty-api:8080
-      - Services__LoyaltyInternal=http://local.loyalty-internal-api:8080
+      - Services__Loyalty=http://LoyaltyApi
+      - Services__LoyaltyInternal=http://LoyaltyInternalApi
+      - ServiceDiscovery__MyUrl=http://local.api:8080
+      - ServiceDiscovery__ServiceName=Api
+      - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
 
   local.loyalty-api:
     image: loyalty-api
     container_name: local.loyalty-api
+    depends_on:
+      - consul
     ports:
       - "5050:8080"
     environment:
       - DatabaseConnection=mongodb://mongodb:27017
       - OtlpEndpoint=http://jaeger:4317
       - Environment=local
+      - ServiceDiscovery__MyUrl=http://local.loyalty-api:8080
+      - ServiceDiscovery__ServiceName=LoyaltyApi
+      - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
 
   local.loyalty-internal-api:
     image: loyalty-internal-api
     container_name: local.loyalty-internal-api
+    depends_on:
+      - consul
     environment:
       - DatabaseConnection=mongodb://mongodb:27017
       - OtlpEndpoint=http://jaeger:4317
       - Environment=local
-  
-  # reverse-proxy:
-  #   image: nginx:latest
-  #   ports:
-  #     - "8080:80"  # Map port 80 of the container to port 8080 on the host
-  #   volumes:
-  #     - ./nginx/nginx-custom.conf:/etc/nginx/conf.d/default.conf:ro
-  #   depends_on:
-  #     - local.api
-  #     - local.loyalty-api
+      - ServiceDiscovery__MyUrl=http://local.loyalty-internal-api:8080
+      - ServiceDiscovery__ServiceName=LoyaltyInternalApi
+      - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500

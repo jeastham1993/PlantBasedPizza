@@ -41,16 +41,21 @@ namespace PlantBasedPizza.Shared
 
             var consulAddress = configuration.GetSection("ServiceDiscovery")["ConsulServiceEndpoint"];
 
-            if (!string.IsNullOrEmpty(consulAddress))
+            if (string.IsNullOrEmpty(consulAddress))
+            {
+                services.AddSingleton<IServiceRegistry, ConfigurationFileServiceRegistry>();
+            }
+            else
             {
                 services.AddSingleton<IConsulClient, ConsulClient>(provider =>
                     new ConsulClient(config => config.Address = new Uri(consulAddress)));
-
-                services.Configure<ServiceDiscoverySettings>(configuration.GetSection("ServiceDiscovery"));
+                
                 services.AddSingleton<IHostedService, ConsulRegisterService>();
                 services.AddSingleton<IServiceRegistry, ConsulServiceRegistry>();
-                services.AddSingleton<ServiceRegistryHttpMessageHandler>();
             }
+
+            services.Configure<ServiceDiscoverySettings>(configuration.GetSection("ServiceDiscovery"));
+            services.AddSingleton<ServiceRegistryHttpMessageHandler>();
 
             return services;
         }
