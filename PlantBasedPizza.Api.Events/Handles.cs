@@ -1,6 +1,4 @@
-using System.Threading.Tasks;
-
-namespace PlantBasedPizza.Shared.Events
+namespace PlantBasedPizza.Api
 {
     public interface Handles<in T> where T : IDomainEvent
     {

@@ -1,6 +1,4 @@
-using System;
-
-namespace PlantBasedPizza.Shared.Events
+namespace PlantBasedPizza.Api
 {
     public interface IDomainEvent
     {
