@@ -1,9 +1,8 @@
 using System;
 using System.Linq;
 using FluentAssertions;
-using PlantBasedPizza.Events;
+using PlantBasedPizza.Api.Events;
 using PlantBasedPizza.OrderManager.Core.Entities;
-using PlantBasedPizza.Shared.Events;
 using Xunit;
 
 namespace PlantBasedPizza.UnitTest;

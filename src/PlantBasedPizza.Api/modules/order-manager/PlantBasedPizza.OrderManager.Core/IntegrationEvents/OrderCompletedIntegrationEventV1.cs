@@ -2,8 +2,15 @@ using PlantBasedPizza.Events;
 
 namespace PlantBasedPizza.OrderManager.Core.IntegrationEvents;
 
-public class OrderCompletedIntegrationEvent : IntegrationEvent
+public class OrderCompletedIntegrationEventV1 : IntegrationEvent
 {
-    public override string EventName { get; }
-    public override string EventVersion { get; }
+    public override string EventName => "order.orderCompleted";
+    public override string EventVersion => "v1";
+    public override string Source => "https://orders.plantbasedpizza";
+
+    public string OrderIdentifier { get; set; }
+    
+    public string CustomerIdentifier { get; set; }
+    
+    public decimal OrderValue { get; set; }
 }

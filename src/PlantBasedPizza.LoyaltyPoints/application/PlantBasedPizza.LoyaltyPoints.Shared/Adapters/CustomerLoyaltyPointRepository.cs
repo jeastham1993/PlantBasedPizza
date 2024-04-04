@@ -1,8 +1,8 @@
 using System.Diagnostics;
 using MongoDB.Driver;
-using PlantBasedPizza.LoyaltyPoints.Core;
+using PlantBasedPizza.LoyaltyPoints.Shared.Core;
 
-namespace PlantBasedPizza.LoyaltyPoints.Adapters;
+namespace PlantBasedPizza.LoyaltyPoints.Shared.Adapters;
 
 public class CustomerLoyaltyPointRepository : ICustomerLoyaltyPointsRepository
 {

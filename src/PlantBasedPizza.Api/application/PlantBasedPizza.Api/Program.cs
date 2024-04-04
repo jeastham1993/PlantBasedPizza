@@ -1,12 +1,12 @@
-using System.Diagnostics;
 using MongoDB.Driver;
 using PlantBasedPizza.Api;
+using PlantBasedPizza.Api.Events;
 using PlantBasedPizza.Deliver.Infrastructure;
+using PlantBasedPizza.Events;
 using PlantBasedPizza.Kitchen.Infrastructure;
 using PlantBasedPizza.OrderManager.Infrastructure;
 using PlantBasedPizza.Recipes.Infrastructure;
 using PlantBasedPizza.Shared;
-using PlantBasedPizza.Shared.Events;
 using PlantBasedPizza.Shared.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,7 +22,9 @@ builder.Services.AddOrderManagerInfrastructure(builder.Configuration);
 builder.Services.AddRecipeInfrastructure(builder.Configuration);
 builder.Services.AddKitchenInfrastructure(builder.Configuration);
 builder.Services.AddDeliveryModuleInfrastructure(builder.Configuration);
-builder.Services.AddSharedInfrastructure(builder.Configuration, "PlantBasedPizza");
+builder.Services.AddSharedInfrastructure(builder.Configuration, "PlantBasedPizza")
+    .AddMessaging(builder.Configuration);
+
 builder.Services.AddHttpClient();
 
 builder.Services.AddControllers();

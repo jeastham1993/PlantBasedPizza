@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
 namespace PlantBasedPizza.Deliver.Core.Entities
 {
     public interface IDeliveryRequestRepository

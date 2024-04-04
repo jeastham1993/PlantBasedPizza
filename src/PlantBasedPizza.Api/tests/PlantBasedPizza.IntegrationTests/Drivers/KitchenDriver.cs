@@ -4,7 +4,6 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using PlantBasedPizza.IntegrationTests.Requests;
 using PlantBasedPizza.IntegrationTests.ViewModels;
 
 namespace PlantBasedPizza.IntegrationTests.Drivers

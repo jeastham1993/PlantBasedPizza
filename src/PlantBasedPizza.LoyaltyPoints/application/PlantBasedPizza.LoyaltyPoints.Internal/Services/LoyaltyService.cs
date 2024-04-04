@@ -1,7 +1,8 @@
 using Grpc.Core;
-using PlantBasedPizza.LoyaltyPoints.Core;
+using PlantBasedPizza.Api.Internal;
+using PlantBasedPizza.LoyaltyPoints.Shared.Core;
 
-namespace PlantBasedPizza.Api.Internal.Services;
+namespace PlantBasedPizza.LoyaltyPoints.Internal.Services;
 
 public class LoyaltyService : Loyalty.LoyaltyBase
 {

@@ -1,5 +1,5 @@
 using System.Diagnostics;
-using PlantBasedPizza.LoyaltyPoints.Core;
+using PlantBasedPizza.LoyaltyPoints.Shared.Core;
 
 namespace PlantBasedPizza.LoyaltyPoints;
 

@@ -1,4 +1,4 @@
-namespace PlantBasedPizza.LoyaltyPoints.Core;
+namespace PlantBasedPizza.LoyaltyPoints.Shared.Core;
 
 public interface ICustomerLoyaltyPointsRepository
 {

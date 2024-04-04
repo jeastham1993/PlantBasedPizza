@@ -1,12 +1,10 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Microsoft.Extensions.Logging;
 using Moq;
+using PlantBasedPizza.Api.Events;
 using PlantBasedPizza.Deliver.Core.Entities;
 using PlantBasedPizza.Deliver.Core.Handlers;
-using PlantBasedPizza.Events;
-using PlantBasedPizza.Shared.Events;
 using PlantBasedPizza.Shared.Logging;
 using Xunit;
 

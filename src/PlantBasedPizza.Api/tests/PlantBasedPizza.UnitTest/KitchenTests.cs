@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using PlantBasedPizza.Kitchen.Core.Adapters;
 using PlantBasedPizza.Kitchen.Core.Entities;
-using PlantBasedPizza.Recipes.Core.Entities;
 using PlantBasedPizza.UnitTest.Builders;
 using Xunit;
 

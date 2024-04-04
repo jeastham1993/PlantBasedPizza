@@ -1,7 +1,8 @@
 using System.Diagnostics;
+using Microsoft.Extensions.DependencyInjection;
 using PlantBasedPizza.Shared.Logging;
 
-namespace PlantBasedPizza.Api
+namespace PlantBasedPizza.Api.Events
 {
     public static class DomainEvents
     {

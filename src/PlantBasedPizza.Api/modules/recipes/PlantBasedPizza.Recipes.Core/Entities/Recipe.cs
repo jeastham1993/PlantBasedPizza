@@ -1,10 +1,10 @@
 using System.Text.Json.Serialization;
+using PlantBasedPizza.Api.Events;
 using PlantBasedPizza.Shared.Logging;
 
 namespace PlantBasedPizza.Recipes.Core.Entities
 {
     using PlantBasedPizza.Recipes.Core.Events;
-    using PlantBasedPizza.Shared.Events;
 
     public class Recipe
     {

@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace PlantBasedPizza.Kitchen.Core.Adapters
 {
     public class OrderAdapter

@@ -1,13 +1,12 @@
-using PlantBasedPizza.Shared.Events;
 using PlantBasedPizza.Shared.Logging;
 
-namespace PlantBasedPizza.Events
+namespace PlantBasedPizza.Api.Events
 {
-    public class OrderSubmittedEvent : IDomainEvent
+    public class OrderCreatedEvent : IDomainEvent
     {
         private readonly string _eventId;
 
-        public OrderSubmittedEvent(string orderIdentifier)
+        public OrderCreatedEvent(string orderIdentifier)
         {
             this._eventId = Guid.NewGuid().ToString();
             this.EventDate = DateTime.Now;
@@ -17,7 +16,7 @@ namespace PlantBasedPizza.Events
 
         public string OrderIdentifier { get; private set; }
         
-        public string EventName => "order-manager.order-submitted";
+        public string EventName => "order-manager.order-created";
         
         public string EventVersion => "v1";
 

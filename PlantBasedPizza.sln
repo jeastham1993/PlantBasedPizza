@@ -81,6 +81,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Payments", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Payments.IntegrationTests", "src\PlantBasedPizza.Payments\tests\PlantBasedPizza.Payments.IntegrationTests\PlantBasedPizza.Payments.IntegrationTests.csproj", "{60CBA2E5-A6B8-457E-A049-5FF8E1A604BE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Api.Events", "src\PlantBasedPizza.Api\modules\PlantBasedPizza.Api.Events\PlantBasedPizza.Api.Events.csproj", "{C5971037-CE17-45E6-939E-434AC22D5519}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.LoyaltyPoints.Worker", "src\PlantBasedPizza.LoyaltyPoints\application\PlantBasedPizza.LoyaltyPoints.Worker\PlantBasedPizza.LoyaltyPoints.Worker.csproj", "{FE6FEE08-E808-43BB-9BEE-14FC48D82CA7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -119,6 +123,8 @@ Global
 		{F8DC95A1-59E3-4317-A307-2AB2D30D96C1} = {0036B08E-D3DA-4B08-941D-CEC2404C4158}
 		{8A1150ED-B4B5-4711-87B7-92C289908738} = {0036B08E-D3DA-4B08-941D-CEC2404C4158}
 		{60CBA2E5-A6B8-457E-A049-5FF8E1A604BE} = {F8DC95A1-59E3-4317-A307-2AB2D30D96C1}
+		{C5971037-CE17-45E6-939E-434AC22D5519} = {682A9C61-5D3D-466E-9EAF-C1ABF01F99D8}
+		{FE6FEE08-E808-43BB-9BEE-14FC48D82CA7} = {A58FCAD4-DD5B-4B39-B5C7-A1123CFEE5DD}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{179E35BF-4F04-4660-8F82-413DA572E7F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -205,5 +211,13 @@ Global
 		{60CBA2E5-A6B8-457E-A049-5FF8E1A604BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{60CBA2E5-A6B8-457E-A049-5FF8E1A604BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{60CBA2E5-A6B8-457E-A049-5FF8E1A604BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C5971037-CE17-45E6-939E-434AC22D5519}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5971037-CE17-45E6-939E-434AC22D5519}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5971037-CE17-45E6-939E-434AC22D5519}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5971037-CE17-45E6-939E-434AC22D5519}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE6FEE08-E808-43BB-9BEE-14FC48D82CA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE6FEE08-E808-43BB-9BEE-14FC48D82CA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE6FEE08-E808-43BB-9BEE-14FC48D82CA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE6FEE08-E808-43BB-9BEE-14FC48D82CA7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

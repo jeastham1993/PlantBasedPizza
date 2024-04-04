@@ -1,6 +1,6 @@
 namespace PlantBasedPizza.Events;
 
-public class IEventHandler
+public interface IEventHandler
 {
-    
+    Task Handle(string evtPayload);
 }

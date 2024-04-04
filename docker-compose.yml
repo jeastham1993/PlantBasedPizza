@@ -22,11 +22,19 @@ services:
     ports:
       - 8500:8500
 
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: 'rabbitmq'
+    expose:
+      - "5672"
+      - "15672"
+
   local.api:
     image: plant-based-pizza-api
     container_name: local.pizza-api
     depends_on:
       - consul
+      - rabbitmq
     ports:
       - "5051:8080"
     environment:
@@ -39,12 +47,15 @@ services:
       - ServiceDiscovery__MyUrl=http://local.api:8080
       - ServiceDiscovery__ServiceName=Api
       - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
+      - Messaging__HostName=rabbitmq
+      - Messaging__ExchangeName=local.plantbasedpizza
 
   local.loyalty-api:
     image: loyalty-api
     container_name: local.loyalty-api
     depends_on:
       - consul
+      - rabbitmq
     ports:
       - "5050:8080"
     environment:
@@ -60,6 +71,7 @@ services:
     container_name: local.loyalty-internal-api
     depends_on:
       - consul
+      - rabbitmq
     environment:
       - DatabaseConnection=mongodb://mongodb:27017
       - OtlpEndpoint=http://jaeger:4317
@@ -68,11 +80,28 @@ services:
       - ServiceDiscovery__ServiceName=LoyaltyInternalApi
       - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
 
+  local.loyalty-worker:
+    image: loyalty-worker
+    container_name: local.loyalty-worker
+    depends_on:
+      - consul
+      - rabbitmq
+    environment:
+      - DatabaseConnection=mongodb://mongodb:27017
+      - OtlpEndpoint=http://jaeger:4317
+      - Environment=local
+      - ServiceDiscovery__MyUrl=
+      - ServiceDiscovery__ServiceName=
+      - ServiceDiscovery__ConsulServiceEndpoint=
+      - Messaging__HostName=rabbitmq
+      - Messaging__ExchangeName=local.plantbasedpizza
+
   local.payment-api:
     image: payment-api
     container_name: local.payment-api
     depends_on:
       - consul
+      - rabbitmq
     environment:
       - OtlpEndpoint=http://jaeger:4317
       - Environment=local

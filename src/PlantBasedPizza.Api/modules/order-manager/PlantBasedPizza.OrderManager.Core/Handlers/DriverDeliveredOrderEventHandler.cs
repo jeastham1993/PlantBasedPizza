@@ -1,7 +1,8 @@
+using PlantBasedPizza.Api.Events;
 using PlantBasedPizza.Events;
 using PlantBasedPizza.OrderManager.Core.Entities;
+using PlantBasedPizza.OrderManager.Core.IntegrationEvents;
 using PlantBasedPizza.OrderManager.Core.Services;
-using PlantBasedPizza.Shared.Events;
 using Saunter.Attributes;
 
 namespace PlantBasedPizza.OrderManager.Core.Handlers
@@ -11,11 +12,13 @@ namespace PlantBasedPizza.OrderManager.Core.Handlers
     {
         private readonly IOrderRepository _orderRepository;
         private readonly ILoyaltyPointService _loyaltyPointService;
+        private readonly IEventPublisher _eventPublisher;
 
-        public DriverDeliveredOrderEventHandler(IOrderRepository orderRepository, ILoyaltyPointService loyaltyPointService)
+        public DriverDeliveredOrderEventHandler(IOrderRepository orderRepository, ILoyaltyPointService loyaltyPointService, IEventPublisher eventPublisher)
         {
             _orderRepository = orderRepository;
             _loyaltyPointService = loyaltyPointService;
+            _eventPublisher = eventPublisher;
         }
 
         [Channel("delivery.order-delivered")] // Creates a Channel
@@ -27,7 +30,14 @@ namespace PlantBasedPizza.OrderManager.Core.Handlers
             order.CompleteOrder();
             
             await this._orderRepository.Update(order).ConfigureAwait(false);
-            await this._loyaltyPointService.AddLoyaltyPoints(order.CustomerIdentifier, evt.OrderIdentifier, order.TotalPrice);
+            // await this._loyaltyPointService.AddLoyaltyPoints(order.CustomerIdentifier, evt.OrderIdentifier, order.TotalPrice);
+
+            await this._eventPublisher.Publish(new OrderCompletedIntegrationEventV1()
+            {
+                OrderIdentifier = order.OrderIdentifier,
+                CustomerIdentifier = order.CustomerIdentifier,
+                OrderValue = order.TotalPrice
+            });
         }
     }
 }

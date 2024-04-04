@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace PlantBasedPizza.LoyaltyPoints.Core;
+namespace PlantBasedPizza.LoyaltyPoints.Shared.Core;
 
 public class LoyaltyPointsDTO
 {

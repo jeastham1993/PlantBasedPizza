@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using PlantBasedPizza.Kitchen.Core.Adapters;
 using PlantBasedPizza.Kitchen.Core.Entities;
-using PlantBasedPizza.Recipes.Core.Entities;
 
 namespace PlantBasedPizza.UnitTest.Builders
 {

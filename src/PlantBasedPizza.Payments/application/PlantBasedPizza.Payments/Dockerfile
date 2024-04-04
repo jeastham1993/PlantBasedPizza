@@ -6,7 +6,7 @@ COPY . ./
 # Restore as distinct layers
 RUN dotnet restore PlantBasedPizza.Payments/application/PlantBasedPizza.Payments/PlantBasedPizza.Payments.csproj
 # Build and publish a release
-RUN dotnet publish PlantBasedPizza.Payments/application/PlantBasedPizza.Payments/PlantBasedPizza.Payments.csproj -c Release -o out
+RUN dotnet publish PlantBasedPizza.Payments/application/PlantBasedPizza.Payments/PlantBasedPizza.Payments.csproj -c Release -o out -r linux-arm64
 
 # Build runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:8.0

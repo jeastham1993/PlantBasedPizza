@@ -1,12 +1,12 @@
-using System;
-using PlantBasedPizza.Shared.Events;
 using PlantBasedPizza.Shared.Logging;
+using Saunter.Attributes;
 
-namespace PlantBasedPizza.Events
+namespace PlantBasedPizza.Api.Events
 {
-    public class OrderDeliveredEvent : IDomainEvent
+    [AsyncApi]
+    public class OrderBakedEvent : IDomainEvent
     {
-        public OrderDeliveredEvent(string orderIdentifier)
+        public OrderBakedEvent(string orderIdentifier)
         {
             this.EventId = Guid.NewGuid().ToString();
             this.EventDate = DateTime.Now;
@@ -14,7 +14,7 @@ namespace PlantBasedPizza.Events
             this.CorrelationId = CorrelationContext.GetCorrelationId();
         }
         
-        public string EventName => "delivery.order-delivered";
+        public string EventName => "kitchen.baked";
         
         public string EventVersion => "v1";
         

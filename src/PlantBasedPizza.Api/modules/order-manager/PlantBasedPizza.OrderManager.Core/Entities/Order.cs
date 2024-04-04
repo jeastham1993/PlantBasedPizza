@@ -1,8 +1,8 @@
 using Newtonsoft.Json;
-using PlantBasedPizza.Events;
-using PlantBasedPizza.Shared.Events;
+using PlantBasedPizza.Api.Events;
 using PlantBasedPizza.Shared.Guards;
 using PlantBasedPizza.Shared.Logging;
+using DomainEvents = PlantBasedPizza.Api.Events.DomainEvents;
 
 namespace PlantBasedPizza.OrderManager.Core.Entities
 {

@@ -1,8 +1,5 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using FluentAssertions;
-using Newtonsoft.Json;
 using PlantBasedPizza.IntegrationTests.Drivers;
 using TechTalk.SpecFlow;
 

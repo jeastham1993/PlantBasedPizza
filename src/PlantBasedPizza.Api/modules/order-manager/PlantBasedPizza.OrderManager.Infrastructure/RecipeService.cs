@@ -1,6 +1,6 @@
 using PlantBasedPizza.OrderManager.Core.Services;
 using PlantBasedPizza.Recipes.Core.Entities;
-using Recipe = PlantBasedPizza.OrderManager.Core.ViewModels.Recipe;
+using Recipe = PlantBasedPizza.OrderManager.Core.Services.Recipe;
 
 namespace PlantBasedPizza.OrderManager.Infrastructure
 {

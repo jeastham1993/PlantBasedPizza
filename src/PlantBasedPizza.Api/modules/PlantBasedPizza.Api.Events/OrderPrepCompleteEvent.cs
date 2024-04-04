@@ -1,12 +1,10 @@
-using System;
-using PlantBasedPizza.Shared.Events;
 using PlantBasedPizza.Shared.Logging;
 
-namespace PlantBasedPizza.Events
+namespace PlantBasedPizza.Api.Events
 {
-    public class OrderPreparingEvent : IDomainEvent
+    public class OrderPrepCompleteEvent : IDomainEvent
     {
-        public OrderPreparingEvent(string orderIdentifier)
+        public OrderPrepCompleteEvent(string orderIdentifier)
         {
             this.EventId = Guid.NewGuid().ToString();
             this.EventDate = DateTime.Now;
@@ -14,7 +12,7 @@ namespace PlantBasedPizza.Events
             this.CorrelationId = CorrelationContext.GetCorrelationId();
         }
         
-        public string EventName => "kitchen.prep-started";
+        public string EventName => "kitchen.prep-complete";
         
         public string EventVersion => "v1";
         

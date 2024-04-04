@@ -1,4 +1,5 @@
-using PlantBasedPizza.Api.Internal.Services;
+using PlantBasedPizza.LoyaltyPoints.Internal;
+using PlantBasedPizza.LoyaltyPoints.Internal.Services;
 using PlantBasedPizza.LoyaltyPoints.Shared;
 
 var builder = WebApplication.CreateBuilder(args);

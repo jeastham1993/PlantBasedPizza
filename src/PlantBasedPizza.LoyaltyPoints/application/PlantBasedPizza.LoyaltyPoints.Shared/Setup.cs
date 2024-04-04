@@ -2,8 +2,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
-using PlantBasedPizza.LoyaltyPoints.Adapters;
-using PlantBasedPizza.LoyaltyPoints.Core;
+using PlantBasedPizza.LoyaltyPoints.Shared.Adapters;
+using PlantBasedPizza.LoyaltyPoints.Shared.Core;
 using PlantBasedPizza.Shared;
 
 namespace PlantBasedPizza.LoyaltyPoints.Shared;
