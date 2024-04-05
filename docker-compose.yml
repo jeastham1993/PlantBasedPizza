@@ -102,6 +102,8 @@ services:
     depends_on:
       - consul
       - rabbitmq
+    ports:
+      - "5052:8080"
     environment:
       - OtlpEndpoint=http://jaeger:4317
       - Environment=local
