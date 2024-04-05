@@ -27,7 +27,8 @@ services:
     container_name: 'rabbitmq'
     expose:
       - "5672"
-      - "15672"
+    ports:
+      - "15672:15672"
 
   local.api:
     image: plant-based-pizza-api
