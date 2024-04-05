@@ -53,7 +53,7 @@ public class RabbitMqEventSubscriber
         var channel = connection.CreateModel();
         channel.ExchangeDeclare(exchange: _settings.ExchangeName, ExchangeType.Topic, durable: true);
         
-        var queue = channel.QueueDeclare(queueName).QueueName;
+        var queue = channel.QueueDeclare(queueName, durable: true, autoDelete: false).QueueName;
         
         channel.QueueBind(queue, exchange: _settings.ExchangeName, routingKey: eventName);
         
