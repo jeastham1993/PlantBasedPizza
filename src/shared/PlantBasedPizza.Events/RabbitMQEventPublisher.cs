@@ -56,8 +56,11 @@ public class RabbitMQEventPublisher : IEventPublisher
             Id = eventId,
             Data = evt,
         };
-        
-        evtWrapper.SetAttributeFromString("traceparent", Activity.Current?.Id);
+
+        if (!string.IsNullOrEmpty(Activity.Current?.Id))
+        {
+            evtWrapper.SetAttributeFromString("traceparent", Activity.Current?.Id);   
+        }
         
         this._logger.LogInformation("Publishing event {EventId} {EventVersion} with traceId {TraceId}", evtWrapper.Id, evt.EventVersion, Activity.Current?.Id);
 

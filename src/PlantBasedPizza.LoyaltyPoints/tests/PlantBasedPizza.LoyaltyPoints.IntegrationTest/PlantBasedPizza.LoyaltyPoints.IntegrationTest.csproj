@@ -40,5 +40,9 @@
             <Visible>true</Visible>
         </Compile>
     </ItemGroup>
+    
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\shared\PlantBasedPizza.Events\PlantBasedPizza.Events.csproj" />
+    </ItemGroup>
 
 </Project>

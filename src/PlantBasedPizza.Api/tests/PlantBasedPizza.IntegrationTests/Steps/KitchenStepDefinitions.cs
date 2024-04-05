@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using FluentAssertions;
 using PlantBasedPizza.IntegrationTests.Drivers;
@@ -9,16 +10,19 @@ namespace PlantBasedPizza.IntegrationTests.Steps
     [Binding]
     public sealed class KitchenStepDefinitions
     {
+        private readonly ScenarioContext _scenarioContext;
         private readonly KitchenDriver _kitchenDriver;
 
         public KitchenStepDefinitions(ScenarioContext scenarioContext)
         {
+            _scenarioContext = scenarioContext;
             this._kitchenDriver = new KitchenDriver();
         }
 
         [Then(@"an order with identifier (.*) should be added to the new kitchen requests")]
         public async Task ThenAnOrderWithIdentifierOrdShouldBeAddedToTheNewKitchenRequests(string p0)
         {
+            Activity.Current = _scenarioContext.Get<Activity>("Activity");
             await Task.Delay(TimeSpan.FromSeconds(5));
             
             var newKitchenRequests = await this._kitchenDriver.GetNew();
@@ -38,24 +42,28 @@ namespace PlantBasedPizza.IntegrationTests.Steps
         [When(@"order (.*) is marked as preparing")]
         public async Task WhenOrderOrdIsMarkedAsPreparing(string p0)
         {
+            Activity.Current = _scenarioContext.Get<Activity>("Activity");
             await this._kitchenDriver.Preparing(p0);
         }
 
         [When(@"order (.*) is marked as prep-complete")]
         public async Task WhenOrderOrdIsMarkedAsPrepComplete(string p0)
         {
+            Activity.Current = _scenarioContext.Get<Activity>("Activity");
             await this._kitchenDriver.PrepComplete(p0);
         }
         
         [When(@"order (.*) is marked as bake-complete")]
         public async Task WhenOrderOrdIsMarkedAsBakeComplete(string p0)
         {
+            Activity.Current = _scenarioContext.Get<Activity>("Activity");
             await this._kitchenDriver.BakeComplete(p0);
         }
         
         [When(@"order (.*) is marked as quality-checked")]
         public async Task WhenOrderOrdIsMarkedAsQualityChecked(string p0)
         {
+            Activity.Current = _scenarioContext.Get<Activity>("Activity");
             await this._kitchenDriver.QualityChecked(p0);
         }
 
@@ -70,6 +78,7 @@ namespace PlantBasedPizza.IntegrationTests.Steps
         [Then(@"order (.*) should appear in the baking queue")]
         public async Task ThenOrderOrdShouldAppearInTheBakingQueueQueue(string p0)
         {
+            Activity.Current = _scenarioContext.Get<Activity>("Activity");
             await Task.Delay(TimeSpan.FromSeconds(5));
             
             var requests = await this._kitchenDriver.GetBaking();
@@ -80,6 +89,7 @@ namespace PlantBasedPizza.IntegrationTests.Steps
         [Then(@"order (.*) should appear in the quality check queue")]
         public async Task ThenOrderOrdShouldAppearInTheQualityCheckQueue(string p0)
         {
+            Activity.Current = _scenarioContext.Get<Activity>("Activity");
             var requests = await this._kitchenDriver.GetQualityChecked();
 
             requests.Exists(p => p.OrderIdentifier == p0).Should().BeTrue();

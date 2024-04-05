@@ -1,16 +1,15 @@
-using System;
 using System.Diagnostics;
 using OpenTelemetry;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using TechTalk.SpecFlow;
 
-namespace PlantBasedPizza.IntegrationTests.Hooks;
+namespace PlantBasedPizza.Payments.IntegrationTests.Hooks;
 
 [Binding]
 public static class Hook
 {
-    private const string SERVICE_NAME = "PlantBasedPizzaApiIntegrationTests";
+    private const string SERVICE_NAME = "PaymentIntegrationTests";
     
     public static ActivitySource Source { get; private set; }
     public static TracerProvider TracerProvider { get; private set; }

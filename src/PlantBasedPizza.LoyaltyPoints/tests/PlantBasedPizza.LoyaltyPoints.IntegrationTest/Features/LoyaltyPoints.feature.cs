@@ -83,11 +83,11 @@ namespace PlantBasedPizza.LoyaltyPoints.IntegrationTest.Features
         [Xunit.SkippableFactAttribute(DisplayName="Can add loyalty points")]
         [Xunit.TraitAttribute("FeatureTitle", "LoyaltyPoints")]
         [Xunit.TraitAttribute("Description", "Can add loyalty points")]
-        [Xunit.TraitAttribute("Category", "LoyaltyPoints")]
+        [Xunit.TraitAttribute("Category", "CanAddLoyaltyPoints")]
         public void CanAddLoyaltyPoints()
         {
             string[] tagsOfScenario = new string[] {
-                    "LoyaltyPoints"};
+                    "CanAddLoyaltyPoints"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Can add loyalty points", null, tagsOfScenario, argumentsOfScenario, featureTags);
 #line 4
@@ -114,11 +114,11 @@ this.ScenarioInitialize(scenarioInfo);
         [Xunit.SkippableFactAttribute(DisplayName="Can spend loyalty points")]
         [Xunit.TraitAttribute("FeatureTitle", "LoyaltyPoints")]
         [Xunit.TraitAttribute("Description", "Can spend loyalty points")]
-        [Xunit.TraitAttribute("Category", "LoyaltyPoints")]
+        [Xunit.TraitAttribute("Category", "CanSpendLoyaltyPoints")]
         public void CanSpendLoyaltyPoints()
         {
             string[] tagsOfScenario = new string[] {
-                    "LoyaltyPoints"};
+                    "CanSpendLoyaltyPoints"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Can spend loyalty points", null, tagsOfScenario, argumentsOfScenario, featureTags);
 #line 9

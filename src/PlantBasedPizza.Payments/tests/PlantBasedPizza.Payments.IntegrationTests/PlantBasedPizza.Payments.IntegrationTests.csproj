@@ -44,5 +44,9 @@
     <ItemGroup>
       <Folder Include="ViewModels\" />
     </ItemGroup>
+    
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\shared\PlantBasedPizza.Events\PlantBasedPizza.Events.csproj" />
+    </ItemGroup>
 
 </Project>

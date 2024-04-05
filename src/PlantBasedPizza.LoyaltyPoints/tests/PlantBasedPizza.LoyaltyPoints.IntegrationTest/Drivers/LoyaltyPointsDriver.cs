@@ -1,8 +1,12 @@
 using System.Text;
 using System.Text.Json;
 using Grpc.Net.Client;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using PlantBasedPizza.Events;
 using PlantBasedPizza.LoyaltyPoints.IntegrationTest.LoyaltyClient;
 using PlantBasedPizza.LoyaltyPoints.IntegrationTest.ViewModels;
+using Serilog.Extensions.Logging;
 
 namespace PlantBasedPizza.LoyaltyPoints.IntegrationTest.Drivers;
 
@@ -11,29 +15,33 @@ public class LoyaltyPointsDriver
         private static string BaseUrl = TestConstants.DefaultTestUrl;
 
         private readonly HttpClient _httpClient;
-        private readonly Loyalty.LoyaltyClient _loyaltyClient;
+        private readonly IEventPublisher _eventPublisher;
 
         public LoyaltyPointsDriver()
         {
             this._httpClient = new HttpClient();
 
             var channel = GrpcChannel.ForAddress(TestConstants.InternalTestEndpoint);
-            this._loyaltyClient = new Loyalty.LoyaltyClient(channel);
+            new Loyalty.LoyaltyClient(channel);
+
+            _eventPublisher = new RabbitMQEventPublisher(new OptionsWrapper<RabbitMqSettings>(new RabbitMqSettings()
+            {
+                ExchangeName = "dev-loyalty-points",
+                HostName = "localhost"
+            }), new Logger<RabbitMQEventPublisher>(new SerilogLoggerFactory()));
         }
 
         public async Task AddLoyaltyPoints(string customerIdentifier, string orderIdentifier, decimal orderValue)
         {
-            var res = await this._loyaltyClient.AddLoyaltyPointsAsync(new AddLoyaltyPointsRequest()
+            await this._eventPublisher.Publish(new OrderCompletedIntegrationEventV1()
             {
                 CustomerIdentifier = customerIdentifier,
                 OrderIdentifier = orderIdentifier,
-                OrderValue = (double)orderValue
+                OrderValue = orderValue
             });
 
-            if (res is null)
-            {
-                throw new Exception($"Failure adding loyalty points");
-            }
+            // Delay to allow for message processing
+            await Task.Delay(TimeSpan.FromSeconds(2));
         }
 
         public async Task<LoyaltyPointsDTO?> GetLoyaltyPoints(string customerIdentifier)
