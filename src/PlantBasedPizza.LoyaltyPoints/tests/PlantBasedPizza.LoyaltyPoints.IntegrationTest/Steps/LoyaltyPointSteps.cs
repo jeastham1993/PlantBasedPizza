@@ -31,8 +31,10 @@ public sealed class LoyaltyPointSteps
         Activity.Current = _scenarioContext.Get<Activity>("Activity");
         
         var points = await this._driver.GetLoyaltyPoints(customerIdentifier);
+        var internalPoints = await this._driver.GetLoyaltyPointsInternal(customerIdentifier);
 
         points.TotalPoints.Should().Be(totalPoints);
+        internalPoints.TotalPoints.Should().Be(totalPoints);
     }
 
     [When(@"(.*) points are spent for customer (.*) for order (.*)")]

@@ -21,6 +21,11 @@ services:
     image: hashicorp/consul:latest
     ports:
       - 8500:8500
+  
+  cache:
+    image: redis:7.2
+    ports:
+      - '6379:6379'
 
   rabbitmq:
     image: rabbitmq:3-management-alpine
@@ -42,12 +47,32 @@ services:
       - DatabaseConnection=mongodb://mongodb:27017
       - OtlpEndpoint=http://jaeger:4317
       - Environment=local
+      - RedisConnectionString=cache
       - Services__Loyalty=http://LoyaltyApi
       - Services__LoyaltyInternal=http://LoyaltyInternalApi
       - Services__PaymentInternal=http://PaymentApi
       - ServiceDiscovery__MyUrl=http://local.api:8080
       - ServiceDiscovery__ServiceName=Api
       - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
+      - Messaging__HostName=rabbitmq
+      - Messaging__ExchangeName=local.plantbasedpizza
+
+  local.orders-worker:
+    image: plant-based-orders-worker
+    container_name: local.orders-worker
+    depends_on:
+      - consul
+      - rabbitmq
+    ports:
+      - "5051:8080"
+    environment:
+      - DatabaseConnection=mongodb://mongodb:27017
+      - OtlpEndpoint=http://jaeger:4317
+      - RedisConnectionString=cache
+      - Environment=local
+      - ServiceDiscovery__MyUrl=
+      - ServiceDiscovery__ServiceName=
+      - ServiceDiscovery__ConsulServiceEndpoint=
       - Messaging__HostName=rabbitmq
       - Messaging__ExchangeName=local.plantbasedpizza
 

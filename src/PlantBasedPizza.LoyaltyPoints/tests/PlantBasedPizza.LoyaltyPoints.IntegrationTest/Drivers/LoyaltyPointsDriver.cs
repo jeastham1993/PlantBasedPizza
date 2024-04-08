@@ -16,17 +16,18 @@ public class LoyaltyPointsDriver
 
         private readonly HttpClient _httpClient;
         private readonly IEventPublisher _eventPublisher;
+        private readonly Loyalty.LoyaltyClient _loyaltyClient;
 
         public LoyaltyPointsDriver()
         {
             this._httpClient = new HttpClient();
 
             var channel = GrpcChannel.ForAddress(TestConstants.InternalTestEndpoint);
-            new Loyalty.LoyaltyClient(channel);
+            this._loyaltyClient = new Loyalty.LoyaltyClient(channel);
 
             _eventPublisher = new RabbitMQEventPublisher(new OptionsWrapper<RabbitMqSettings>(new RabbitMqSettings()
             {
-                ExchangeName = "dev-loyalty-points",
+                ExchangeName = "dev.loyalty",
                 HostName = "localhost"
             }), new Logger<RabbitMQEventPublisher>(new SerilogLoggerFactory()));
         }
@@ -42,6 +43,20 @@ public class LoyaltyPointsDriver
 
             // Delay to allow for message processing
             await Task.Delay(TimeSpan.FromSeconds(2));
+        }
+
+        public async Task<LoyaltyPointsDTO?> GetLoyaltyPointsInternal(string customerIdentifier)
+        {
+            var points = await this._loyaltyClient.GetCustomerLoyaltyPointsAsync(new GetCustomerLoyaltyPointsRequest()
+            {
+                CustomerIdentifier = customerIdentifier
+            });
+
+            return new LoyaltyPointsDTO()
+            {
+                CustomerIdentifier = points.CustomerIdentifier,
+                TotalPoints = Convert.ToDecimal(points.TotalPoints)
+            };
         }
 
         public async Task<LoyaltyPointsDTO?> GetLoyaltyPoints(string customerIdentifier)

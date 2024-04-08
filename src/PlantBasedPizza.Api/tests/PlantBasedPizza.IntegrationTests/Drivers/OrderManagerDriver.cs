@@ -3,9 +3,14 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using PlantBasedPizza.Events;
 using PlantBasedPizza.IntegrationTests.Requests;
 using PlantBasedPizza.IntegrationTests.ViewModels;
+using RabbitMQ.Client.Events;
+using Serilog.Extensions.Logging;
 
 namespace PlantBasedPizza.IntegrationTests.Drivers
 {

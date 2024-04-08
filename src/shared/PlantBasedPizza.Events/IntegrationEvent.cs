@@ -6,5 +6,5 @@ public abstract class IntegrationEvent
     
     public abstract string EventVersion { get; }
     
-    public abstract string Source { get; }
+    public abstract Uri Source { get; }
 }

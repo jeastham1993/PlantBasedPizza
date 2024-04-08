@@ -7,10 +7,23 @@ namespace PlantBasedPizza.LoyaltyPoints.Internal.Services;
 public class LoyaltyService : Loyalty.LoyaltyBase
 {
     private readonly AddLoyaltyPointsCommandHandler _handler;
+    private readonly ICustomerLoyaltyPointsRepository _repository;
 
-    public LoyaltyService(AddLoyaltyPointsCommandHandler handler)
+    public LoyaltyService(AddLoyaltyPointsCommandHandler handler, ICustomerLoyaltyPointsRepository repository)
     {
         _handler = handler;
+        _repository = repository;
+    }
+
+    public override async Task<GetCustomerLoyaltyPointsReply> GetCustomerLoyaltyPoints(GetCustomerLoyaltyPointsRequest request, ServerCallContext context)
+    {
+        var loyaltyPoints = await this._repository.GetCurrentPointsFor(request.CustomerIdentifier);
+
+        return new GetCustomerLoyaltyPointsReply()
+        {
+            CustomerIdentifier = request.CustomerIdentifier,
+            TotalPoints = Convert.ToDouble(loyaltyPoints?.TotalPoints ?? 0)
+        };
     }
 
     public override async Task<AddLoyaltyPointsReply> AddLoyaltyPoints(AddLoyaltyPointsRequest request, ServerCallContext context)

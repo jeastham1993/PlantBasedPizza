@@ -14,12 +14,13 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
     {
         private readonly IOrderRepository _orderRepository;
         private readonly IPaymentService _paymentService;
+        private readonly ILoyaltyPointService _loyaltyPointService;
         private readonly CollectOrderCommandHandler _collectOrderCommandHandler;
         private readonly AddItemToOrderHandler _addItemToOrderHandler;
         private readonly CreateDeliveryOrderCommandHandler _createDeliveryOrderCommandHandler;
         private readonly CreatePickupOrderCommandHandler _createPickupOrderCommandHandler;
 
-        public OrderController(IOrderRepository orderRepository, CollectOrderCommandHandler collectOrderCommandHandler, AddItemToOrderHandler addItemToOrderHandler, CreateDeliveryOrderCommandHandler createDeliveryOrderCommandHandler, CreatePickupOrderCommandHandler createPickupOrderCommandHandler, IPaymentService paymentService)
+        public OrderController(IOrderRepository orderRepository, CollectOrderCommandHandler collectOrderCommandHandler, AddItemToOrderHandler addItemToOrderHandler, CreateDeliveryOrderCommandHandler createDeliveryOrderCommandHandler, CreatePickupOrderCommandHandler createPickupOrderCommandHandler, IPaymentService paymentService, ILoyaltyPointService loyaltyPointService)
         {
             _orderRepository = orderRepository;
             _collectOrderCommandHandler = collectOrderCommandHandler;
@@ -27,6 +28,7 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
             _createDeliveryOrderCommandHandler = createDeliveryOrderCommandHandler;
             _createPickupOrderCommandHandler = createPickupOrderCommandHandler;
             _paymentService = paymentService;
+            _loyaltyPointService = loyaltyPointService;
         }
 
         /// <summary>
@@ -103,7 +105,9 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
             var order = await this._orderRepository.Retrieve(orderIdentifier);
 
             await this._paymentService.TakePaymentFor(order);
-
+            var loyaltyPoints = await this._loyaltyPointService.GetCustomerLoyaltyPoints(order.CustomerIdentifier);
+            
+            order.AddCustomerLoyaltyPoints(loyaltyPoints);
             order.SubmitOrder();
 
             await this._orderRepository.Update(order);

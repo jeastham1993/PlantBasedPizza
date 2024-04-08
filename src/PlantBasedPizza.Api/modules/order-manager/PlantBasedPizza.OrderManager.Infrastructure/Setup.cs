@@ -81,6 +81,12 @@ namespace PlantBasedPizza.OrderManager.Infrastructure
                     channel.ServiceConfig = new ServiceConfig() { MethodConfigs = { defaultMethodConfig } };
                 });
             
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = configuration["RedisConnectionString"];
+                options.InstanceName = "Orders";
+            });
+            
             services.AddSingleton<IOrderRepository, OrderRepository>();
             services.AddSingleton<CollectOrderCommandHandler>();
             services.AddSingleton<AddItemToOrderHandler>();

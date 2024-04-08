@@ -8,13 +8,11 @@ namespace PlantBasedPizza.OrderManager.Core.CollectOrder;
 public class CollectOrderCommandHandler
 {
     private readonly IOrderRepository _orderRepository;
-    private readonly ILoyaltyPointService _loyaltyPointService;
     private readonly IEventPublisher _eventPublisher;
 
     public CollectOrderCommandHandler(IOrderRepository orderRepository, ILoyaltyPointService loyaltyPointService, IEventPublisher eventPublisher)
     {
         _orderRepository = orderRepository;
-        _loyaltyPointService = loyaltyPointService;
         _eventPublisher = eventPublisher;
     }
     
@@ -30,11 +28,6 @@ public class CollectOrderCommandHandler
             }
 
             existingOrder.CompleteOrder();
-            
-            // await this._loyaltyPointService.AddLoyaltyPoints(
-            //     existingOrder.CustomerIdentifier,
-            //     existingOrder.OrderIdentifier,
-            //     existingOrder.TotalPrice);
 
             await this._eventPublisher.Publish(new OrderCompletedIntegrationEventV1()
             {

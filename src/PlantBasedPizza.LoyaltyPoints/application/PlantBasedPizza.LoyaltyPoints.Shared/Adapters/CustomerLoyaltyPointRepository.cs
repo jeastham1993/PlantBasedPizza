@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using MongoDB.Driver;
+using PlantBasedPizza.Events;
 using PlantBasedPizza.LoyaltyPoints.Shared.Core;
 
 namespace PlantBasedPizza.LoyaltyPoints.Shared.Adapters;
@@ -7,9 +8,11 @@ namespace PlantBasedPizza.LoyaltyPoints.Shared.Adapters;
 public class CustomerLoyaltyPointRepository : ICustomerLoyaltyPointsRepository
 {
     private readonly IMongoCollection<CustomerLoyaltyPoints> _loyaltyPoints;
+    private readonly IEventPublisher _eventPublisher;
 
-    public CustomerLoyaltyPointRepository(MongoClient client)
+    public CustomerLoyaltyPointRepository(MongoClient client, IEventPublisher eventPublisher)
     {
+        _eventPublisher = eventPublisher;
         var database = client.GetDatabase("LoyaltyPoints");
         this._loyaltyPoints = database.GetCollection<CustomerLoyaltyPoints>("loyalty");
     }
@@ -37,5 +40,11 @@ public class CustomerLoyaltyPointRepository : ICustomerLoyaltyPointsRepository
             .Set(loyaltyPoint => loyaltyPoint.History, points.History);
 
         await this._loyaltyPoints.UpdateOneAsync(queryBuilder, updateDefinition, new UpdateOptions() { IsUpsert = true });
+
+        await this._eventPublisher.Publish(new CustomerLoyaltyPointsUpdated()
+        {
+            CustomerIdentifier = points.CustomerId,
+            TotalLoyaltyPoints = points.TotalPoints
+        });
     }
 }

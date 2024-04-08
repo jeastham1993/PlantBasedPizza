@@ -11,13 +11,11 @@ namespace PlantBasedPizza.OrderManager.Core.Handlers
     public class DriverDeliveredOrderEventHandler : Handles<OrderDeliveredEvent>
     {
         private readonly IOrderRepository _orderRepository;
-        private readonly ILoyaltyPointService _loyaltyPointService;
         private readonly IEventPublisher _eventPublisher;
 
         public DriverDeliveredOrderEventHandler(IOrderRepository orderRepository, ILoyaltyPointService loyaltyPointService, IEventPublisher eventPublisher)
         {
             _orderRepository = orderRepository;
-            _loyaltyPointService = loyaltyPointService;
             _eventPublisher = eventPublisher;
         }
 
@@ -30,7 +28,6 @@ namespace PlantBasedPizza.OrderManager.Core.Handlers
             order.CompleteOrder();
             
             await this._orderRepository.Update(order).ConfigureAwait(false);
-            // await this._loyaltyPointService.AddLoyaltyPoints(order.CustomerIdentifier, evt.OrderIdentifier, order.TotalPrice);
 
             await this._eventPublisher.Publish(new OrderCompletedIntegrationEventV1()
             {

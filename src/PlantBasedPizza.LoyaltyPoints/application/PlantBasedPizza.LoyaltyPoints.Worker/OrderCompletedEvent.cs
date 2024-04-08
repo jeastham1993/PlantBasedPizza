@@ -11,5 +11,5 @@ public class OrderCompletedEvent : IntegrationEvent
     public decimal OrderValue { get; set; }
     public override string EventName => "order.orderCompleted";
     public override string EventVersion => "v1";
-    public override string Source => "https://orders.plantbasedpizza";
+    public override Uri Source => new Uri("https://orders.plantbasedpizza");
 }

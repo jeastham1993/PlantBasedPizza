@@ -50,7 +50,7 @@ public class RabbitMQEventPublisher : IEventPublisher
         var evtWrapper = new CloudEvent
         {
             Type = queueName,
-            Source = new Uri(evt.Source),
+            Source = evt.Source,
             Time = DateTimeOffset.Now,
             DataContentType = "application/json",
             Id = eventId,
