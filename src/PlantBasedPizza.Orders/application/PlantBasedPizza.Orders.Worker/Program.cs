@@ -2,8 +2,10 @@ using Microsoft.AspNetCore.Builder;
 using PlantBasedPizza.Events;
 using PlantBasedPizza.Orders.Worker;
 using PlantBasedPizza.Shared;
+using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Configuration.AddEnvironmentVariables();
 
 var serviceName = "OrdersWorker";
 
@@ -15,6 +17,11 @@ builder.Services.AddStackExchangeRedisCache(options =>
 {
     options.Configuration = builder.Configuration["RedisConnectionString"];
     options.InstanceName = "Orders";
+    options.ConfigurationOptions = new ConfigurationOptions()
+    {
+        AbortOnConnectFail = false,
+        ConnectRetry = 10
+    };
 });
 
 builder.Services.AddHostedService<LoyaltyPointsUpdatedCacheWorker>();

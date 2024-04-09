@@ -19,7 +19,7 @@ public class OrdersTestDriver
             {
                 ExchangeName = "dev.plantbasedpizza",
                 HostName = "localhost"
-            }), new Logger<RabbitMQEventPublisher>(new SerilogLoggerFactory()));
+            }), new Logger<RabbitMQEventPublisher>(new SerilogLoggerFactory()),  new RabbitMQConnection("localhost"));
         }
 
         public async Task SimulateLoyaltyPointsUpdatedEvent(string customerIdentifier, decimal totalPoints)

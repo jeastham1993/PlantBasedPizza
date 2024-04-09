@@ -29,7 +29,7 @@ public class LoyaltyPointsDriver
             {
                 ExchangeName = "dev.loyalty",
                 HostName = "localhost"
-            }), new Logger<RabbitMQEventPublisher>(new SerilogLoggerFactory()));
+            }), new Logger<RabbitMQEventPublisher>(new SerilogLoggerFactory()), new RabbitMQConnection("localhost"));
         }
 
         public async Task AddLoyaltyPoints(string customerIdentifier, string orderIdentifier, decimal orderValue)

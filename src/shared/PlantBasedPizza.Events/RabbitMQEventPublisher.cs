@@ -16,17 +16,11 @@ public class RabbitMQEventPublisher : IEventPublisher
     private readonly IConnection _connection;
     private readonly ILogger<RabbitMQEventPublisher> _logger;
     
-    public RabbitMQEventPublisher(IOptions<RabbitMqSettings> settings, ILogger<RabbitMQEventPublisher> logger)
+    public RabbitMQEventPublisher(IOptions<RabbitMqSettings> settings, ILogger<RabbitMQEventPublisher> logger, RabbitMQConnection connection)
     {
         _logger = logger;
+        _connection = connection.Connection;
         _rabbitMqSettings = settings.Value;
-
-        var factory = new ConnectionFactory()
-        {
-            HostName = _rabbitMqSettings.HostName
-        };
-
-        _connection = factory.CreateConnection();
     }
     
     public async Task Publish(IntegrationEvent evt)

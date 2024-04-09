@@ -41,6 +41,7 @@ services:
     depends_on:
       - consul
       - rabbitmq
+      - cache
     ports:
       - "5051:8080"
     environment:
@@ -63,8 +64,7 @@ services:
     depends_on:
       - consul
       - rabbitmq
-    ports:
-      - "5051:8080"
+      - cache
     environment:
       - DatabaseConnection=mongodb://mongodb:27017
       - OtlpEndpoint=http://jaeger:4317
@@ -91,6 +91,8 @@ services:
       - ServiceDiscovery__MyUrl=http://local.loyalty-api:8080
       - ServiceDiscovery__ServiceName=LoyaltyApi
       - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
+      - Messaging__HostName=rabbitmq
+      - Messaging__ExchangeName=local.plantbasedpizza
 
   local.loyalty-internal-api:
     image: loyalty-internal-api
@@ -105,6 +107,8 @@ services:
       - ServiceDiscovery__MyUrl=http://local.loyalty-internal-api:8080
       - ServiceDiscovery__ServiceName=LoyaltyInternalApi
       - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
+      - Messaging__HostName=rabbitmq
+      - Messaging__ExchangeName=local.plantbasedpizza
 
   local.loyalty-worker:
     image: loyalty-worker

@@ -13,14 +13,12 @@ public class LoyaltyPointsUpdatedCacheWorker : BackgroundService
     private readonly RabbitMqEventSubscriber _eventSubscriber;
     private readonly ActivitySource _source;
     private readonly IDistributedCache _distributedCache;
-    private readonly IDatabase _cache;
 
     public LoyaltyPointsUpdatedCacheWorker(RabbitMqEventSubscriber eventSubscriber, ActivitySource source, IDistributedCache distributedCache)
     {
         _eventSubscriber = eventSubscriber;
         _source = source;
         _distributedCache = distributedCache;
-        _cache = ConnectionMultiplexer.Connect("localhost").GetDatabase();
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)

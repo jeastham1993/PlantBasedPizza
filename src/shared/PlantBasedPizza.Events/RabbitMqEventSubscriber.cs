@@ -12,45 +12,18 @@ namespace PlantBasedPizza.Events;
 
 public class RabbitMqEventSubscriber
 {
-    private readonly ILogger<RabbitMqEventSubscriber> _logger;
+    private readonly RabbitMQConnection _connection;
     private readonly RabbitMqSettings _settings;
 
-    public RabbitMqEventSubscriber(ILogger<RabbitMqEventSubscriber> logger, IOptions<RabbitMqSettings> settings)
+    public RabbitMqEventSubscriber(RabbitMQConnection connection, ILogger<RabbitMqEventSubscriber> logger, IOptions<RabbitMqSettings> settings)
     {
-        _logger = logger;
+        _connection = connection;
         _settings = settings.Value;
     }
 
-    public async Task<RetrieveEventConsumerResponse> CreateEventConsumer(string queueName, string eventName)
+    public RetrieveEventConsumerResponse CreateEventConsumer(string queueName, string eventName)
     {
-        var connectionRetry = 3;
-
-        IConnection? connection = null;
-
-        while (connectionRetry > 0)
-        {
-            try
-            {
-                this._logger.LogError($"Connecting to '{_settings.HostName}'");
-                
-                var factory = new ConnectionFactory()
-                {
-                    HostName = _settings.HostName
-                };
-
-                connection = factory.CreateConnection();
-                break;
-            }
-            catch (BrokerUnreachableException e)
-            {
-                connectionRetry--;
-                this._logger.LogError($"Broker unreachable, retrying {connectionRetry} more time(s)", e);
-                
-                await Task.Delay(TimeSpan.FromSeconds(2));
-            }   
-        }
-        
-        var channel = connection.CreateModel();
+        var channel = this._connection.Connection.CreateModel();
         channel.ExchangeDeclare(exchange: _settings.ExchangeName, ExchangeType.Topic, durable: true);
         
         var queue = channel.QueueDeclare(queueName, durable: true, autoDelete: false, exclusive: false).QueueName;
