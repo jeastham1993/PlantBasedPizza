@@ -23,7 +23,7 @@ public class RabbitMQEventPublisher : IEventPublisher
         _rabbitMqSettings = settings.Value;
     }
     
-    public async Task Publish(IntegrationEvent evt)
+    public Task Publish(IntegrationEvent evt)
     {
         var channel = _connection.CreateModel();
 
@@ -53,7 +53,7 @@ public class RabbitMQEventPublisher : IEventPublisher
 
         if (!string.IsNullOrEmpty(Activity.Current?.Id))
         {
-            evtWrapper.SetAttributeFromString("traceparent", Activity.Current?.Id);   
+            evtWrapper.SetAttributeFromString("traceparent", Activity.Current?.Id!);   
         }
         
         this._logger.LogInformation("Publishing event {EventId} {EventVersion} with traceId {TraceId}", evtWrapper.Id, evt.EventVersion, Activity.Current?.Id);
@@ -70,5 +70,7 @@ public class RabbitMQEventPublisher : IEventPublisher
         
         //put the data on to the product queue
         channel.BasicPublish(exchange: _rabbitMqSettings.ExchangeName, routingKey: $"{evt.EventName}.{evt.EventVersion}", body: body);
+
+        return Task.CompletedTask;
     }
 }

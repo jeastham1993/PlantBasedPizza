@@ -25,8 +25,7 @@ public class LoyaltyPointsUpdatedCacheWorker : BackgroundService
     {
         var queueName = "orders-loyaltyPointsUpdated-worker";
 
-        var subscription =
-            await this._eventSubscriber.CreateEventConsumer(queueName, "loyalty.customerLoyaltyPointsUpdated.v1");
+        var subscription = this._eventSubscriber.CreateEventConsumer(queueName, "loyalty.customerLoyaltyPointsUpdated.v1");
         
         subscription.Consumer.Received += async (model, ea) =>
         {

@@ -31,7 +31,7 @@ public class Worker : BackgroundService
     {
         var queueName = "loyaltypoints-ordercompleted-worker";
         
-        var eventConsumer = await _subscriber.CreateEventConsumer(queueName, "order.orderCompleted.v1");
+        var eventConsumer = _subscriber.CreateEventConsumer(queueName, "order.orderCompleted.v1");
         
         eventConsumer.Consumer.Received += async (model, ea) =>
         {

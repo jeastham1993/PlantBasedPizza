@@ -2,7 +2,7 @@ namespace PlantBasedPizza.Events;
 
 public class RabbitMqSettings
 {
-    public string HostName { get; set; }
-    
-    public string ExchangeName { get; set; }
+    public string HostName { get; set; } = "localhost";
+
+    public string ExchangeName { get; set; } = "";
 }

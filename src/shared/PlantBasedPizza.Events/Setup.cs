@@ -13,7 +13,7 @@ public static class Setup
 
         if (hostName is null)
         {
-            throw new EventBusConnectionException(null, "Host name is null");
+            throw new EventBusConnectionException("", "Host name is null");
         }
         
         services.AddSingleton(new RabbitMQConnection(hostName!));

@@ -56,8 +56,8 @@ public class RabbitMqEventSubscriber
         {
             EventData = evtData,
             TraceParent = traceParent,
-            QueueTime = (DateTimeOffset.Now - evtWrapper.Time.Value).Milliseconds,
-            EventId = evtWrapper.Id
+            QueueTime = (DateTimeOffset.Now - evtWrapper.Time!.Value).Milliseconds,
+            EventId = evtWrapper.Id!
         };
     }
 }
