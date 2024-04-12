@@ -2,9 +2,9 @@ using PlantBasedPizza.Deliver.Core.Entities;
 
 namespace PlantBasedPizza.Deliver.Core.GetDelivery;
 
-public record AddressDTO
+public record AddressDto
 {
-    public AddressDTO(Address address)
+    public AddressDto(Address address)
     {
         this.AddressLine1 = address.AddressLine1;
         this.AddressLine2 = address.AddressLine2;

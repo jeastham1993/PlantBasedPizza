@@ -61,7 +61,7 @@ namespace PlantBasedPizza.IntegrationTests.Drivers
                 OrderIdentifier = orderIdentifier
             });
 
-            var result = await this._httpClient.PostAsync(new Uri(url), new StringContent(content, Encoding.UTF8, "application/json")).ConfigureAwait(false);
+            await this._httpClient.PostAsync(new Uri(url), new StringContent(content, Encoding.UTF8, "application/json")).ConfigureAwait(false);
         }
 
         public async Task<List<DeliveryRequest>> GetAssignedDeliveriesForDriver(string driverName)

@@ -6,7 +6,7 @@ public class CustomerLoyaltyPointsUpdated : IntegrationEvent
 {
     public override string EventName => "loyalty.customerLoyaltyPointsUpdated";
     public override string EventVersion => "v1";
-    public override Uri Source => new Uri("https://loyalty.plantbasedpizza");
+    public override Uri Source => new("https://loyalty.plantbasedpizza");
     
     public string CustomerIdentifier { get; set; }
     

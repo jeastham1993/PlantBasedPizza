@@ -14,13 +14,10 @@ public class CreateDeliveryOrderCommandHandler
 
     public async Task<OrderDto?> Handle(CreateDeliveryOrder request)
     {
-        try
+        if (await this._orderRepository.Exists(request.OrderIdentifier))
         {
-            var existingOrder = await _orderRepository.Retrieve(request.OrderIdentifier);
-
             return null;
         }
-        catch (OrderNotFoundException){}
 
         var order = Order.Create(request.OrderIdentifier, request.OrderType, request.CustomerIdentifier,
             new DeliveryDetails

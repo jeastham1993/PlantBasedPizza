@@ -47,7 +47,7 @@ app.MapGet("/loyalty/{customerIdentifier}", async (string customerIdentifier) =>
         return Results.NotFound(customerIdentifier);
     }
 
-    return Results.Ok(new LoyaltyPointsDTO(loyalty));
+    return Results.Ok(new LoyaltyPointsDto(loyalty));
 });
 
 app.Run();

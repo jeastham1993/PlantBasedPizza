@@ -5,7 +5,7 @@ using Saunter.Attributes;
 namespace PlantBasedPizza.OrderManager.Core.Handlers
 {
     [AsyncApi("OrderManager")]
-    public class DriverCollectedOrderEventHandler : Handles<DriverCollectedOrderEvent>
+    public class DriverCollectedOrderEventHandler : IHandles<DriverCollectedOrderEvent>
     {
         private readonly IOrderRepository _orderRepository;
 

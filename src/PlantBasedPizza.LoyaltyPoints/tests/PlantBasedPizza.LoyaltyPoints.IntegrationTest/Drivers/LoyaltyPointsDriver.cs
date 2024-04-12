@@ -45,27 +45,27 @@ public class LoyaltyPointsDriver
             await Task.Delay(TimeSpan.FromSeconds(2));
         }
 
-        public async Task<LoyaltyPointsDTO?> GetLoyaltyPointsInternal(string customerIdentifier)
+        public async Task<LoyaltyPointsDto?> GetLoyaltyPointsInternal(string customerIdentifier)
         {
             var points = await this._loyaltyClient.GetCustomerLoyaltyPointsAsync(new GetCustomerLoyaltyPointsRequest()
             {
                 CustomerIdentifier = customerIdentifier
             });
 
-            return new LoyaltyPointsDTO()
+            return new LoyaltyPointsDto()
             {
                 CustomerIdentifier = points.CustomerIdentifier,
                 TotalPoints = Convert.ToDecimal(points.TotalPoints)
             };
         }
 
-        public async Task<LoyaltyPointsDTO?> GetLoyaltyPoints(string customerIdentifier)
+        public async Task<LoyaltyPointsDto?> GetLoyaltyPoints(string customerIdentifier)
         {
             var url = $"{BaseUrl}/loyalty/{customerIdentifier}";
             
             var getResult = await this._httpClient.GetAsync(new Uri(url)).ConfigureAwait(false);
 
-            return JsonSerializer.Deserialize<LoyaltyPointsDTO>(await getResult.Content.ReadAsStringAsync());
+            return JsonSerializer.Deserialize<LoyaltyPointsDto>(await getResult.Content.ReadAsStringAsync());
         }
 
         public async Task SpendLoyaltyPoints(string customerIdentifier, string orderIdentifier, int points)

@@ -5,7 +5,7 @@ using Saunter.Attributes;
 namespace PlantBasedPizza.OrderManager.Core.Handlers
 {
     [AsyncApi]
-    public class OrderQualityCheckedEventHandler : Handles<OrderQualityCheckedEvent>
+    public class OrderQualityCheckedEventHandler : IHandles<OrderQualityCheckedEvent>
     {
         private readonly IOrderRepository _orderRepository;
 

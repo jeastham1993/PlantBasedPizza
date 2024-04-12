@@ -29,7 +29,7 @@ namespace PlantBasedPizza.Deliver.Infrastructure
             });
             
             services.AddSingleton<IDeliveryRequestRepository, DeliveryRequestRepository>();
-            services.AddSingleton<Handles<OrderReadyForDeliveryEvent>, OrderReadyForDeliveryEventHandler>();
+            services.AddSingleton<IHandles<OrderReadyForDeliveryEvent>, OrderReadyForDeliveryEventHandler>();
             services.AddSingleton<GetDeliveryQueryHandler>();
 
             return services;

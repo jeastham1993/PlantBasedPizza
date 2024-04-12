@@ -14,7 +14,7 @@ public class AddLoyaltyPointsCommandHandler
         _logger = logger;
     }
 
-    public async Task<LoyaltyPointsDTO> Handle(AddLoyaltyPointsCommand command)
+    public async Task<LoyaltyPointsDto> Handle(AddLoyaltyPointsCommand command)
     {
         this._logger.LogInformation($"Handling AddLoyaltyPointsCommand for {command.OrderIdentifier}");
         
@@ -29,6 +29,6 @@ public class AddLoyaltyPointsCommandHandler
 
         await this._customerLoyaltyPointsRepository.UpdatePoints(currentLoyaltyPoints);
 
-        return new LoyaltyPointsDTO(currentLoyaltyPoints);
+        return new LoyaltyPointsDto(currentLoyaltyPoints);
     }
 }

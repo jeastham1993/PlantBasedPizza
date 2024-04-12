@@ -19,7 +19,7 @@ public class ServiceRegistryHttpMessageHandler : DelegatingHandler
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        using var serviceDiscoverySpan = Activity.Current?.Source.StartActivity("ServiceDiscovery");
+        using var serviceDiscoverySpan = Activity.Current?.Source.StartActivity("ServiceDiscovery")!;
 
         if (string.IsNullOrEmpty(_serviceDiscoverySettings.ConsulServiceEndpoint))
         {

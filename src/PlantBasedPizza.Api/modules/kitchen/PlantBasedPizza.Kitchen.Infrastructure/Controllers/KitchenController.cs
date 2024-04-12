@@ -22,18 +22,18 @@ namespace PlantBasedPizza.Kitchen.Infrastructure.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("new")]
-        public IEnumerable<KitchenRequestDTO> GetNew()
+        public IEnumerable<KitchenRequestDto> GetNew()
         {
             try
             {
                 var queryResults = this._kitchenRequestRepository.GetNew().Result;
 
-                return queryResults.Select(p => new KitchenRequestDTO(p)).ToList();
+                return queryResults.Select(p => new KitchenRequestDto(p)).ToList();
             }
             catch (Exception ex)
             {
                 this._observabilityService.Error(ex, "Error processing");
-                return new List<KitchenRequestDTO>();
+                return new List<KitchenRequestDto>();
             }
         }
 
@@ -61,18 +61,18 @@ namespace PlantBasedPizza.Kitchen.Infrastructure.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("prep")]
-        public IEnumerable<KitchenRequestDTO> GetPrep()
+        public IEnumerable<KitchenRequestDto> GetPrep()
         {
             try
             {
                 var queryResults = this._kitchenRequestRepository.GetPrep().Result;
 
-                return queryResults.Select(p => new KitchenRequestDTO(p)).ToList();
+                return queryResults.Select(p => new KitchenRequestDto(p)).ToList();
             }
             catch (Exception ex)
             {
                 this._observabilityService.Error(ex, "Error processing");
-                return new List<KitchenRequestDTO>();
+                return new List<KitchenRequestDto>();
             }
         }
 
@@ -98,18 +98,18 @@ namespace PlantBasedPizza.Kitchen.Infrastructure.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("baking")]
-        public IEnumerable<KitchenRequestDTO> GetBaking()
+        public IEnumerable<KitchenRequestDto> GetBaking()
         {
             try
             {
                 var queryResults = this._kitchenRequestRepository.GetBaking().Result;
 
-                return queryResults.Select(p => new KitchenRequestDTO(p));
+                return queryResults.Select(p => new KitchenRequestDto(p));
             }
             catch (Exception ex)
             {
                 this._observabilityService.Error(ex, "Error processing");
-                return new List<KitchenRequestDTO>();
+                return new List<KitchenRequestDto>();
             }
         }
 
@@ -152,18 +152,18 @@ namespace PlantBasedPizza.Kitchen.Infrastructure.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("quality-check")]
-        public IEnumerable<KitchenRequestDTO> GetAwaitingQualityCheck()
+        public IEnumerable<KitchenRequestDto> GetAwaitingQualityCheck()
         {
             try
             {
                 var queryResults = this._kitchenRequestRepository.GetAwaitingQualityCheck().Result;
 
-                return queryResults.Select(p => new KitchenRequestDTO(p));
+                return queryResults.Select(p => new KitchenRequestDto(p));
             }
             catch (Exception ex)
             {
                 this._observabilityService.Error(ex, "Error processing");
-                return new List<KitchenRequestDTO>();
+                return new List<KitchenRequestDto>();
             }
         }
     }

@@ -24,7 +24,7 @@ namespace PlantBasedPizza.Deliver.Infrastructure.Controllers
         /// <param name="orderIdentifier">The identifier of the order.</param>
         /// <returns>A <see cref="DeliveryRequest"/>.</returns>
         [HttpGet("{orderIdentifier}/status")]
-        public async Task<DeliveryRequestDTO?> Get(string orderIdentifier)
+        public async Task<DeliveryRequestDto?> Get(string orderIdentifier)
         {
             return await this._getDeliveryQueryHandler.Handle(new GetDeliveryQuery(orderIdentifier));
         }

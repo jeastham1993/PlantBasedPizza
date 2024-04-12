@@ -96,12 +96,12 @@ namespace PlantBasedPizza.OrderManager.Infrastructure
             services.AddSingleton<ILoyaltyPointService, LoyaltyPointService>();
             services.AddSingleton<IPaymentService, PaymentService>();
             
-            services.AddSingleton<Handles<OrderPreparingEvent>, OrderPreparingEventHandler>();
-            services.AddSingleton<Handles<OrderPrepCompleteEvent>, OrderPrepCompleteEventHandler>();
-            services.AddSingleton<Handles<OrderBakedEvent>, OrderBakedEventHandler>();
-            services.AddSingleton<Handles<OrderQualityCheckedEvent>, OrderQualityCheckedEventHandler>();
-            services.AddSingleton<Handles<OrderDeliveredEvent>, DriverDeliveredOrderEventHandler>();
-            services.AddSingleton<Handles<DriverCollectedOrderEvent>, DriverCollectedOrderEventHandler>();
+            services.AddSingleton<IHandles<OrderPreparingEvent>, OrderPreparingEventHandler>();
+            services.AddSingleton<IHandles<OrderPrepCompleteEvent>, OrderPrepCompleteEventHandler>();
+            services.AddSingleton<IHandles<OrderBakedEvent>, OrderBakedEventHandler>();
+            services.AddSingleton<IHandles<OrderQualityCheckedEvent>, OrderQualityCheckedEventHandler>();
+            services.AddSingleton<IHandles<OrderDeliveredEvent>, DriverDeliveredOrderEventHandler>();
+            services.AddSingleton<IHandles<DriverCollectedOrderEvent>, DriverCollectedOrderEventHandler>();
 
             services.AddSingleton<OrderManagerHealthChecks>();
             services.AddHttpClient<OrderManagerHealthChecks>()

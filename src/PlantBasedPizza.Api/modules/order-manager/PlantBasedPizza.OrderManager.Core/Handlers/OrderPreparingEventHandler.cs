@@ -6,7 +6,7 @@ using Saunter.Attributes;
 namespace PlantBasedPizza.OrderManager.Core.Handlers
 {
     [AsyncApi]
-    public class OrderPreparingEventHandler : Handles<OrderPreparingEvent>
+    public class OrderPreparingEventHandler : IHandles<OrderPreparingEvent>
     {
         private readonly IOrderRepository _orderRepository;
         private readonly ILogger<OrderPreparingEventHandler> _logger;

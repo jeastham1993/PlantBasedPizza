@@ -23,7 +23,7 @@ namespace PlantBasedPizza.Kitchen.Infrastructure
             
             services.AddSingleton<IRecipeService, RecipeService>();
             services.AddSingleton<IOrderManagerService, OrderManagerService>();
-            services.AddSingleton<Handles<OrderSubmittedEvent>, OrderSubmittedEventHandler>();
+            services.AddSingleton<IHandles<OrderSubmittedEvent>, OrderSubmittedEventHandler>();
             services.AddSingleton<IKitchenRequestRepository, KitchenRequestRepository>();
 
             return services;

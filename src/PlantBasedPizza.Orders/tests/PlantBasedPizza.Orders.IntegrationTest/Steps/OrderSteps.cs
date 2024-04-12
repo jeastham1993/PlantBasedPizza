@@ -16,7 +16,6 @@ public partial class OrderSteps
     private readonly OrdersTestDriver _driver;
     private readonly ScenarioContext _scenarioContext;
     private readonly ConnectionMultiplexer _connectionMultiplexer;
-    private readonly IDatabase _cache;
     private readonly IDistributedCache _distributedCache;
     
     public OrderSteps(ScenarioContext scenarioContext)
@@ -24,7 +23,7 @@ public partial class OrderSteps
         _scenarioContext = scenarioContext;
         _driver = new OrdersTestDriver();
         _connectionMultiplexer = ConnectionMultiplexer.Connect("localhost");
-        _cache = _connectionMultiplexer.GetDatabase();
+        _connectionMultiplexer.GetDatabase();
         _distributedCache = new RedisCache(Options.Create<RedisCacheOptions>(new RedisCacheOptions()
         {
             InstanceName = "OrdersWorker",

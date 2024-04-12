@@ -9,7 +9,7 @@ public class SpendLoyaltyPointsCommandHandler
         _customerLoyaltyPointsRepository = customerLoyaltyPointsRepository;
     }
 
-    public async Task<LoyaltyPointsDTO> Handle(SpendLoyaltyPointsCommand command)
+    public async Task<LoyaltyPointsDto> Handle(SpendLoyaltyPointsCommand command)
     {
         var currentLoyaltyPoints = await this._customerLoyaltyPointsRepository.GetCurrentPointsFor(command.CustomerIdentifier);
     
@@ -22,6 +22,6 @@ public class SpendLoyaltyPointsCommandHandler
 
         await this._customerLoyaltyPointsRepository.UpdatePoints(currentLoyaltyPoints);
 
-        return new LoyaltyPointsDTO(currentLoyaltyPoints);
+        return new LoyaltyPointsDto(currentLoyaltyPoints);
     }
 }

@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace PlantBasedPizza.LoyaltyPoints.IntegrationTest.ViewModels;
 
-public class LoyaltyPointsDTO
+public class LoyaltyPointsDto
 {
     [JsonPropertyName("customerIdentifier")]
     public string CustomerIdentifier { get; set; }

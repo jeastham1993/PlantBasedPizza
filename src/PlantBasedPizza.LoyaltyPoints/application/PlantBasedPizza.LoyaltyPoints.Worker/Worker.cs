@@ -16,14 +16,12 @@ public class Worker : BackgroundService
 {
     private readonly AddLoyaltyPointsCommandHandler _handler;
     private readonly RabbitMqEventSubscriber _subscriber;
-    private readonly ILogger<Worker> _logger;
     private readonly ActivitySource _source;
 
     public Worker(AddLoyaltyPointsCommandHandler handler, RabbitMqEventSubscriber subscriber, ILogger<Worker> logger, ActivitySource source)
     {
         _handler = handler;
         _subscriber = subscriber;
-        _logger = logger;
         _source = source;
     }
 
@@ -47,8 +45,6 @@ public class Worker : BackgroundService
                 OrderValue = evtDataResponse.EventData.OrderValue,
                 OrderIdentifier = evtDataResponse.EventData.OrderIdentifier
             });
-            
-            processingActivity.Dispose();
         };
         
         while (!stoppingToken.IsCancellationRequested)

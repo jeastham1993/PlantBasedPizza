@@ -9,7 +9,7 @@ using Saunter.Attributes;
 namespace PlantBasedPizza.Kitchen.Core.Handlers
 {
     [AsyncApi]
-    public class OrderSubmittedEventHandler : Handles<OrderSubmittedEvent>
+    public class OrderSubmittedEventHandler : IHandles<OrderSubmittedEvent>
     {
         private readonly IKitchenRequestRepository _kitchenRequestRepository;
         private readonly IRecipeService _recipeService;

@@ -20,31 +20,6 @@ public class LoyaltyPointService : ILoyaltyPointService
         _distributedCache = distributedCache;
     }
 
-    public async Task AddLoyaltyPoints(string customerId, string orderIdentifier, decimal orderValue)
-    {
-        try
-        {
-            var createLoyaltyPointsResult = await this._loyaltyClient.AddLoyaltyPointsAsync(
-                new AddLoyaltyPointsRequest()
-                {
-                    CustomerIdentifier = customerId,
-                    OrderIdentifier = orderIdentifier,
-                    OrderValue = (double)orderValue,
-
-                });
-
-            if (createLoyaltyPointsResult is null)
-            {
-                throw new Exception("Failure sending loyalty points");
-            }
-        }
-        catch (Exception e)
-        {
-            this._logger.LogInformation(e, "Failure");
-            throw;
-        }
-    }
-
     public async Task<decimal> GetCustomerLoyaltyPoints(string customerId)
     {
         try

@@ -34,10 +34,17 @@ public class OrderRepository : IOrderRepository
         return order;
     }
 
+    public async Task<bool> Exists(string orderIdentifier)
+    {
+        var queryBuilder = Builders<Order>.Filter.Eq(p => p.OrderIdentifier, orderIdentifier);
+
+        var order = await this._orders.Find(queryBuilder).FirstOrDefaultAsync().ConfigureAwait(false);
+
+        return order != null;
+    }
+
     public async Task<List<Order>> GetAwaitingCollection()
     {
-        var queryBuilder = Builders<Order>.Filter.Eq(p => p.OrderType, OrderType.Pickup);
-
         var order = await this._orders.Find(p => p.OrderType == OrderType.Pickup && p.AwaitingCollection).ToListAsync();
 
         return order;

@@ -5,6 +5,8 @@ namespace PlantBasedPizza.OrderManager.Core.Entities
         Task Add(Order order);
 
         Task<Order> Retrieve(string orderIdentifier);
+        
+        Task<bool> Exists(string orderIdentifier);
 
         Task<List<Order>> GetAwaitingCollection();
         

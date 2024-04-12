@@ -3,14 +3,14 @@ using PlantBasedPizza.Deliver.Core.Entities;
 
 namespace PlantBasedPizza.Deliver.Core.GetDelivery;
 
-public class DeliveryRequestDTO
+public class DeliveryRequestDto
 {
-    public DeliveryRequestDTO(DeliveryRequest request)
+    public DeliveryRequestDto(DeliveryRequest request)
     {
         this.OrderIdentifier = request.OrderIdentifier;
         this.Driver = request.Driver;
         this.AwaitingCollection = request.AwaitingCollection;
-        this.DeliveryAddress = new AddressDTO(request.DeliveryAddress);
+        this.DeliveryAddress = new AddressDto(request.DeliveryAddress);
         this.DriverCollectedOn = request.DriverCollectedOn;
         this.DeliveredOn = request.DeliveredOn;
     }
@@ -21,7 +21,7 @@ public class DeliveryRequestDTO
         
     public bool AwaitingCollection { get; set; }
     
-    public AddressDTO? DeliveryAddress { get; set; }
+    public AddressDto? DeliveryAddress { get; set; }
     
     public DateTime? DriverCollectedOn { get; set; }
     

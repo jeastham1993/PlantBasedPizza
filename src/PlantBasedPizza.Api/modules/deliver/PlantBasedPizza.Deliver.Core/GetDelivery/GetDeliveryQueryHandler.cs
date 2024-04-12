@@ -12,12 +12,12 @@ public class GetDeliveryQueryHandler
         _deliveryRequestRepository = deliveryRequestRepository;
     }
 
-    public async Task<DeliveryRequestDTO> Handle(GetDeliveryQuery query)
+    public async Task<DeliveryRequestDto> Handle(GetDeliveryQuery query)
     {
         Activity.Current?.AddTag("orderIdentifier", query.OrderIdentifier);
             
         var deliveryRequest = await this._deliveryRequestRepository.GetDeliveryStatusForOrder(query.OrderIdentifier);
 
-        return new DeliveryRequestDTO(deliveryRequest);
+        return new DeliveryRequestDto(deliveryRequest);
     }
 }

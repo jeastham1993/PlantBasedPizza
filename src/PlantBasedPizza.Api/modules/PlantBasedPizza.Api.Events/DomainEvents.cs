@@ -38,7 +38,7 @@ namespace PlantBasedPizza.Api.Events
                 
                 observability?.Info($"[EVENT MANAGER] Raising event {evt.EventName}");
 
-                foreach (var handler in Container.GetServices<Handles<T>>())
+                foreach (var handler in Container.GetServices<IHandles<T>>())
                 {
                     observability?.Info($"[EVENT MANAGER] Handling event with handler {handler.GetType().Name}");
                     
