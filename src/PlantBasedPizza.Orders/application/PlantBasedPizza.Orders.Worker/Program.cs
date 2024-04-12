@@ -17,11 +17,6 @@ builder.Services.AddStackExchangeRedisCache(options =>
 {
     options.Configuration = builder.Configuration["RedisConnectionString"];
     options.InstanceName = "Orders";
-    options.ConfigurationOptions = new ConfigurationOptions()
-    {
-        AbortOnConnectFail = false,
-        ConnectRetry = 10
-    };
 });
 
 builder.Services.AddHostedService<LoyaltyPointsUpdatedCacheWorker>();
