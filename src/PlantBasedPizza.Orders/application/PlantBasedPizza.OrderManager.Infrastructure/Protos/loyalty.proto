@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+option csharp_namespace = "PlantBasedPizza.OrderManager.Infrastructure";
+
+package loyalty;
+
+// The Loyalty service definition.
+service Loyalty {
+  rpc AddLoyaltyPoints (AddLoyaltyPointsRequest) returns (AddLoyaltyPointsReply);
+  rpc GetCustomerLoyaltyPoints (GetCustomerLoyaltyPointsRequest) returns (GetCustomerLoyaltyPointsReply);
+}
+
+message AddLoyaltyPointsRequest {
+  string orderIdentifier = 1;
+  string customerIdentifier = 2;
+  double orderValue = 3;
+}
+
+message AddLoyaltyPointsReply {
+  string customerIdentifier = 1;
+  double totalPoints = 2;
+}
+
+message GetCustomerLoyaltyPointsRequest {
+  string customerIdentifier = 1;
+}
+
+message GetCustomerLoyaltyPointsReply {
+  string customerIdentifier = 1;
+  double totalPoints = 2;
+}

@@ -1,3 +1,4 @@
+using PlantBasedPizza.Events;
 using PlantBasedPizza.Shared.Logging;
 
 namespace PlantBasedPizza.Api.Events

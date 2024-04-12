@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging;
 using PlantBasedPizza.Api.Events;
+using PlantBasedPizza.Events;
 using PlantBasedPizza.OrderManager.Core.Entities;
 using Saunter.Attributes;
 

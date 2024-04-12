@@ -4,6 +4,7 @@ using PlantBasedPizza.Api.Events;
 using PlantBasedPizza.Deliver.Core.Entities;
 using PlantBasedPizza.Deliver.Core.GetDelivery;
 using PlantBasedPizza.Deliver.Core.Handlers;
+using PlantBasedPizza.Events;
 
 namespace PlantBasedPizza.Deliver.Infrastructure
 {

@@ -1,3 +1,4 @@
+using PlantBasedPizza.Events;
 using PlantBasedPizza.Shared.Logging;
 using Saunter.Attributes;
 

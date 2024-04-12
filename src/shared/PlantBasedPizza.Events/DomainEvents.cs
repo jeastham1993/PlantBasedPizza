@@ -2,7 +2,7 @@ using System.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 using PlantBasedPizza.Shared.Logging;
 
-namespace PlantBasedPizza.Api.Events
+namespace PlantBasedPizza.Events
 {
     public static class DomainEvents
     {

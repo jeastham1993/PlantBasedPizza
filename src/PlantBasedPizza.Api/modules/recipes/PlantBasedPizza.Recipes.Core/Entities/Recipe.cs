@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using PlantBasedPizza.Api.Events;
+using PlantBasedPizza.Events;
 using PlantBasedPizza.Shared.Logging;
 
 namespace PlantBasedPizza.Recipes.Core.Entities

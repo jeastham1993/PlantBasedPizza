@@ -1,4 +1,4 @@
-namespace PlantBasedPizza.Api.Events
+namespace PlantBasedPizza.Events
 {
     public interface IHandles<in T> where T : IDomainEvent
     {

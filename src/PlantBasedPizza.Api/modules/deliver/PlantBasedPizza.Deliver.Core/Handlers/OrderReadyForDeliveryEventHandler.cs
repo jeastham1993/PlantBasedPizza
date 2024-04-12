@@ -1,5 +1,6 @@
 using PlantBasedPizza.Api.Events;
 using PlantBasedPizza.Deliver.Core.Entities;
+using PlantBasedPizza.Events;
 using PlantBasedPizza.Shared.Logging;
 using Saunter.Attributes;
 
