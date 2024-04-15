@@ -1,11 +1,10 @@
-using System;
 using System.Diagnostics;
 using OpenTelemetry;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using TechTalk.SpecFlow;
 
-namespace PlantBasedPizza.IntegrationTests.Hooks;
+namespace PlantBasedPizza.Delivery.IntegrationTests.Hooks;
 
 [Binding]
 public static class Hook

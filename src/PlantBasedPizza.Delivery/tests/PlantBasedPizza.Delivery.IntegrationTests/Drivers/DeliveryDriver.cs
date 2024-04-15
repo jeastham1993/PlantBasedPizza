@@ -1,22 +1,46 @@
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
-using PlantBasedPizza.IntegrationTests.ViewModels;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using PlantBasedPizza.Delivery.IntegrationTests.ViewModels;
+using PlantBasedPizza.Events;
+using Serilog.Extensions.Logging;
 
-namespace PlantBasedPizza.IntegrationTests.Drivers
+namespace PlantBasedPizza.Delivery.IntegrationTests.Drivers
 {
     public class DeliveryDriver
     {
         private static string BaseUrl = TestConstants.DefaultTestUrl;
 
         private readonly HttpClient _httpClient;
+        private readonly IEventPublisher _eventPublisher;
 
         public DeliveryDriver()
         {
             this._httpClient = new HttpClient();
+
+            _eventPublisher = new RabbitMQEventPublisher(new OptionsWrapper<RabbitMqSettings>(new RabbitMqSettings()
+            {
+                ExchangeName = "dev.delivery",
+                HostName = "localhost"
+            }), new Logger<RabbitMQEventPublisher>(new SerilogLoggerFactory()), new RabbitMQConnection("localhost"));
+        }
+
+        public async Task ANewOrderIsReadyForDelivery(string orderIdentifier)
+        {
+            await this._eventPublisher.Publish(new OrderReadyForDeliveryEventV1()
+            {
+                OrderIdentifier = orderIdentifier,
+                DeliveryAddressLine1 = "Address Line 1",
+                DeliveryAddressLine2 = "Address Line 2",
+                DeliveryAddressLine3 = "Address Line 3",
+                DeliveryAddressLine4 = "Address Line 4",
+                DeliveryAddressLine5 = "Address Line 5",
+                Postcode = "TL6 7IO",
+            });
+
+            // Delay to allow for message processing
+            await Task.Delay(TimeSpan.FromSeconds(2));
         }
 
         public async Task<List<DeliveryRequest>> GetAwaitingDriver()

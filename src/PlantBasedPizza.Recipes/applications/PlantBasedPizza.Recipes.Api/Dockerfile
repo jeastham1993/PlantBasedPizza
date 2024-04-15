@@ -2,8 +2,8 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 as build
 
 WORKDIR /App
 COPY . ./
-RUN dotnet restore PlantBasedPizza.Recipes/application/PlantBasedPizza.Recipes.Api/PlantBasedPizza.Recipes.Api.csproj
-RUN dotnet publish PlantBasedPizza.Recipes/application/PlantBasedPizza.Recipes.Api/PlantBasedPizza.Recipes.Api.csproj -o out -c Release -r linux-arm64
+RUN dotnet restore PlantBasedPizza.Recipes/applications/PlantBasedPizza.Recipes.Api/PlantBasedPizza.Recipes.Api.csproj
+RUN dotnet publish PlantBasedPizza.Recipes/applications/PlantBasedPizza.Recipes.Api/PlantBasedPizza.Recipes.Api.csproj -o out -c Release -r linux-arm64
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 as runtime
 WORKDIR /App

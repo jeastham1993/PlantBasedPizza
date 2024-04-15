@@ -1,4 +1,4 @@
-namespace PlantBasedPizza.IntegrationTests.ViewModels
+namespace PlantBasedPizza.Delivery.IntegrationTests.ViewModels
 {
     public class Address
     {

@@ -35,29 +35,6 @@ services:
     ports:
       - "15672:15672"
 
-  local.api:
-    image: plant-based-pizza-api
-    container_name: local.pizza-api
-    depends_on:
-      - consul
-      - rabbitmq
-      - cache
-    expose:
-      - "8080"
-    environment:
-      - DatabaseConnection=mongodb://mongodb:27017
-      - OtlpEndpoint=http://jaeger:4317
-      - Environment=local
-      - RedisConnectionString=cache
-      - Services__Loyalty=http://LoyaltyApi
-      - Services__LoyaltyInternal=http://LoyaltyInternalApi
-      - Services__PaymentInternal=http://PaymentApi
-      - ServiceDiscovery__MyUrl=http://local.api:8080
-      - ServiceDiscovery__ServiceName=Api
-      - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
-      - Messaging__HostName=rabbitmq
-      - Messaging__ExchangeName=local.plantbasedpizza
-
   local.orders-api:
     image: plant-based-orders-api
     container_name: local.orders-api
@@ -75,7 +52,7 @@ services:
       - Services__Loyalty=http://LoyaltyApi
       - Services__LoyaltyInternal=http://LoyaltyInternalApi
       - Services__PaymentInternal=http://PaymentApi
-      - Services__Recipes=http://Api
+      - Services__Recipes=http://RecipeApi
       - ServiceDiscovery__MyUrl=http://local.orders-api:8080
       - ServiceDiscovery__ServiceName=OrdersApi
       - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
@@ -96,7 +73,7 @@ services:
       - Services__Loyalty=http://LoyaltyApi
       - Services__LoyaltyInternal=http://LoyaltyInternalApi
       - Services__PaymentInternal=http://PaymentApi
-      - Services__Recipes=http://Api
+      - Services__Recipes=http://RecipeApi
       - Environment=local
       - ServiceDiscovery__MyUrl=
       - ServiceDiscovery__ServiceName=
@@ -170,7 +147,7 @@ services:
       - OtlpEndpoint=http://jaeger:4317
       - Environment=local
       - RedisConnectionString=cache
-      - Services__Recipes=http://Api
+      - Services__Recipes=http://RecipeApi
       - ServiceDiscovery__MyUrl=http://local.kitchen-api:8080
       - ServiceDiscovery__ServiceName=KitchenApi
       - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
@@ -189,7 +166,7 @@ services:
       - OtlpEndpoint=http://jaeger:4317
       - Environment=local
       - RedisConnectionString=cache
-      - Services__Recipes=http://Api
+      - Services__Recipes=http://RecipeApi
       - ServiceDiscovery__MyUrl=
       - ServiceDiscovery__ServiceName=
       - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
@@ -211,11 +188,69 @@ services:
       - ServiceDiscovery__ServiceName=PaymentApi
       - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
 
+  local.recipe-api:
+    image: plant-based-recipes-api
+    container_name: local.recipe-api
+    depends_on:
+      - consul
+      - rabbitmq
+    expose:
+      - "8080"
+    environment:
+      - DatabaseConnection=mongodb://mongodb:27017
+      - OtlpEndpoint=http://jaeger:4317
+      - Environment=local
+      - ServiceDiscovery__MyUrl=http://local.recipe-api:8080
+      - ServiceDiscovery__ServiceName=RecipeApi
+      - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
+      - Messaging__HostName=rabbitmq
+      - Messaging__ExchangeName=local.plantbasedpizza
+
+  local.delivery-api:
+    image: plant-based-delivery-api
+    container_name: local.delivery-api
+    expose:
+      - "8080"
+    depends_on:
+      - consul
+      - rabbitmq
+      - cache
+    environment:
+      - DatabaseConnection=mongodb://mongodb:27017
+      - OtlpEndpoint=http://jaeger:4317
+      - Environment=local
+      - ServiceDiscovery__MyUrl=http://local.delivery-api:8080
+      - ServiceDiscovery__ServiceName=DeliveryApi
+      - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
+      - Messaging__HostName=rabbitmq
+      - Messaging__ExchangeName=local.plantbasedpizza
+
+  local.delivery-worker:
+    image: plant-based-delivery-worker
+    container_name: local.delivery-worker
+    depends_on:
+      - consul
+      - rabbitmq
+      - cache
+    environment:
+      - DatabaseConnection=mongodb://mongodb:27017
+      - OtlpEndpoint=http://jaeger:4317
+      - Environment=local
+      - ServiceDiscovery__MyUrl=
+      - ServiceDiscovery__ServiceName=
+      - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
+      - Messaging__HostName=rabbitmq
+      - Messaging__ExchangeName=local.plantbasedpizza
+
   reverse-proxy:
     image: nginx:latest
     ports:
-      - "5051:80"  # Map port 80 of the container to port 8080 on the host
+      - "5051:80"
     volumes:
       - ./nginx/nginx-custom.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:
-      - local.api
+      - "local.delivery-api"
+      - "local.orders-api"
+      - "local.kitchen-api"
+      - "local.recipe-api"
+      - "local.loyalty-api"

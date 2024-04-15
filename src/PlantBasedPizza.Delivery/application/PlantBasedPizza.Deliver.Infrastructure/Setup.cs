@@ -1,37 +1,40 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
-using PlantBasedPizza.Recipes.Core.Entities;
+using PlantBasedPizza.Deliver.Core.Entities;
+using PlantBasedPizza.Deliver.Core.GetDelivery;
+using PlantBasedPizza.Deliver.Core.Handlers;
 
-namespace PlantBasedPizza.Recipes.Infrastructure
+namespace PlantBasedPizza.Deliver.Infrastructure
 {
     using MongoDB.Bson.Serialization;
 
     public static class Setup
     {
-        public static IServiceCollection AddRecipeInfrastructure(this IServiceCollection services,
+        public static IServiceCollection AddDeliveryInfrastructure(this IServiceCollection services,
             IConfiguration configuration)
-        {         
+        {
             var client = new MongoClient(configuration["DatabaseConnection"]);
 
             services.AddSingleton(client);
             
-            BsonClassMap.RegisterClassMap<Recipe>(map =>
-            {
-                map.AutoMap();
-                map.MapField("_ingredients");
-                map.SetIgnoreExtraElements(true);
-                map.SetIgnoreExtraElementsIsInherited(true);
-            });
-            
-            BsonClassMap.RegisterClassMap<Ingredient>(map =>
+            BsonClassMap.RegisterClassMap<DeliveryRequest>(map =>
             {
                 map.AutoMap();
                 map.SetIgnoreExtraElements(true);
                 map.SetIgnoreExtraElementsIsInherited(true);
             });
             
-            services.AddSingleton<IRecipeRepository, RecipeRepository>();
+            BsonClassMap.RegisterClassMap<Address>(map =>
+            {
+                map.AutoMap();
+                map.SetIgnoreExtraElements(true);
+                map.SetIgnoreExtraElementsIsInherited(true);
+            });
+            
+            services.AddSingleton<IDeliveryRequestRepository, DeliveryRequestRepository>();
+            services.AddSingleton<OrderReadyForDeliveryEventHandler>();
+            services.AddSingleton<GetDeliveryQueryHandler>();
 
             return services;
         }

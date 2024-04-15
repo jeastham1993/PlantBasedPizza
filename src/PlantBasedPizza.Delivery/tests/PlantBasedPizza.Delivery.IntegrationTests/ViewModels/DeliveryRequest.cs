@@ -1,7 +1,6 @@
-using System;
 using System.Text.Json.Serialization;
 
-namespace PlantBasedPizza.IntegrationTests.ViewModels
+namespace PlantBasedPizza.Delivery.IntegrationTests.ViewModels
 {
     public class DeliveryRequest
     {

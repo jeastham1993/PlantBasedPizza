@@ -10,9 +10,10 @@ namespace PlantBasedPizza.Orders.Worker.Handlers
         private readonly IOrderRepository _orderRepository;
         private readonly IEventPublisher _eventPublisher;
 
-        public OrderQualityCheckedEventHandler(IOrderRepository orderRepository)
+        public OrderQualityCheckedEventHandler(IOrderRepository orderRepository, IEventPublisher eventPublisher)
         {
             _orderRepository = orderRepository;
+            _eventPublisher = eventPublisher;
         }
         
         public async Task Handle(OrderQualityCheckedEventV1 evt)

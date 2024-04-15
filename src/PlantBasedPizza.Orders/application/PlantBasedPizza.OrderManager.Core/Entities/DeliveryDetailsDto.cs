@@ -1,36 +1,24 @@
 using Newtonsoft.Json;
 
-namespace PlantBasedPizza.OrderManager.Core.Entities
+namespace PlantBasedPizza.OrderManager.Core.Entities;
+
+public record DeliveryDetailsDto
 {
-    public class DeliveryDetails
-    {
-        [JsonConstructor]
-        public DeliveryDetails()
-        {
-            this.AddressLine1 = "";
-            this.AddressLine2 = "";
-            this.AddressLine3 = "";
-            this.AddressLine4 = "";
-            this.AddressLine5 = "";
-            this.Postcode = "";
-        }
+    [JsonProperty("addressLine1")]
+    public string AddressLine1 { get; init; } = "";
         
-        [JsonProperty]
-        public string AddressLine1 { get; init; }
+    [JsonProperty("addressLine2")]
+    public string AddressLine2 { get; init; } = "";
         
-        [JsonProperty]
-        public string AddressLine2 { get; init; }
+    [JsonProperty("addressLine3")]
+    public string AddressLine3 { get; init; } = "";
         
-        [JsonProperty]
-        public string AddressLine3 { get; init; }
+    [JsonProperty("addressLine4")]
+    public string AddressLine4 { get; init; } = "";
         
-        [JsonProperty]
-        public string AddressLine4 { get; init; }
+    [JsonProperty("addressLine5")]
+    public string AddressLine5 { get; init; } = "";
         
-        [JsonProperty]
-        public string AddressLine5 { get; init; }
-        
-        [JsonProperty]
-        public string Postcode { get; init; }
-    }
+    [JsonProperty("postcode")]
+    public string Postcode { get; init; } = "";
 }

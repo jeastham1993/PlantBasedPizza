@@ -1,6 +1,6 @@
-namespace PlantBasedPizza.IntegrationTests.Drivers;
+namespace PlantBasedPizza.Delivery.IntegrationTests.Drivers;
 
-public class TestConstants
+public static class TestConstants
 {
-    
+    public static string DefaultTestUrl = "http://localhost:5259";
 }

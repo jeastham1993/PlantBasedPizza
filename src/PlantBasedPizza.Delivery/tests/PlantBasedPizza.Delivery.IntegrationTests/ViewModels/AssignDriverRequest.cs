@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace PlantBasedPizza.IntegrationTests.ViewModels
+namespace PlantBasedPizza.Delivery.IntegrationTests.ViewModels
 {
     public class AssignDriverRequest
     {

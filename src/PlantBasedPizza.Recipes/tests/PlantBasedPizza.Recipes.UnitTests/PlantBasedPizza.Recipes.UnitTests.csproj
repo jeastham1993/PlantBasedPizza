@@ -26,7 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\PlantBasedPizza.Api\modules\recipes\PlantBasedPizza.Recipes.Core\PlantBasedPizza.Recipes.Core.csproj" />
+    <ProjectReference Include="..\..\applications\PlantBasedPizza.Recipes.Core\PlantBasedPizza.Recipes.Core.csproj" />
   </ItemGroup>
 
 </Project>
