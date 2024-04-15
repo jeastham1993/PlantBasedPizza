@@ -9,7 +9,7 @@ public static class Setup
 {
     public static IServiceCollection AddMessaging(this IServiceCollection services, IConfiguration configuration)
     {
-        var hostName = configuration.GetSection("Messaging")["HostName"];
+        var hostName = configuration["Messaging:HostName"];
 
         if (hostName is null)
         {

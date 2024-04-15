@@ -1,4 +1,3 @@
-using MongoDB.Driver;
 using PlantBasedPizza.Events;
 using PlantBasedPizza.OrderManager.Infrastructure;
 using PlantBasedPizza.Shared;
@@ -7,10 +6,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder
     .Configuration
     .AddEnvironmentVariables();
-
-var client = new MongoClient(builder.Configuration["DatabaseConnection"]);
-
-builder.Services.AddSingleton(client);
 
 builder.Services.AddOrderManagerInfrastructure(builder.Configuration);
 builder.Services.AddSharedInfrastructure(builder.Configuration, "PlantBasedPizza")
@@ -31,11 +26,6 @@ app.Map("/order/health", async () =>
     return Results.Ok(healthCheckResult);
 });
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.MapControllers();
 
 app.Run();

@@ -2,6 +2,7 @@ using Grpc.Core;
 using Grpc.Net.Client.Configuration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using MongoDB.Driver;
 using PlantBasedPizza.OrderManager.Core.AddItemToOrder;
 using PlantBasedPizza.OrderManager.Core.CollectOrder;
 using PlantBasedPizza.OrderManager.Core.CreateDeliveryOrder;
@@ -22,6 +23,12 @@ namespace PlantBasedPizza.OrderManager.Infrastructure
         public static IServiceCollection AddOrderManagerInfrastructure(this IServiceCollection services,
             IConfiguration configuration)
         {
+            services.Configure<ServiceEndpoints>(configuration.GetSection("Services"));
+            
+            var client = new MongoClient(configuration["DatabaseConnection"]);
+
+            services.AddSingleton(client);
+            
             BsonClassMap.RegisterClassMap<Order>(map =>
             {
                 map.AutoMap();
@@ -93,21 +100,9 @@ namespace PlantBasedPizza.OrderManager.Infrastructure
             services.AddSingleton<IRecipeService, RecipeService>();
             services.AddSingleton<ILoyaltyPointService, LoyaltyPointService>();
             services.AddSingleton<IPaymentService, PaymentService>();
-            
-            // services.AddSingleton<IHandles<OrderPreparingEvent>, OrderPreparingEventHandler>();
-            // services.AddSingleton<IHandles<OrderPrepCompleteEvent>, OrderPrepCompleteEventHandler>();
-            // services.AddSingleton<IHandles<OrderBakedEvent>, OrderBakedEventHandler>();
-            // services.AddSingleton<IHandles<OrderQualityCheckedEvent>, OrderQualityCheckedEventHandler>();
-            // services.AddSingleton<IHandles<OrderDeliveredEvent>, DriverDeliveredOrderEventHandler>();
-            // services.AddSingleton<IHandles<DriverCollectedOrderEvent>, DriverCollectedOrderEventHandler>();
-
             services.AddSingleton<OrderManagerHealthChecks>();
-            services.AddHttpClient<OrderManagerHealthChecks>()
-                .AddHttpMessageHandler<ServiceRegistryHttpMessageHandler>()
-                .SetHandlerLifetime(TimeSpan.FromMinutes(5))
-                .AddPolicyHandler(GetRetryPolicy());
-            services.AddHttpClient<IRecipeService, RecipeService>()
-                .ConfigureHttpClient(client => client.BaseAddress = new Uri(configuration["Services:Recipes"]))
+            
+            services.AddHttpClient("service-registry-http-client")
                 .AddHttpMessageHandler<ServiceRegistryHttpMessageHandler>()
                 .SetHandlerLifetime(TimeSpan.FromMinutes(5))
                 .AddPolicyHandler(GetRetryPolicy());

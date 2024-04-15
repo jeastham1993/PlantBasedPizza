@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <UserSecretsId>dotnet-PlantBasedPizza.Kitchen.Worker-4BB52594-2835-4EB0-BF49-CD41A8232803</UserSecretsId>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="8.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.3" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\..\shared\PlantBasedPizza.Events\PlantBasedPizza.Events.csproj" />
+      <ProjectReference Include="..\..\..\shared\PlantBasedPizza.Shared\PlantBasedPizza.Shared.csproj" />
+      <ProjectReference Include="..\PlantBasedPizza.Kitchen.Core\PlantBasedPizza.Kitchen.Core.csproj" />
+      <ProjectReference Include="..\PlantBasedPizza.Kitchen.Infrastructure\PlantBasedPizza.Kitchen.Infrastructure.csproj" />
+    </ItemGroup>
+</Project>

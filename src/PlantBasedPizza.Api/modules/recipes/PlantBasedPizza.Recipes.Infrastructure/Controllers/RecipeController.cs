@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
+using PlantBasedPizza.Events;
 using PlantBasedPizza.Recipes.Core.Commands;
 using PlantBasedPizza.Recipes.Core.Entities;
+using PlantBasedPizza.Recipes.Core.IntegrationEvents;
 using PlantBasedPizza.Shared.Logging;
 
 namespace PlantBasedPizza.Recipes.Infrastructure.Controllers
@@ -10,11 +12,13 @@ namespace PlantBasedPizza.Recipes.Infrastructure.Controllers
     {
         private readonly IRecipeRepository _recipeRepository;
         private readonly IObservabilityService _observability;
+        private readonly IEventPublisher _eventPublisher;
 
-        public RecipeController(IRecipeRepository recipeRepository, IObservabilityService observability)
+        public RecipeController(IRecipeRepository recipeRepository, IObservabilityService observability, IEventPublisher eventPublisher)
         {
             _recipeRepository = recipeRepository;
             _observability = observability;
+            _eventPublisher = eventPublisher;
         }
 
         /// <summary>
@@ -63,6 +67,10 @@ namespace PlantBasedPizza.Recipes.Infrastructure.Controllers
             }
 
             await this._recipeRepository.Add(recipe);
+            await this._eventPublisher.Publish(new RecipeCreatedEventV1()
+            {
+                RecipeIdentifier = recipe.RecipeIdentifier
+            });
 
             return recipe;
         }

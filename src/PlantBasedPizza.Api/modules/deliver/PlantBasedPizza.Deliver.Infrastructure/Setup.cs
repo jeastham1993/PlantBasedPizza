@@ -28,9 +28,11 @@ namespace PlantBasedPizza.Deliver.Infrastructure
                 map.SetIgnoreExtraElements(true);
                 map.SetIgnoreExtraElementsIsInherited(true);
             });
+
+            services.AddHostedService<OrderReadyForDeliveryEventWorker>();
             
             services.AddSingleton<IDeliveryRequestRepository, DeliveryRequestRepository>();
-            services.AddSingleton<IHandles<OrderReadyForDeliveryEvent>, OrderReadyForDeliveryEventHandler>();
+            services.AddSingleton<OrderReadyForDeliveryEventHandler>();
             services.AddSingleton<GetDeliveryQueryHandler>();
 
             return services;

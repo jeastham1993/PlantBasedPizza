@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using Consul;
 using Grpc.Net.Client;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using PlantBasedPizza.Shared.ServiceDiscovery;
 
 namespace PlantBasedPizza.OrderManager.Infrastructure;
@@ -9,16 +9,23 @@ namespace PlantBasedPizza.OrderManager.Infrastructure;
 public class OrderManagerHealthChecks
 {
     private readonly HttpClient _httpClient;
-    private readonly IConfiguration _configuration;
+    private readonly ServiceEndpoints _serviceEndpoints;
     private readonly GrpcChannel _grpcChannel;
 
-    public OrderManagerHealthChecks(HttpClient client, IServiceRegistry serviceRegistry, IConfiguration configuration)
+    public OrderManagerHealthChecks(HttpClient client, IServiceRegistry serviceRegistry, IOptions<ServiceEndpoints> serviceEndpoints)
     {
+        this._serviceEndpoints = serviceEndpoints.Value;
+        
         this._httpClient = client;
-        _configuration = configuration;
 
         var address = serviceRegistry.GetServiceAddress("PlantBasedPizza-LoyaltyPoints-Internal").GetAwaiter().GetResult();
-        this._grpcChannel = GrpcChannel.ForAddress(address ?? configuration["Services:LoyaltyInternal"]);
+
+        if (string.IsNullOrEmpty(address))
+        {
+            address = _serviceEndpoints.LoyaltyInternal;
+        }
+        
+        this._grpcChannel = GrpcChannel.ForAddress(address);
     }
     
     public async Task<OrderManagerHealthCheckResult> Check()
@@ -27,7 +34,7 @@ public class OrderManagerHealthChecks
         
         try
         {
-            var res = await _httpClient.GetAsync($"{this._configuration["Services:Loyalty"]}/loyalty/health");
+            var res = await _httpClient.GetAsync($"{_serviceEndpoints.Loyalty}/loyalty/health");
 
             if (!res.IsSuccessStatusCode)
             {
@@ -45,7 +52,7 @@ public class OrderManagerHealthChecks
         
         try
         {
-            var res = await _httpClient.GetAsync($"{this._configuration["Services:Recipes"]}/health");
+            var res = await _httpClient.GetAsync($"{_serviceEndpoints.Recipes}/health");
 
             if (!res.IsSuccessStatusCode)
             {

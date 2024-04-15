@@ -28,9 +28,9 @@ namespace PlantBasedPizza.E2ETests.Drivers
 
         public async Task AssignDriver(string orderIdentifier, string driverName)
         {
+            // Delay to allow async process to catch up
+            await Task.Delay(TimeSpan.FromSeconds(2));
             var url = $"{BaseUrl}/delivery/assign";
-            
-            Console.WriteLine(url);
 
             var content = JsonSerializer.Serialize(new AssignDriverRequest()
             {

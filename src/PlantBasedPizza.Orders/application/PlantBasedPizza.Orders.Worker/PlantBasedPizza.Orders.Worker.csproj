@@ -15,13 +15,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Content Include="..\..\..\..\.dockerignore">
-        <Link>.dockerignore</Link>
-      </Content>
-    </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\..\..\PlantBasedPizza.Api\modules\order-manager\PlantBasedPizza.OrderManager.Core\PlantBasedPizza.OrderManager.Core.csproj" />
-      <ProjectReference Include="..\..\..\PlantBasedPizza.Api\modules\order-manager\PlantBasedPizza.OrderManager.Infrastructure\PlantBasedPizza.OrderManager.Infrastructure.csproj" />
+      <ProjectReference Include="..\..\..\shared\PlantBasedPizza.Events\PlantBasedPizza.Events.csproj" />
+      <ProjectReference Include="..\..\..\shared\PlantBasedPizza.Shared\PlantBasedPizza.Shared.csproj" />
+      <ProjectReference Include="..\PlantBasedPizza.OrderManager.Core\PlantBasedPizza.OrderManager.Core.csproj" />
+      <ProjectReference Include="..\PlantBasedPizza.OrderManager.Infrastructure\PlantBasedPizza.OrderManager.Infrastructure.csproj" />
     </ItemGroup>
 </Project>

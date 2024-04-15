@@ -1,10 +1,8 @@
 using System.Diagnostics;
-using System.Globalization;
 using Microsoft.Extensions.Caching.Distributed;
 using PlantBasedPizza.Events;
 using PlantBasedPizza.Orders.Worker.IntegrationEvents;
 using RabbitMQ.Client;
-using StackExchange.Redis;
 
 namespace PlantBasedPizza.Orders.Worker;
 

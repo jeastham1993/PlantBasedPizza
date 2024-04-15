@@ -50,8 +50,14 @@ namespace PlantBasedPizza.Shared
                 services.AddSingleton<IConsulClient, ConsulClient>(provider =>
                     new ConsulClient(config => config.Address = new Uri(consulAddress)));
                 
-                services.AddSingleton<IHostedService, ConsulRegisterService>();
                 services.AddSingleton<IServiceRegistry, ConsulServiceRegistry>();
+            }
+
+            // Only register the running application with Consul if it has a valid URL
+            var myUrl = configuration.GetSection("ServiceDiscovery")["MyUrl"];
+            if (!string.IsNullOrEmpty(myUrl))
+            {
+                services.AddSingleton<IHostedService, ConsulRegisterService>();   
             }
 
             services.Configure<ServiceDiscoverySettings>(configuration.GetSection("ServiceDiscovery"));

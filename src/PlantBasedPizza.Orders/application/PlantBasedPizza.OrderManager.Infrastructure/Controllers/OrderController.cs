@@ -1,10 +1,12 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using PlantBasedPizza.Events;
 using PlantBasedPizza.OrderManager.Core.AddItemToOrder;
 using PlantBasedPizza.OrderManager.Core.CollectOrder;
 using PlantBasedPizza.OrderManager.Core.CreateDeliveryOrder;
 using PlantBasedPizza.OrderManager.Core.CreatePickupOrder;
 using PlantBasedPizza.OrderManager.Core.Entities;
+using PlantBasedPizza.OrderManager.Core.IntegrationEvents;
 using PlantBasedPizza.OrderManager.Core.Services;
 
 namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
@@ -14,13 +16,14 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
     {
         private readonly IOrderRepository _orderRepository;
         private readonly IPaymentService _paymentService;
+        private readonly IEventPublisher _eventPublisher;
         private readonly ILoyaltyPointService _loyaltyPointService;
         private readonly CollectOrderCommandHandler _collectOrderCommandHandler;
         private readonly AddItemToOrderHandler _addItemToOrderHandler;
         private readonly CreateDeliveryOrderCommandHandler _createDeliveryOrderCommandHandler;
         private readonly CreatePickupOrderCommandHandler _createPickupOrderCommandHandler;
 
-        public OrderController(IOrderRepository orderRepository, CollectOrderCommandHandler collectOrderCommandHandler, AddItemToOrderHandler addItemToOrderHandler, CreateDeliveryOrderCommandHandler createDeliveryOrderCommandHandler, CreatePickupOrderCommandHandler createPickupOrderCommandHandler, IPaymentService paymentService, ILoyaltyPointService loyaltyPointService)
+        public OrderController(IOrderRepository orderRepository, CollectOrderCommandHandler collectOrderCommandHandler, AddItemToOrderHandler addItemToOrderHandler, CreateDeliveryOrderCommandHandler createDeliveryOrderCommandHandler, CreatePickupOrderCommandHandler createPickupOrderCommandHandler, IPaymentService paymentService, ILoyaltyPointService loyaltyPointService, IEventPublisher eventPublisher)
         {
             _orderRepository = orderRepository;
             _collectOrderCommandHandler = collectOrderCommandHandler;
@@ -29,6 +32,7 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
             _createPickupOrderCommandHandler = createPickupOrderCommandHandler;
             _paymentService = paymentService;
             _loyaltyPointService = loyaltyPointService;
+            _eventPublisher = eventPublisher;
         }
 
         /// <summary>
@@ -111,6 +115,15 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
             order.SubmitOrder();
 
             await this._orderRepository.Update(order);
+            await this._eventPublisher.Publish(new OrderSubmittedEventV1()
+            {
+                OrderIdentifier = order.OrderIdentifier,
+                Items = order.Items.Select(item => new OrderSubmittedEventItem()
+                {
+                    ItemName = item.ItemName,
+                    RecipeIdentifier = item.RecipeIdentifier
+                }).ToList()
+            });
 
             return new OrderDto(order);
         }

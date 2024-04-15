@@ -5,6 +5,7 @@ using Moq;
 using PlantBasedPizza.Api.Events;
 using PlantBasedPizza.Deliver.Core.Entities;
 using PlantBasedPizza.Deliver.Core.Handlers;
+using PlantBasedPizza.Deliver.Core.IntegrationEvents;
 using PlantBasedPizza.Events;
 using PlantBasedPizza.Shared.Logging;
 using Xunit;
@@ -56,8 +57,16 @@ namespace PlantBasedPizza.UnitTest
 
             var handler = new OrderReadyForDeliveryEventHandler(mockRepo.Object, mockLogger.Object);
 
-            await handler.Handle(new OrderReadyForDeliveryEvent(OrderIdentifier, "Address line 1", string.Empty,
-                string.Empty, string.Empty, string.Empty, "TY6 7UI"));
+            await handler.Handle(new OrderReadyForDeliveryEventV1()
+            {
+                OrderIdentifier = "1234",
+                DeliveryAddressLine1 = "AddressLine1",
+                DeliveryAddressLine2 = "AddressLine2",
+                DeliveryAddressLine3 = "AddressLine3",
+                DeliveryAddressLine4 = "AddressLine4",
+                DeliveryAddressLine5 = "AddressLine5",
+                Postcode = "Postcode"
+            });
             
             mockRepo.Verify(p => p.AddNewDeliveryRequest(It.IsAny<DeliveryRequest>()), Times.Once);
         }
@@ -75,8 +84,16 @@ namespace PlantBasedPizza.UnitTest
 
             var handler = new OrderReadyForDeliveryEventHandler(mockRepo.Object, mockLogger.Object);
 
-            await handler.Handle(new OrderReadyForDeliveryEvent(OrderIdentifier, "Address line 1", string.Empty,
-                string.Empty, string.Empty, string.Empty, "TY6 7UI"));
+            await handler.Handle(new OrderReadyForDeliveryEventV1()
+            {
+                OrderIdentifier = "1234",
+                DeliveryAddressLine1 = "AddressLine1",
+                DeliveryAddressLine2 = "AddressLine2",
+                DeliveryAddressLine3 = "AddressLine3",
+                DeliveryAddressLine4 = "AddressLine4",
+                DeliveryAddressLine5 = "AddressLine5",
+                Postcode = "Postcode"
+            });
             
             mockRepo.Verify(p => p.AddNewDeliveryRequest(It.IsAny<DeliveryRequest>()), Times.Never);
         }
