@@ -1,0 +1,6 @@
+@PlantBasedPizza.Kitchen.Api_HostAddress = http://localhost:5094
+
+GET {{PlantBasedPizza.Kitchen.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

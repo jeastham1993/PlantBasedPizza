@@ -1,7 +1,23 @@
-Feature: Kitchen
-	Kitchen request features
+Feature: KitchenFeature
+All features related to the kitchen module.
 
-@NewOrderAppearsInList
-Scenario: New order appears in list of kitchen new orders
-	Given a new order submitted event is raised for order ORD8765
-	Then order ORD8765 should appear in the kitchen new order list
+@kitchen
+Scenario: Order should be moved through the requisite kitchen queues - prparing
+    Given a new order submitted event is raised
+    When order is marked as preparing
+    Then order should appear in the preparing queue
+
+@kitchen
+Scenario: Order should be moved through the requisite kitchen queues - prep complete
+    Given a new order submitted event is raised
+    When order is marked as preparing
+    And order is marked as prep-complete
+    Then order should appear in the baking queue
+
+@kitchen
+Scenario: Order should be moved through the requisite kitchen queues - bake complete
+    Given a new order submitted event is raised
+    When order is marked as preparing
+    And order is marked as prep-complete
+    And order is marked as bake-complete
+    Then order should appear in the quality check queue

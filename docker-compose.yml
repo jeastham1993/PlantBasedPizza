@@ -156,6 +156,27 @@ services:
       - Messaging__HostName=rabbitmq
       - Messaging__ExchangeName=local.plantbasedpizza
 
+  local.kitchen-api:
+    image: plant-based-kitchen-api
+    container_name: local.kitchen-api
+    expose:
+      - "8080"
+    depends_on:
+      - consul
+      - rabbitmq
+      - cache
+    environment:
+      - DatabaseConnection=mongodb://mongodb:27017
+      - OtlpEndpoint=http://jaeger:4317
+      - Environment=local
+      - RedisConnectionString=cache
+      - Services__Recipes=http://Api
+      - ServiceDiscovery__MyUrl=http://local.kitchen-api:8080
+      - ServiceDiscovery__ServiceName=KitchenApi
+      - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
+      - Messaging__HostName=rabbitmq
+      - Messaging__ExchangeName=local.plantbasedpizza
+
   local.kitchen-worker:
     image: plant-based-kitchen-worker
     container_name: local.kitchen-worker

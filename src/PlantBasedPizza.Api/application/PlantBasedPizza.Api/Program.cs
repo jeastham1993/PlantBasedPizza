@@ -1,10 +1,7 @@
 using MongoDB.Driver;
 using PlantBasedPizza.Api;
-using PlantBasedPizza.Api.Events;
 using PlantBasedPizza.Deliver.Infrastructure;
 using PlantBasedPizza.Events;
-using PlantBasedPizza.Kitchen.Infrastructure;
-using PlantBasedPizza.OrderManager.Infrastructure;
 using PlantBasedPizza.Recipes.Infrastructure;
 using PlantBasedPizza.Shared;
 using PlantBasedPizza.Shared.Logging;
@@ -18,9 +15,7 @@ var client = new MongoClient(builder.Configuration["DatabaseConnection"]);
 
 builder.Services.AddSingleton(client);
 
-builder.Services.AddOrderManagerInfrastructure(builder.Configuration);
 builder.Services.AddRecipeInfrastructure(builder.Configuration);
-builder.Services.AddKitchenInfrastructure(builder.Configuration);
 builder.Services.AddDeliveryModuleInfrastructure(builder.Configuration);
 builder.Services.AddSharedInfrastructure(builder.Configuration, "PlantBasedPizza")
     .AddMessaging(builder.Configuration);
@@ -33,13 +28,9 @@ var app = builder.Build();
 
 DomainEvents.Container = app.Services;
 
-var orderManagerHealthChecks = app.Services.GetRequiredService<OrderManagerHealthChecks>();
-
 app.Map("/health", async () =>
 {
     var healthCheckResult = new HealthCheckResult();
-
-    healthCheckResult.OrderManagerHealthCheck = await orderManagerHealthChecks.Check();
     
     return Results.Ok(healthCheckResult);
 });

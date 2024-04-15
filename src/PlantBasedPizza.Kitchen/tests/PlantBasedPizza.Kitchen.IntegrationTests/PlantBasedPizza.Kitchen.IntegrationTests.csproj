@@ -32,8 +32,4 @@
     <ProjectReference Include="..\..\..\shared\PlantBasedPizza.Events\PlantBasedPizza.Events.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Hooks\" />
-  </ItemGroup>
-
 </Project>
