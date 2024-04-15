@@ -1,11 +1,7 @@
 using FluentAssertions;
-using PlantBasedPizza.Api.Events;
-using PlantBasedPizza.Events;
 using PlantBasedPizza.Recipes.Core.Entities;
-using PlantBasedPizza.Recipes.Core.Events;
-using Xunit;
 
-namespace PlantBasedPizza.UnitTest;
+namespace PlantBasedPizza.Recipes.UnitTests;
 
 public class RecipeTests
 {
@@ -15,11 +11,6 @@ public class RecipeTests
     public void CanCreateNewOrder_ShouldSetDefaultFields()
     {
         Recipe? createdRecipe = null;
-        
-        DomainEvents.Register<RecipeCreatedEvent>((evt) =>
-        {
-            createdRecipe = evt.Recipe;
-        });
 
         var recipe = new Recipe(DefaultRecipeIdentifier, "Pizza", 6.5M);
         
