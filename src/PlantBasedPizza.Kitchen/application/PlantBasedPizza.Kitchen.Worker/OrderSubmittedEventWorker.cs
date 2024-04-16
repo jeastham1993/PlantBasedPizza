@@ -13,7 +13,8 @@ public class OrderSubmittedEventWorker : BackgroundService
     private readonly OrderSubmittedEventHandler _eventHandler;
     private readonly ILogger<OrderSubmittedEventWorker> _logger;
 
-    public OrderSubmittedEventWorker(RabbitMqEventSubscriber eventSubscriber, ActivitySource source, OrderSubmittedEventHandler eventHandler, ILogger<OrderSubmittedEventWorker> logger)
+    public OrderSubmittedEventWorker(RabbitMqEventSubscriber eventSubscriber, ActivitySource source,
+        OrderSubmittedEventHandler eventHandler, ILogger<OrderSubmittedEventWorker> logger)
     {
         _eventSubscriber = eventSubscriber;
         _source = source;
@@ -23,35 +24,45 @@ public class OrderSubmittedEventWorker : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        this._logger.LogInformation("Starting worker");
-        
+        _logger.LogInformation("Starting worker");
+
         var queueName = "kitchen-orderSubmitted-worker";
 
-        var subscription = this._eventSubscriber.CreateEventConsumer(queueName, "order.orderSubmitted.v1");
-        
+        var subscription = _eventSubscriber.CreateEventConsumer(queueName, "order.orderSubmitted.v1");
+
         subscription.Consumer.Received += async (model, ea) =>
         {
-            this._logger.LogInformation("Received event, processing");
-            
-            var evtDataResponse = await _eventSubscriber.ParseEventFrom<OrderSubmittedEventV1>(ea.Body.ToArray());
+            try
+            {
+                _logger.LogInformation("Received event, processing");
 
-            using var processingActivity = _source.StartActivity("kitchen-process-order-submitted-event",
-                ActivityKind.Server, evtDataResponse.TraceParent);
-            processingActivity.AddTag("queue.time", evtDataResponse.QueueTime);
+                var evtDataResponse = await _eventSubscriber.ParseEventFrom<OrderSubmittedEventV1>(ea.Body.ToArray());
 
-            processingActivity.SetTag("orderIdentifier", evtDataResponse.EventData.OrderIdentifier);
-            
-            this._logger.LogInformation($"Event is for order {evtDataResponse.EventData.OrderIdentifier}");
+                using var processingActivity = _source.StartActivity("kitchen-process-order-submitted-event",
+                    ActivityKind.Server, evtDataResponse.TraceParent);
+                processingActivity.AddTag("queue.time", evtDataResponse.QueueTime);
 
-            await this._eventHandler.Handle(evtDataResponse.EventData);
+                processingActivity.SetTag("orderIdentifier", evtDataResponse.EventData.OrderIdentifier);
+
+                _logger.LogInformation($"Event is for order {evtDataResponse.EventData.OrderIdentifier}");
+
+                await _eventHandler.Handle(evtDataResponse.EventData);
+                subscription.Channel.BasicAck(ea.DeliveryTag, false);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Received event, processing");
+                
+                subscription.Channel.BasicReject(ea.DeliveryTag, true);
+            }
         };
-        
+
         while (!stoppingToken.IsCancellationRequested)
         {
             subscription.Channel.BasicConsume(
                 queueName,
-                autoAck: true,
-                consumer: subscription.Consumer);
+                false,
+                subscription.Consumer);
 
             await Task.Delay(1000, stoppingToken);
         }

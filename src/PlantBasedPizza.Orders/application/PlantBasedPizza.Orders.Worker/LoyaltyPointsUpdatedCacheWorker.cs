@@ -12,7 +12,8 @@ public class LoyaltyPointsUpdatedCacheWorker : BackgroundService
     private readonly ActivitySource _source;
     private readonly IDistributedCache _distributedCache;
 
-    public LoyaltyPointsUpdatedCacheWorker(RabbitMqEventSubscriber eventSubscriber, ActivitySource source, IDistributedCache distributedCache)
+    public LoyaltyPointsUpdatedCacheWorker(RabbitMqEventSubscriber eventSubscriber, ActivitySource source,
+        IDistributedCache distributedCache)
     {
         _eventSubscriber = eventSubscriber;
         _source = source;
@@ -23,29 +24,39 @@ public class LoyaltyPointsUpdatedCacheWorker : BackgroundService
     {
         var queueName = "orders-loyaltyPointsUpdated-worker";
 
-        var subscription = this._eventSubscriber.CreateEventConsumer(queueName, "loyalty.customerLoyaltyPointsUpdated.v1");
-        
+        var subscription = _eventSubscriber.CreateEventConsumer(queueName, "loyalty.customerLoyaltyPointsUpdated.v1");
+
         subscription.Consumer.Received += async (model, ea) =>
         {
-            var evtDataResponse = await _eventSubscriber.ParseEventFrom<CustomerLoyaltyPointsUpdatedEvent>(ea.Body.ToArray());
+            try
+            {
+                var evtDataResponse =
+                    await _eventSubscriber.ParseEventFrom<CustomerLoyaltyPointsUpdatedEvent>(ea.Body.ToArray());
 
-            using var processingActivity = _source.StartActivity("processing-order-completed-event",
-                ActivityKind.Server, evtDataResponse.TraceParent);
-            processingActivity.AddTag("queue.time", evtDataResponse.QueueTime);
+                using var processingActivity = _source.StartActivity("processing-order-completed-event",
+                    ActivityKind.Server, evtDataResponse.TraceParent);
+                processingActivity.AddTag("queue.time", evtDataResponse.QueueTime);
 
-            processingActivity.SetTag("customerIdentifier", evtDataResponse.EventData.CustomerIdentifier);
-            processingActivity.SetTag("totalPoints", evtDataResponse.EventData.TotalLoyaltyPoints);
+                processingActivity.SetTag("customerIdentifier", evtDataResponse.EventData.CustomerIdentifier);
+                processingActivity.SetTag("totalPoints", evtDataResponse.EventData.TotalLoyaltyPoints);
 
-            await this._distributedCache.SetStringAsync(evtDataResponse.EventData.CustomerIdentifier.ToUpper(),
-                evtDataResponse.EventData.TotalLoyaltyPoints.ToString("n0"), token: stoppingToken);
+                await _distributedCache.SetStringAsync(evtDataResponse.EventData.CustomerIdentifier.ToUpper(),
+                    evtDataResponse.EventData.TotalLoyaltyPoints.ToString("n0"), stoppingToken);
+
+                subscription.Channel.BasicAck(ea.DeliveryTag, false);
+            }
+            catch (Exception e)
+            {
+                subscription.Channel.BasicReject(ea.DeliveryTag, true);
+            }
         };
-        
+
         while (!stoppingToken.IsCancellationRequested)
         {
             subscription.Channel.BasicConsume(
                 queueName,
-                autoAck: true,
-                consumer: subscription.Consumer);
+                false,
+                subscription.Consumer);
 
             await Task.Delay(1000, stoppingToken);
         }

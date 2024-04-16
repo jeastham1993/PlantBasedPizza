@@ -17,8 +17,8 @@ public class LoyaltyPointsDriver
 
         public async Task<LoyaltyPointsDto?> GetLoyaltyPoints(string customerIdentifier)
         {
-            // Add a forced delay to allow async messaging to catch up
-            await Task.Delay(TimeSpan.FromSeconds(5));
+            // Delay to allow async processing to catch up
+            await Task.Delay(TimeSpan.FromSeconds(2));
             
             var url = $"{BaseUrl}/loyalty/{customerIdentifier}";
             

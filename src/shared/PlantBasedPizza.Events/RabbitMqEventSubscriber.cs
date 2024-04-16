@@ -21,13 +21,27 @@ public class RabbitMqEventSubscriber
         _settings = settings.Value;
     }
 
-    public RetrieveEventConsumerResponse CreateEventConsumer(string queueName, string eventName)
+    public RetrieveEventConsumerResponse CreateEventConsumer(string queueName, string eventName, int deliveryLimit = 3)
     {
         var channel = this._connection.Connection.CreateModel();
         channel.ExchangeDeclare(exchange: _settings.ExchangeName, ExchangeType.Topic, durable: true);
+        channel.ExchangeDeclare(exchange: $"{_settings.ExchangeName}-dlq", ExchangeType.Direct, durable: true);
+
+        var dlq = channel.QueueDeclare($"{queueName}-dlq", durable: true, autoDelete: false, exclusive: false,
+            arguments: new Dictionary<string, object>(1)
+            {
+                { "x-queue-type", "quorum" },
+            });
         
-        var queue = channel.QueueDeclare(queueName, durable: true, autoDelete: false, exclusive: false).QueueName;
+        var queue = channel.QueueDeclare(queueName, durable: true, autoDelete: false, exclusive: false, arguments: new Dictionary<string, object>(1)
+        {
+            {"x-queue-type", "quorum"},
+            {"x-delivery-limit", deliveryLimit},
+            {"x-dead-letter-exchange", $"{_settings.ExchangeName}-dlq"},
+            {"x-dead-letter-routing-key", dlq.QueueName}
+        }).QueueName;
         
+        channel.QueueBind(dlq, exchange: $"{_settings.ExchangeName}-dlq", routingKey: dlq.QueueName);
         channel.QueueBind(queue, exchange: _settings.ExchangeName, routingKey: eventName);
         
         return new RetrieveEventConsumerResponse(channel);

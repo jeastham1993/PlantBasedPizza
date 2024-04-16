@@ -20,22 +20,31 @@ public class OrderReadyForDeliveryEventWorker(
         
         subscription.Consumer.Received += async (model, ea) =>
         {
-            var evtDataResponse = await eventSubscriber.ParseEventFrom<OrderReadyForDeliveryEventV1>(ea.Body.ToArray());
+            try
+            {
+                var evtDataResponse = await eventSubscriber.ParseEventFrom<OrderReadyForDeliveryEventV1>(ea.Body.ToArray());
 
-            using var processingActivity = source.StartActivity("processing-order-quality-checked-event",
-                ActivityKind.Server, evtDataResponse.TraceParent);
-            processingActivity.AddTag("queue.time", evtDataResponse.QueueTime);
+                using var processingActivity = source.StartActivity("processing-order-quality-checked-event",
+                    ActivityKind.Server, evtDataResponse.TraceParent);
+                processingActivity.AddTag("queue.time", evtDataResponse.QueueTime);
 
-            processingActivity.SetTag("orderIdentifier", evtDataResponse.EventData.OrderIdentifier);
+                processingActivity.SetTag("orderIdentifier", evtDataResponse.EventData.OrderIdentifier);
 
-            await eventHandler.Handle(evtDataResponse.EventData);
+                await eventHandler.Handle(evtDataResponse.EventData);
+            
+                subscription.Channel.BasicAck(ea.DeliveryTag, false);
+            }
+            catch (Exception e)
+            {
+                subscription.Channel.BasicReject(ea.DeliveryTag, true);
+            }
         };
         
         while (!stoppingToken.IsCancellationRequested)
         {
             subscription.Channel.BasicConsume(
                 queueName,
-                autoAck: true,
+                autoAck: false,
                 consumer: subscription.Consumer);
 
             await Task.Delay(1000, stoppingToken);

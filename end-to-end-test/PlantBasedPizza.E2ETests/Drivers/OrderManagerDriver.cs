@@ -64,6 +64,9 @@ namespace PlantBasedPizza.E2ETests.Drivers
 
         public async Task CollectOrder(string orderIdentifier)
         {
+            // Delay to allow async processing to catch up
+            await Task.Delay(TimeSpan.FromSeconds(2));
+            
             var res = await this._httpClient.PostAsync(new Uri($"{BaseUrl}/order/collected"), new StringContent(
                 JsonConvert.SerializeObject(new CollectOrderRequest()
                 {

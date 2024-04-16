@@ -17,6 +17,9 @@ namespace PlantBasedPizza.E2ETests.Drivers
 
         public async Task<List<DeliveryRequest>> GetAwaitingDriver()
         {
+            // Delay to allow async processing to catch up
+            await Task.Delay(TimeSpan.FromSeconds(2));
+            
             var result = await this._httpClient.GetAsync(new Uri($"{BaseUrl}/delivery/awaiting-collection"))
                 .ConfigureAwait(false);
 

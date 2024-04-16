@@ -17,6 +17,9 @@ namespace PlantBasedPizza.E2ETests.Drivers
         
         public async Task<List<KitchenRequest>> GetNew()
         {
+            // Delay to allow async processing to catch up
+            await Task.Delay(TimeSpan.FromSeconds(2));
+            
             var result = await this._httpClient.GetAsync(new Uri($"{BaseUrl}/kitchen/new")).ConfigureAwait(false);
 
             var kitchenRequests = JsonConvert.DeserializeObject<List<KitchenRequest>>(await result.Content.ReadAsStringAsync());

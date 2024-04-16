@@ -80,16 +80,16 @@ namespace PlantBasedPizza.Delivery.IntegrationTests.Features
             this.TestTearDown();
         }
         
-        [Xunit.SkippableFactAttribute(DisplayName="OrderShouldApppearReadyForDelivery")]
+        [Xunit.SkippableFactAttribute(DisplayName="CreatePoisonPillOrder")]
         [Xunit.TraitAttribute("FeatureTitle", "DeliveryFeature")]
-        [Xunit.TraitAttribute("Description", "OrderShouldApppearReadyForDelivery")]
+        [Xunit.TraitAttribute("Description", "CreatePoisonPillOrder")]
         [Xunit.TraitAttribute("Category", "delivery")]
-        public void OrderShouldApppearReadyForDelivery()
+        public void CreatePoisonPillOrder()
         {
             string[] tagsOfScenario = new string[] {
                     "delivery"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("OrderShouldApppearReadyForDelivery", null, tagsOfScenario, argumentsOfScenario, featureTags);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("CreatePoisonPillOrder", null, tagsOfScenario, argumentsOfScenario, featureTags);
 #line 5
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
@@ -101,9 +101,39 @@ this.ScenarioInitialize(scenarioInfo);
             {
                 this.ScenarioStart();
 #line 6
- testRunner.Given("an order is ready for delivery", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+ testRunner.Given("a poison pill order is ready for delivery", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
 #line 7
+ testRunner.Then("it should not be awaiting delivery collection", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [Xunit.SkippableFactAttribute(DisplayName="OrderShouldApppearReadyForDelivery")]
+        [Xunit.TraitAttribute("FeatureTitle", "DeliveryFeature")]
+        [Xunit.TraitAttribute("Description", "OrderShouldApppearReadyForDelivery")]
+        [Xunit.TraitAttribute("Category", "delivery")]
+        public void OrderShouldApppearReadyForDelivery()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "delivery"};
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("OrderShouldApppearReadyForDelivery", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 10
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 11
+ testRunner.Given("an order is ready for delivery", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line hidden
+#line 12
  testRunner.Then("it should be awaiting delivery collection", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             }
@@ -120,7 +150,7 @@ this.ScenarioInitialize(scenarioInfo);
                     "delivery"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("OrderCanHaveDriverAssigned", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 10
+#line 15
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
@@ -130,13 +160,13 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 this.ScenarioStart();
-#line 11
+#line 16
  testRunner.Given("an order is ready for delivery", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
-#line 12
+#line 17
  testRunner.When("it is assigned to a driver named James", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 13
+#line 18
  testRunner.Then("it should appear in a list of James deliveries", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             }
@@ -153,7 +183,7 @@ this.ScenarioInitialize(scenarioInfo);
                     "delivery"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("WhenOrderDeliveredShouldMarkAsOrderComplete", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 16
+#line 21
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
@@ -163,16 +193,16 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 this.ScenarioStart();
-#line 17
+#line 22
  testRunner.Given("an order is ready for delivery", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
-#line 18
+#line 23
  testRunner.When("it is assigned to a driver named James", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 19
+#line 24
  testRunner.And("it is delivered", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 20
+#line 25
  testRunner.Then("it should no longer be assigned to a driver named James", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             }

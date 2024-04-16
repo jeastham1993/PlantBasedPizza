@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using Microsoft.Extensions.Caching.Distributed;
 using PlantBasedPizza.Events;
 using PlantBasedPizza.Orders.Worker.Handlers;
 using PlantBasedPizza.Orders.Worker.IntegrationEvents;
@@ -13,7 +12,8 @@ public class OrderBakedEventWorker : BackgroundService
     private readonly ActivitySource _source;
     private readonly OrderBakedEventHandler _eventHandler;
 
-    public OrderBakedEventWorker(RabbitMqEventSubscriber eventSubscriber, ActivitySource source, OrderBakedEventHandler eventHandler)
+    public OrderBakedEventWorker(RabbitMqEventSubscriber eventSubscriber, ActivitySource source,
+        OrderBakedEventHandler eventHandler)
     {
         _eventSubscriber = eventSubscriber;
         _source = source;
@@ -24,27 +24,36 @@ public class OrderBakedEventWorker : BackgroundService
     {
         var queueName = "orders-orderBaked-worker";
 
-        var subscription = this._eventSubscriber.CreateEventConsumer(queueName, "kitchen.orderBaked.v1");
-        
+        var subscription = _eventSubscriber.CreateEventConsumer(queueName, "kitchen.orderBaked.v1");
+
         subscription.Consumer.Received += async (model, ea) =>
         {
-            var evtDataResponse = await _eventSubscriber.ParseEventFrom<OrderBakedEventV1>(ea.Body.ToArray());
+            try
+            {
+                var evtDataResponse = await _eventSubscriber.ParseEventFrom<OrderBakedEventV1>(ea.Body.ToArray());
 
-            using var processingActivity = _source.StartActivity("processing-order-completed-event",
-                ActivityKind.Server, evtDataResponse.TraceParent);
-            processingActivity.AddTag("queue.time", evtDataResponse.QueueTime);
+                using var processingActivity = _source.StartActivity("processing-order-completed-event",
+                    ActivityKind.Server, evtDataResponse.TraceParent);
+                processingActivity.AddTag("queue.time", evtDataResponse.QueueTime);
 
-            processingActivity.SetTag("orderIdentifier", evtDataResponse.EventData.OrderIdentifier);
+                processingActivity.SetTag("orderIdentifier", evtDataResponse.EventData.OrderIdentifier);
 
-            await this._eventHandler.Handle(evtDataResponse.EventData);
+                await _eventHandler.Handle(evtDataResponse.EventData);
+
+                subscription.Channel.BasicAck(ea.DeliveryTag, false);
+            }
+            catch (Exception e)
+            {
+                subscription.Channel.BasicReject(ea.DeliveryTag, true);
+            }
         };
-        
+
         while (!stoppingToken.IsCancellationRequested)
         {
             subscription.Channel.BasicConsume(
                 queueName,
-                autoAck: true,
-                consumer: subscription.Consumer);
+                false,
+                subscription.Consumer);
 
             await Task.Delay(1000, stoppingToken);
         }
