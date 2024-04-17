@@ -102,6 +102,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Delivery.In
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Delivery.UnitTests", "src\PlantBasedPizza.Delivery\tests\PlantBasedPizza.Delivery.UnitTests\PlantBasedPizza.Delivery.UnitTests.csproj", "{1F7B874C-65E4-4B38-854F-9111F3473B4B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PlantBasedPizza.Account", "PlantBasedPizza.Account", "{D9915AEC-0362-47BC-BAA2-4FCCCE319341}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Account.Api", "src\PlantBasedPizza.Account\application\PlantBasedPizza.Account.Api\PlantBasedPizza.Account.Api.csproj", "{E36550E1-BA63-4EB3-A6CA-78520D9C3AE5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -151,6 +155,7 @@ Global
 		{289878F8-9590-4218-8F86-FAF49A3F4E55} = {11645DBA-E9C6-49F6-B911-5026049B9151}
 		{2F3CE883-E55B-45A3-8FC8-89D89B7B9D16} = {289878F8-9590-4218-8F86-FAF49A3F4E55}
 		{1F7B874C-65E4-4B38-854F-9111F3473B4B} = {289878F8-9590-4218-8F86-FAF49A3F4E55}
+		{E36550E1-BA63-4EB3-A6CA-78520D9C3AE5} = {D9915AEC-0362-47BC-BAA2-4FCCCE319341}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{179E35BF-4F04-4660-8F82-413DA572E7F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -293,5 +298,9 @@ Global
 		{1F7B874C-65E4-4B38-854F-9111F3473B4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1F7B874C-65E4-4B38-854F-9111F3473B4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1F7B874C-65E4-4B38-854F-9111F3473B4B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E36550E1-BA63-4EB3-A6CA-78520D9C3AE5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E36550E1-BA63-4EB3-A6CA-78520D9C3AE5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E36550E1-BA63-4EB3-A6CA-78520D9C3AE5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E36550E1-BA63-4EB3-A6CA-78520D9C3AE5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

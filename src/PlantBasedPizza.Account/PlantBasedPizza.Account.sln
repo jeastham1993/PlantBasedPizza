@@ -1,0 +1,39 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "application", "application", "{3582F79E-2187-4CCD-836D-48EE30BC64A8}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.yml = docker-compose.yml
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Account.Api", "application\PlantBasedPizza.Account.Api\PlantBasedPizza.Account.Api.csproj", "{53CF4664-854F-4161-BEB2-EABFD6F9419C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{FE220876-2B87-4095-8BD2-039049503C72}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Account.IntegrationTests", "tests\PlantBasedPizza.Account.IntegrationTests\PlantBasedPizza.Account.IntegrationTests.csproj", "{4DDC795B-2EA4-4123-B631-F0D8CAA99BA6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{53CF4664-854F-4161-BEB2-EABFD6F9419C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{53CF4664-854F-4161-BEB2-EABFD6F9419C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{53CF4664-854F-4161-BEB2-EABFD6F9419C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{53CF4664-854F-4161-BEB2-EABFD6F9419C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4DDC795B-2EA4-4123-B631-F0D8CAA99BA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4DDC795B-2EA4-4123-B631-F0D8CAA99BA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4DDC795B-2EA4-4123-B631-F0D8CAA99BA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4DDC795B-2EA4-4123-B631-F0D8CAA99BA6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{53CF4664-854F-4161-BEB2-EABFD6F9419C} = {3582F79E-2187-4CCD-836D-48EE30BC64A8}
+		{4DDC795B-2EA4-4123-B631-F0D8CAA99BA6} = {FE220876-2B87-4095-8BD2-039049503C72}
+	EndGlobalSection
+EndGlobal
