@@ -1,13 +1,10 @@
-using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Headers;
-using System.Security.Claims;
 using System.Text;
-using System.Text.Json;
-using Grpc.Net.Client;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using PlantBasedPizza.Events;
+using PlantBasedPizza.IntegrationTest.Helpers;
 using PlantBasedPizza.OrderManager.Core.AddItemToOrder;
 using PlantBasedPizza.OrderManager.Core.CollectOrder;
 using PlantBasedPizza.OrderManager.Core.CreateDeliveryOrder;
@@ -26,42 +23,8 @@ public class OrdersTestDriver
 
         public OrdersTestDriver()
         {
-            var userId = Guid.NewGuid().ToString();
-            var staffId = Guid.NewGuid().ToString();
-            
-            var userClaims = new[]
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, userId),
-                new Claim(JwtRegisteredClaimNames.Email, $"{userId}@test.com"),
-                new Claim(ClaimTypes.Role, "user")
-            };
-            
-            var userToken = JwtTokenProvider.JwtSecurityTokenHandler.WriteToken(
-                new JwtSecurityToken(
-                    JwtTokenProvider.Issuer,
-                    JwtTokenProvider.Issuer,
-                    userClaims,
-                    expires: DateTime.Now.AddMinutes(30),
-                    signingCredentials: JwtTokenProvider.SigningCredentials
-                )
-            );
-            
-            var staffClaims = new[]
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, staffId),
-                new Claim(JwtRegisteredClaimNames.Email, $"{staffId}@test.com"),
-                new Claim(ClaimTypes.Role, "staff")
-            };
-            
-            var staffToken = JwtTokenProvider.JwtSecurityTokenHandler.WriteToken(
-                new JwtSecurityToken(
-                    JwtTokenProvider.Issuer,
-                    JwtTokenProvider.Issuer,
-                    staffClaims,
-                    expires: DateTime.Now.AddMinutes(30),
-                    signingCredentials: JwtTokenProvider.SigningCredentials
-                )
-            );
+            var userToken = TestTokenGenerator.GenerateTestTokenForRole("user");
+            var staffToken = TestTokenGenerator.GenerateTestTokenForRole("staff");
             
             _userHttpClient = new HttpClient();
             _userHttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userToken);

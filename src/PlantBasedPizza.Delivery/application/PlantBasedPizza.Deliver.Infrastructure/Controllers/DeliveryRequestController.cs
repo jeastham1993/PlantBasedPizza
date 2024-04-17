@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PlantBasedPizza.Deliver.Core.Commands;
 using PlantBasedPizza.Deliver.Core.Entities;
@@ -28,6 +29,7 @@ namespace PlantBasedPizza.Deliver.Infrastructure.Controllers
         /// <param name="orderIdentifier">The identifier of the order.</param>
         /// <returns>A <see cref="DeliveryRequest"/>.</returns>
         [HttpGet("{orderIdentifier}/status")]
+        [Authorize(Roles = "user")]
         public async Task<DeliveryRequestDto?> Get(string orderIdentifier)
         {
             return await this._getDeliveryQueryHandler.Handle(new GetDeliveryQuery(orderIdentifier));
@@ -38,6 +40,7 @@ namespace PlantBasedPizza.Deliver.Infrastructure.Controllers
         /// </summary>
         /// <returns>A list of all orders awaiting collection.</returns>
         [HttpGet("awaiting-collection")]
+        [Authorize(Roles = "staff")]
         public async Task<List<DeliveryRequest>> GetAwaitingCollection()
         {
             return await this._deliveryRequestRepository.GetAwaitingDriver();
@@ -49,6 +52,7 @@ namespace PlantBasedPizza.Deliver.Infrastructure.Controllers
         /// <param name="request">The contents of the assignment request. A <see cref="AssignDriverRequest"/>.</param>
         /// <returns>The status.</returns>
         [HttpPost("assign")]
+        [Authorize(Roles = "staff")]
         public async Task<IActionResult> Collect([FromBody] AssignDriverRequest request)
         {
             request.AddToTelemetry();
@@ -78,6 +82,7 @@ namespace PlantBasedPizza.Deliver.Infrastructure.Controllers
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpPost("delivered")]
+        [Authorize(Roles = "driver")]
         public async Task<IActionResult> MarkDelivered([FromBody] MarkOrderDeliveredRequest request)
         {
             request.AddToTelemetry();
@@ -106,6 +111,7 @@ namespace PlantBasedPizza.Deliver.Infrastructure.Controllers
         /// <param name="driverName">The name of the driver to search for.</param>
         /// <returns></returns>
         [HttpGet("driver/{driverName}/orders")]
+        [Authorize(Roles = "staff")]
         public async Task<List<DeliveryRequest>> GetForDriver(string driverName)
         {
             Activity.Current?.AddTag("driverName", driverName);

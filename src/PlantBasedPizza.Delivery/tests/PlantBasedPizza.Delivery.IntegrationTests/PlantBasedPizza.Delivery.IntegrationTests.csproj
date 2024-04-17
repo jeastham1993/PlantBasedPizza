@@ -42,6 +42,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\shared\PlantBasedPizza.Events\PlantBasedPizza.Events.csproj" />
+    <ProjectReference Include="..\..\..\shared\PlantBasedPizza.IntegrationTest.Helpers\PlantBasedPizza.IntegrationTest.Helpers.csproj" />
   </ItemGroup>
 
 

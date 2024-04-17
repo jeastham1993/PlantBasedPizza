@@ -1,9 +1,11 @@
+using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using PlantBasedPizza.Delivery.IntegrationTests.ViewModels;
 using PlantBasedPizza.Events;
+using PlantBasedPizza.IntegrationTest.Helpers;
 using Serilog.Extensions.Logging;
 
 namespace PlantBasedPizza.Delivery.IntegrationTests.Drivers
@@ -12,12 +14,24 @@ namespace PlantBasedPizza.Delivery.IntegrationTests.Drivers
     {
         private static string BaseUrl = TestConstants.DefaultTestUrl;
 
-        private readonly HttpClient _httpClient;
+        private readonly HttpClient _userHttpClient;
+        private readonly HttpClient _staffHttpClient;
+        private readonly HttpClient _driverHttpClient;
         private readonly IEventPublisher _eventPublisher;
 
         public DeliveryDriver()
         {
-            this._httpClient = new HttpClient();
+            this._userHttpClient = new HttpClient();
+            this._userHttpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", TestTokenGenerator.GenerateTestTokenForRole("user"));
+            
+            this._staffHttpClient = new HttpClient();
+            this._staffHttpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", TestTokenGenerator.GenerateTestTokenForRole("staff"));
+            
+            this._driverHttpClient = new HttpClient();
+            this._driverHttpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", TestTokenGenerator.GenerateTestTokenForRole("driver"));
 
             _eventPublisher = new RabbitMQEventPublisher(new OptionsWrapper<RabbitMqSettings>(new RabbitMqSettings()
             {
@@ -45,7 +59,7 @@ namespace PlantBasedPizza.Delivery.IntegrationTests.Drivers
 
         public async Task<List<DeliveryRequest>> GetAwaitingDriver()
         {
-            var result = await this._httpClient.GetAsync(new Uri($"{BaseUrl}/delivery/awaiting-collection"))
+            var result = await this._staffHttpClient.GetAsync(new Uri($"{BaseUrl}/delivery/awaiting-collection"))
                 .ConfigureAwait(false);
 
             var deliveryRequests =
@@ -66,7 +80,7 @@ namespace PlantBasedPizza.Delivery.IntegrationTests.Drivers
                 DriverName = driverName
             });
 
-            var result = await this._httpClient.PostAsync(new Uri(url), new StringContent(content, Encoding.UTF8, "application/json")).ConfigureAwait(false);
+            var result = await this._staffHttpClient.PostAsync(new Uri(url), new StringContent(content, Encoding.UTF8, "application/json")).ConfigureAwait(false);
 
             if (!result.IsSuccessStatusCode)
             {
@@ -85,12 +99,12 @@ namespace PlantBasedPizza.Delivery.IntegrationTests.Drivers
                 OrderIdentifier = orderIdentifier
             });
 
-            await this._httpClient.PostAsync(new Uri(url), new StringContent(content, Encoding.UTF8, "application/json")).ConfigureAwait(false);
+            await this._driverHttpClient.PostAsync(new Uri(url), new StringContent(content, Encoding.UTF8, "application/json")).ConfigureAwait(false);
         }
 
         public async Task<List<DeliveryRequest>> GetAssignedDeliveriesForDriver(string driverName)
         {
-            var result = await this._httpClient.GetAsync(new Uri($"{BaseUrl}/delivery/driver/{driverName}/orders"))
+            var result = await this._staffHttpClient.GetAsync(new Uri($"{BaseUrl}/delivery/driver/{driverName}/orders"))
                 .ConfigureAwait(false);
 
             var deliveryRequests =
