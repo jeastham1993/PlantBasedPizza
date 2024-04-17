@@ -1,11 +1,11 @@
 config:
-  target: "{{ $processEnvironment.API_URL }}"
+  target: "http://localhost:5051"
   http:
     timeout : 60
   processor: "generator.js"
   phases:
-    - duration: 600
-      arrivalRate: 50
+    - duration: 10
+      arrivalRate: 10
 
 before:
   flow:
@@ -46,26 +46,31 @@ scenarios:
           headers:
             Content-Type: "application/json"
           json:
+      - think: 5
       - put:
           url: "/kitchen/{{ Id }}/preparing"
           headers:
             Content-Type: "application/json"
           json:
+      - think: 2
       - put:
           url: "/kitchen/{{ Id }}/prep-complete"
           headers:
             Content-Type: "application/json"
           json:
+      - think: 2
       - put:
           url: "/kitchen/{{ Id }}/bake-complete"
           headers:
             Content-Type: "application/json"
           json:
+      - think: 2
       - put:
           url: "/kitchen/{{ Id }}/quality-check"
           headers:
             Content-Type: "application/json"
           json:
+      - think: 2
       - post:
           url: "/order/collected"
           headers:
