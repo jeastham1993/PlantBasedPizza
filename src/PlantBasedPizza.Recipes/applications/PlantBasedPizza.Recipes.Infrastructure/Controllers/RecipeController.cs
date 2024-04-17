@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PlantBasedPizza.Events;
 using PlantBasedPizza.Recipes.Core.Commands;
@@ -50,29 +51,46 @@ namespace PlantBasedPizza.Recipes.Infrastructure.Controllers
         /// <param name="request">The <see cref="CreateRecipeCommand"/> request.</param>
         /// <returns></returns>
         [HttpPost("")]
-        public async Task<Recipe> Create([FromBody] CreateRecipeCommand request)
+        [Authorize(Roles = "admin,staff")]
+        public async Task<Recipe?> Create([FromBody] CreateRecipeCommand request)
         {
-            var existingRecipe = await this._recipeRepository.Retrieve(request.RecipeIdentifier);
-
-            if (existingRecipe != null)
+            try
             {
-                return existingRecipe;
+                var existingRecipe = await this._recipeRepository.Retrieve(request.RecipeIdentifier);
+
+                if (existingRecipe != null)
+                {
+                    return existingRecipe;
+                }
+
+                var category = request.Category switch
+                {
+                    "pizza" => RecipeCategory.Pizza,
+                    "sides" => RecipeCategory.Sides,
+                    "drinks" => RecipeCategory.Drinks,
+                    _ => throw new ArgumentOutOfRangeException()
+                };
+
+                var recipe = new Recipe(category, request.RecipeIdentifier, request.Name, request.Price);
+
+                foreach (var item in request.Ingredients)
+                {
+                    recipe.AddIngredient(item.Name, item.Quantity);
+                }
+
+                await this._recipeRepository.Add(recipe);
+                await this._eventPublisher.Publish(new RecipeCreatedEventV1()
+                {
+                    RecipeIdentifier = recipe.RecipeIdentifier
+                });
+
+                return recipe;
             }
-
-            var recipe = new Recipe(request.RecipeIdentifier, request.Name, request.Price);
-
-            foreach (var item in request.Ingredients)
+            catch (ArgumentOutOfRangeException)
             {
-                recipe.AddIngredient(item.Name, item.Quantity);
+                Response.StatusCode = 400;
+                return null;
             }
-
-            await this._recipeRepository.Add(recipe);
-            await this._eventPublisher.Publish(new RecipeCreatedEventV1()
-            {
-                RecipeIdentifier = recipe.RecipeIdentifier
-            });
-
-            return recipe;
         }
     }
 }

@@ -12,7 +12,7 @@ public class RecipeTests
     {
         Recipe? createdRecipe = null;
 
-        var recipe = new Recipe(DefaultRecipeIdentifier, "Pizza", 6.5M);
+        var recipe = new Recipe(RecipeCategory.Pizza, DefaultRecipeIdentifier, "Pizza", 6.5M);
         
         recipe.AddIngredient("Base", 1);
         recipe.AddIngredient("Tomato Sauce", 1);

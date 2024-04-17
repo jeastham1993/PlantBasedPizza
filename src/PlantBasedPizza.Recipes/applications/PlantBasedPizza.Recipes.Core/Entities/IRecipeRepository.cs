@@ -9,5 +9,8 @@ namespace PlantBasedPizza.Recipes.Core.Entities
         Task Add(Recipe recipe);
 
         Task Update(Recipe recipe);
+        
+        // Seed data on startup, this wouldn't normally happen in a production application. 
+        Task SeedRecipes();
     }
 }

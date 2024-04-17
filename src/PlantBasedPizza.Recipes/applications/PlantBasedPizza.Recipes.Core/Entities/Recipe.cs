@@ -2,6 +2,13 @@ using System.Text.Json.Serialization;
 
 namespace PlantBasedPizza.Recipes.Core.Entities;
 
+public enum RecipeCategory
+{
+    Pizza,
+    Sides,
+    Drinks
+}
+
 public class Recipe
 {
     private List<Ingredient> _ingredients;
@@ -14,8 +21,9 @@ public class Recipe
         this._ingredients = new List<Ingredient>();
     }
         
-    public Recipe(string recipeIdentifier, string name, decimal price)
+    public Recipe(RecipeCategory category, string recipeIdentifier, string name, decimal price)
     {
+        this.Category = category;
         this.RecipeIdentifier = recipeIdentifier;
         this.Name = name;
         this.Price = price;
@@ -24,6 +32,9 @@ public class Recipe
         
     [JsonPropertyName("recipeIdentifier")]
     public string RecipeIdentifier { get; private set; }
+        
+    [JsonPropertyName("category")]
+    public RecipeCategory Category { get; private set; }
         
     [JsonPropertyName("name")]
     public string Name { get; private set; }
