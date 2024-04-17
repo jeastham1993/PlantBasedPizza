@@ -4,15 +4,27 @@ namespace PlantBasedPizza.LoyaltyPoints.Shared.Core;
 
 public class LoyaltyPointsDto
 {
-    public LoyaltyPointsDto(CustomerLoyaltyPoints points)
+    public LoyaltyPointsDto(decimal totalPoints)
     {
-        this.CustomerIdentifier = points.CustomerId;
-        this.TotalPoints = points.TotalPoints;
+        TotalPoints = totalPoints;
+        History = new List<LoyaltyPointHistoryDto>();
     }
     
-    [JsonPropertyName("customerIdentifier")]
-    public string CustomerIdentifier { get; set; }
+    public LoyaltyPointsDto(CustomerLoyaltyPoints points)
+    {
+        this.TotalPoints = points.TotalPoints;
+        this.History = points.History.Select(history => new LoyaltyPointHistoryDto()
+        {
+            DateTime = history.DateTime,
+            PointsAdded = history.PointsAdded,
+            OrderIdentifier = history.OrderIdentifier,
+            OrderValue = history.OrderValue
+        }).ToList();
+    }
     
     [JsonPropertyName("totalPoints")]
     public decimal TotalPoints { get; set; }
+    
+    [JsonPropertyName("history")]
+    public List<LoyaltyPointHistoryDto> History { get; set; }
 }

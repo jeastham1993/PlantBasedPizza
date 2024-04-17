@@ -1,9 +1,11 @@
+using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using Grpc.Net.Client;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using PlantBasedPizza.Events;
+using PlantBasedPizza.IntegrationTest.Helpers;
 using PlantBasedPizza.Kitchen.IntegrationTests.ViewModels;
 using Serilog.Extensions.Logging;
 
@@ -18,7 +20,9 @@ public class KitchenDriver
 
         public KitchenDriver()
         {
+            var staffToken = TestTokenGenerator.GenerateTestTokenForRole("staff");
             this._httpClient = new HttpClient();
+            this._httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", staffToken); 
 
             _eventPublisher = new RabbitMQEventPublisher(new OptionsWrapper<RabbitMqSettings>(new RabbitMqSettings()
             {

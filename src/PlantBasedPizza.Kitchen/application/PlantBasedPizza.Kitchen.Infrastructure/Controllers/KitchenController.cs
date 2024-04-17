@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PlantBasedPizza.Events;
 using PlantBasedPizza.Kitchen.Core.Entities;
@@ -26,6 +27,7 @@ namespace PlantBasedPizza.Kitchen.Infrastructure.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("new")]
+        [Authorize(Roles = "staff")]
         public IEnumerable<KitchenRequestDto> GetNew()
         {
             try
@@ -47,6 +49,7 @@ namespace PlantBasedPizza.Kitchen.Infrastructure.Controllers
         /// <param name="orderIdentifier">The order identifier.</param>
         /// <returns></returns>
         [HttpPut("{orderIdentifier}/preparing")]
+        [Authorize(Roles = "staff")]
         public async Task<KitchenRequest> Preparing(string orderIdentifier)
         {
             ApplicationLogger.Info("Received request to prepare order");
@@ -70,6 +73,7 @@ namespace PlantBasedPizza.Kitchen.Infrastructure.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("prep")]
+        [Authorize(Roles = "staff")]
         public IEnumerable<KitchenRequestDto> GetPrep()
         {
             try
@@ -91,6 +95,7 @@ namespace PlantBasedPizza.Kitchen.Infrastructure.Controllers
         /// <param name="orderIdentifier">The order identifier.</param>
         /// <returns></returns>
         [HttpPut("{orderIdentifier}/prep-complete")]
+        [Authorize(Roles = "staff")]
         public async Task<KitchenRequest> PrepComplete(string orderIdentifier)
         {
             var kitchenRequest = this._kitchenRequestRepository.Retrieve(orderIdentifier).Result;
@@ -112,6 +117,7 @@ namespace PlantBasedPizza.Kitchen.Infrastructure.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("baking")]
+        [Authorize(Roles = "staff")]
         public IEnumerable<KitchenRequestDto> GetBaking()
         {
             try
@@ -133,6 +139,7 @@ namespace PlantBasedPizza.Kitchen.Infrastructure.Controllers
         /// <param name="orderIdentifier">The order identifier.</param>
         /// <returns></returns>
         [HttpPut("{orderIdentifier}/bake-complete")]
+        [Authorize(Roles = "staff")]
         public async Task<KitchenRequest> BakeComplete(string orderIdentifier)
         {
             var kitchenRequest = this._kitchenRequestRepository.Retrieve(orderIdentifier).Result;
@@ -155,6 +162,7 @@ namespace PlantBasedPizza.Kitchen.Infrastructure.Controllers
         /// <param name="orderIdentifier">The order identifier.</param>
         /// <returns></returns>
         [HttpPut("{orderIdentifier}/quality-check")]
+        [Authorize(Roles = "staff")]
         public async Task<KitchenRequest> QualityCheckComplete(string orderIdentifier)
         {
             var kitchenRequest = this._kitchenRequestRepository.Retrieve(orderIdentifier).Result;
@@ -176,6 +184,7 @@ namespace PlantBasedPizza.Kitchen.Infrastructure.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("quality-check")]
+        [Authorize(Roles = "staff")]
         public IEnumerable<KitchenRequestDto> GetAwaitingQualityCheck()
         {
             try

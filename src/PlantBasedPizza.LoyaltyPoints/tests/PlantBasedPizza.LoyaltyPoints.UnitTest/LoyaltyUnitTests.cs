@@ -25,8 +25,7 @@ public class LoyaltyUnitTests
             CustomerIdentifier = customerId,
             OrderValue = 50.79M
         });
-
-        handleResponse.CustomerIdentifier.Should().Be(customerId);
+        
         handleResponse.TotalPoints.Should().Be(51);
     }
     
@@ -51,8 +50,7 @@ public class LoyaltyUnitTests
             CustomerIdentifier = customerId,
             OrderValue = 50.79M
         });
-
-        handleResponse.CustomerIdentifier.Should().Be(customerId);
+        
         handleResponse.TotalPoints.Should().Be(201);
     }
     
@@ -76,8 +74,7 @@ public class LoyaltyUnitTests
             CustomerIdentifier = customerId,
             PointsToSpend = 50
         });
-
-        handleResponse.CustomerIdentifier.Should().Be(customerId);
+        
         handleResponse.TotalPoints.Should().Be(100);
     }
     

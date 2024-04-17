@@ -1,5 +1,9 @@
 using System.Diagnostics;
+using System.Security.Claims;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using PlantBasedPizza.LoyaltyPoints;
 using PlantBasedPizza.LoyaltyPoints.Shared;
 using PlantBasedPizza.LoyaltyPoints.Shared.Core;
@@ -7,9 +11,34 @@ using PlantBasedPizza.LoyaltyPoints.Shared.Core;
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddEnvironmentVariables();
 
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(o =>
+{
+    o.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidIssuer = builder.Configuration["Auth:Issuer"],
+        ValidAudience = builder.Configuration["Auth:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey
+            (Encoding.UTF8.GetBytes(builder.Configuration["Auth:Key"])),
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = false,
+        ValidateIssuerSigningKey = true
+    };
+});
+
+builder.Services.AddAuthorization();
+
 builder.Services.AddLoyaltyServices(builder.Configuration, "LoyaltyPointsAPI");
 
 var app = builder.Build();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 var addLoyaltyPointsHandler = app.Services.GetRequiredService<AddLoyaltyPointsCommandHandler>();
 var spendLoyaltyPointsHandler = app.Services.GetRequiredService<SpendLoyaltyPointsCommandHandler>();
@@ -17,37 +46,20 @@ var loyaltyRepo = app.Services.GetRequiredService<ICustomerLoyaltyPointsReposito
 
 app.MapGet("/loyalty/health", () => "");
 
-app.MapPost("/loyalty", async ([FromBody] AddLoyaltyPointsCommand command) =>
+app.MapGet("/loyalty", async (ClaimsPrincipal user) =>
 {
-    command.AddToTrace();
-
-    if (!command.Validate())
-    {
-        return Results.BadRequest();
-    }
+    var accountId = user.Claims.ExtractAccountId();
     
-    return Results.Ok(await addLoyaltyPointsHandler.Handle(command));
-});
-
-app.MapPost("/loyalty/spend", async ([FromBody] SpendLoyaltyPointsCommand command) =>
-{
-    command.AddToTrace();
+    Activity.Current?.AddTag("loyalty.customerId", accountId);
     
-    return await spendLoyaltyPointsHandler.Handle(command);
-});
-
-app.MapGet("/loyalty/{customerIdentifier}", async (string customerIdentifier) =>
-{
-    Activity.Current?.AddTag("loyalty.customerId", customerIdentifier);
-    
-    var loyalty = await loyaltyRepo.GetCurrentPointsFor(customerIdentifier);
+    var loyalty = await loyaltyRepo.GetCurrentPointsFor(accountId);
 
     if (loyalty == null)
     {
-        return Results.NotFound(customerIdentifier);
+        return Results.Ok(new LoyaltyPointsDto(0));
     }
 
     return Results.Ok(new LoyaltyPointsDto(loyalty));
-});
+}).RequireAuthorization(policyBuilder => policyBuilder.RequireRole("user"));
 
 app.Run();
