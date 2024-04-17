@@ -1,0 +1,6 @@
+{
+    "service": "Payment",
+    "method": "TakePayment",
+    "input": { "matches": { "customerIdentifier": ".*" } },
+    "output": { "data": { "paymentStatus": "SUCCESS", "isSuccess": true } }
+}

@@ -1,0 +1,9 @@
+{
+    "request": {
+      "method": "GET",
+      "urlPath": "/loyalty/health"
+    },
+    "response": {
+      "status": 200
+    }
+  }

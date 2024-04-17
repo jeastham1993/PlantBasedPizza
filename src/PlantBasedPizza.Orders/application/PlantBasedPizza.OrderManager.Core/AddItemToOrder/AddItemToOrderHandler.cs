@@ -22,6 +22,11 @@ public class AddItemToOrderHandler
             
             var order = await this._orderRepository.Retrieve(command.OrderIdentifier);
 
+            if (order.CustomerIdentifier != command.CustomerIdentifier)
+            {
+                throw new OrderNotFoundException(command.OrderIdentifier);
+            } 
+
             order.AddOrderItem(command.RecipeIdentifier, recipe.ItemName, command.Quantity, recipe.Price);
 
             await this._orderRepository.Update(order);

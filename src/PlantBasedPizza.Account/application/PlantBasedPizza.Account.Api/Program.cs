@@ -61,6 +61,8 @@ app.UseAuthorization();
 
 var accountRepository = app.Services.GetRequiredService<IUserAccountRepository>();
 
+await accountRepository.SeedInitialUser();
+
 app.MapPost("/account/login", [AllowAnonymous] async (LoginCommand login) =>
 {
     try
@@ -71,16 +73,16 @@ app.MapPost("/account/login", [AllowAnonymous] async (LoginCommand login) =>
         var audience = builder.Configuration["Auth:Audience"];
         var key = Encoding.ASCII.GetBytes
             (builder.Configuration["Auth:Key"]);
+        var claims = new[]
+        {
+            new Claim(JwtRegisteredClaimNames.Sub, account.AccountId),
+            new Claim(JwtRegisteredClaimNames.Email, account.EmailAddress),
+            new Claim(ClaimTypes.Role, account.AsAuthenticatedRole())
+        };
+        
         var tokenDescriptor = new SecurityTokenDescriptor
         {
-            Subject = new ClaimsIdentity(new[]
-            {
-                new Claim("Id", Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Sub, account.AccountId),
-                new Claim(JwtRegisteredClaimNames.Email, account.EmailAddress),
-                new Claim(JwtRegisteredClaimNames.Jti,
-                    Guid.NewGuid().ToString())
-            }),
+            Subject = new ClaimsIdentity(claims),
             Expires = DateTime.UtcNow.AddMinutes(5),
             Issuer = issuer,
             Audience = audience,
@@ -123,5 +125,41 @@ app.MapPost("/account/register", [AllowAnonymous] async (RegisterUserCommand reg
         return Results.BadRequest("User exists");
     }
 });
+
+app.MapPost("/account/driver/register", [AllowAnonymous] async (RegisterUserCommand register) =>
+{
+    try
+    {
+        var userAccount = await accountRepository.CreateDriverAccount(register.EmailAddress, register.Password);
+        
+        return Results.Ok(new RegisterResponse()
+        {
+            AccountId = userAccount.AccountId
+        });
+    }
+    catch (UserExistsException)
+    {
+        Activity.Current.AddTag("user.exists", true);
+        return Results.BadRequest("User exists");
+    }
+}).RequireAuthorization(policyBuilder => policyBuilder.RequireRole(["staff","admin"]));
+
+app.MapPost("/account/staff/register", [AllowAnonymous] async (RegisterUserCommand register) =>
+{
+    try
+    {
+        var userAccount = await accountRepository.CreateStaffAccount(register.EmailAddress, register.Password);
+        
+        return Results.Ok(new RegisterResponse()
+        {
+            AccountId = userAccount.AccountId
+        });
+    }
+    catch (UserExistsException)
+    {
+        Activity.Current.AddTag("user.exists", true);
+        return Results.BadRequest("User exists");
+    }
+}).RequireAuthorization(policyBuilder => policyBuilder.RequireRole("admin"));
 
 app.Run();

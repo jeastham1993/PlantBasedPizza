@@ -11,13 +11,15 @@ public class LoyaltyPointsUpdatedCacheWorker : BackgroundService
     private readonly RabbitMqEventSubscriber _eventSubscriber;
     private readonly ActivitySource _source;
     private readonly IDistributedCache _distributedCache;
+    private readonly ILogger<LoyaltyPointsUpdatedCacheWorker> _logger;
 
     public LoyaltyPointsUpdatedCacheWorker(RabbitMqEventSubscriber eventSubscriber, ActivitySource source,
-        IDistributedCache distributedCache)
+        IDistributedCache distributedCache, ILogger<LoyaltyPointsUpdatedCacheWorker> logger)
     {
         _eventSubscriber = eventSubscriber;
         _source = source;
         _distributedCache = distributedCache;
+        _logger = logger;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -30,23 +32,29 @@ public class LoyaltyPointsUpdatedCacheWorker : BackgroundService
         {
             try
             {
+                this._logger.LogInformation("Processing message {messageId}", ea.DeliveryTag);
+                
                 var evtDataResponse =
                     await _eventSubscriber.ParseEventFrom<CustomerLoyaltyPointsUpdatedEvent>(ea.Body.ToArray());
 
                 using var processingActivity = _source.StartActivity("processing-order-completed-event",
                     ActivityKind.Server, evtDataResponse.TraceParent);
                 processingActivity.AddTag("queue.time", evtDataResponse.QueueTime);
-
-                processingActivity.SetTag("customerIdentifier", evtDataResponse.EventData.CustomerIdentifier);
-                processingActivity.SetTag("totalPoints", evtDataResponse.EventData.TotalLoyaltyPoints);
+                processingActivity.AddTag("message.id", ea.DeliveryTag);
+                processingActivity.AddTag("customerIdentifier", evtDataResponse.EventData.CustomerIdentifier);
+                processingActivity.AddTag("totalPoints", evtDataResponse.EventData.TotalLoyaltyPoints);
 
                 await _distributedCache.SetStringAsync(evtDataResponse.EventData.CustomerIdentifier.ToUpper(),
                     evtDataResponse.EventData.TotalLoyaltyPoints.ToString("n0"), stoppingToken);
+
+                this._logger.LogInformation("Cached");
 
                 subscription.Channel.BasicAck(ea.DeliveryTag, false);
             }
             catch (Exception e)
             {
+                this._logger.LogError(e, "Failure processing message");
+                
                 subscription.Channel.BasicReject(ea.DeliveryTag, true);
             }
         };

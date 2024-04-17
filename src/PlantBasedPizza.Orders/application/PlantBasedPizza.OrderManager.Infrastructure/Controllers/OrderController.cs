@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PlantBasedPizza.Events;
 using PlantBasedPizza.OrderManager.Core.AddItemToOrder;
@@ -8,6 +9,7 @@ using PlantBasedPizza.OrderManager.Core.CreatePickupOrder;
 using PlantBasedPizza.OrderManager.Core.Entities;
 using PlantBasedPizza.OrderManager.Core.IntegrationEvents;
 using PlantBasedPizza.OrderManager.Core.Services;
+using PlantBasedPizza.OrderManager.Infrastructure.Extensions;
 
 namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
 {
@@ -41,13 +43,21 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
         /// <param name="orderIdentifier">The order identifier.</param>
         /// <returns></returns>
         [HttpGet("{orderIdentifier}/detail")]
+        [Authorize(Roles = "user")]
         public async Task<OrderDto?> Get(string orderIdentifier)
         {
             try
             {
+                var accountId = User.Claims.ExtractAccountId();
+                
                 Activity.Current?.SetTag("orderIdentifier", orderIdentifier);
                 
                 var order = await this._orderRepository.Retrieve(orderIdentifier).ConfigureAwait(false);
+
+                if (order.CustomerIdentifier != accountId)
+                {
+                    throw new OrderNotFoundException(orderIdentifier);
+                }
                 
                 return new OrderDto(order);
             }
@@ -66,8 +76,13 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
         /// <param name="request">The <see cref="CreatePickupOrderCommand"/> command contents.</param>
         /// <returns></returns>
         [HttpPost("pickup")]
-        public async Task<OrderDto?> Create([FromBody] CreatePickupOrderCommand request) =>
-            await this._createPickupOrderCommandHandler.Handle(request);
+        [Authorize(Roles = "user")]
+        public async Task<OrderDto?> Create([FromBody] CreatePickupOrderCommand request)
+        {
+            request.CustomerIdentifier = User.Claims.ExtractAccountId();
+            
+            return await this._createPickupOrderCommandHandler.Handle(request);
+        }
 
         /// <summary>
         /// Create a new delivery order.
@@ -75,8 +90,13 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
         /// <param name="request">The <see cref="CreateDeliveryOrder"/> request.</param>
         /// <returns></returns>
         [HttpPost("deliver")]
-        public async Task<OrderDto?> Create([FromBody] CreateDeliveryOrder request) =>
-            await this._createDeliveryOrderCommandHandler.Handle(request);
+        [Authorize(Roles = "user")]
+        public async Task<OrderDto?> Create([FromBody] CreateDeliveryOrder request)
+        {
+            request.CustomerIdentifier = User.Claims.ExtractAccountId();
+            
+            return await this._createDeliveryOrderCommandHandler.Handle(request);   
+        }
 
         /// <summary>
         /// Add an item to the order.
@@ -84,9 +104,11 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
         /// <param name="request">the <see cref="AddItemToOrderCommand"/> request.</param>
         /// <returns></returns>
         [HttpPost("{orderIdentifier}/items")]
+        [Authorize(Roles = "user")]
         public async Task<OrderDto?> AddItemToOrder([FromBody] AddItemToOrderCommand request)
         {
             request.AddToTelemetry();
+            request.CustomerIdentifier = User.Claims.ExtractAccountId();
 
             var order = await this._addItemToOrderHandler.Handle(request);
 
@@ -104,9 +126,17 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
         /// <param name="orderIdentifier">The order to submit.</param>
         /// <returns></returns>
         [HttpPost("{orderIdentifier}/submit")]
+        [Authorize(Roles = "user")]
         public async Task<OrderDto> SubmitOrder(string orderIdentifier)
         {
+            var accountId = User.Claims.ExtractAccountId();
+            
             var order = await this._orderRepository.Retrieve(orderIdentifier);
+            
+            if (order.CustomerIdentifier != accountId)
+            {
+                throw new OrderNotFoundException(orderIdentifier);
+            }
 
             await this._paymentService.TakePaymentFor(order);
             var loyaltyPoints = await this._loyaltyPointService.GetCustomerLoyaltyPoints(order.CustomerIdentifier);
@@ -133,6 +163,7 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("awaiting-collection")]
+        [Authorize(Roles = "staff")]
         public async Task<IEnumerable<OrderDto>> GetAwaitingCollection()
         {
             var awaitingCollection = await this._orderRepository.GetAwaitingCollection();
@@ -146,6 +177,7 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
         /// <param name="request">The <see cref="CollectOrderRequest"/> request.</param>
         /// <returns></returns>
         [HttpPost("collected")]
+        [Authorize(Roles = "staff")]
         public async Task<OrderDto?> OrderCollected([FromBody] CollectOrderRequest request) =>
             await this._collectOrderCommandHandler.Handle(request);
     }

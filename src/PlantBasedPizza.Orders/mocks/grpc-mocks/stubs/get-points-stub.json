@@ -1,0 +1,6 @@
+{
+    "service": "Loyalty",
+    "method": "GetCustomerLoyaltyPoints",
+    "input": { "matches": { "customerIdentifier": ".*" } },
+    "output": { "data": { "customerIdentifier": "James", "totalPoints": 50 } }
+}

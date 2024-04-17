@@ -8,8 +8,8 @@ namespace PlantBasedPizza.OrderManager.Core.CreatePickupOrder
         [JsonPropertyName("orderIdentifier")]
         public string OrderIdentifier { get; init; } = "";
         
-        [JsonPropertyName("customerIdentifier")]
-        public string CustomerIdentifier { get; init; } = "";
+        [JsonIgnore]
+        public string CustomerIdentifier { get; set; } = "";
 
         public OrderType OrderType => OrderType.Pickup;
     }

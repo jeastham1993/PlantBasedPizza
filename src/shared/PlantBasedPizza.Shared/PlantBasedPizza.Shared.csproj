@@ -30,4 +30,8 @@
     <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.7.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Extensions\" />
+  </ItemGroup>
+
 </Project>

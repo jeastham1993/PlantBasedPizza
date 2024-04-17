@@ -1,0 +1,6 @@
+{
+    "service": "Loyalty",
+    "method": "AddLoyaltyPoints",
+    "input": { "matches": { "orderIdentifier": ".*" } },
+    "output": { "data": { "customerIdentifier": "James", "totalPoints": 50 } }
+}

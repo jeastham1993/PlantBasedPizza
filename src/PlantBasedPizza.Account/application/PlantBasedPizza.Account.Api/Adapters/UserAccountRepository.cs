@@ -17,25 +17,22 @@ public class UserAccountRepository : IUserAccountRepository
     
     public async Task<UserAccount> CreateAccount(string emailAddress, string password)
     {
-        var queryBuilder = Builders<UserAccount>.Filter.Eq(p => p.EmailAddress, emailAddress);
+        return await this.InsertUserAccount(emailAddress, password, AccountType.User);
+    }
 
-        var account = await this._accounts.Find(queryBuilder).FirstOrDefaultAsync().ConfigureAwait(false);
-
-        if (account is not null)
+    public async Task<UserAccount> CreateStaffAccount(string emailAddress, string password)
+    {
+        if (!emailAddress.EndsWith("@plantbasedpizza.com"))
         {
-            throw new UserExistsException();
+            throw new InvalidUserException();
         }
-        
-        var userAccount = new UserAccount()
-        {
-            AccountId = Guid.NewGuid().ToString(),
-            EmailAddress = emailAddress,
-            Password = HashPassword(password)
-        };
-        
-        await _accounts.InsertOneAsync(userAccount).ConfigureAwait(false);
 
-        return userAccount;
+        return await this.InsertUserAccount(emailAddress, password, AccountType.Staff);
+    }
+
+    public async Task<UserAccount> CreateDriverAccount(string emailAddress, string password)
+    {
+        return await this.InsertUserAccount(emailAddress, password, AccountType.Driver);
     }
 
     public async Task<UserAccount> ValidateCredentials(string emailAddress, string password)
@@ -55,7 +52,16 @@ public class UserAccountRepository : IUserAccountRepository
 
         return account;
     }
-    
+
+    public async Task SeedInitialUser()
+    {
+        try
+        {
+            await InsertUserAccount("admin@plantbasedpizza.com", "Admin!23", AccountType.Admin);
+        }
+        catch (UserExistsException){}
+    }
+
     // Note: This hashing algorithm may not be suitable for production scenarios with real user data
     private static string HashPassword(string password)
     {
@@ -77,5 +83,29 @@ public class UserAccountRepository : IUserAccountRepository
 
         // Return the hashed string
         return builder.ToString();
+    }
+
+    private async Task<UserAccount> InsertUserAccount(string emailAddress, string password, AccountType type)
+    {
+        var queryBuilder = Builders<UserAccount>.Filter.Eq(p => p.EmailAddress, emailAddress);
+
+        var account = await this._accounts.Find(queryBuilder).FirstOrDefaultAsync().ConfigureAwait(false);
+
+        if (account is not null)
+        {
+            throw new UserExistsException();
+        }
+        
+        var userAccount = new UserAccount()
+        {
+            AccountId = Guid.NewGuid().ToString(),
+            EmailAddress = emailAddress,
+            Password = HashPassword(password),
+            AccountType = type
+        };
+        
+        await _accounts.InsertOneAsync(userAccount).ConfigureAwait(false);
+
+        return userAccount;
     }
 }
