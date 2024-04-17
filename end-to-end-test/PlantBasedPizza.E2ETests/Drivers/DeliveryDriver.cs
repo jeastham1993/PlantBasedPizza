@@ -41,19 +41,34 @@ namespace PlantBasedPizza.E2ETests.Drivers
                 DriverName = driverName
             });
 
-            var result = await this._httpClient.PostAsync(new Uri(url), new StringContent(content, Encoding.UTF8, "application/json")).ConfigureAwait(false);
+            var retries = 10;
+            var isSuccess = false;
 
-            if (!result.IsSuccessStatusCode)
+            while (retries > 0)
             {
-                throw new Exception($"Failed to assign driver: {result.StatusCode} {await result.Content.ReadAsStringAsync()}");
+                var result = await this._httpClient.PostAsync(new Uri(url), new StringContent(content, Encoding.UTF8, "application/json")).ConfigureAwait(false);
+
+                if (result.IsSuccessStatusCode)
+                {
+                    isSuccess = true;
+                    return;
+                }
+
+                retries--;
+                await Task.Delay(TimeSpan.FromSeconds(2));
+            }
+
+            if (!isSuccess)
+            {
+                throw new Exception($"Failed to assign driver");   
             }
         }
 
         public async Task DeliverOrder(string orderIdentifier)
         {
-            var url = $"{BaseUrl}/delivery/delivered";
+            await Task.Delay(TimeSpan.FromSeconds(5));
             
-            Console.WriteLine(url);
+            var url = $"{BaseUrl}/delivery/delivered";
 
             var content = JsonSerializer.Serialize(new MarkOrderDeliveredRequest()
             {

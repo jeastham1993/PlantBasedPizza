@@ -64,6 +64,9 @@ namespace PlantBasedPizza.E2ETests.Steps
         [Then(@"order (.*) should contain a (.*) event")]
         public async Task ThenOrderOrdShouldContainAOrderQualityCheckedEvent(string p0, string p1)
         {
+            // Allow async processes to catch up
+            await Task.Delay(TimeSpan.FromSeconds(10));
+            
             Activity.Current = _scenarioContext.Get<Activity>("Activity");
             
             var order = await this._driver.GetOrder(p0).ConfigureAwait(false);

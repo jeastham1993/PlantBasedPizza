@@ -34,6 +34,8 @@ namespace PlantBasedPizza.E2ETests.Drivers
 
         public async Task AddNewOrder(string orderIdentifier, string customerIdentifier)
         {
+            await Task.Delay(TimeSpan.FromSeconds(5));
+            
             await this._httpClient.PostAsync(new Uri($"{BaseUrl}/order/pickup"), new StringContent(
                 JsonConvert.SerializeObject(new CreatePickupOrderCommand()
                 {
@@ -44,6 +46,8 @@ namespace PlantBasedPizza.E2ETests.Drivers
 
         public async Task AddItemToOrder(string orderIdentifier, string recipeIdentifier, int quantity)
         {
+            await Task.Delay(TimeSpan.FromSeconds(5));
+            
             await checkRecipeExists(recipeIdentifier).ConfigureAwait(false);
 
             await this._httpClient.PostAsync(new Uri($"{BaseUrl}/order/{orderIdentifier}/items"),
