@@ -58,6 +58,9 @@ services:
       - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
       - Messaging__HostName=rabbitmq
       - Messaging__ExchangeName=local.plantbasedpizza
+      - Auth__Issuer=https://auth.plantbasedpizza.com
+      - Auth__Audience=https://auth.plantbasedpizza.com
+      - Auth__Key="This is a sample secret key please use a secret store and something more secure in a real production environment"
 
   local.orders-worker:
     image: plant-based-orders-worker
@@ -98,6 +101,9 @@ services:
       - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
       - Messaging__HostName=rabbitmq
       - Messaging__ExchangeName=local.plantbasedpizza
+      - Auth__Issuer=https://auth.plantbasedpizza.com
+      - Auth__Audience=https://auth.plantbasedpizza.com
+      - Auth__Key="This is a sample secret key please use a secret store and something more secure in a real production environment"
 
   local.loyalty-internal-api:
     image: loyalty-internal-api
@@ -153,6 +159,9 @@ services:
       - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
       - Messaging__HostName=rabbitmq
       - Messaging__ExchangeName=local.plantbasedpizza
+      - Auth__Issuer=https://auth.plantbasedpizza.com
+      - Auth__Audience=https://auth.plantbasedpizza.com
+      - Auth__Key="This is a sample secret key please use a secret store and something more secure in a real production environment"
 
   local.kitchen-worker:
     image: plant-based-kitchen-worker
@@ -179,8 +188,8 @@ services:
     depends_on:
       - consul
       - rabbitmq
-    ports:
-      - "5052:8080"
+    expose:
+      - "8080"
     environment:
       - OtlpEndpoint=http://jaeger:4317
       - Environment=local
@@ -205,6 +214,9 @@ services:
       - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
       - Messaging__HostName=rabbitmq
       - Messaging__ExchangeName=local.plantbasedpizza
+      - Auth__Issuer=https://auth.plantbasedpizza.com
+      - Auth__Audience=https://auth.plantbasedpizza.com
+      - Auth__Key="This is a sample secret key please use a secret store and something more secure in a real production environment"
 
   local.delivery-api:
     image: plant-based-delivery-api
@@ -224,6 +236,9 @@ services:
       - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
       - Messaging__HostName=rabbitmq
       - Messaging__ExchangeName=local.plantbasedpizza
+      - Auth__Issuer=https://auth.plantbasedpizza.com
+      - Auth__Audience=https://auth.plantbasedpizza.com
+      - Auth__Key="This is a sample secret key please use a secret store and something more secure in a real production environment"
 
   local.delivery-worker:
     image: plant-based-delivery-worker
@@ -242,6 +257,25 @@ services:
       - Messaging__HostName=rabbitmq
       - Messaging__ExchangeName=local.plantbasedpizza
 
+  local.account-api:
+    image: plant-based-account-api
+    container_name: local.account-api
+    expose:
+      - "8080"
+    depends_on:
+      - consul
+      - rabbitmq
+      - cache
+    environment:
+      - DatabaseConnection=mongodb://mongodb:27017
+      - OtlpEndpoint=http://jaeger:4317
+      - Environment=local
+      - Messaging__HostName=rabbitmq
+      - Messaging__ExchangeName=local.plantbasedpizza
+      - Auth__Issuer=https://auth.plantbasedpizza.com
+      - Auth__Audience=https://auth.plantbasedpizza.com
+      - Auth__Key="This is a sample secret key please use a secret store and something more secure in a real production environment"
+
   reverse-proxy:
     image: nginx:latest
     ports:
@@ -254,3 +288,4 @@ services:
       - "local.kitchen-api"
       - "local.recipe-api"
       - "local.loyalty-api"
+      - "local.account-api"

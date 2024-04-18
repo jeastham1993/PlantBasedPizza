@@ -22,3 +22,5 @@ docker build -f src/PlantBasedPizza.Recipes/applications/PlantBasedPizza.Recipes
 
 docker build -f src/PlantBasedPizza.Delivery/application/PlantBasedPizza.Delivery.Worker/Dockerfile -t plant-based-delivery-worker ./src |
 docker build -f src/PlantBasedPizza.Delivery/application/PlantBasedPizza.Delivery.Api/Dockerfile -t plant-based-delivery-api ./src
+
+docker build -f src/PlantBasedPizza.Account/application/PlantBasedPizza.Account.Api/Dockerfile -t plant-based-account-api ./src
