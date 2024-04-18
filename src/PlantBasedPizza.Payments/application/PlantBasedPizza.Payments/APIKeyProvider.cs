@@ -11,6 +11,11 @@ public class APIKeyProvider
 
     public bool IsValidApiKey(string inboundKey)
     {
+        if (string.IsNullOrEmpty(inboundKey))
+        {
+            return false;
+        }
+        
         return inboundKey.Equals(_configuration["Auth:ApiKey"]);
     }
 }
