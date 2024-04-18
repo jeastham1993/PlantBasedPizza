@@ -11,6 +11,15 @@ permissions:
   contents: read
 
 jobs:
+  aws:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-1
+          role-to-assume: ${{secrets.DEPLOYMENT_ROLE_NAME}}
+          role-session-name: GitHubActionsSession
   docker:
     uses: jeastham1993/PlantBasedPizza/.github/workflows/build-and-push-base.yaml@microservices-module-6
     with:
