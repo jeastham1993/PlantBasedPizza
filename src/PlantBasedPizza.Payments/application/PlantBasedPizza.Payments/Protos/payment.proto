@@ -4,15 +4,14 @@ option csharp_namespace = "PlantBasedPizza.Payments";
 
 package payment;
 
-// The greeting service definition.
 service Payment {
-  // Sends a greeting
   rpc TakePayment (TakePaymentRequest) returns (TakePaymentsReply);
 }
 
 message TakePaymentRequest {
   string customerIdentifier = 1;
   double paymentAmount = 2;
+  string orderIdentifier = 3;
 }
 
 message TakePaymentsReply {

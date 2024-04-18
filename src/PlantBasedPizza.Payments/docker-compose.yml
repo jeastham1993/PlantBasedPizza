@@ -21,3 +21,10 @@ services:
       - 13133:13133
       - 4317:4317
       - 4318:4318
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: 'payments-rabbitmq'
+    ports:
+        - 5672:5672
+        - 15672:15672

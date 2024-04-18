@@ -1,3 +1,4 @@
+using Grpc.Core;
 using Grpc.Net.Client;
 
 namespace PlantBasedPizza.Payments.IntegrationTests.Drivers;
@@ -5,9 +6,15 @@ namespace PlantBasedPizza.Payments.IntegrationTests.Drivers;
 public class PaymentDriver
     {
         private readonly Payment.PaymentClient _paymentClient;
+        private readonly Metadata _apiKeyHeaders;
 
         public PaymentDriver()
         {
+            _apiKeyHeaders = new Metadata
+            {
+                { "APIKey", "this is a test api key" }
+            };
+            
             var channel = GrpcChannel.ForAddress(TestConstants.InternalTestEndpoint);
             this._paymentClient = new Payment.PaymentClient(channel);
         }
@@ -18,8 +25,27 @@ public class PaymentDriver
             {
                 CustomerIdentifier = customerIdentifier,
                 PaymentAmount = paymentAmount
-            });
+            }, _apiKeyHeaders);
 
             return res.IsSuccess;
+        }
+
+        public async Task<bool> TakePaymentWithoutAuth(string customerIdentifier, double paymentAmount)
+        {
+            try
+            {
+                var res = await this._paymentClient.TakePaymentAsync(new TakePaymentRequest()
+                {
+                    CustomerIdentifier = customerIdentifier,
+                    PaymentAmount = paymentAmount,
+                    OrderIdentifier = Guid.NewGuid().ToString()
+                });
+
+                return res.IsSuccess;
+            }
+            catch (RpcException)
+            {
+                return false;
+            }
         }
     }

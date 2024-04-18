@@ -26,4 +26,14 @@ public sealed class PaymentSteps
         
         result.Should().BeTrue();
     }
+
+    [Then(@"a payment is taken for (.*) then the result should be unsuccessful")]
+    public async Task ThenAPaymentIsTakenForThenTheResultShouldBeUnSuccessful(double p0)
+    {
+        Activity.Current = _scenarioContext.Get<Activity>("Activity");
+        
+        var result = await this._driver.TakePaymentWithoutAuth("James", p0);
+        
+        result.Should().BeFalse();
+    }
 }
