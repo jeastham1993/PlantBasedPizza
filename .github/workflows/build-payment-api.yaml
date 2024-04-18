@@ -1,7 +1,10 @@
 name: build-and-push-docker
 
 on:
-  workflow_dispatch:
+    push:
+      branches:
+        - microservices-module-6
+    workflow_dispatch:
 
 jobs:
   docker:
