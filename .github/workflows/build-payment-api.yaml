@@ -29,7 +29,7 @@ jobs:
           context: ./src
           file: src/PlantBasedPizza.Payments/application/PlantBasedPizza.Payments/Dockerfile
       - name: docker-compose up
-        run: docker-compose up -d
+        run: docker-compose up -d -f src/PlantBasedPizza.Payments/docker-compose-integration.yml
       - name: Wait for docker to start
         run: sleep 5
       - name: Run Integration Tests
