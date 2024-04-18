@@ -15,7 +15,6 @@ public class APIKeyProvider
         {
             return false;
         }
-        
         return inboundKey.Equals(_configuration["Auth:ApiKey"]);
     }
 }
