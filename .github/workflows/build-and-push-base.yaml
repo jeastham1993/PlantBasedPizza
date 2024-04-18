@@ -1,3 +1,5 @@
+name: Build & Push Base Workflow
+
 on:
   workflow_call:
     inputs:
