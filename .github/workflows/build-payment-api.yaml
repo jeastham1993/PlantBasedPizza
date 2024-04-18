@@ -8,15 +8,10 @@ on:
 
 jobs:
   docker:
-    runs-on: ubuntu-latest
-    steps:
-      -
-        name: Checkout
-        uses: actions/checkout@v4
-      -
-        uses: jeastham1993/PlantBasedPizza/.github/workflows/build-and-push-base.yml@microservices-module-6
-        with:
-          image-name: payment-api
-          dockerfile: src/PlantBasedPizza.Payments/applications/PlantBasedPizza.Payments/Dockerfile-x86
-          integration-test-compose-file: src/PlantBasedPizza.Payments/docker-compose-integration.yml
-          integration-test-folder: src/PlantBasedPizza.Payments/tests/PlantBasedPizza.Payments.IntegrationTests
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-and-push-base.yml@microservices-module-6
+    with:
+      image-name: payment-api
+      dockerfile: src/PlantBasedPizza.Payments/applications/PlantBasedPizza.Payments/Dockerfile-x86
+      integration-test-compose-file: src/PlantBasedPizza.Payments/docker-compose-integration.yml
+      integration-test-folder: src/PlantBasedPizza.Payments/tests/PlantBasedPizza.Payments.IntegrationTests
+        
