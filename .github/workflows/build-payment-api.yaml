@@ -8,7 +8,7 @@ on:
 
 jobs:
   docker:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-and-push-base.yml@microservices-module-6
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-and-push-base.yaml@microservices-module-6
     with:
       image-name: payment-api
       dockerfile: src/PlantBasedPizza.Payments/applications/PlantBasedPizza.Payments/Dockerfile-x86
