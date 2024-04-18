@@ -18,6 +18,7 @@ jobs:
       dockerfile: src/PlantBasedPizza.Payments/application/PlantBasedPizza.Payments/Dockerfile-x86
       integration-test-compose-file: src/PlantBasedPizza.Payments/docker-compose-integration.yml
       integration-test-folder: src/PlantBasedPizza.Payments/tests/PlantBasedPizza.Payments.IntegrationTests
+    secrets:
       deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
       ecr-registry: ${{secrets.ECR_REGISTRY}}
         
