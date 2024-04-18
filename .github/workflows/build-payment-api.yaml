@@ -1,4 +1,4 @@
-name: build-and-push-docker
+name: Payment API CICD
 
 on:
     push:
@@ -18,6 +18,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           push: false
+          load: true
           tags: payment-api:latest
           context: ./src
           file: src/PlantBasedPizza.Payments/application/PlantBasedPizza.Payments/Dockerfile
