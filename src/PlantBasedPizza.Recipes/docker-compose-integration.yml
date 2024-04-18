@@ -35,7 +35,6 @@ services:
     image: plant-based-recipes-api
     container_name: local.recipe-api
     depends_on:
-      - consul
       - rabbitmq
     ports:
       - "5138:8080"
