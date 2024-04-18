@@ -32,7 +32,7 @@ services:
   payment-api:
     image: payment-api
     ports:
-        - 5070:5070
+        - 5070:8080
     environment:
       - OtlpEndpoint=http://jaeger:4317
       - Environment=local
