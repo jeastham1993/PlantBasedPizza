@@ -31,7 +31,9 @@ jobs:
       - name: docker-compose up
         run: docker-compose -f src/PlantBasedPizza.Payments/docker-compose-integration.yml up -d
       - name: Wait for docker to start
-        run: sleep 5
+        run: sleep 20
+      - name: Wait for docker to start
+        run: docker ps
       - name: Run Integration Tests
         run: dotnet test src/PlantBasedPizza.Payments/tests/PlantBasedPizza.Payments.IntegrationTests
           
