@@ -34,6 +34,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\shared\PlantBasedPizza.IntegrationTest.Helpers\PlantBasedPizza.IntegrationTest.Helpers.csproj" />
     <ProjectReference Include="..\..\src\shared\PlantBasedPizza.Shared\PlantBasedPizza.Shared.csproj" />
   </ItemGroup>
 

@@ -104,7 +104,7 @@ this.ScenarioInitialize(scenarioInfo);
  testRunner.Given("a new order is created for customer james-collect", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
 #line 8
- testRunner.When("a CREATEORDERTEST is added to order", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+ testRunner.When("a marg is added to order", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
 #line 9
  testRunner.And("order is submitted", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
@@ -119,7 +119,7 @@ this.ScenarioInitialize(scenarioInfo);
  testRunner.Then("order should contain a Order completed. event", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
 #line 13
- testRunner.And("the total points should be greater than 0 for james-collect", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+ testRunner.And("the total points should be greater than 0 for user-account", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             }
             this.ScenarioCleanup();

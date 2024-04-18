@@ -7,7 +7,7 @@ public static class TestTokenGenerator
 {
     public static string GenerateTestTokenForRole(string roleName)
     {
-        var accountId = Guid.NewGuid().ToString();
+        var accountId = $"{roleName}-account";
             
         var userClaims = new[]
         {

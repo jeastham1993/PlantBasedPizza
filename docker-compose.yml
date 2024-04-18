@@ -58,9 +58,9 @@ services:
       - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
       - Messaging__HostName=rabbitmq
       - Messaging__ExchangeName=local.plantbasedpizza
-      - Auth__Issuer=https://auth.plantbasedpizza.com
-      - Auth__Audience=https://auth.plantbasedpizza.com
-      - Auth__Key="This is a sample secret key please use a secret store and something more secure in a real production environment"
+      - Auth__Issuer=https://plantbasedpizza.com
+      - Auth__Audience=https://plantbasedpizza.com
+      - Auth__Key=This is a sample secret key - please don't use in production environment.'
 
   local.orders-worker:
     image: plant-based-orders-worker
@@ -101,9 +101,9 @@ services:
       - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
       - Messaging__HostName=rabbitmq
       - Messaging__ExchangeName=local.plantbasedpizza
-      - Auth__Issuer=https://auth.plantbasedpizza.com
-      - Auth__Audience=https://auth.plantbasedpizza.com
-      - Auth__Key="This is a sample secret key please use a secret store and something more secure in a real production environment"
+      - Auth__Issuer=https://plantbasedpizza.com
+      - Auth__Audience=https://plantbasedpizza.com
+      - Auth__Key=This is a sample secret key - please don't use in production environment.'
 
   local.loyalty-internal-api:
     image: loyalty-internal-api
@@ -159,9 +159,9 @@ services:
       - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
       - Messaging__HostName=rabbitmq
       - Messaging__ExchangeName=local.plantbasedpizza
-      - Auth__Issuer=https://auth.plantbasedpizza.com
-      - Auth__Audience=https://auth.plantbasedpizza.com
-      - Auth__Key="This is a sample secret key please use a secret store and something more secure in a real production environment"
+      - Auth__Issuer=https://plantbasedpizza.com
+      - Auth__Audience=https://plantbasedpizza.com
+      - Auth__Key=This is a sample secret key - please don't use in production environment.'
 
   local.kitchen-worker:
     image: plant-based-kitchen-worker
@@ -214,9 +214,9 @@ services:
       - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
       - Messaging__HostName=rabbitmq
       - Messaging__ExchangeName=local.plantbasedpizza
-      - Auth__Issuer=https://auth.plantbasedpizza.com
-      - Auth__Audience=https://auth.plantbasedpizza.com
-      - Auth__Key="This is a sample secret key please use a secret store and something more secure in a real production environment"
+      - Auth__Issuer=https://plantbasedpizza.com
+      - Auth__Audience=https://plantbasedpizza.com
+      - Auth__Key=This is a sample secret key - please don't use in production environment.'
 
   local.delivery-api:
     image: plant-based-delivery-api
@@ -236,9 +236,9 @@ services:
       - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
       - Messaging__HostName=rabbitmq
       - Messaging__ExchangeName=local.plantbasedpizza
-      - Auth__Issuer=https://auth.plantbasedpizza.com
-      - Auth__Audience=https://auth.plantbasedpizza.com
-      - Auth__Key="This is a sample secret key please use a secret store and something more secure in a real production environment"
+      - Auth__Issuer=https://plantbasedpizza.com
+      - Auth__Audience=https://plantbasedpizza.com
+      - Auth__Key=This is a sample secret key - please don't use in production environment.'
 
   local.delivery-worker:
     image: plant-based-delivery-worker
@@ -272,9 +272,9 @@ services:
       - Environment=local
       - Messaging__HostName=rabbitmq
       - Messaging__ExchangeName=local.plantbasedpizza
-      - Auth__Issuer=https://auth.plantbasedpizza.com
-      - Auth__Audience=https://auth.plantbasedpizza.com
-      - Auth__Key="This is a sample secret key please use a secret store and something more secure in a real production environment"
+      - Auth__Issuer=https://plantbasedpizza.com
+      - Auth__Audience=https://plantbasedpizza.com
+      - Auth__Key=This is a sample secret key - please don't use in production environment.'
 
   reverse-proxy:
     image: nginx:latest
