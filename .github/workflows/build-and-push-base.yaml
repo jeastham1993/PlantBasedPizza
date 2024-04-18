@@ -37,7 +37,6 @@ jobs:
             aws-region: eu-west-1
             ## the following creates an ARN based on the values entered into github secrets
             role-to-assume: ${{secrets.DEV_ACCOUNT_ROLE}}
-            role-session-name: GitHubActions
       - name: Declare some variables
         shell: bash
         run: |

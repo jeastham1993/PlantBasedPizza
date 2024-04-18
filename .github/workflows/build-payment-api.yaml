@@ -6,6 +6,10 @@ on:
         - microservices-module-6
     workflow_dispatch:
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   docker:
     uses: jeastham1993/PlantBasedPizza/.github/workflows/build-and-push-base.yaml@microservices-module-6
