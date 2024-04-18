@@ -20,7 +20,7 @@ jobs:
     uses: jeastham1993/PlantBasedPizza/.github/workflows/build-and-push-base.yaml@microservices-module-6
     with:
       image-name: recipes-api
-      dockerfile: src/PlantBasedPizza.Recipes/application/PlantBasedPizza.Recipes.Api/Dockerfile-x86
+      dockerfile: src/PlantBasedPizza.Recipes/applications/PlantBasedPizza.Recipes.Api/Dockerfile-x86
       integration-test-compose-file: src/PlantBasedPizza.Recipes/docker-compose-integration.yml
       integration-test-folder: src/PlantBasedPizza.Recipes/tests/PlantBasedPizza.Recipes.IntegrationTests
     secrets:
