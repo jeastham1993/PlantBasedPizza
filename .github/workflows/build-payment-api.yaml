@@ -27,8 +27,7 @@ jobs:
           load: true
           tags: payment-api:latest
           context: ./src
-          file: src/PlantBasedPizza.Payments/application/PlantBasedPizza.Payments/Dockerfile
-          platforms: linux/amd64,linux/arm64
+          file: src/PlantBasedPizza.Payments/application/PlantBasedPizza.Payments/Dockerfile-x86
       - name: docker-compose up
         run: docker-compose -f src/PlantBasedPizza.Payments/docker-compose-integration.yml up
       - name: Wait for docker to start
