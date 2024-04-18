@@ -13,6 +13,13 @@ on:
       integration-test-folder:
           required: true
           type: string
+      ecr-registry:
+          required: true
+          type: string
+    secrets:
+      deploy-role-arn:
+        description: 'The role for the AWS IAM role to use for deployment'
+        required: false
 
 permissions:
   id-token: write
@@ -35,7 +42,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: eu-west-1
-          role-to-assume: ${{secrets.DEPLOYMENT_ROLE_NAME}}
+          role-to-assume: ${{secrets.deploy-role-arn}}
           role-session-name: GitHubActionsSession
       - name: Declare some variables
         shell: bash
@@ -59,10 +66,10 @@ jobs:
       - name: Teardown
         run: docker-compose -f ${{ inputs.integration-test-compose-file }} down
       - name: Tag With Commit Hash
-        run: docker tag ${{inputs.image-name}} ${{secrets.ECR_REGISTRY}}/${{inputs.image-name}}:${{ env.sha_short }}
+        run: docker tag ${{inputs.image-name}} ${{inputs.ecr-registry}}/${{inputs.image-name}}:${{ env.sha_short }}
       - uses: aws-actions/amazon-ecr-login@v2
         name: Login to Amazon ECR
         id: login-ecr
       - name: Tag With Commit Hash
-        run: docker push ${{secrets.ECR_REGISTRY}}/${{inputs.image-name}}:${{ env.sha_short }}
+        run: docker push ${{inputs.ecr-registry}}/${{inputs.image-name}}:${{ env.sha_short }}
           

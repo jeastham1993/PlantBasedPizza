@@ -11,15 +11,6 @@ permissions:
   contents: read
 
 jobs:
-  aws:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-region: eu-west-1
-          role-to-assume: ${{secrets.DEPLOYMENT_ROLE_NAME}}
-          role-session-name: GitHubActionsSession
   docker:
     uses: jeastham1993/PlantBasedPizza/.github/workflows/build-and-push-base.yaml@microservices-module-6
     with:
@@ -27,4 +18,6 @@ jobs:
       dockerfile: src/PlantBasedPizza.Payments/application/PlantBasedPizza.Payments/Dockerfile-x86
       integration-test-compose-file: src/PlantBasedPizza.Payments/docker-compose-integration.yml
       integration-test-folder: src/PlantBasedPizza.Payments/tests/PlantBasedPizza.Payments.IntegrationTests
+      deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
+      ecr-registry: ${{secrets.ECR_REGISTRY}}
         
