@@ -5,10 +5,10 @@ on:
       branches:
         - microservices-module-6
       paths:
-        - './.github/workflows/build-and-push-base.yaml'
-        - './.github/workflows/build-payment-services.yaml'
-        - './src/PlantBasedPizza.Payments/*'
-        - './src/shared/*'
+        - .github/workflows/build-and-push-base.yaml
+        - .github/workflows/build-payment-services.yaml
+        - src/PlantBasedPizza.Payments/**
+        - src/shared/**
     workflow_dispatch:
 
 permissions:
