@@ -1,0 +1,50 @@
+on:
+  workflow_call:
+    inputs:
+      image-name:
+          required: true
+          type: string
+      dockerfile:
+          required: true
+          type: string
+      integration-test-compose-file:
+          required: true
+          type: string
+      integration-test-folder:
+          required: true
+          type: string
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8'
+      - name: Declare some variables
+        shell: bash
+        run: |
+          echo "sha_short=$(git rev-parse --short "$GITHUB_SHA")" >> "$GITHUB_ENV"
+      -
+        name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          push: false
+          load: true
+          tags: ${{ inputs.image-name }}:latest
+          context: ./src
+          file: ${{ inputs.dockerfile }}
+      - name: docker-compose up
+        run: docker-compose -f ${{ inputs.integration-test-compose-file }} up -d
+      - name: Wait for docker to start
+        run: sleep 20
+      - name: Wait for docker to start
+        run: docker ps
+      - name: Run Integration Tests
+        run: dotnet test ${{ inputs.integration-test-folder }}
+      - name: Tag With Commit Hash
+        run: docker tag ${{inputs.image-name}} ${{ env.sha_short }}"
+          
