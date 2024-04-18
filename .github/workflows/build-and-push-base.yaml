@@ -55,9 +55,9 @@ jobs:
         run: docker-compose -f ${{ inputs.integration-test-compose-file }} down
       - name: Tag With Commit Hash
         run: docker tag ${{inputs.image-name}} ${{secrets.ECR_REGISTRY}}/${{inputs.image-name}}:${{ env.sha_short }}
-      - name: Login to Amazon ECR
+      - uses: aws-actions/amazon-ecr-login@v2
+        name: Login to Amazon ECR
         id: login-ecr
-        uses: aws-actions/amazon-ecr-login
       - name: Tag With Commit Hash
         run: docker push ${{secrets.ECR_REGISTRY}}/${{inputs.image-name}}:${{ env.sha_short }}
           
