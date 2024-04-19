@@ -34,19 +34,18 @@ services:
     expose:
         - 5672
         - 15672
+    ports:
+        - "5672:5672"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:15672"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
+      test: rabbitmq-diagnostics -q ping
 
   local.kitchen-api:
     image: ${REGISTRY}/kitchen-api:${IMAGE_TAG}
     ports:
       - "5097:8080"
     depends_on:
-      - rabbitmq
-      - cache
+      rabbitmq:
+        condition: service_healthy
     restart: on-failure
     environment:
       - DatabaseConnection=mongodb://mongodb:27017 
@@ -66,8 +65,8 @@ services:
   local.kitchen-worker:
     image: ${REGISTRY}/kitchen-worker:${IMAGE_TAG}
     depends_on:
-      - rabbitmq
-      - cache
+      rabbitmq:
+        condition: service_healthy
     restart: on-failure
     environment:
       - DatabaseConnection=mongodb://mongodb:27017
