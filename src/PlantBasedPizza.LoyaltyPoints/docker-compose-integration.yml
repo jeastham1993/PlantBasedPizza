@@ -1,15 +1,14 @@
 version: "3.7"
 services:
-  loyalty-mongodb:
+  mongodb:
     image: mongo
-    container_name: loyalty-mongodb
     environment:
       - PUID=1000
       - PGID=1000
     ports:
       - 27017:27017
 
-  loyalty-jaeger:
+  jaeger:
     image: jaegertracing/opentelemetry-all-in-one:latest
     ports:
       - 16686:16686
@@ -17,9 +16,8 @@ services:
       - 4317:4317
       - 4318:4318
 
-  loyalty-rabbitmq:
+  rabbitmq:
     image: rabbitmq:3-management-alpine
-    container_name: 'loyalty-rabbitmq'
     ports:
         - 5672:5672
         - 15672:15672
@@ -27,17 +25,17 @@ services:
   local.loyalty-api:
     image: ${REGISTRY}/loyalty-api:${IMAGE_TAG}
     depends_on:
-      - loyalty-rabbitmq
+      - rabbitmq
     ports:
       - "5271:8080"
     environment:
-      - DatabaseConnection=mongodb://loyalty-mongodb:27017
-      - OtlpEndpoint=http://loyalty-jaeger:4317
+      - DatabaseConnection=mongodb://mongodb:27017
+      - OtlpEndpoint=http://jaeger:4317
       - Environment=local
       - ServiceDiscovery__MyUrl=
       - ServiceDiscovery__ServiceName=
       - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
-      - Messaging__HostName=loyalty-rabbitmq
+      - Messaging__HostName=rabbitmq
       - Messaging__ExchangeName=dev.loyalty
       - Auth__Issuer=https://plantbasedpizza.com
       - Auth__Audience=https://plantbasedpizza.com
@@ -48,15 +46,15 @@ services:
     ports:
       - "5069:8080"
     depends_on:
-      - loyalty-rabbitmq
+      - rabbitmq
     environment:
-      - DatabaseConnection=mongodb://loyalty-mongodb:27017
-      - OtlpEndpoint=http://loyalty-jaeger:4317
+      - DatabaseConnection=mongodb://mongodb:27017
+      - OtlpEndpoint=http://jaeger:4317
       - Environment=local
       - ServiceDiscovery__MyUrl=
       - ServiceDiscovery__ServiceName=
       - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
-      - Messaging__HostName=loyalty-rabbitmq
+      - Messaging__HostName=rabbitmq
       - Messaging__ExchangeName=dev.loyalty
 
   local.loyalty-worker:
@@ -64,11 +62,11 @@ services:
     depends_on:
       - loyalty-rabbitmq
     environment:
-      - DatabaseConnection=mongodb://loyalty-mongodb:27017
-      - OtlpEndpoint=http://loyalty-jaeger:4317
+      - DatabaseConnection=mongodb://mongodb:27017
+      - OtlpEndpoint=http://jaeger:4317
       - Environment=local
       - ServiceDiscovery__MyUrl=
       - ServiceDiscovery__ServiceName=
       - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
-      - Messaging__HostName=loyalty-rabbitmq
+      - Messaging__HostName=rabbitmq
       - Messaging__ExchangeName=dev.loyalty
