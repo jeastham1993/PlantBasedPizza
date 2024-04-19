@@ -36,9 +36,7 @@ services:
     ports:
       - "5139:8080"
     depends_on:
-      - consul
       - rabbitmq
-      - cache
     environment:
       - DatabaseConnection=mongodb://mongodb:27017
       - OtlpEndpoint=http://jaeger:4317
