@@ -22,6 +22,11 @@ services:
     ports:
       - "6379:6379"
 
+  consul:
+    image: hashicorp/consul:latest
+    ports:
+      - 8500:8500
+
   wiremock:
     image: wiremock/wiremock:latest
     expose:
