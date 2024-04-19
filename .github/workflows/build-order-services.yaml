@@ -19,7 +19,7 @@ jobs:
   build-api-image:
     uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@microservices-module-6
     with:
-      unit-test-folder: src/PlantBasedPizza.Orders/tests/PlantBasedPizza.Orders.UnitTests
+      unit-test-folder: src/PlantBasedPizza.Orders/tests/PlantBasedPizza.Orders.UnitTest
       image-name: orders-api
       dockerfile: src/PlantBasedPizza.Orders/application/PlantBasedPizza.Orders.Api/Dockerfile-x86
     secrets:
@@ -29,7 +29,7 @@ jobs:
   build-worker-image:
     uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@microservices-module-6
     with:
-      unit-test-folder: src/PlantBasedPizza.Orders/tests/PlantBasedPizza.Orders.UnitTests
+      unit-test-folder: src/PlantBasedPizza.Orders/tests/PlantBasedPizza.Orders.UnitTest
       image-name: orders-worker
       dockerfile: src/PlantBasedPizza.Orders/application/PlantBasedPizza.Orders.Worker/Dockerfile-x86
     secrets:
