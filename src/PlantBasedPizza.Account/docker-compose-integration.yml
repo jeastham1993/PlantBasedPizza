@@ -1,0 +1,50 @@
+version: "3.7"
+services:
+  mongodb:
+    image: mongo
+    container_name: account-mongodb
+    environment:
+      - PUID=1000
+      - PGID=1000
+    ports:
+      - 27017:27017
+
+  jaeger:
+    image: jaegertracing/opentelemetry-all-in-one:latest
+    ports:
+      - 16686:16686
+      - 13133:13133
+      - 4317:4317
+      - 4318:4318
+
+  wiremock:
+    image: wiremock/wiremock:latest
+    ports:
+      - 8443:8080
+    volumes:
+      - ./mocks/recipe-api:/home/wiremock
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: 'account-rabbitmq'
+    ports:
+        - 5672:5672
+        - 15672:15672
+
+  local.account-api:
+    image: ${REGISTRY}/account-api:${IMAGE_TAG}
+    ports:
+      - "5139:8080"
+    depends_on:
+      - consul
+      - rabbitmq
+      - cache
+    environment:
+      - DatabaseConnection=mongodb://mongodb:27017
+      - OtlpEndpoint=http://jaeger:4317
+      - Environment=local
+      - Messaging__HostName=rabbitmq
+      - Messaging__ExchangeName=dev.accounts
+      - Auth__Issuer=https://plantbasedpizza.com
+      - Auth__Audience=https://plantbasedpizza.com
+      - Auth__Key=This is a sample secret key - please don't use in production environment.'

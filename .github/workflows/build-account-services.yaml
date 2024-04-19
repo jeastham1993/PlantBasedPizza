@@ -1,0 +1,36 @@
+name: Account Services CICD
+
+on:
+    push:
+      branches:
+        - microservices-module-6
+      paths:
+        - .github/workflows/build-and-push-base.yaml
+        - .github/workflows/build-account-services.yaml
+        - src/PlantBasedPizza.Account/**
+        - src/shared/**
+    workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build-image:
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@microservices-module-6
+    with:
+      unit-test-folder: src/PlantBasedPizza.Account/tests/PlantBasedPizza.Account.UnitTests
+      image-name: account-api
+      dockerfile: src/PlantBasedPizza.Account/application/PlantBasedPizza.Account.Api/Dockerfile-x86
+    secrets:
+      deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
+      ecr-registry: ${{secrets.ECR_REGISTRY}}
+  integration-test:
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/integration-test-base.yaml@microservices-module-6
+    needs: build-image
+    with:
+      integration-test-compose-file: src/PlantBasedPizza.Account/docker-compose-integration.yml
+      integration-test-folder: src/PlantBasedPizza.Account/tests/PlantBasedPizza.Account.IntegrationTests
+    secrets:
+      deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
+      ecr-registry: ${{secrets.ECR_REGISTRY}}
