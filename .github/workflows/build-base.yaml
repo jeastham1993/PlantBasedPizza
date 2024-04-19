@@ -36,6 +36,12 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8'
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-1
+          role-to-assume: ${{secrets.deploy-role-arn}}
+          role-session-name: GitHubActionsSession
       - name: Run Unit Tests
         run: dotnet test ${{ inputs.unit-test-folder }}
       - name: Declare some variables
@@ -52,18 +58,14 @@ jobs:
           context: ./src
           file: ${{ inputs.dockerfile }}
       - name: Tag With Commit Hash
-        run: docker tag ${{inputs.image-name}} ${{secrets.ecr-registry}}/${{inputs.image-name}}:${{ env.sha_short }}
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-region: eu-west-1
-          role-to-assume: ${{secrets.deploy-role-arn}}
-          role-session-name: GitHubActionsSession
+        run: docker tag ${{inputs.image-name}}:latest ${{secrets.ecr-registry}}/${{inputs.image-name}}:${{ env.sha_short }}
+      - name: Tag With Latest
+        run: docker tag ${{inputs.image-name}}:latest ${{secrets.ecr-registry}}/${{inputs.image-name}}:latest
       - uses: aws-actions/amazon-ecr-login@v2
         name: Login to Amazon ECR
         id: login-ecr
-      - name: Push to Registry
+      - name: Push Commit Hash to Registry
         run: docker push ${{secrets.ecr-registry}}/${{inputs.image-name}}:${{ env.sha_short }}
-      - name: Push to Registry
+      - name: Push Latest image to Registry
         run: docker push ${{secrets.ecr-registry}}/${{inputs.image-name}}:latest
           
