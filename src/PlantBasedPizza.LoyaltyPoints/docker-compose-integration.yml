@@ -27,7 +27,7 @@ services:
   local.loyalty-api:
     image: ${REGISTRY}/loyalty-api:${IMAGE_TAG}
     depends_on:
-      - rabbitmq
+      - loyalty-rabbitmq
     ports:
       - "5271:8080"
     environment:

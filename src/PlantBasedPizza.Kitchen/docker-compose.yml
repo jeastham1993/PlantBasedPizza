@@ -29,15 +29,6 @@ services:
     volumes:
       - ./mocks/recipe-api:/home/wiremock
 
-  gripmock:
-    image: tkpd/gripmock:latest
-    ports:
-      - 4770:4770
-      - 4771:4771
-    volumes:
-      - ./mocks/grpc-mocks:/proto
-    command: --stub=/proto/stubs /proto/loyalty.proto /proto/payment.proto
-
   rabbitmq:
     image: rabbitmq:3-management-alpine
     container_name: 'kitchen-rabbitmq'
