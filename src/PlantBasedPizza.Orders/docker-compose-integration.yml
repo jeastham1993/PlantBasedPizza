@@ -42,10 +42,10 @@ services:
     image: rabbitmq:3-management-alpine
     container_name: 'rabbitmq'
     ports:
-        - "5672:5672"
+      - "5672:5672"
     expose:
-        - 5672
-        - 15672
+      - "5672"
+      - "15672"
 
   local.orders-api:
     image: ${REGISTRY}/orders-api:${IMAGE_TAG}

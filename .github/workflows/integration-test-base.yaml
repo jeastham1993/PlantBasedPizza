@@ -45,8 +45,8 @@ jobs:
           echo "IMAGE_TAG=$(git rev-parse --short "$GITHUB_SHA")" >> $GITHUB_ENV
       - name: docker-compose up
         run: docker-compose -f ${{ inputs.integration-test-compose-file }} up -d
-      - name: Wait for docker to start
-        run: sleep 5
+      - name: Wait for docker to start - 20s
+        run: sleep 20
       - name: Wait for docker to start
         run: docker ps
       - name: Run Integration Tests
