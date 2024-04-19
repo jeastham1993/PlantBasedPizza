@@ -46,14 +46,14 @@ public class LoyaltyPointsDriver
             });
         }
 
-        public async Task<LoyaltyPointsDto?> GetLoyaltyPointsInternal(string customerIdentifier)
+        public async Task<LoyaltyPointsDto?> GetLoyaltyPointsInternal()
         {
             // Delay to allow for message processing
             await Task.Delay(TimeSpan.FromSeconds(5));
             
             var points = await this._loyaltyClient.GetCustomerLoyaltyPointsAsync(new GetCustomerLoyaltyPointsRequest()
             {
-                CustomerIdentifier = customerIdentifier
+                CustomerIdentifier = "user-account"
             });
 
             return new LoyaltyPointsDto()
@@ -63,7 +63,7 @@ public class LoyaltyPointsDriver
             };
         }
 
-        public async Task<LoyaltyPointsDto?> GetLoyaltyPoints(string customerIdentifier)
+        public async Task<LoyaltyPointsDto?> GetLoyaltyPoints()
         {
             await Task.Delay(TimeSpan.FromSeconds(5));
             
