@@ -48,7 +48,7 @@ services:
     ports:
       - "5069:8080"
     depends_on:
-      - rabbitmq
+      - loyalty-rabbitmq
     environment:
       - DatabaseConnection=mongodb://mongodb:27017
       - OtlpEndpoint=http://jaeger:4317
@@ -62,7 +62,7 @@ services:
   local.loyalty-worker:
     image: ${REGISTRY}/loyalty-worker:${IMAGE_TAG}
     depends_on:
-      - rabbitmq
+      - loyalty-rabbitmq
     environment:
       - DatabaseConnection=mongodb://mongodb:27017
       - OtlpEndpoint=http://jaeger:4317
