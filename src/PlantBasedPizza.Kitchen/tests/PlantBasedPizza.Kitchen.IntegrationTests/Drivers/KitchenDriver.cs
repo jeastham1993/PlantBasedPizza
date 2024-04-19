@@ -72,6 +72,16 @@ public class KitchenDriver
             return kitchenRequests;
         }
         
+        public async Task<List<KitchenRequestDto>> GetNew()
+        {
+            await Task.Delay(TimeSpan.FromSeconds(3));
+            var result = await this._httpClient.GetAsync(new Uri($"{BaseUrl}/kitchen/new")).ConfigureAwait(false);
+
+            var kitchenRequests = JsonSerializer.Deserialize<List<KitchenRequestDto>>(await result.Content.ReadAsStringAsync());
+
+            return kitchenRequests;
+        }
+        
         public async Task<List<KitchenRequestDto>> GetBaking()
         {
             await Task.Delay(TimeSpan.FromSeconds(3));

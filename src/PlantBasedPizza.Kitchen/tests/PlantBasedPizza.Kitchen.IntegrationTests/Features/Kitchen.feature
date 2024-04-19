@@ -2,6 +2,11 @@ Feature: KitchenFeature
 All features related to the kitchen module.
 
 @kitchen
+Scenario: Order appears as new
+    Given a new order submitted event is raised
+    Then order should appear as new
+
+@kitchen
 Scenario: Order should be moved through the requisite kitchen queues - prparing
     Given a new order submitted event is raised
     When order is marked as preparing

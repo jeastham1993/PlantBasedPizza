@@ -82,6 +82,17 @@ public class KitchenSteps
         requests.Exists(p => p.OrderIdentifier == orderId).Should().BeTrue();
     }
 
+    [Then(@"order should appear as new")]
+    public async Task ThenOrderShouldAppearAsNew()
+    {
+        var orderId = _scenarioContext.Get<string>("orderId");
+        Activity.Current = _scenarioContext.Get<Activity>("Activity");
+        
+        var requests = await _kitchenDriver.GetNew();
+
+        requests.Exists(p => p.OrderIdentifier == orderId).Should().BeTrue();
+    }
+
     [Then(@"order should appear in the baking queue")]
     public async Task ThenOrderOrdShouldAppearInTheBakingQueueQueue()
     {
