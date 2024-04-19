@@ -43,7 +43,7 @@ jobs:
       - build-worker-image
     with:
       integration-test-compose-file: src/PlantBasedPizza.Orders/docker-compose-integration.yml
-      integration-test-folder: src/PlantBasedPizza.Orders/tests/PlantBasedPizza.Orders.IntegrationTests
+      integration-test-folder: src/PlantBasedPizza.Orders/tests/PlantBasedPizza.Orders.IntegrationTest
     secrets:
       deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
       ecr-registry: ${{secrets.ECR_REGISTRY}}
