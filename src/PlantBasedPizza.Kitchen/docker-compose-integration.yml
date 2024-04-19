@@ -56,8 +56,8 @@ services:
       - RedisConnectionString=cache
       - Services__Recipes=http://wiremock:8080
       - ServiceDiscovery__MyUrl=
-      - ServiceDiscovery__ServiceName=
-      - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
+      - ServiceDiscovery__ServiceName=KitchenApi
+      - ServiceDiscovery__ConsulServiceEndpoint=
       - Messaging__HostName=rabbitmq
       - Messaging__ExchangeName=dev.kitchen
       - Auth__Issuer=https://plantbasedpizza.com
@@ -77,7 +77,7 @@ services:
       - RedisConnectionString=cache
       - Services__Recipes=http://wiremock:8080
       - ServiceDiscovery__MyUrl=
-      - ServiceDiscovery__ServiceName=
-      - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
+      - ServiceDiscovery__ServiceName=KitchenWorker
+      - ServiceDiscovery__ConsulServiceEndpoint=
       - Messaging__HostName=rabbitmq
       - Messaging__ExchangeName=dev.kitchen

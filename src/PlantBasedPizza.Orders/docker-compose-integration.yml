@@ -70,8 +70,8 @@ services:
       - Services__PaymentInternal=http://gripmock:4770
       - Services__Recipes=http://wiremock:8443
       - ServiceDiscovery__MyUrl=
-      - ServiceDiscovery__ServiceName=
-      - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
+      - ServiceDiscovery__ServiceName=OrdersApi
+      - ServiceDiscovery__ConsulServiceEndpoint=
       - Messaging__HostName=rabbitmq
       - Messaging__ExchangeName=dev.plantbasedpizza
       - Auth__Issuer=https://plantbasedpizza.com
@@ -95,7 +95,7 @@ services:
       - Services__Recipes=http://wiremock:8443
       - Environment=local
       - ServiceDiscovery__MyUrl=
-      - ServiceDiscovery__ServiceName=
-      - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
+      - ServiceDiscovery__ServiceName=OrdersWorker
+      - ServiceDiscovery__ConsulServiceEndpoint=
       - Messaging__HostName=rabbitmq
       - Messaging__ExchangeName=dev.plantbasedpizza
