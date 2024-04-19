@@ -2,7 +2,6 @@ version: "3.7"
 services:
   mongodb:
     image: mongo
-    container_name: kitchen-mongodb
     environment:
       - PUID=1000
       - PGID=1000
@@ -31,7 +30,6 @@ services:
 
   rabbitmq:
     image: rabbitmq:3-management-alpine
-    container_name: 'kitchen-rabbitmq'
     ports:
         - 5672:5672
         - 15672:15672
