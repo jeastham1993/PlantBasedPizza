@@ -31,9 +31,6 @@ services:
 
   rabbitmq:
     image: rabbitmq:3-management-alpine
-    expose:
-        - 5672
-        - 15672
     ports:
         - "5672:5672"
     healthcheck:

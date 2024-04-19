@@ -49,6 +49,10 @@ jobs:
         run: sleep 20
       - name: Wait for docker to start
         run: docker ps
+      - name: Check kitchen containers
+        run: |
+          docker logs plantbasedpizzakitchen_local.kitchen-worker_1
+          docker logs plantbasedpizzakitchen_local.kitchen-api_1
       - name: Run Integration Tests
         run: dotnet test ${{ inputs.integration-test-folder }}
       - name: Teardown
