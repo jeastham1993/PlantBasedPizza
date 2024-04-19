@@ -1,0 +1,47 @@
+name: Kitchen Services CICD
+
+on:
+    push:
+      branches:
+        - microservices-module-6
+      paths:
+        - .github/workflows/build-and-push-base.yaml
+        - .github/workflows/build-kitchen-services.yaml
+        - src/PlantBasedPizza.Kitchen/**
+        - src/shared/**
+    workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build-api-image:
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@microservices-module-6
+    with:
+      unit-test-folder: src/PlantBasedPizza.Kitchen/tests/PlantBasedPizza.Kitchen.UnitTests
+      image-name: kitchen-api
+      dockerfile: src/PlantBasedPizza.Kitchen/application/PlantBasedPizza.Kitchen.Api/Dockerfile-x86
+    secrets:
+      deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
+      ecr-registry: ${{secrets.ECR_REGISTRY}}
+  build-worker-image:
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@microservices-module-6
+    with:
+      unit-test-folder: src/PlantBasedPizza.Kitchen/tests/PlantBasedPizza.Kitchen.UnitTests
+      image-name: kitchen-worker
+      dockerfile: src/PlantBasedPizza.Kitchen/application/PlantBasedPizza.Kitchen.Worker/Dockerfile-x86
+    secrets:
+      deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
+      ecr-registry: ${{secrets.ECR_REGISTRY}}
+  integration-test:
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/integration-test-base.yaml@microservices-module-6
+    needs:
+      - build-api-image
+      - build-worker-image
+    with:
+      integration-test-compose-file: src/PlantBasedPizza.Kitchen/docker-compose-integration.yml
+      integration-test-folder: src/PlantBasedPizza.Kitchen/tests/PlantBasedPizza.Kitchen.IntegrationTests
+    secrets:
+      deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
+      ecr-registry: ${{secrets.ECR_REGISTRY}}

@@ -1,0 +1,86 @@
+version: "3.7"
+services:
+  mongodb:
+    image: mongo
+    container_name: kitchen-mongodb
+    environment:
+      - PUID=1000
+      - PGID=1000
+    ports:
+      - 27017:27017
+
+  jaeger:
+    image: jaegertracing/opentelemetry-all-in-one:latest
+    ports:
+      - 16686:16686
+      - 13133:13133
+      - 4317:4317
+      - 4318:4318
+  
+  cache:
+    image: redis:7.2
+    ports:
+      - '6379:6379'
+
+  wiremock:
+    image: wiremock/wiremock:latest
+    ports:
+      - 8443:8080
+    volumes:
+      - ./mocks/recipe-api:/home/wiremock
+
+  gripmock:
+    image: tkpd/gripmock:latest
+    ports:
+      - 4770:4770
+      - 4771:4771
+    volumes:
+      - ./mocks/grpc-mocks:/proto
+    command: --stub=/proto/stubs /proto/loyalty.proto /proto/payment.proto
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: 'kitchen-rabbitmq'
+    ports:
+        - 5672:5672
+        - 15672:15672
+
+  local.kitchen-api:
+    container_name: local.kitchen-api
+    ports:
+      - "5097:8080"
+    depends_on:
+      - rabbitmq
+      - cache
+    environment:
+      - DatabaseConnection=mongodb://mongodb:27017
+      - OtlpEndpoint=http://jaeger:4317
+      - Environment=local
+      - RedisConnectionString=cache
+      - Services__Recipes=http://wiremock:8443
+      - ServiceDiscovery__MyUrl=
+      - ServiceDiscovery__ServiceName=
+      - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
+      - Messaging__HostName=rabbitmq
+      - Messaging__ExchangeName=dev.kitchen
+      - Auth__Issuer=https://plantbasedpizza.com
+      - Auth__Audience=https://plantbasedpizza.com
+      - Auth__Key=This is a sample secret key - please don't use in production environment.'
+
+  local.kitchen-worker:
+    image: plant-based-kitchen-worker
+    container_name: local.kitchen-worker
+    depends_on:
+      - rabbitmq
+      - cache
+    environment:
+      - DatabaseConnection=mongodb://mongodb:27017
+      - OtlpEndpoint=http://jaeger:4317
+      - Environment=local
+      - RedisConnectionString=cache
+      - Services__Recipes=http://wiremock:8443
+      - ServiceDiscovery__MyUrl=
+      - ServiceDiscovery__ServiceName=
+      - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
+      - Messaging__HostName=rabbitmq
+      - Messaging__ExchangeName=dev.kitchen

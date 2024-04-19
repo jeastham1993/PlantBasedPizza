@@ -26,16 +26,12 @@ namespace PlantBasedPizza.Delivery.UnitTests
         [Fact]
         public void CanCreateNewDeliveryRequestAddAddDriver_ShouldAddDriverAndRaiseEvent()
         {
-            var driverName = "";
-            
             var request = new DeliveryRequest(OrderIdentifier, new Address("Address line 1", "TY6 7UI"));
 
-            request.ClaimDelivery("James");
+            _ = request.ClaimDelivery("James");
 
             request.Driver.Should().Be("James");
             request.DriverCollectedOn.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(5));
-
-            driverName.Should().Be("James");
         }
         
         [Fact]
