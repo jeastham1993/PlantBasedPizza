@@ -52,6 +52,7 @@ public class KitchenDriver
 
         public async Task<List<KitchenRequestDto>> GetNewOrders()
         {
+            await Task.Delay(TimeSpan.FromSeconds(3));
             var result = await this._httpClient.GetAsync($"{TestConstants.DefaultTestUrl}/kitchen/new");
 
             if (!result.IsSuccessStatusCode)
@@ -73,6 +74,7 @@ public class KitchenDriver
         
         public async Task<List<KitchenRequestDto>> GetBaking()
         {
+            await Task.Delay(TimeSpan.FromSeconds(3));
             var result = await this._httpClient.GetAsync(new Uri($"{BaseUrl}/kitchen/baking")).ConfigureAwait(false);
 
             var kitchenRequests = JsonSerializer.Deserialize<List<KitchenRequestDto>>(await result.Content.ReadAsStringAsync());
@@ -82,6 +84,7 @@ public class KitchenDriver
         
         public async Task<List<KitchenRequestDto>> GetQualityChecked()
         {
+            await Task.Delay(TimeSpan.FromSeconds(3));
             var result = await this._httpClient.GetAsync(new Uri($"{BaseUrl}/kitchen/quality-check")).ConfigureAwait(false);
 
             var kitchenRequests = JsonSerializer.Deserialize<List<KitchenRequestDto>>(await result.Content.ReadAsStringAsync());
