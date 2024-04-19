@@ -61,7 +61,7 @@ jobs:
       - name: docker-compose up
         run: docker-compose -f ${{ inputs.integration-test-compose-file }} up -d
       - name: Wait for docker to start
-        run: sleep 5
+        run: sleep 20
       - name: Run Integration Tests
         run: dotnet test ${{ inputs.integration-test-folder }}
       - name: Teardown
