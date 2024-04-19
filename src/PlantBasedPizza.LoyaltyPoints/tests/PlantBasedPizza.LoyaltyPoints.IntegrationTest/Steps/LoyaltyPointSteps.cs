@@ -19,7 +19,7 @@ public sealed class LoyaltyPointSteps
     }
     
     [Given(@"the loyalty points are added for order (.*) with a value of (.*)")]
-    public async Task LoyaltyPointsAreAdded(string customerId, string orderIdentifier, decimal orderValue)
+    public async Task LoyaltyPointsAreAdded(string orderIdentifier, decimal orderValue)
     {
         Activity.Current = _scenarioContext.Get<Activity>("Activity");
         await this._driver.AddLoyaltyPoints(orderIdentifier, orderValue);
