@@ -13,6 +13,8 @@ on:
       deploy-role-arn:
         description: 'The role for the AWS IAM role to use for deployment'
         required: true
+      ecr-registry:
+          required: true
 
 permissions:
   id-token: write
