@@ -30,7 +30,7 @@ services:
         - 15672:15672
 
   payment-api:
-    image: payment-api
+    image: 730335273443.dkr.ecr.eu-west-1.amazonaws.com/payment-api:latest
     ports:
         - 5070:8080
     environment:

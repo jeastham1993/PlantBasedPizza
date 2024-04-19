@@ -1,0 +1,48 @@
+name: Integration Test Base Workflow
+
+on:
+  workflow_call:
+    inputs:
+      integration-test-compose-file:
+          required: true
+          type: string
+      integration-test-folder:
+          required: true
+          type: string
+    secrets:
+      deploy-role-arn:
+        description: 'The role for the AWS IAM role to use for deployment'
+        required: true
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8'
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-1
+          role-to-assume: ${{secrets.deploy-role-arn}}
+          role-session-name: GitHubActionsSession
+      - uses: aws-actions/amazon-ecr-login@v2
+        name: Login to Amazon ECR
+        id: login-ecr
+      - name: docker-compose up
+        run: docker-compose -f ${{ inputs.integration-test-compose-file }} up -d
+      - name: Wait for docker to start
+        run: sleep 5
+      - name: Run Integration Tests
+        run: dotnet test ${{ inputs.integration-test-folder }}
+      - name: Teardown
+        run: docker-compose -f ${{ inputs.integration-test-compose-file }} down
+          
