@@ -5,7 +5,8 @@ on:
       branches:
         - microservices-module-6
       paths:
-        - .github/workflows/build-and-push-base.yaml
+        - .github/workflows/build-base.yaml
+        - .github/workflows/integration-test-base.yaml
         - .github/workflows/build-recipe-services.yaml
         - src/PlantBasedPizza.Recipes/**
         - src/shared/**
@@ -16,14 +17,21 @@ permissions:
   contents: read
 
 jobs:
-  docker:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-and-push-base.yaml@microservices-module-6
+  build-image:
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@microservices-module-6
     with:
-      image-name: recipes-api
-      dockerfile: src/PlantBasedPizza.Recipes/applications/PlantBasedPizza.Recipes.Api/Dockerfile-x86
+      unit-test-folder: src/PlantBasedPizza.Recipes/tests/PlantBasedPizza.Recipes.UnitTests
+      image-name: recipe-api
+      dockerfile: src/PlantBasedPizza.Recipes/applications/PlantBasedPizza.Recipes/Dockerfile-x86
+    secrets:
+      deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
+      ecr-registry: ${{secrets.ECR_REGISTRY}}
+  integration-test:
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/integration-test-base.yaml@microservices-module-6
+    needs: build-image
+    with:
       integration-test-compose-file: src/PlantBasedPizza.Recipes/docker-compose-integration.yml
       integration-test-folder: src/PlantBasedPizza.Recipes/tests/PlantBasedPizza.Recipes.IntegrationTests
     secrets:
       deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
       ecr-registry: ${{secrets.ECR_REGISTRY}}
-        

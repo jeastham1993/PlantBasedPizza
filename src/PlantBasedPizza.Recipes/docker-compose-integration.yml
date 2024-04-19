@@ -32,8 +32,7 @@ services:
         - 15672:15672
 
   local.recipe-api:
-    image: plant-based-recipes-api
-    container_name: local.recipe-api
+    image: ${REGISTRY}/recipe-api:${IMAGE_TAG}
     depends_on:
       - rabbitmq
     ports:
