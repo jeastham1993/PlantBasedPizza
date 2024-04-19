@@ -36,21 +36,21 @@ public class LoyaltyPointsDriver
             }), new Logger<RabbitMQEventPublisher>(new SerilogLoggerFactory()), new RabbitMQConnection("localhost"));
         }
 
-        public async Task AddLoyaltyPoints(string customerIdentifier, string orderIdentifier, decimal orderValue)
+        public async Task AddLoyaltyPoints(string orderIdentifier, decimal orderValue)
         {
             await this._eventPublisher.Publish(new OrderCompletedIntegrationEventV1()
             {
-                CustomerIdentifier = customerIdentifier,
+                CustomerIdentifier = "user-account",
                 OrderIdentifier = orderIdentifier,
                 OrderValue = orderValue
             });
-
-            // Delay to allow for message processing
-            await Task.Delay(TimeSpan.FromSeconds(2));
         }
 
         public async Task<LoyaltyPointsDto?> GetLoyaltyPointsInternal(string customerIdentifier)
         {
+            // Delay to allow for message processing
+            await Task.Delay(TimeSpan.FromSeconds(5));
+            
             var points = await this._loyaltyClient.GetCustomerLoyaltyPointsAsync(new GetCustomerLoyaltyPointsRequest()
             {
                 CustomerIdentifier = customerIdentifier
@@ -65,19 +65,12 @@ public class LoyaltyPointsDriver
 
         public async Task<LoyaltyPointsDto?> GetLoyaltyPoints(string customerIdentifier)
         {
-            var url = $"{BaseUrl}/loyalty/{customerIdentifier}";
+            await Task.Delay(TimeSpan.FromSeconds(5));
+            
+            var url = $"{BaseUrl}/loyalty";
             
             var getResult = await this._httpClient.GetAsync(new Uri(url)).ConfigureAwait(false);
 
             return JsonSerializer.Deserialize<LoyaltyPointsDto>(await getResult.Content.ReadAsStringAsync());
-        }
-
-        public async Task SpendLoyaltyPoints(string customerIdentifier, string orderIdentifier, int points)
-        {
-            var url = $"{BaseUrl}/loyalty/spend";
-            
-            var content = JsonSerializer.Serialize(new SpendLoyaltyPointsCommand(){CustomerIdentifier = customerIdentifier, OrderIdentifier = orderIdentifier, PointsToSpend = points});
-            
-            await this._httpClient.PostAsync(new Uri(url), new StringContent(content, Encoding.UTF8, "application/json")).ConfigureAwait(false);
         }
     }

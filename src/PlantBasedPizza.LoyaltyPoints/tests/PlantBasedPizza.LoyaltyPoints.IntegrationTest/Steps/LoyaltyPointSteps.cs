@@ -22,7 +22,7 @@ public sealed class LoyaltyPointSteps
     public async Task LoyaltyPointsAreAdded(string customerId, string orderIdentifier, decimal orderValue)
     {
         Activity.Current = _scenarioContext.Get<Activity>("Activity");
-        await this._driver.AddLoyaltyPoints(customerId, orderIdentifier, orderValue);
+        await this._driver.AddLoyaltyPoints(orderIdentifier, orderValue);
     }
 
     [Then(@"the total points should be (.*) for (.*)")]
@@ -35,13 +35,5 @@ public sealed class LoyaltyPointSteps
 
         points.TotalPoints.Should().Be(totalPoints);
         internalPoints.TotalPoints.Should().Be(totalPoints);
-    }
-
-    [When(@"(.*) points are spent for customer (.*) for order (.*)")]
-    public async Task WhenPointsAreSpentForCustomerJamesForOrderOrd(int points, string customerId, string orderIdentifier)
-    {
-        Activity.Current = _scenarioContext.Get<Activity>("Activity");
-        
-        await this._driver.SpendLoyaltyPoints(customerId, orderIdentifier, points);
     }
 }

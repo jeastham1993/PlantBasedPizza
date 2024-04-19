@@ -111,40 +111,6 @@ this.ScenarioInitialize(scenarioInfo);
             this.ScenarioCleanup();
         }
         
-        [Xunit.SkippableFactAttribute(DisplayName="Can spend loyalty points")]
-        [Xunit.TraitAttribute("FeatureTitle", "LoyaltyPoints")]
-        [Xunit.TraitAttribute("Description", "Can spend loyalty points")]
-        [Xunit.TraitAttribute("Category", "CanSpendLoyaltyPoints")]
-        public void CanSpendLoyaltyPoints()
-        {
-            string[] tagsOfScenario = new string[] {
-                    "CanSpendLoyaltyPoints"};
-            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Can spend loyalty points", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 9
-this.ScenarioInitialize(scenarioInfo);
-#line hidden
-            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
-            {
-                testRunner.SkipScenario();
-            }
-            else
-            {
-                this.ScenarioStart();
-#line 10
- testRunner.Given("the loyalty points are added for customer SpendyJames for order ORD229 with a val" +
-                        "ue of 56.67", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line hidden
-#line 11
- testRunner.When("20 points are spent for customer SpendyJames for order ORD789", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
-#line hidden
-#line 12
- testRunner.Then("the total points should be 37 for SpendyJames", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line hidden
-            }
-            this.ScenarioCleanup();
-        }
-        
         [System.CodeDom.Compiler.GeneratedCodeAttribute("TechTalk.SpecFlow", "3.9.0.0")]
         [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
         public class FixtureData : System.IDisposable
