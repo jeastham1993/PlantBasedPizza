@@ -10,8 +10,6 @@ public class RecipeTests
     [Fact]
     public void CanCreateNewOrder_ShouldSetDefaultFields()
     {
-        Recipe? createdRecipe = null;
-
         var recipe = new Recipe(RecipeCategory.Pizza, DefaultRecipeIdentifier, "Pizza", 6.5M);
         
         recipe.AddIngredient("Base", 1);
@@ -22,7 +20,5 @@ public class RecipeTests
         recipe.Name.Should().Be("Pizza");
         recipe.Price.Should().Be(6.5M);
         recipe.Ingredients.Count.Should().Be(3);
-
-        createdRecipe.Should().NotBeNull();
     }
 }
