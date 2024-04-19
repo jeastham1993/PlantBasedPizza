@@ -1,0 +1,60 @@
+name: Kitchen Services CICD
+
+on:
+    push:
+      branches:
+        - microservices-module-6
+      paths:
+        - .github/workflows/build-and-push-base.yaml
+        - .github/workflows/build-loyalty-services.yaml
+        - src/PlantBasedPizza.LoyaltyPoints/**
+        - src/shared/**
+    workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build-api-image:
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@microservices-module-6
+    with:
+      unit-test-folder: src/PlantBasedPizza.LoyaltyPoints/tests/PlantBasedPizza.LoyaltyPoints.UnitTests
+      image-name: loyalty-api
+      dockerfile: src/PlantBasedPizza.LoyaltyPoints/application/PlantBasedPizza.LoyaltyPoints.Api/Dockerfile-x86
+    secrets:
+      deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
+      ecr-registry: ${{secrets.ECR_REGISTRY}}
+
+  build-internal-api-image:
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@microservices-module-6
+    with:
+      unit-test-folder: src/PlantBasedPizza.LoyaltyPoints/tests/PlantBasedPizza.LoyaltyPoints.UnitTests
+      image-name: loyalty-internal-api
+      dockerfile: src/PlantBasedPizza.LoyaltyPoints/application/PlantBasedPizza.LoyaltyPoints.Internal/Dockerfile-x86
+    secrets:
+      deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
+      ecr-registry: ${{secrets.ECR_REGISTRY}}
+
+  build-worker-image:
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@microservices-module-6
+    with:
+      unit-test-folder: src/PlantBasedPizza.LoyaltyPoints/tests/PlantBasedPizza.LoyaltyPoints.UnitTests
+      image-name: loyalty-worker
+      dockerfile: src/PlantBasedPizza.LoyaltyPoints/application/PlantBasedPizza.LoyaltyPoints.Worker/Dockerfile-x86
+    secrets:
+      deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
+      ecr-registry: ${{secrets.ECR_REGISTRY}}
+      
+  integration-test:
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/integration-test-base.yaml@microservices-module-6
+    needs:
+      - build-api-image
+      - build-internal-api-image
+      - build-worker-image
+    with:
+      integration-test-compose-file: src/PlantBasedPizza.LoyaltyPoints/docker-compose-integration.yml
+      integration-test-folder: src/PlantBasedPizza.LoyaltyPoints/tests/PlantBasedPizza.LoyaltyPoints.IntegrationTests
+    secrets:
+      deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
+      ecr-registry: ${{secrets.ECR_REGISTRY}}
