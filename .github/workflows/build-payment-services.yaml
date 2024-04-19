@@ -27,6 +27,7 @@ jobs:
       ecr-registry: ${{secrets.ECR_REGISTRY}}
   integration-test:
     uses: jeastham1993/PlantBasedPizza/.github/workflows/integration-test-base.yaml@microservices-module-6
+    needs: build-image
     with:
       integration-test-compose-file: src/PlantBasedPizza.Payments/docker-compose-integration.yml
       integration-test-folder: src/PlantBasedPizza.Payments/tests/PlantBasedPizza.Payments.IntegrationTests
