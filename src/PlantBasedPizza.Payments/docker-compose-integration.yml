@@ -30,7 +30,7 @@ services:
         - 15672:15672
 
   payment-api:
-    image: 730335273443.dkr.ecr.eu-west-1.amazonaws.com/payment-api:latest
+    image: ${REGISTRY}/payment-api:${IMAGE_TAG}
     ports:
         - 5070:8080
     environment:

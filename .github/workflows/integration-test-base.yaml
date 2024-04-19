@@ -37,6 +37,10 @@ jobs:
       - uses: aws-actions/amazon-ecr-login@v2
         name: Login to Amazon ECR
         id: login-ecr
+      - name:
+        run: |
+          echo "REGISTRY=${{secrets.ecr-registry}}" >> $GITHUB_ENV
+          echo "IMAGE_TAG=$(git rev-parse --short "$GITHUB_SHA")" >> $GITHUB_ENV
       - name: docker-compose up
         run: docker-compose -f ${{ inputs.integration-test-compose-file }} up -d
       - name: Wait for docker to start
