@@ -24,8 +24,8 @@ services:
 
   wiremock:
     image: wiremock/wiremock:latest
-    ports:
-      - 8443:8080
+    expose:
+      - 8080
     volumes:
       - ./mocks/recipe-api:/home/wiremock
 
@@ -44,11 +44,11 @@ services:
       - rabbitmq
       - cache
     environment:
-      - DatabaseConnection=mongodb://mongodb:27017
+      - DatabaseConnection=mongodb://mongodb:27017 
       - OtlpEndpoint=http://jaeger:4317
       - Environment=local
       - RedisConnectionString=cache
-      - Services__Recipes=http://wiremock:8443
+      - Services__Recipes=http://wiremock:8080
       - ServiceDiscovery__MyUrl=
       - ServiceDiscovery__ServiceName=
       - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
@@ -68,7 +68,7 @@ services:
       - OtlpEndpoint=http://jaeger:4317
       - Environment=local
       - RedisConnectionString=cache
-      - Services__Recipes=http://wiremock:8443
+      - Services__Recipes=http://wiremock:8080
       - ServiceDiscovery__MyUrl=
       - ServiceDiscovery__ServiceName=
       - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
