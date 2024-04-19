@@ -1,9 +1,11 @@
+using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using Grpc.Net.Client;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using PlantBasedPizza.Events;
+using PlantBasedPizza.IntegrationTest.Helpers;
 using PlantBasedPizza.LoyaltyPoints.IntegrationTest.LoyaltyClient;
 using PlantBasedPizza.LoyaltyPoints.IntegrationTest.ViewModels;
 using Serilog.Extensions.Logging;
@@ -21,7 +23,9 @@ public class LoyaltyPointsDriver
         public LoyaltyPointsDriver()
         {
             this._httpClient = new HttpClient();
-
+            this._httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", TestTokenGenerator.GenerateTestTokenForRole("user"));
+            
             var channel = GrpcChannel.ForAddress(TestConstants.InternalTestEndpoint);
             this._loyaltyClient = new Loyalty.LoyaltyClient(channel);
 
