@@ -43,9 +43,9 @@ services:
     container_name: 'rabbitmq'
     ports:
       - "5672:5672"
-    expose:
-      - "5672"
-      - "15672"
+      - "15672:15672"
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
 
   local.orders-api:
     image: ${REGISTRY}/orders-api:${IMAGE_TAG}
