@@ -1,4 +1,4 @@
-name: Kitchen Services CICD
+name: Loyalty Services CICD
 
 on:
     push:
@@ -19,7 +19,7 @@ jobs:
   build-api-image:
     uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@microservices-module-6
     with:
-      unit-test-folder: src/PlantBasedPizza.LoyaltyPoints/tests/PlantBasedPizza.LoyaltyPoints.UnitTests
+      unit-test-folder: src/PlantBasedPizza.LoyaltyPoints/tests/PlantBasedPizza.LoyaltyPoints.UnitTest
       image-name: loyalty-api
       dockerfile: src/PlantBasedPizza.LoyaltyPoints/application/PlantBasedPizza.LoyaltyPoints.Api/Dockerfile-x86
     secrets:
@@ -29,7 +29,7 @@ jobs:
   build-internal-api-image:
     uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@microservices-module-6
     with:
-      unit-test-folder: src/PlantBasedPizza.LoyaltyPoints/tests/PlantBasedPizza.LoyaltyPoints.UnitTests
+      unit-test-folder: src/PlantBasedPizza.LoyaltyPoints/tests/PlantBasedPizza.LoyaltyPoints.UnitTest
       image-name: loyalty-internal-api
       dockerfile: src/PlantBasedPizza.LoyaltyPoints/application/PlantBasedPizza.LoyaltyPoints.Internal/Dockerfile-x86
     secrets:
@@ -39,13 +39,13 @@ jobs:
   build-worker-image:
     uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@microservices-module-6
     with:
-      unit-test-folder: src/PlantBasedPizza.LoyaltyPoints/tests/PlantBasedPizza.LoyaltyPoints.UnitTests
+      unit-test-folder: src/PlantBasedPizza.LoyaltyPoints/tests/PlantBasedPizza.LoyaltyPoints.UnitTest
       image-name: loyalty-worker
       dockerfile: src/PlantBasedPizza.LoyaltyPoints/application/PlantBasedPizza.LoyaltyPoints.Worker/Dockerfile-x86
     secrets:
       deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
       ecr-registry: ${{secrets.ECR_REGISTRY}}
-      
+
   integration-test:
     uses: jeastham1993/PlantBasedPizza/.github/workflows/integration-test-base.yaml@microservices-module-6
     needs:

@@ -1,0 +1,49 @@
+name: Order Services CICD
+
+on:
+    push:
+      branches:
+        - microservices-module-6
+      paths:
+        - .github/workflows/build-and-push-base.yaml
+        - .github/workflows/build-order-services.yaml
+        - src/PlantBasedPizza.Orders/**
+        - src/shared/**
+    workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build-api-image:
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@microservices-module-6
+    with:
+      unit-test-folder: src/PlantBasedPizza.Orders/tests/PlantBasedPizza.Orders.UnitTests
+      image-name: orders-api
+      dockerfile: src/PlantBasedPizza.Orders/application/PlantBasedPizza.Orders.Api/Dockerfile-x86
+    secrets:
+      deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
+      ecr-registry: ${{secrets.ECR_REGISTRY}}
+
+  build-worker-image:
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@microservices-module-6
+    with:
+      unit-test-folder: src/PlantBasedPizza.Orders/tests/PlantBasedPizza.Orders.UnitTests
+      image-name: orders-worker
+      dockerfile: src/PlantBasedPizza.Orders/application/PlantBasedPizza.Orders.Worker/Dockerfile-x86
+    secrets:
+      deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
+      ecr-registry: ${{secrets.ECR_REGISTRY}}
+
+  integration-test:
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/integration-test-base.yaml@microservices-module-6
+    needs:
+      - build-api-image
+      - build-worker-image
+    with:
+      integration-test-compose-file: src/PlantBasedPizza.Orders/docker-compose-integration.yml
+      integration-test-folder: src/PlantBasedPizza.Orders/tests/PlantBasedPizza.Orders.IntegrationTests
+    secrets:
+      deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
+      ecr-registry: ${{secrets.ECR_REGISTRY}}
