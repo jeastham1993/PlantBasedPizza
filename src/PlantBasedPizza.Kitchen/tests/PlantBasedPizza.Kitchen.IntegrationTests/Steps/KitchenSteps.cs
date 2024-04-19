@@ -69,6 +69,7 @@ public class KitchenSteps
     {
         var orderId = _scenarioContext.Get<string>("orderId");
         Activity.Current = _scenarioContext.Get<Activity>("Activity");
+        
         await _kitchenDriver.QualityChecked(orderId);
     }
 
