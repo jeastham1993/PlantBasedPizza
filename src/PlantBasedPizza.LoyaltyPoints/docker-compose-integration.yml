@@ -31,13 +31,13 @@ services:
     ports:
       - "5271:8080"
     environment:
-      - DatabaseConnection=mongodb://mongodb:27017
-      - OtlpEndpoint=http://jaeger:4317
+      - DatabaseConnection=mongodb://loyalty-mongodb:27017
+      - OtlpEndpoint=http://loyalty-jaeger:4317
       - Environment=local
       - ServiceDiscovery__MyUrl=
       - ServiceDiscovery__ServiceName=
       - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
-      - Messaging__HostName=rabbitmq
+      - Messaging__HostName=loyalty-rabbitmq
       - Messaging__ExchangeName=dev.loyalty
       - Auth__Issuer=https://plantbasedpizza.com
       - Auth__Audience=https://plantbasedpizza.com
@@ -50,13 +50,13 @@ services:
     depends_on:
       - loyalty-rabbitmq
     environment:
-      - DatabaseConnection=mongodb://mongodb:27017
-      - OtlpEndpoint=http://jaeger:4317
+      - DatabaseConnection=mongodb://loyalty-mongodb:27017
+      - OtlpEndpoint=http://loyalty-jaeger:4317
       - Environment=local
       - ServiceDiscovery__MyUrl=
       - ServiceDiscovery__ServiceName=
       - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
-      - Messaging__HostName=rabbitmq
+      - Messaging__HostName=loyalty-rabbitmq
       - Messaging__ExchangeName=dev.loyalty
 
   local.loyalty-worker:
@@ -64,11 +64,11 @@ services:
     depends_on:
       - loyalty-rabbitmq
     environment:
-      - DatabaseConnection=mongodb://mongodb:27017
-      - OtlpEndpoint=http://jaeger:4317
+      - DatabaseConnection=mongodb://loyalty-mongodb:27017
+      - OtlpEndpoint=http://loyalty-jaeger:4317
       - Environment=local
       - ServiceDiscovery__MyUrl=
       - ServiceDiscovery__ServiceName=
       - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
-      - Messaging__HostName=rabbitmq
+      - Messaging__HostName=loyalty-rabbitmq
       - Messaging__ExchangeName=dev.loyalty
