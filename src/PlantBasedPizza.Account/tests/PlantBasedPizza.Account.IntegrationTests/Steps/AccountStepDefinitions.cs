@@ -32,7 +32,7 @@ public class AccountStepDefinitions
         var emailAddress = $"{Guid.NewGuid().ToString()}@test.com";
         _scenarioContext.Add("emailAddress", emailAddress);
         
-        var password = Guid.NewGuid().ToString();
+        var password = $"{Guid.NewGuid()}!A23";
         _scenarioContext.Add("password", password);
 
         var res = await this._driver.RegisterUser(emailAddress, password);

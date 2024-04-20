@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
+using System.Runtime.CompilerServices;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -7,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.IdentityModel.Tokens;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
+using PlantBasedPizza.Account.Api;
 using PlantBasedPizza.Account.Api.Adapters;
 using PlantBasedPizza.Account.Api.Core;
 using PlantBasedPizza.Events;
@@ -41,6 +43,8 @@ var client = new MongoClient(builder.Configuration["DatabaseConnection"]);
 
 builder.Services.AddSingleton(client);
 builder.Services.AddSingleton<IUserAccountRepository, UserAccountRepository>();
+builder.Services.AddSingleton<UserAccountService>();
+builder.Services.Configure<JwtConfiguration>(builder.Configuration.GetSection("Auth"));
             
 BsonClassMap.RegisterClassMap<UserAccount>(map =>
 {
@@ -60,6 +64,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 var accountRepository = app.Services.GetRequiredService<IUserAccountRepository>();
+var userAccountService = app.Services.GetRequiredService<UserAccountService>();
 
 await accountRepository.SeedInitialUser();
 
@@ -67,43 +72,12 @@ app.MapPost("/account/login", [AllowAnonymous] async (LoginCommand login) =>
 {
     try
     {
-        var account = await accountRepository.ValidateCredentials(login.EmailAddress, login.Password);
-    
-        var issuer = builder.Configuration["Auth:Issuer"];
-        var audience = builder.Configuration["Auth:Audience"];
-        var key = Encoding.ASCII.GetBytes
-            (builder.Configuration["Auth:Key"]);
-        var claims = new[]
-        {
-            new Claim(JwtRegisteredClaimNames.Sub, account.AccountId),
-            new Claim(JwtRegisteredClaimNames.Email, account.EmailAddress),
-            new Claim(ClaimTypes.Role, account.AsAuthenticatedRole())
-        };
-        
-        var tokenDescriptor = new SecurityTokenDescriptor
-        {
-            Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.UtcNow.AddMinutes(5),
-            Issuer = issuer,
-            Audience = audience,
-            SigningCredentials = new SigningCredentials
-            (new SymmetricSecurityKey(key),
-                SecurityAlgorithms.HmacSha512Signature)
-        };
-        var tokenHandler = new JwtSecurityTokenHandler();
-        var token = tokenHandler.CreateToken(tokenDescriptor);
-        
-        var stringToken = tokenHandler.WriteToken(token);
-    
-        return Results.Ok(new LoginResponse()
-        {
-            AuthToken = stringToken
-        });
+        var loginResponse = await userAccountService.Login(login);
+
+        return Results.Ok(loginResponse);
     }
     catch (LoginFailedException)
     {
-        Activity.Current.AddTag("login.failed", true);
-        
         return Results.Unauthorized();
     }
 });
@@ -112,7 +86,7 @@ app.MapPost("/account/register", [AllowAnonymous] async (RegisterUserCommand reg
 {
     try
     {
-        var userAccount = await accountRepository.CreateAccount(register.EmailAddress, register.Password);
+        var userAccount = await userAccountService.Register(register, AccountType.User);
         
         return Results.Ok(new RegisterResponse()
         {
@@ -121,7 +95,6 @@ app.MapPost("/account/register", [AllowAnonymous] async (RegisterUserCommand reg
     }
     catch (UserExistsException)
     {
-        Activity.Current.AddTag("user.exists", true);
         return Results.BadRequest("User exists");
     }
 });
@@ -130,7 +103,7 @@ app.MapPost("/account/driver/register", [AllowAnonymous] async (RegisterUserComm
 {
     try
     {
-        var userAccount = await accountRepository.CreateDriverAccount(register.EmailAddress, register.Password);
+        var userAccount = await userAccountService.Register(register, AccountType.Driver);
         
         return Results.Ok(new RegisterResponse()
         {
@@ -139,7 +112,6 @@ app.MapPost("/account/driver/register", [AllowAnonymous] async (RegisterUserComm
     }
     catch (UserExistsException)
     {
-        Activity.Current.AddTag("user.exists", true);
         return Results.BadRequest("User exists");
     }
 }).RequireAuthorization(policyBuilder => policyBuilder.RequireRole(["staff","admin"]));
@@ -148,7 +120,7 @@ app.MapPost("/account/staff/register", [AllowAnonymous] async (RegisterUserComma
 {
     try
     {
-        var userAccount = await accountRepository.CreateStaffAccount(register.EmailAddress, register.Password);
+        var userAccount = await userAccountService.Register(register, AccountType.Staff);
         
         return Results.Ok(new RegisterResponse()
         {
@@ -157,7 +129,6 @@ app.MapPost("/account/staff/register", [AllowAnonymous] async (RegisterUserComma
     }
     catch (UserExistsException)
     {
-        Activity.Current.AddTag("user.exists", true);
         return Results.BadRequest("User exists");
     }
 }).RequireAuthorization(policyBuilder => policyBuilder.RequireRole("admin"));
