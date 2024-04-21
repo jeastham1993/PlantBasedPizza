@@ -40,8 +40,6 @@ var app = builder.Build();
 app.UseAuthentication();
 app.UseAuthorization();
 
-var addLoyaltyPointsHandler = app.Services.GetRequiredService<AddLoyaltyPointsCommandHandler>();
-var spendLoyaltyPointsHandler = app.Services.GetRequiredService<SpendLoyaltyPointsCommandHandler>();
 var loyaltyRepo = app.Services.GetRequiredService<ICustomerLoyaltyPointsRepository>();
 
 app.MapGet("/loyalty/health", () => "");

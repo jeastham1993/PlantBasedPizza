@@ -4,6 +4,7 @@ using MongoDB.Driver;
 using PlantBasedPizza.Events;
 using PlantBasedPizza.Kitchen.Core.Entities;
 using PlantBasedPizza.Kitchen.Core.Services;
+using PlantBasedPizza.Kitchen.Infrastructure.IntegrationEvents;
 using PlantBasedPizza.Shared.ServiceDiscovery;
 using Polly;
 using Polly.Contrib.WaitAndRetry;
@@ -37,6 +38,7 @@ namespace PlantBasedPizza.Kitchen.Infrastructure
             
             services.AddSingleton<IRecipeService, RecipeService>();
             services.AddSingleton<IKitchenRequestRepository, KitchenRequestRepository>();
+            services.AddSingleton<IKitchenEventPublisher, KitchenEventPublisher>();
 
             return services;
         }

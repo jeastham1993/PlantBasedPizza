@@ -20,6 +20,7 @@
     <PackageReference Include="Polly.Extensions" Version="8.3.1" />
     <PackageReference Include="Polly.Extensions.Http" Version="3.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.4" />
+    <PackageReference Include="Saunter" Version="0.13.0" />
   </ItemGroup>
 
 <ItemGroup>

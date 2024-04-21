@@ -4,6 +4,7 @@ using MongoDB.Driver;
 using PlantBasedPizza.Deliver.Core.Entities;
 using PlantBasedPizza.Deliver.Core.GetDelivery;
 using PlantBasedPizza.Deliver.Core.Handlers;
+using PlantBasedPizza.Deliver.Infrastructure.IntegrationEvents;
 
 namespace PlantBasedPizza.Deliver.Infrastructure
 {
@@ -33,6 +34,7 @@ namespace PlantBasedPizza.Deliver.Infrastructure
             });
             
             services.AddSingleton<IDeliveryRequestRepository, DeliveryRequestRepository>();
+            services.AddSingleton<IDeliveryEventPublisher, DeliveryEventPublisher>();
             services.AddSingleton<OrderReadyForDeliveryEventHandler>();
             services.AddSingleton<GetDeliveryQueryHandler>();
 

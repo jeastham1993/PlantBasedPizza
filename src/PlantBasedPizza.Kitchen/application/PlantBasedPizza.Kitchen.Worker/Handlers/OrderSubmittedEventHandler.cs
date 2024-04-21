@@ -1,8 +1,8 @@
 using PlantBasedPizza.Events;
 using PlantBasedPizza.Kitchen.Core.Adapters;
 using PlantBasedPizza.Kitchen.Core.Entities;
-using PlantBasedPizza.Kitchen.Core.IntegrationEvents;
 using PlantBasedPizza.Kitchen.Core.Services;
+using PlantBasedPizza.Kitchen.Infrastructure.IntegrationEvents;
 using PlantBasedPizza.Kitchen.Worker.IntegrationEvents;
 using PlantBasedPizza.Shared.Guards;
 using PlantBasedPizza.Shared.Logging;
@@ -11,12 +11,12 @@ namespace PlantBasedPizza.Kitchen.Worker.Handlers
 {
     public class OrderSubmittedEventHandler
     {
-        private readonly IEventPublisher _eventPublisher;
+        private readonly IKitchenEventPublisher _eventPublisher;
         private readonly IObservabilityService _logger;
         private readonly IKitchenRequestRepository _kitchenRequestRepository;
         private readonly IRecipeService _recipeService;
 
-        public OrderSubmittedEventHandler(IKitchenRequestRepository kitchenRequestRepository, IRecipeService recipeService, IObservabilityService logger, IEventPublisher eventPublisher)
+        public OrderSubmittedEventHandler(IKitchenRequestRepository kitchenRequestRepository, IRecipeService recipeService, IObservabilityService logger, IKitchenEventPublisher eventPublisher)
         {
             _kitchenRequestRepository = kitchenRequestRepository;
             _recipeService = recipeService;
@@ -46,11 +46,7 @@ namespace PlantBasedPizza.Kitchen.Worker.Handlers
             this._logger.Info("[KITCHEN] Storing kitchen request");
 
             await this._kitchenRequestRepository.AddNew(kitchenRequest);
-            await this._eventPublisher.Publish(new KitchenConfirmedOrderEventV1()
-            {
-                OrderIdentifier = kitchenRequest.OrderIdentifier,
-                KitchenIdentifier = kitchenRequest.KitchenRequestId
-            });
+            await this._eventPublisher.PublishKitchenConfirmedOrderEventV1(kitchenRequest);
         }
     }
 }

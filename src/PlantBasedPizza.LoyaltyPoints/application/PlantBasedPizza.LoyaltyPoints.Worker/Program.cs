@@ -9,7 +9,7 @@ builder.Services
     .AddLoyaltyServices(builder.Configuration, "LoyaltyPointsWorker")
     .AddMessaging(builder.Configuration);
 
-builder.Services.AddHostedService<Worker>();
+builder.Services.AddHostedService<AddLoyaltyPointsWorker>();
 
 var app = builder.Build();
 

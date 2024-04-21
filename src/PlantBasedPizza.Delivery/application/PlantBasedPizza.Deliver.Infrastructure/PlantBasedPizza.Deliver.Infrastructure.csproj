@@ -15,10 +15,7 @@
   <ItemGroup>
     <PackageReference Include="MongoDB.Driver" Version="2.24.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.4" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="IntegrationEvents\" />
+    <PackageReference Include="Saunter" Version="0.13.0" />
   </ItemGroup>
 
 </Project>

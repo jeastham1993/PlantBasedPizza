@@ -5,13 +5,13 @@ using RabbitMQ.Client;
 
 namespace PlantBasedPizza.LoyaltyPoints.Worker;
 
-public class Worker : BackgroundService
+public class AddLoyaltyPointsWorker : BackgroundService
 {
     private readonly AddLoyaltyPointsCommandHandler _handler;
     private readonly RabbitMqEventSubscriber _subscriber;
     private readonly ActivitySource _source;
 
-    public Worker(AddLoyaltyPointsCommandHandler handler, RabbitMqEventSubscriber subscriber, ILogger<Worker> logger,
+    public AddLoyaltyPointsWorker(AddLoyaltyPointsCommandHandler handler, RabbitMqEventSubscriber subscriber, ILogger<AddLoyaltyPointsWorker> logger,
         ActivitySource source)
     {
         _handler = handler;

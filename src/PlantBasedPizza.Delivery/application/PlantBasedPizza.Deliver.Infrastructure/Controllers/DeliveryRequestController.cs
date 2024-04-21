@@ -5,6 +5,7 @@ using PlantBasedPizza.Deliver.Core.Commands;
 using PlantBasedPizza.Deliver.Core.Entities;
 using PlantBasedPizza.Deliver.Core.GetDelivery;
 using PlantBasedPizza.Deliver.Core.IntegrationEvents;
+using PlantBasedPizza.Deliver.Infrastructure.IntegrationEvents;
 using PlantBasedPizza.Events;
 
 namespace PlantBasedPizza.Deliver.Infrastructure.Controllers
@@ -13,10 +14,10 @@ namespace PlantBasedPizza.Deliver.Infrastructure.Controllers
     public class DeliveryRequestController : ControllerBase 
     {
         private readonly IDeliveryRequestRepository _deliveryRequestRepository;
-        private readonly IEventPublisher _eventPublisher;
+        private readonly IDeliveryEventPublisher _eventPublisher;
         private readonly GetDeliveryQueryHandler _getDeliveryQueryHandler;
 
-        public DeliveryRequestController(IDeliveryRequestRepository deliveryRequestRepository, GetDeliveryQueryHandler getDeliveryQueryHandler, IEventPublisher eventPublisher)
+        public DeliveryRequestController(IDeliveryRequestRepository deliveryRequestRepository, GetDeliveryQueryHandler getDeliveryQueryHandler, IDeliveryEventPublisher eventPublisher)
         {
             _deliveryRequestRepository = deliveryRequestRepository;
             _getDeliveryQueryHandler = getDeliveryQueryHandler;
@@ -67,11 +68,7 @@ namespace PlantBasedPizza.Deliver.Infrastructure.Controllers
             await existingDeliveryRequest.ClaimDelivery(request.DriverName, this.Request.Headers["CorrelationId"].ToString());
 
             await this._deliveryRequestRepository.UpdateDeliveryRequest(existingDeliveryRequest);
-            await this._eventPublisher.Publish(new DriverCollectedOrderEventV1()
-            {
-                DriverName = request.DriverName,
-                OrderIdentifier = existingDeliveryRequest.OrderIdentifier
-            });
+            await this._eventPublisher.PublishDriverOrderCollectedEventV1(existingDeliveryRequest);
 
             return this.Ok(existingDeliveryRequest);
         }
@@ -97,10 +94,7 @@ namespace PlantBasedPizza.Deliver.Infrastructure.Controllers
             await existingDeliveryRequest.Deliver(this.Request.Headers["CorrelationId"].ToString());
             
             await this._deliveryRequestRepository.UpdateDeliveryRequest(existingDeliveryRequest);
-            await this._eventPublisher.Publish(new DriverDeliveredOrderEventV1()
-            {
-                OrderIdentifier = existingDeliveryRequest.OrderIdentifier
-            });
+            await this._eventPublisher.PublishDriverDeliveredOrderEventV1(existingDeliveryRequest);
 
             return this.Ok(existingDeliveryRequest);
         }

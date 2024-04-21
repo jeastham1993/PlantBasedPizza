@@ -2,8 +2,11 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using PlantBasedPizza.Deliver.Infrastructure;
+using PlantBasedPizza.Deliver.Infrastructure.IntegrationEvents;
 using PlantBasedPizza.Events;
 using PlantBasedPizza.Shared;
+using Saunter;
+using Saunter.AsyncApiSchema.v2;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddEnvironmentVariables();
@@ -14,6 +17,24 @@ builder.Services.AddSharedInfrastructure(builder.Configuration, applicationName)
     .AddMessaging(builder.Configuration)
     .AddDeliveryInfrastructure(builder.Configuration)
     .AddControllers();
+
+var generateAsyncApi = builder.Configuration["Messaging:UseAsyncApi"] == "Y";
+
+if (generateAsyncApi)
+{
+    builder.Services.AddAsyncApiSchemaGeneration(options =>
+    {
+        options.AssemblyMarkerTypes = new[] {typeof(DeliveryEventPublisher)};
+
+        options.AsyncApi = new AsyncApiDocument
+        {
+            Info = new Info("PlantBasedPizza Delivery API", "1.0.0")
+            {
+                Description = "The delivery API manages orders that are deing delivered to customers.",
+            },
+        };
+    });   
+}
 
 builder.Services.AddAuthentication(options =>
 {
@@ -40,8 +61,20 @@ builder.Services.AddAuthorization();
 var app = builder.Build();
 
 app.UseAuthentication();
+
+app.UseRouting();
+
 app.UseAuthorization();
 
 app.MapControllers();
+
+if (generateAsyncApi)
+{
+    app.UseEndpoints(endpoints =>
+    {
+        endpoints.MapAsyncApiDocuments();
+        endpoints.MapAsyncApiUi();
+    });   
+}
 
 app.Run();

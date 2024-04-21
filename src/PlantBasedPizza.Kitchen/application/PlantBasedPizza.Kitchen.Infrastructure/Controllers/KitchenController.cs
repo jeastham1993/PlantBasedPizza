@@ -2,8 +2,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PlantBasedPizza.Events;
 using PlantBasedPizza.Kitchen.Core.Entities;
-using PlantBasedPizza.Kitchen.Core.IntegrationEvents;
 using PlantBasedPizza.Kitchen.Infrastructure.DataTransfer;
+using PlantBasedPizza.Kitchen.Infrastructure.IntegrationEvents;
 using PlantBasedPizza.Shared.Logging;
 
 namespace PlantBasedPizza.Kitchen.Infrastructure.Controllers
@@ -12,10 +12,10 @@ namespace PlantBasedPizza.Kitchen.Infrastructure.Controllers
     public class KitchenController : ControllerBase
     {
         private readonly IKitchenRequestRepository _kitchenRequestRepository;
-        private readonly IEventPublisher _eventPublisher;
+        private readonly IKitchenEventPublisher _eventPublisher;
         private readonly IObservabilityService _observabilityService;
 
-        public KitchenController(IKitchenRequestRepository kitchenRequestRepository, IObservabilityService observabilityService, IEventPublisher eventPublisher)
+        public KitchenController(IKitchenRequestRepository kitchenRequestRepository, IObservabilityService observabilityService, IKitchenEventPublisher eventPublisher)
         {
             _kitchenRequestRepository = kitchenRequestRepository;
             this._observabilityService = observabilityService;
@@ -59,11 +59,7 @@ namespace PlantBasedPizza.Kitchen.Infrastructure.Controllers
             kitchenRequest.Preparing(this.Request.Headers["CorrelationId"].ToString());
 
             await this._kitchenRequestRepository.Update(kitchenRequest);
-            await this._eventPublisher.Publish(new OrderPreparingEventV1()
-            {
-                OrderIdentifier = orderIdentifier,
-                KitchenIdentifier = kitchenRequest.KitchenRequestId
-            });
+            await this._eventPublisher.PublishOrderPreparingEventV1(kitchenRequest);
 
             return kitchenRequest;
         }
@@ -103,11 +99,7 @@ namespace PlantBasedPizza.Kitchen.Infrastructure.Controllers
             kitchenRequest.PrepComplete(this.Request.Headers["CorrelationId"].ToString());
 
             await this._kitchenRequestRepository.Update(kitchenRequest);
-            await this._eventPublisher.Publish(new OrderPrepCompleteEventV1()
-            {
-                OrderIdentifier = orderIdentifier,
-                KitchenIdentifier = kitchenRequest.KitchenRequestId
-            });
+            await this._eventPublisher.PublishOrderPrepCompleteEventV1(kitchenRequest);
 
             return kitchenRequest;
         }
@@ -147,11 +139,7 @@ namespace PlantBasedPizza.Kitchen.Infrastructure.Controllers
             kitchenRequest.BakeComplete(this.Request.Headers["CorrelationId"].ToString());
 
             await this._kitchenRequestRepository.Update(kitchenRequest);
-            await this._eventPublisher.Publish(new OrderBakedEventV1()
-            {
-                OrderIdentifier = orderIdentifier,
-                KitchenIdentifier = kitchenRequest.KitchenRequestId
-            });
+            await this._eventPublisher.PublishOrderBakedEventV1(kitchenRequest);
 
             return kitchenRequest;
         }
@@ -170,11 +158,7 @@ namespace PlantBasedPizza.Kitchen.Infrastructure.Controllers
             kitchenRequest.QualityCheckComplete(this.Request.Headers["CorrelationId"].ToString()).Wait();
 
             await this._kitchenRequestRepository.Update(kitchenRequest);
-            await this._eventPublisher.Publish(new OrderQualityCheckedEventV1()
-            {
-                OrderIdentifier = orderIdentifier,
-                KitchenIdentifier = kitchenRequest.KitchenRequestId
-            });
+            await this._eventPublisher.PublishOrderQualityCheckedEventV1(kitchenRequest);
 
             return kitchenRequest;
         }
