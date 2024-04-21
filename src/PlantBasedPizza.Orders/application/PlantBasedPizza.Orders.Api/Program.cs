@@ -13,18 +13,23 @@ builder
     .Configuration
     .AddEnvironmentVariables();
 
-builder.Services.AddAsyncApiSchemaGeneration(options =>
-{
-    options.AssemblyMarkerTypes = new[] {typeof(OrderEventPublisher)};
+var generateAsyncApi = builder.Configuration["Messaging:UseAsyncApi"] == "Y";
 
-    options.AsyncApi = new AsyncApiDocument
+if (generateAsyncApi)
+{
+    builder.Services.AddAsyncApiSchemaGeneration(options =>
     {
-        Info = new Info("PlantBasedPizza Orders API", "1.0.0")
+        options.AssemblyMarkerTypes = new[] {typeof(OrderEventPublisher)};
+
+        options.AsyncApi = new AsyncApiDocument
         {
-            Description = "The orders API allows orders to be placed.",
-        },
-    };
-});
+            Info = new Info("PlantBasedPizza Orders API", "1.0.0")
+            {
+                Description = "The orders API allows orders to be placed.",
+            },
+        };
+    });   
+}
 
 builder.Services.AddAuthentication(options =>
 {
@@ -75,10 +80,13 @@ app.Map("/order/health", async () =>
 
 app.MapControllers();
 
-app.UseEndpoints(endpoints =>
+if (generateAsyncApi)
 {
-    endpoints.MapAsyncApiDocuments();
-    endpoints.MapAsyncApiUi();
-});
+    app.UseEndpoints(endpoints =>
+    {
+        endpoints.MapAsyncApiDocuments();
+        endpoints.MapAsyncApiUi();
+    });   
+}
 
 app.Run();
