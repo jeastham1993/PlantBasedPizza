@@ -170,6 +170,126 @@ this.ScenarioInitialize(scenarioInfo);
             this.ScenarioCleanup();
         }
         
+        [Xunit.SkippableFactAttribute(DisplayName="InvalidEmailsCantRegister")]
+        [Xunit.TraitAttribute("FeatureTitle", "AccountFeature")]
+        [Xunit.TraitAttribute("Description", "InvalidEmailsCantRegister")]
+        [Xunit.TraitAttribute("Category", "account")]
+        public void InvalidEmailsCantRegister()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "account"};
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("InvalidEmailsCantRegister", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 20
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 21
+ testRunner.Given("an invalid email address", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line hidden
+#line 22
+ testRunner.Then("registration should fail", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [Xunit.SkippableFactAttribute(DisplayName="EmptyEmailsCantRegister")]
+        [Xunit.TraitAttribute("FeatureTitle", "AccountFeature")]
+        [Xunit.TraitAttribute("Description", "EmptyEmailsCantRegister")]
+        [Xunit.TraitAttribute("Category", "account")]
+        public void EmptyEmailsCantRegister()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "account"};
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("EmptyEmailsCantRegister", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 25
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 26
+ testRunner.Given("an empty email address", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line hidden
+#line 27
+ testRunner.Then("registration should fail", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [Xunit.SkippableFactAttribute(DisplayName="InvalidPasswordsCantRegister")]
+        [Xunit.TraitAttribute("FeatureTitle", "AccountFeature")]
+        [Xunit.TraitAttribute("Description", "InvalidPasswordsCantRegister")]
+        [Xunit.TraitAttribute("Category", "account")]
+        public void InvalidPasswordsCantRegister()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "account"};
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("InvalidPasswordsCantRegister", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 30
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 31
+ testRunner.Given("an invalid password", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line hidden
+#line 32
+ testRunner.Then("registration should fail", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [Xunit.SkippableFactAttribute(DisplayName="EmptyPasswordsCantRegister")]
+        [Xunit.TraitAttribute("FeatureTitle", "AccountFeature")]
+        [Xunit.TraitAttribute("Description", "EmptyPasswordsCantRegister")]
+        [Xunit.TraitAttribute("Category", "account")]
+        public void EmptyPasswordsCantRegister()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "account"};
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("EmptyPasswordsCantRegister", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 35
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 36
+ testRunner.Given("an empty password", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line hidden
+#line 37
+ testRunner.Then("registration should fail", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
         [System.CodeDom.Compiler.GeneratedCodeAttribute("TechTalk.SpecFlow", "3.9.0.0")]
         [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
         public class FixtureData : System.IDisposable

@@ -52,6 +52,52 @@ public class AccountStepDefinitions
         loginResponse.Should().NotBeNull();
         loginResponse!.AuthToken.Should().NotBeEmpty();
     }
+
+    [Given(@"an invalid email address")]
+    public async Task AnInvalidEmailAddress()
+    {
+        Activity.Current = _scenarioContext.Get<Activity>("Activity");
+
+        var emailAddress = $"{Guid.NewGuid().ToString()}emfoiwenfwfe";
+        var password = "AValidPassword!23";
+        _scenarioContext.Add("emailAddress", emailAddress);
+        _scenarioContext.Add("password", password);
+    }
+
+    [Given(@"an invalid password")]
+    public async Task AnInvalidPassword()
+    {
+        Activity.Current = _scenarioContext.Get<Activity>("Activity");
+
+        var emailAddress = $"{Guid.NewGuid().ToString()}@test.com";
+        var password = "1234";
+        
+        _scenarioContext.Add("emailAddress", emailAddress);
+        _scenarioContext.Add("password", password);
+    }
+
+    [Given(@"an empty email address")]
+    public async Task AnEmptyEmailAddress()
+    {
+        Activity.Current = _scenarioContext.Get<Activity>("Activity");
+
+        var emailAddress = $"";
+        var password = "AValidPassword!23";
+        _scenarioContext.Add("emailAddress", emailAddress);
+        _scenarioContext.Add("password", password);
+    }
+
+    [Given(@"an empty password")]
+    public async Task AnEmptyPassword()
+    {
+        Activity.Current = _scenarioContext.Get<Activity>("Activity");
+
+        var emailAddress = $"{Guid.NewGuid().ToString()}@test.com";
+        var password = "";
+        
+        _scenarioContext.Add("emailAddress", emailAddress);
+        _scenarioContext.Add("password", password);
+    }
     
     [Then("they should not be able to login with an invalid password")]
     public async Task ThenTheyShouldNotLoginWithAnInvalidPassword()
@@ -74,5 +120,17 @@ public class AccountStepDefinitions
         var loginResponse = await this._driver.Login(emailAddress, "some random stuff");
 
         loginResponse.Should().BeNull();
+    }
+
+    [Then("registration should fail")]
+    public async Task RegistrationShouldFail()
+    {
+        Activity.Current = _scenarioContext.Get<Activity>("Activity");
+        var emailAddress = _scenarioContext.Get<string>("emailAddress");
+        var password = _scenarioContext.Get<string>("password");
+
+        var registerResult = await this._driver.RegisterUser(emailAddress, password);
+
+        registerResult.Should().BeNull();
     }
 }
