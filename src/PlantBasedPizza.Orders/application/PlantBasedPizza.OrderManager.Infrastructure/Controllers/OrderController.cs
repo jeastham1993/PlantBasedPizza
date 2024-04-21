@@ -7,9 +7,9 @@ using PlantBasedPizza.OrderManager.Core.CollectOrder;
 using PlantBasedPizza.OrderManager.Core.CreateDeliveryOrder;
 using PlantBasedPizza.OrderManager.Core.CreatePickupOrder;
 using PlantBasedPizza.OrderManager.Core.Entities;
-using PlantBasedPizza.OrderManager.Core.IntegrationEvents;
 using PlantBasedPizza.OrderManager.Core.Services;
 using PlantBasedPizza.OrderManager.Infrastructure.Extensions;
+using PlantBasedPizza.OrderManager.Infrastructure.IntegrationEvents;
 
 namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
 {
@@ -18,14 +18,14 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
     {
         private readonly IOrderRepository _orderRepository;
         private readonly IPaymentService _paymentService;
-        private readonly IEventPublisher _eventPublisher;
+        private readonly IOrderEventPublisher _eventPublisher;
         private readonly ILoyaltyPointService _loyaltyPointService;
         private readonly CollectOrderCommandHandler _collectOrderCommandHandler;
         private readonly AddItemToOrderHandler _addItemToOrderHandler;
         private readonly CreateDeliveryOrderCommandHandler _createDeliveryOrderCommandHandler;
         private readonly CreatePickupOrderCommandHandler _createPickupOrderCommandHandler;
 
-        public OrderController(IOrderRepository orderRepository, CollectOrderCommandHandler collectOrderCommandHandler, AddItemToOrderHandler addItemToOrderHandler, CreateDeliveryOrderCommandHandler createDeliveryOrderCommandHandler, CreatePickupOrderCommandHandler createPickupOrderCommandHandler, IPaymentService paymentService, ILoyaltyPointService loyaltyPointService, IEventPublisher eventPublisher)
+        public OrderController(IOrderRepository orderRepository, CollectOrderCommandHandler collectOrderCommandHandler, AddItemToOrderHandler addItemToOrderHandler, CreateDeliveryOrderCommandHandler createDeliveryOrderCommandHandler, CreatePickupOrderCommandHandler createPickupOrderCommandHandler, IPaymentService paymentService, ILoyaltyPointService loyaltyPointService, IOrderEventPublisher eventPublisher)
         {
             _orderRepository = orderRepository;
             _collectOrderCommandHandler = collectOrderCommandHandler;
@@ -145,15 +145,7 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
             order.SubmitOrder();
 
             await this._orderRepository.Update(order);
-            await this._eventPublisher.Publish(new OrderSubmittedEventV1()
-            {
-                OrderIdentifier = order.OrderIdentifier,
-                Items = order.Items.Select(item => new OrderSubmittedEventItem()
-                {
-                    ItemName = item.ItemName,
-                    RecipeIdentifier = item.RecipeIdentifier
-                }).ToList()
-            });
+            await this._eventPublisher.PublishOrderSubmittedEventV1(order);
 
             return new OrderDto(order);
         }

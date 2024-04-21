@@ -9,6 +9,7 @@ using PlantBasedPizza.OrderManager.Core.CreateDeliveryOrder;
 using PlantBasedPizza.OrderManager.Core.CreatePickupOrder;
 using PlantBasedPizza.OrderManager.Core.Entities;
 using PlantBasedPizza.OrderManager.Core.Services;
+using PlantBasedPizza.OrderManager.Infrastructure.IntegrationEvents;
 using PlantBasedPizza.Shared.ServiceDiscovery;
 using Polly;
 using Polly.Contrib.WaitAndRetry;
@@ -101,6 +102,7 @@ namespace PlantBasedPizza.OrderManager.Infrastructure
             services.AddSingleton<ILoyaltyPointService, LoyaltyPointService>();
             services.AddSingleton<IPaymentService, PaymentService>();
             services.AddSingleton<OrderManagerHealthChecks>();
+            services.AddSingleton<IOrderEventPublisher, OrderEventPublisher>();
             
             services.AddHttpClient("service-registry-http-client")
                 .AddHttpMessageHandler<ServiceRegistryHttpMessageHandler>()

@@ -1,6 +1,6 @@
 using PlantBasedPizza.Events;
 using PlantBasedPizza.OrderManager.Core.Entities;
-using PlantBasedPizza.OrderManager.Core.IntegrationEvents;
+using PlantBasedPizza.OrderManager.Infrastructure.IntegrationEvents;
 using PlantBasedPizza.Orders.Worker.IntegrationEvents;
 
 namespace PlantBasedPizza.Orders.Worker.Handlers
@@ -8,9 +8,9 @@ namespace PlantBasedPizza.Orders.Worker.Handlers
     public class OrderQualityCheckedEventHandler
     {
         private readonly IOrderRepository _orderRepository;
-        private readonly IEventPublisher _eventPublisher;
+        private readonly IOrderEventPublisher _eventPublisher;
 
-        public OrderQualityCheckedEventHandler(IOrderRepository orderRepository, IEventPublisher eventPublisher)
+        public OrderQualityCheckedEventHandler(IOrderRepository orderRepository, IOrderEventPublisher eventPublisher)
         {
             _orderRepository = orderRepository;
             _eventPublisher = eventPublisher;
@@ -26,16 +26,7 @@ namespace PlantBasedPizza.Orders.Worker.Handlers
             {
                 order.AddHistory("Sending for delivery");
 
-                await this._eventPublisher.Publish(new OrderReadyForDeliveryEventV1()
-                {
-                    OrderIdentifier = order.OrderIdentifier,
-                    DeliveryAddressLine1 = order.DeliveryDetails.AddressLine1,
-                    DeliveryAddressLine2 = order.DeliveryDetails.AddressLine2,
-                    DeliveryAddressLine3 = order.DeliveryDetails.AddressLine3,
-                    DeliveryAddressLine4 = order.DeliveryDetails.AddressLine4,
-                    DeliveryAddressLine5 = order.DeliveryDetails.AddressLine5,
-                    Postcode = order.DeliveryDetails.Postcode,
-                });
+                await this._eventPublisher.PublishOrderReadyForDeliveryEventV1(order);
             }
             else
             {

@@ -3,12 +3,28 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using PlantBasedPizza.Events;
 using PlantBasedPizza.OrderManager.Infrastructure;
+using PlantBasedPizza.OrderManager.Infrastructure.IntegrationEvents;
 using PlantBasedPizza.Shared;
+using Saunter;
+using Saunter.AsyncApiSchema.v2;
 
 var builder = WebApplication.CreateBuilder(args);
 builder
     .Configuration
     .AddEnvironmentVariables();
+
+builder.Services.AddAsyncApiSchemaGeneration(options =>
+{
+    options.AssemblyMarkerTypes = new[] {typeof(OrderEventPublisher)};
+
+    options.AsyncApi = new AsyncApiDocument
+    {
+        Info = new Info("PlantBasedPizza Orders API", "1.0.0")
+        {
+            Description = "The orders API allows orders to be placed.",
+        },
+    };
+});
 
 builder.Services.AddAuthentication(options =>
 {
@@ -43,6 +59,9 @@ builder.Services.AddControllers();
 var app = builder.Build();
 
 app.UseAuthentication();
+
+app.UseRouting();
+
 app.UseAuthorization();
 
 var orderManagerHealthChecks = app.Services.GetRequiredService<OrderManagerHealthChecks>();
@@ -55,5 +74,11 @@ app.Map("/order/health", async () =>
 });
 
 app.MapControllers();
+
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapAsyncApiDocuments();
+    endpoints.MapAsyncApiUi();
+});
 
 app.Run();

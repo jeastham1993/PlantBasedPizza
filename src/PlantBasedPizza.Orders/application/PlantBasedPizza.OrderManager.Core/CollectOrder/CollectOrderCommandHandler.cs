@@ -1,16 +1,15 @@
-using PlantBasedPizza.Events;
 using PlantBasedPizza.OrderManager.Core.Entities;
-using PlantBasedPizza.OrderManager.Core.IntegrationEvents;
 using PlantBasedPizza.OrderManager.Core.Services;
+using PlantBasedPizza.OrderManager.Infrastructure.IntegrationEvents;
 
 namespace PlantBasedPizza.OrderManager.Core.CollectOrder;
 
 public class CollectOrderCommandHandler
 {
     private readonly IOrderRepository _orderRepository;
-    private readonly IEventPublisher _eventPublisher;
+    private readonly IOrderEventPublisher _eventPublisher;
 
-    public CollectOrderCommandHandler(IOrderRepository orderRepository, ILoyaltyPointService loyaltyPointService, IEventPublisher eventPublisher)
+    public CollectOrderCommandHandler(IOrderRepository orderRepository, ILoyaltyPointService loyaltyPointService, IOrderEventPublisher eventPublisher)
     {
         _orderRepository = orderRepository;
         _eventPublisher = eventPublisher;
@@ -29,12 +28,7 @@ public class CollectOrderCommandHandler
 
             existingOrder.CompleteOrder();
 
-            await this._eventPublisher.Publish(new OrderCompletedIntegrationEventV1()
-            {
-                OrderIdentifier = existingOrder.OrderIdentifier,
-                CustomerIdentifier = existingOrder.CustomerIdentifier,
-                OrderValue = existingOrder.TotalPrice
-            });
+            await this._eventPublisher.PublishOrderCompletedEventV1(existingOrder);
 
             await this._orderRepository.Update(existingOrder).ConfigureAwait(false);
 
