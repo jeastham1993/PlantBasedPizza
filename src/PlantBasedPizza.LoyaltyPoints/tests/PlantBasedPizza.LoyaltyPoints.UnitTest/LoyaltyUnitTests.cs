@@ -53,6 +53,16 @@ public class LoyaltyUnitTests
     }
     
     [Fact]
+    public async Task AddMultipleLoyaltyPointsForSameOrder_ShouldSkipSecondTime()
+    {
+        var order = new CustomerLoyaltyPoints();
+        order.AddLoyaltyPoints(100, "ORD123");
+        order.AddLoyaltyPoints(50, "ORD123");
+
+        order.TotalPoints.Should().Be(100);
+    }
+    
+    [Fact]
     public async Task CanSpendPoints_ShouldDecreaseFromBalance()
     {
         var mockRepo = A.Fake<ICustomerLoyaltyPointsRepository>();
