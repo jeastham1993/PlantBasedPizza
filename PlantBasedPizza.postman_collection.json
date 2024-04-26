@@ -1,0 +1,848 @@
+{
+	"info": {
+		"_postman_id": "d7142826-2aa3-4996-afce-f8ef768b8b46",
+		"name": "PlantBasedPizza",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "31852043"
+	},
+	"item": [
+		{
+			"name": "Order",
+			"item": [
+				{
+					"name": "Order",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{UserAuthToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"OrderIdentifier\": \"JAMES11\",\n    \"CustomerIdentifier\": \"james\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ApiUrl}}/order/pickup",
+							"host": [
+								"{{ApiUrl}}"
+							],
+							"path": [
+								"order",
+								"pickup"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Submit",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{UserAuthToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"OrderIdentifier\": \"{{OrderRef}}\",\n    \"CustomerIdentifier\": \"james\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ApiUrl}}/order/{{OrderRef}}/submit",
+							"host": [
+								"{{ApiUrl}}"
+							],
+							"path": [
+								"order",
+								"{{OrderRef}}",
+								"submit"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Awaiting Collection",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{StaffAuthToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ApiUrl}}/order/awaiting-collection",
+							"host": [
+								"{{ApiUrl}}"
+							],
+							"path": [
+								"order",
+								"awaiting-collection"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Collect Order",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{UserAuthToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"OrderIdentifier\": \"JAMES11\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ApiUrl}}/order/collected",
+							"host": [
+								"{{ApiUrl}}"
+							],
+							"path": [
+								"order",
+								"collected"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Details",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{UserAuthToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ApiUrl}}/order/{{OrderRef}}/detail",
+							"host": [
+								"{{ApiUrl}}"
+							],
+							"path": [
+								"order",
+								"{{OrderRef}}",
+								"detail"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "AddItem",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{UserAuthToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"OrderIdentifier\": \"{{OrderRef}}\",\n    \"RecipeIdentifier\": \"fries\",\n    \"Quantity\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ApiUrl}}/order/{{OrderRef}}/items",
+							"host": [
+								"{{ApiUrl}}"
+							],
+							"path": [
+								"order",
+								"{{OrderRef}}",
+								"items"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Delivery Order",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{UserAuthToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"OrderIdentifier\": \"{{OrderRef}}\",\n    \"CustomerIdentifier\": \"james\",\n    \"addressLine1\": \"AddressLine1\",\n    \"addressLine2\": \"AddressLine2\",\n    \"addressLine3\": \"AddressLine3\",\n    \"addressLine4\": \"AddressLine4\",\n    \"addressLine5\": \"AddressLine5\",\n    \"postcode\": \"Postcode\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ApiUrl}}/order/deliver",
+							"host": [
+								"{{ApiUrl}}"
+							],
+							"path": [
+								"order",
+								"deliver"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Recipes",
+			"item": [
+				{
+					"name": "Recipes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ApiUrl}}/recipes",
+							"host": [
+								"{{ApiUrl}}"
+							],
+							"path": [
+								"recipes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Recipe",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{StaffAuthToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"RecipeIdentifier\": \"marg\",\n    \"Name\": \"Margharita\",\n    \"Price\": 8.99,\n    \"Ingredients\": [\n        {\n            \"Name\": \"Pizza\",\n            \"Quantity\": 1\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ApiUrl}}/recipes",
+							"host": [
+								"{{ApiUrl}}"
+							],
+							"path": [
+								"recipes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Recipe",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ApiUrl}}/recipes/CREATEORDERTEST",
+							"host": [
+								"{{ApiUrl}}"
+							],
+							"path": [
+								"recipes",
+								"CREATEORDERTEST"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Delivery",
+			"item": [
+				{
+					"name": "Awaiting Collection",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{StaffAuthToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ApiUrl}}/delivery/awaiting-collection",
+							"host": [
+								"{{ApiUrl}}"
+							],
+							"path": [
+								"delivery",
+								"awaiting-collection"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delivery Status",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{UserAuthToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ApiUrl}}/delivery/{{OrderRef}}/status",
+							"host": [
+								"{{ApiUrl}}"
+							],
+							"path": [
+								"delivery",
+								"{{OrderRef}}",
+								"status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeliveriesForDriver",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{StaffAuthToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ApiUrl}}/delivery/driver/James/orders",
+							"host": [
+								"{{ApiUrl}}"
+							],
+							"path": [
+								"delivery",
+								"driver",
+								"James",
+								"orders"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delivered",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{DriverAuthToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"OrderIdentifier\": \"{{OrderRef}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ApiUrl}}/delivery/delivered",
+							"host": [
+								"{{ApiUrl}}"
+							],
+							"path": [
+								"delivery",
+								"delivered"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "AssignToDriver",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{StaffAuthToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"OrderIdentifier\": \"{{OrderRef}}\",\n    \"DriverName\": \"James\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ApiUrl}}/delivery/assign",
+							"host": [
+								"{{ApiUrl}}"
+							],
+							"path": [
+								"delivery",
+								"assign"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Loyalty",
+			"item": [
+				{
+					"name": "Points",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{UserAuthToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ApiUrl}}/loyalty",
+							"host": [
+								"{{ApiUrl}}"
+							],
+							"path": [
+								"loyalty"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Kitchen",
+			"item": [
+				{
+					"name": "New",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{StaffAuthToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ApiUrl}}/kitchen/new",
+							"host": [
+								"{{ApiUrl}}"
+							],
+							"path": [
+								"kitchen",
+								"new"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Preparing",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{StaffAuthToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{ApiUrl}}/kitchen/{{OrderRef}}/preparing",
+							"host": [
+								"{{ApiUrl}}"
+							],
+							"path": [
+								"kitchen",
+								"{{OrderRef}}",
+								"preparing"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Prep Complete",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{StaffAuthToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{ApiUrl}}/kitchen/{{OrderRef}}/prep-complete",
+							"host": [
+								"{{ApiUrl}}"
+							],
+							"path": [
+								"kitchen",
+								"{{OrderRef}}",
+								"prep-complete"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Baked",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{StaffAuthToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{ApiUrl}}/kitchen/{{OrderRef}}/bake-complete",
+							"host": [
+								"{{ApiUrl}}"
+							],
+							"path": [
+								"kitchen",
+								"{{OrderRef}}",
+								"bake-complete"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Quality Checked",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{StaffAuthToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{ApiUrl}}/kitchen/{{OrderRef}}/quality-check",
+							"host": [
+								"{{ApiUrl}}"
+							],
+							"path": [
+								"kitchen",
+								"{{OrderRef}}",
+								"quality-check"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Account",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"emailAddress\": \"james@james.com\",\n    \"password\": \"James!23\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ApiUrl}}/account/login",
+							"host": [
+								"{{ApiUrl}}"
+							],
+							"path": [
+								"account",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Staff User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJmOWMwMDJmYi04Yjk5LTQzOTctYmI1NC0wMTQyN2U0ZjJiNDYiLCJlbWFpbCI6ImFkbWluQHBsYW50YmFzZWRwaXp6YS5jb20iLCJyb2xlIjoiYWRtaW4iLCJuYmYiOjE3MTMzNjMyODEsImV4cCI6MTcxMzM2MzU4MSwiaWF0IjoxNzEzMzYzMjgxLCJpc3MiOiJodHRwczovL3BsYW50YmFzZWRwaXp6YS5jb20iLCJhdWQiOiJodHRwczovL3BsYW50YmFzZWRwaXp6YS5jb20ifQ.NufsBcQoV5qCdADrRiUlTAjNt7Q-KbpEvYnXRI6v0jPFhbsVqLKXECGQcoI7BUrBkYT6EsJX3owb3y-F9DrxMg",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"emailAddress\": \"james@plantbasedpizza.com\",\n    \"password\": \"James!23\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ApiUrl}}/account/staff/register",
+							"host": [
+								"{{ApiUrl}}"
+							],
+							"path": [
+								"account",
+								"staff",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"emailAddress\": \"james@james.com\",\n    \"password\": \"James!23\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ApiUrl}}/account/register",
+							"host": [
+								"{{ApiUrl}}"
+							],
+							"path": [
+								"account",
+								"register"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "ApiHealth",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{ApiUrl}}/health",
+					"host": [
+						"{{ApiUrl}}"
+					],
+					"path": [
+						"health"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "ApiUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "OrderRef",
+			"value": "JAMES13",
+			"type": "string"
+		},
+		{
+			"key": "UserAuthToken",
+			"value": "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiM2QyNmY1NC1lNzVkLTRlN2UtOWJiNC04NWM3MGFiMjE0ZDMiLCJlbWFpbCI6ImphbWVzQGphbWVzLmNvbSIsInJvbGUiOiJ1c2VyIiwibmJmIjoxNzEzNDQzNTY4LCJleHAiOjE3MTM0NDM4NjgsImlhdCI6MTcxMzQ0MzU2OCwiaXNzIjoiaHR0cHM6Ly9hdXRoLnBsYW50YmFzZWRwaXp6YS5jb20iLCJhdWQiOiJodHRwczovL2F1dGgucGxhbnRiYXNlZHBpenphLmNvbSJ9.Jz8h8aofY21tB3AISkxOEnxWM9E_YNOE5MXCfHYg1yUwFZ8H9w0mXFUYJsH5gweVNpeGZJJeTeLc7u9q8HyHTQ",
+			"type": "string"
+		},
+		{
+			"key": "StaffAuthToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "DriverAuthToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "AdminAuthToken",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

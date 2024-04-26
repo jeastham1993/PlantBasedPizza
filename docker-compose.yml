@@ -18,7 +18,7 @@ services:
       - 4318:4318
 
   local.api:
-    image: plant-based-pizza-api
+    image: plant-based-pizza-api-mod-1
     container_name: local.pizza-api
     ports:
       - "5051:8080"
@@ -29,7 +29,7 @@ services:
       - Services__Loyalty=http://local.loyalty-api:8080
 
   local.loyalty-api:
-    image: loyalty-api
+    image: loyalty-api-mod-1
     container_name: local.loyalty-api
     ports:
       - "5050:8080"

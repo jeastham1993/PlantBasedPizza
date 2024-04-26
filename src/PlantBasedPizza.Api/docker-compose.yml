@@ -17,12 +17,12 @@ services:
       - 4317:4317
       - 4318:4318
 
-  wiremock:
-    image: wiremock/wiremock:latest
-    ports:
-      - 8443:8080
-    volumes:
-      - ./mocks/loyalty-api:/home/wiremock
+  # wiremock:
+  #   image: wiremock/wiremock:latest
+  #   ports:
+  #     - 8443:8080
+  #   volumes:
+  #     - ./mocks/loyalty-api:/home/wiremock
 
   # test.api:
   #   image: plant-based-pizza
