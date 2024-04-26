@@ -23,14 +23,3 @@ services:
       - 8443:8080
     volumes:
       - ./mocks/loyalty-api:/home/wiremock
-
-  test.api:
-    image: plant-based-pizza-api
-    container_name: test.pizza-api
-    ports:
-      - "5051:8080"
-    environment:
-      - DatabaseConnection=mongodb://mongodb:27017
-      - OtlpEndpoint=http://jaeger:4317
-      - Environment=local
-      - Services__Loyalty=http://wiremock:8080

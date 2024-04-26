@@ -18,7 +18,7 @@ services:
       - 4318:4318
 
   local.api:
-    image: plant-based-pizza-api
+    image: plant-based-pizza-api-mod-2
     container_name: local.pizza-api
     ports:
       - "5051:8080"
@@ -29,7 +29,7 @@ services:
       - Services__Loyalty=http://local.loyalty-api:8080
 
   local.loyalty-api:
-    image: loyalty-api
+    image: loyalty-api-mod-2
     container_name: local.loyalty-api
     ports:
       - "5050:8080"
@@ -37,13 +37,3 @@ services:
       - DatabaseConnection=mongodb://mongodb:27017
       - OtlpEndpoint=http://jaeger:4317
       - Environment=local
-  
-  # reverse-proxy:
-  #   image: nginx:latest
-  #   ports:
-  #     - "8080:80"  # Map port 80 of the container to port 8080 on the host
-  #   volumes:
-  #     - ./nginx/nginx-custom.conf:/etc/nginx/conf.d/default.conf:ro
-  #   depends_on:
-  #     - local.api
-  #     - local.loyalty-api
