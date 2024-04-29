@@ -1,3 +1,9 @@
 {
-    "recipeIdentifier": "Pizza"
+    "recipeIdentifier": "Pizza",
+    "ingredients": [
+        {
+            "name": "Pizza",
+            "quantity": 1
+        }
+    ]
 }

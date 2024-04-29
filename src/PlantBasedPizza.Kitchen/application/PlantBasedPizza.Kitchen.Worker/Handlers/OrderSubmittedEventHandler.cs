@@ -37,8 +37,15 @@ namespace PlantBasedPizza.Kitchen.Worker.Handlers
             foreach (var recipe in evt.Items)
             {
                 this._logger.Info($"[KITCHEN] Addig item {recipe.ItemName}");
+
+                var foundRecipe = await this._recipeService.GetRecipe(recipe.RecipeIdentifier);
+
+                foreach (var ingredient in foundRecipe.Ingredients)
+                {
+                    this._logger.Info(ingredient.Name);
+                }
                 
-                recipes.Add(await this._recipeService.GetRecipe(recipe.RecipeIdentifier));
+                recipes.Add(foundRecipe);
             }
 
             var kitchenRequest = new KitchenRequest(evt.OrderIdentifier, recipes);
