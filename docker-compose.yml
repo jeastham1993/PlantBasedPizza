@@ -36,7 +36,7 @@ services:
       - "15672:15672"
 
   local.api:
-    image: plant-based-pizza-api
+    image: plant-based-pizza-api-mod-4
     container_name: local.pizza-api
     depends_on:
       - consul
@@ -59,7 +59,7 @@ services:
       - Messaging__ExchangeName=local.plantbasedpizza
 
   local.orders-worker:
-    image: plant-based-orders-worker
+    image: plant-based-orders-worker-mod-4
     container_name: local.orders-worker
     depends_on:
       - consul
@@ -77,7 +77,7 @@ services:
       - Messaging__ExchangeName=local.plantbasedpizza
 
   local.loyalty-api:
-    image: loyalty-api
+    image: loyalty-api-mod-4
     container_name: local.loyalty-api
     depends_on:
       - consul
@@ -95,7 +95,7 @@ services:
       - Messaging__ExchangeName=local.plantbasedpizza
 
   local.loyalty-internal-api:
-    image: loyalty-internal-api
+    image: loyalty-internal-api-mod-4
     container_name: local.loyalty-internal-api
     depends_on:
       - consul
@@ -111,7 +111,7 @@ services:
       - Messaging__ExchangeName=local.plantbasedpizza
 
   local.loyalty-worker:
-    image: loyalty-worker
+    image: loyalty-worker-mod-4
     container_name: local.loyalty-worker
     depends_on:
       - consul
@@ -127,7 +127,7 @@ services:
       - Messaging__ExchangeName=local.plantbasedpizza
 
   local.payment-api:
-    image: payment-api
+    image: payment-api-mod-4
     container_name: local.payment-api
     depends_on:
       - consul
