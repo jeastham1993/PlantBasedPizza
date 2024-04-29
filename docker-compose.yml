@@ -23,7 +23,7 @@ services:
       - 8500:8500
 
   local.api:
-    image: plant-based-pizza-api
+    image: plant-based-pizza-api-mod-3
     container_name: local.pizza-api
     depends_on:
       - consul
@@ -41,7 +41,7 @@ services:
       - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
 
   local.loyalty-api:
-    image: loyalty-api
+    image: loyalty-api-mod-3
     container_name: local.loyalty-api
     depends_on:
       - consul
@@ -56,7 +56,7 @@ services:
       - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
 
   local.loyalty-internal-api:
-    image: loyalty-internal-api
+    image: loyalty-internal-api-mod-3
     container_name: local.loyalty-internal-api
     depends_on:
       - consul
@@ -69,7 +69,7 @@ services:
       - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
 
   local.payment-api:
-    image: payment-api
+    image: payment-api-mod-3
     container_name: local.payment-api
     depends_on:
       - consul
