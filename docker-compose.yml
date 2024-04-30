@@ -36,7 +36,7 @@ services:
       - "15672:15672"
 
   local.orders-api:
-    image: plant-based-orders-api
+    image: plant-based-orders-api-mod-5
     container_name: local.orders-api
     depends_on:
       - consul
@@ -64,7 +64,7 @@ services:
       - Auth__PaymentApiKey=the api key to use, use a secret store in production
 
   local.orders-worker:
-    image: plant-based-orders-worker
+    image: plant-based-orders-worker-mod-5
     container_name: local.orders-worker
     depends_on:
       - consul
@@ -86,7 +86,7 @@ services:
       - Messaging__ExchangeName=local.plantbasedpizza
 
   local.loyalty-api:
-    image: loyalty-api
+    image: loyalty-api-mod-5
     container_name: local.loyalty-api
     depends_on:
       - consul
@@ -107,7 +107,7 @@ services:
       - Auth__Key=This is a sample secret key - please don't use in production environment.'
 
   local.loyalty-internal-api:
-    image: loyalty-internal-api
+    image: loyalty-internal-api-mod-5
     container_name: local.loyalty-internal-api
     expose:
       - "8080"
@@ -125,7 +125,7 @@ services:
       - Messaging__ExchangeName=local.plantbasedpizza
 
   local.loyalty-worker:
-    image: loyalty-worker
+    image: loyalty-worker-mod-5
     container_name: local.loyalty-worker
     depends_on:
       - consul
@@ -141,7 +141,7 @@ services:
       - Messaging__ExchangeName=local.plantbasedpizza
 
   local.kitchen-api:
-    image: plant-based-kitchen-api
+    image: plant-based-kitchen-api-mod-5
     container_name: local.kitchen-api
     expose:
       - "8080"
@@ -165,7 +165,7 @@ services:
       - Auth__Key=This is a sample secret key - please don't use in production environment.'
 
   local.kitchen-worker:
-    image: plant-based-kitchen-worker
+    image: plant-based-kitchen-worker-mod-5
     container_name: local.kitchen-worker
     depends_on:
       - consul
@@ -184,7 +184,7 @@ services:
       - Messaging__ExchangeName=local.plantbasedpizza
 
   local.payment-api:
-    image: payment-api
+    image: payment-api-mod-5
     container_name: local.payment-api
     depends_on:
       - consul
@@ -202,7 +202,7 @@ services:
       - Auth__ApiKey=the api key to use, use a secret store in production
 
   local.recipe-api:
-    image: plant-based-recipes-api
+    image: plant-based-recipes-api-mod-5
     container_name: local.recipe-api
     depends_on:
       - consul
@@ -223,7 +223,7 @@ services:
       - Auth__Key=This is a sample secret key - please don't use in production environment.'
 
   local.delivery-api:
-    image: plant-based-delivery-api
+    image: plant-based-delivery-api-mod-5
     container_name: local.delivery-api
     expose:
       - "8080"
@@ -245,7 +245,7 @@ services:
       - Auth__Key=This is a sample secret key - please don't use in production environment.'
 
   local.delivery-worker:
-    image: plant-based-delivery-worker
+    image: plant-based-delivery-worker-mod-5
     container_name: local.delivery-worker
     depends_on:
       - consul
@@ -262,7 +262,7 @@ services:
       - Messaging__ExchangeName=local.plantbasedpizza
 
   local.account-api:
-    image: plant-based-account-api
+    image: plant-based-account-api-mod-5
     container_name: local.account-api
     expose:
       - "8080"
