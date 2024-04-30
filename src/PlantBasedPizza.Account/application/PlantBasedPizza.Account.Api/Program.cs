@@ -144,7 +144,7 @@ app.MapPost("/account/driver/register", [AllowAnonymous] async (RegisterUserComm
     }
 }).RequireAuthorization(policyBuilder => policyBuilder.RequireRole(["staff","admin"]));
 
-app.MapPost("/account/staff/register", [AllowAnonymous] async (RegisterUserCommand register) =>
+app.MapPost("/account/staff/register", async (RegisterUserCommand register) =>
 {
     try
     {
