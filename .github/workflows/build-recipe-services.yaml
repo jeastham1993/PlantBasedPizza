@@ -3,7 +3,7 @@ name: Recipe API CICD
 on:
     push:
       branches:
-        - microservices-module-6
+        - main
       paths:
         - .github/workflows/build-base.yaml
         - .github/workflows/integration-test-base.yaml

@@ -3,7 +3,7 @@ name: Order Services CICD
 on:
     push:
       branches:
-        - microservices-module-6
+        - main
       paths:
         - .github/workflows/build-and-push-base.yaml
         - .github/workflows/build-order-services.yaml
