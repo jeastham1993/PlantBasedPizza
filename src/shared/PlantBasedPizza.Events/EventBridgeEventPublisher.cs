@@ -3,19 +3,19 @@ using Amazon.EventBridge;
 using Amazon.EventBridge.Model;
 using CloudNative.CloudEvents;
 using CloudNative.CloudEvents.SystemTextJson;
-using Microsoft.VisualBasic.CompilerServices;
+using Microsoft.Extensions.Options;
 
 namespace PlantBasedPizza.Events;
 
 public class EventBridgeEventPublisher : IEventPublisher
 {
     private readonly AmazonEventBridgeClient _eventBridgeClient;
-    private readonly RabbitMqSettings _settings;
+    private readonly EventBridgeSettings _settings;
 
-    public EventBridgeEventPublisher(AmazonEventBridgeClient eventBridgeClient, RabbitMqSettings settings)
+    public EventBridgeEventPublisher(AmazonEventBridgeClient eventBridgeClient, IOptions<EventBridgeSettings> settings)
     {
         _eventBridgeClient = eventBridgeClient;
-        _settings = settings;
+        _settings = settings.Value;
     }
 
     public async Task Publish(IntegrationEvent evt)
@@ -56,7 +56,7 @@ public class EventBridgeEventPublisher : IEventPublisher
                 new()
                 {
                     Source = evt.Source.ToString(),
-                    EventBusName = _settings.ExchangeName,
+                    EventBusName = _settings.BusName,
                     Detail = json,
                     DetailType = eventType
                 }

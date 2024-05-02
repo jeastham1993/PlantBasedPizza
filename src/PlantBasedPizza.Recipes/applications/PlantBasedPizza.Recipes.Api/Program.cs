@@ -51,4 +51,6 @@ await recipeRepo.SeedRecipes();
 
 app.MapControllers();
 
+app.Map("/recipes/health", () => Task.FromResult(Results.Ok("OK")));
+
 app.Run();
