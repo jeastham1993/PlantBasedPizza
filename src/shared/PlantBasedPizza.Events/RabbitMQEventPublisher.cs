@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using System.Text;
 using CloudNative.CloudEvents;
-using CloudNative.CloudEvents.NewtonsoftJson;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;

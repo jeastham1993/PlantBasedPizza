@@ -1,3 +1,4 @@
+using Amazon.EventBridge;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RabbitMQ.Client;
@@ -16,10 +17,19 @@ public static class Setup
             throw new EventBusConnectionException("", "Host name is null");
         }
         
-        services.AddSingleton(new RabbitMQConnection(hostName!));
         services.Configure<RabbitMqSettings>(configuration.GetSection("Messaging"));
-        services.AddSingleton<IEventPublisher, RabbitMQEventPublisher>();
-        services.AddSingleton<RabbitMqEventSubscriber>();
+
+        if (hostName == "eventbridge")
+        {
+            services.AddSingleton(new AmazonEventBridgeClient());
+            services.AddSingleton<IEventPublisher, EventBridgeEventPublisher>();
+        }
+        else
+        {
+            services.AddSingleton(new RabbitMQConnection(hostName!));
+            services.AddSingleton<IEventPublisher, RabbitMQEventPublisher>();
+            services.AddSingleton<RabbitMqEventSubscriber>();   
+        }
 
         return services;
     }
