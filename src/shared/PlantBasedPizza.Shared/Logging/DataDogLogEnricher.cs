@@ -10,19 +10,19 @@ public class DataDogLogEnricher : ILogEventEnricher
     {
         var envProperty = propertyFactory
             .CreateProperty(
-                "dd_env",
+                "dd.env",
                 Environment.GetEnvironmentVariable("ENV"));
         var serviceProperty = propertyFactory
             .CreateProperty(
-                "dd_service",
+                "dd.service",
                 Environment.GetEnvironmentVariable("SERVICE_NAME"));
         var traceProperty = propertyFactory
             .CreateProperty(
-                "dd_traceId",
+                "dd.traceId",
                 Activity.Current?.TraceId.ToString());
         var spanProperty = propertyFactory
             .CreateProperty(
-                "dd_spanId",
+                "dd.spanId",
                 Activity.Current?.SpanId.ToString());
         
         logEvent.AddOrUpdateProperty(envProperty);
