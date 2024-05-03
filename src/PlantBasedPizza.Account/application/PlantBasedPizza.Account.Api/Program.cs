@@ -13,6 +13,14 @@ using PlantBasedPizza.Account.Api.Adapters;
 using PlantBasedPizza.Account.Api.Core;
 using PlantBasedPizza.Events;
 using PlantBasedPizza.Shared;
+using PlantBasedPizza.Shared.Logging;
+using Serilog;
+using Serilog.Formatting.Compact;
+
+Log.Logger = new LoggerConfiguration()
+    .Enrich.With(new DataDogLogEnricher())
+    .WriteTo.Console(new CompactJsonFormatter())
+    .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddEnvironmentVariables();
@@ -36,6 +44,7 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true
     };
 });
+builder.Services.AddSerilog();
 
 builder.Services.AddAuthorization();
 
