@@ -1,7 +1,3 @@
-using System.Diagnostics;
-using System.IdentityModel.Tokens.Jwt;
-using System.Runtime.CompilerServices;
-using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -62,9 +58,7 @@ BsonClassMap.RegisterClassMap<UserAccount>(map =>
     map.SetIgnoreExtraElementsIsInherited(true);
 });
 
-var serviceName = "PlantBasedPizza.Account";
-
-builder.Services.AddSharedInfrastructure(builder.Configuration, serviceName)
+builder.Services.AddSharedInfrastructure(builder.Configuration, Environment.GetEnvironmentVariable("SERVICE_NAME"))
     .AddMessaging(builder.Configuration);
 
 var app = builder.Build();
