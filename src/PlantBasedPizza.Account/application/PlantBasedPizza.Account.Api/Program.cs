@@ -68,6 +68,8 @@ var userAccountService = app.Services.GetRequiredService<UserAccountService>();
 
 await accountRepository.SeedInitialUser();
 
+app.MapGet("/account/health", () => Task.FromResult("OK"));
+
 app.MapPost("/account/login", [AllowAnonymous] async (LoginCommand login) =>
 {
     try

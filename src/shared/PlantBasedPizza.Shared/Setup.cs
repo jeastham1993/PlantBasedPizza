@@ -2,6 +2,7 @@ using Consul;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using OpenTelemetry.Exporter;
 using PlantBasedPizza.Shared.Logging;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
@@ -32,7 +33,11 @@ namespace PlantBasedPizza.Shared
                 tracing.AddSource(applicationName);
                 tracing.AddOtlpExporter(otlpOptions =>
                 {
-                    otlpOptions.Endpoint = new Uri(configuration["OtlpEndpoint"] ?? OTEL_DEFAULT_GRPC_ENDPOINT);
+                    var otlpEndpoint = configuration["OtlpEndpoint"];
+                    var otlpUseHttp = configuration["OtlpUseHttp"];
+                    
+                    otlpOptions.Endpoint = new Uri(otlpEndpoint ?? OTEL_DEFAULT_GRPC_ENDPOINT);
+                    otlpOptions.Protocol = otlpUseHttp == "Y" ? OtlpExportProtocol.HttpProtobuf : OtlpExportProtocol.Grpc;
                 });
             });
 
