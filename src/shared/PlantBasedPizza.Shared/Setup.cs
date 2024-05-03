@@ -7,6 +7,8 @@ using PlantBasedPizza.Shared.Logging;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using PlantBasedPizza.Shared.ServiceDiscovery;
+using Serilog;
+using Serilog.Formatting.Compact;
 
 namespace PlantBasedPizza.Shared
 {
@@ -18,8 +20,12 @@ namespace PlantBasedPizza.Shared
             IConfiguration configuration, string applicationName)
         {
             ApplicationLogger.Init();
+            Log.Logger = new LoggerConfiguration()
+                .Enrich.With(new DataDogLogEnricher())
+                .WriteTo.Console(new CompactJsonFormatter())
+                .CreateLogger();
 
-            services.AddLogging();
+            services.AddLogging().AddSerilog();
             
             var otel = services.AddOpenTelemetry();
 

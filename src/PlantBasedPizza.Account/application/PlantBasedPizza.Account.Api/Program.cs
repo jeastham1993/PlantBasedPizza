@@ -13,11 +13,6 @@ using PlantBasedPizza.Shared.Logging;
 using Serilog;
 using Serilog.Formatting.Compact;
 
-Log.Logger = new LoggerConfiguration()
-    .Enrich.With(new DataDogLogEnricher())
-    .WriteTo.Console(new CompactJsonFormatter())
-    .CreateLogger();
-
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddEnvironmentVariables();
 

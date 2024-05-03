@@ -31,10 +31,8 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
-var applicationName = "RecipesApi";
-
 builder.Services.AddRecipeInfrastructure(builder.Configuration);
-builder.Services.AddSharedInfrastructure(builder.Configuration, applicationName)
+builder.Services.AddSharedInfrastructure(builder.Configuration, Environment.GetEnvironmentVariable("SERVICE_NAME"))
     .AddMessaging(builder.Configuration);
 
 builder.Services.AddHttpClient();
