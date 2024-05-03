@@ -25,12 +25,19 @@ namespace PlantBasedPizza.Shared
                 .WriteTo.Console(new CompactJsonFormatter())
                 .CreateLogger();
 
-            services.AddLogging().AddSerilog();
+            services
+                .AddLogging()
+                .AddSerilog();
             
             var otel = services.AddOpenTelemetry();
 
             otel.ConfigureResource(resource => resource
-                .AddService(serviceName: applicationName));
+                .AddService(serviceName: applicationName)
+                .AddAttributes(new List<KeyValuePair<string, object>>(2)
+                {
+                    new("service.name", applicationName),
+                    new("container.id", Environment.MachineName)
+                }));
             
             otel.WithTracing(tracing =>
             {
