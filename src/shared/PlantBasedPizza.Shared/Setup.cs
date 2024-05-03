@@ -22,12 +22,24 @@ namespace PlantBasedPizza.Shared
             services.AddLogging();
             
             var otel = services.AddOpenTelemetry();
+
             otel.ConfigureResource(resource => resource
                 .AddService(serviceName: applicationName));
             
             otel.WithTracing(tracing =>
             {
-                tracing.AddAspNetCoreInstrumentation();
+                tracing.AddAspNetCoreInstrumentation(options =>
+                {
+                    options.Filter = (context) =>
+                    {
+                        if (context.Request.Path.Value.Contains("/health") || context.Request.Path.Value == "/")
+                        {
+                            return false;
+                        }
+
+                        return true;
+                    };
+                });
                 tracing.AddGrpcClientInstrumentation();
                 tracing.AddHttpClientInstrumentation();
                 tracing.AddSource(applicationName);
