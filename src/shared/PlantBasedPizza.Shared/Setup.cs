@@ -38,14 +38,14 @@ namespace PlantBasedPizza.Shared
                 Environment.GetEnvironmentVariable("ECS_CONTAINER_METADATA_URI_V4");
 
             var taskId = Environment.MachineName;
-            ECSMetadata? metadata = null;
+            EcsMetadata? metadata = null;
 
             if (!string.IsNullOrEmpty(metadataUri))
             {
                 Log.Information("Retrieving ECS Metadata");
                 
                 var httpClient = new HttpClient();
-                metadata = httpClient.GetFromJsonAsync<ECSMetadata>(metadataUri).GetAwaiter().GetResult();
+                metadata = httpClient.GetFromJsonAsync<EcsMetadata>(metadataUri).GetAwaiter().GetResult();
                 
                 Log.Information($"Retrieve, DockerID is {metadata.DockerId}");
                 
@@ -60,7 +60,7 @@ namespace PlantBasedPizza.Shared
                     .AddAttributes(new List<KeyValuePair<string, object>>()
                     {
                         new("service.name", applicationName),
-                        new("container.id", taskId),
+                        new("container.id", taskId ?? ""),
                     });
 
                 if (metadata != null)
@@ -69,14 +69,14 @@ namespace PlantBasedPizza.Shared
                     
                     resource.AddAttributes(new List<KeyValuePair<string, object>>()
                     {
-                        new("ecs.cluster.name", metadata.Name),
-                        new("ecs.task.arn", metadata.ContainerARN),
-                        new("ecs.cpu.limit", metadata.Limits.CPU),
-                        new("ecs.taskDefinition.family", metadata.Labels.TaskDefinitionFamily),
-                        new("ecs.taskDefinition.version", metadata.Labels.TaskDefinitionVersion),
-                        new("container.image", metadata.Image),
-                        new("container.startedAt", metadata.StartedAt),
-                        new("container.createdAt", metadata.CreatedAt),
+                        new("ecs.cluster.name", metadata.Name ?? ""),
+                        new("ecs.task.arn", metadata.ContainerARN ?? ""),
+                        new("ecs.cpu.limit", metadata.Limits.CPU.ToString()),
+                        new("ecs.taskDefinition.family", metadata.Labels.TaskDefinitionFamily ?? ""),
+                        new("ecs.taskDefinition.version", metadata.Labels.TaskDefinitionVersion ?? ""),
+                        new("container.image", metadata.Image ?? ""),
+                        new("container.startedAt", metadata.StartedAt ?? ""),
+                        new("container.createdAt", metadata.CreatedAt ?? ""),
                     });
                 }
             });

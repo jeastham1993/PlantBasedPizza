@@ -252,3 +252,6 @@ paket-files/
 *.sln.iml
 /test/Traveltek.Inbound.UnitTest/coverage.json
 test/Traveltek.Inbound.UnitTest/coverage.cobertura.xml
+
+**/cdk.out/*
+**/cdk.context.json
