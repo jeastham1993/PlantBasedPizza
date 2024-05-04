@@ -8,6 +8,7 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using PlantBasedPizza.Shared.ServiceDiscovery;
 using Serilog;
+using Serilog.Filters;
 using Serilog.Formatting.Compact;
 
 namespace PlantBasedPizza.Shared
@@ -21,6 +22,7 @@ namespace PlantBasedPizza.Shared
         {
             ApplicationLogger.Init();
             Log.Logger = new LoggerConfiguration()
+                .Filter.ByExcluding(Matching.FromSource("Microsoft"))
                 .Enrich.With(new DataDogLogEnricher())
                 .WriteTo.Console(new CompactJsonFormatter())
                 .CreateLogger();
@@ -39,9 +41,15 @@ namespace PlantBasedPizza.Shared
             if (!string.IsNullOrEmpty(metadataUri))
             {
                 Log.Information($"Metadata URI: {metadataUri}");
+                Console.WriteLine(metadataUri);
                 
                 taskId = metadataUri.Split("/").Last()
                     .Split("-").First();
+
+                var httpClient = new HttpClient();
+                var getEcsMetadata = httpClient.GetAsync(metadataUri).GetAwaiter().GetResult();
+                Log.Information(getEcsMetadata.Content.ReadAsStringAsync().GetAwaiter().GetResult());
+                Console.WriteLine(getEcsMetadata.Content.ReadAsStringAsync().GetAwaiter().GetResult());
             }
 
             otel.ConfigureResource(resource => resource
