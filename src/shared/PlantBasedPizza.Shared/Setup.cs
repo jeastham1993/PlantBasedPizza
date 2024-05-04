@@ -1,3 +1,4 @@
+using System.Net.Http.Json;
 using Consul;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,32 +38,48 @@ namespace PlantBasedPizza.Shared
                 Environment.GetEnvironmentVariable("ECS_CONTAINER_METADATA_URI_V4");
 
             var taskId = Environment.MachineName;
+            ECSMetadata? metadata = null;
 
             if (!string.IsNullOrEmpty(metadataUri))
             {
-                Log.Information($"Metadata URI: {metadataUri}");
-                Console.WriteLine(metadataUri);
+                Log.Information("Retrieving ECS Metadata");
                 
-                taskId = metadataUri.Split("/").Last()
-                    .Split("-").First();
-
                 var httpClient = new HttpClient();
-                var getEcsMetadata = httpClient.GetAsync(metadataUri).GetAwaiter().GetResult();
-                Log.Information(getEcsMetadata.Content.ReadAsStringAsync().GetAwaiter().GetResult());
-                Console.WriteLine(getEcsMetadata.Content.ReadAsStringAsync().GetAwaiter().GetResult());
+                metadata = httpClient.GetFromJsonAsync<ECSMetadata>(metadataUri).GetAwaiter().GetResult();
                 
-                var getTaskMetadata = httpClient.GetAsync($"{metadataUri}/task").GetAwaiter().GetResult();
-                Log.Information(getTaskMetadata.Content.ReadAsStringAsync().GetAwaiter().GetResult());
-                Console.WriteLine(getTaskMetadata.Content.ReadAsStringAsync().GetAwaiter().GetResult());
+                Log.Information($"Retrieve, DockerID is {metadata.DockerId}");
+                
+                taskId = metadata.DockerId;
+                httpClient.Dispose();
             }
 
-            otel.ConfigureResource(resource => resource
-                .AddService(serviceName: applicationName)
-                .AddAttributes(new List<KeyValuePair<string, object>>(2)
+            otel.ConfigureResource(resource =>
+            {
+                resource
+                    .AddService(serviceName: applicationName)
+                    .AddAttributes(new List<KeyValuePair<string, object>>()
+                    {
+                        new("service.name", applicationName),
+                        new("container.id", taskId),
+                    });
+
+                if (metadata != null)
                 {
-                    new("service.name", applicationName),
-                    new("container.id", taskId)
-                }));
+                    Log.Information("Adding metadata attributes to resource");
+                    
+                    resource.AddAttributes(new List<KeyValuePair<string, object>>()
+                    {
+                        new("ecs.cluster.name", metadata.Name),
+                        new("ecs.task.arn", metadata.ContainerARN),
+                        new("ecs.cpu.limit", metadata.Limits.CPU),
+                        new("ecs.taskDefinition.family", metadata.Labels.TaskDefinitionFamily),
+                        new("ecs.taskDefinition.version", metadata.Labels.TaskDefinitionVersion),
+                        new("container.image", metadata.Image),
+                        new("container.startedAt", metadata.StartedAt),
+                        new("container.createdAt", metadata.CreatedAt),
+                    });
+                }
+            });
             
             otel.WithTracing(tracing =>
             {
