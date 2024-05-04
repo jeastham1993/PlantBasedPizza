@@ -50,6 +50,10 @@ namespace PlantBasedPizza.Shared
                 var getEcsMetadata = httpClient.GetAsync(metadataUri).GetAwaiter().GetResult();
                 Log.Information(getEcsMetadata.Content.ReadAsStringAsync().GetAwaiter().GetResult());
                 Console.WriteLine(getEcsMetadata.Content.ReadAsStringAsync().GetAwaiter().GetResult());
+                
+                var getTaskMetadata = httpClient.GetAsync($"{metadataUri}/task").GetAwaiter().GetResult();
+                Log.Information(getTaskMetadata.Content.ReadAsStringAsync().GetAwaiter().GetResult());
+                Console.WriteLine(getTaskMetadata.Content.ReadAsStringAsync().GetAwaiter().GetResult());
             }
 
             otel.ConfigureResource(resource => resource
