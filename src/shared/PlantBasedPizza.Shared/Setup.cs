@@ -31,12 +31,25 @@ namespace PlantBasedPizza.Shared
             
             var otel = services.AddOpenTelemetry();
 
+            var metadataUri =
+                Environment.GetEnvironmentVariable("ECS_CONTAINER_METADATA_URI_V4");
+
+            var taskId = Environment.MachineName;
+
+            if (!string.IsNullOrEmpty(metadataUri))
+            {
+                Log.Information($"Metadata URI: {metadataUri}");
+                
+                taskId = metadataUri.Split("/").Last()
+                    .Split("-").First();
+            }
+
             otel.ConfigureResource(resource => resource
                 .AddService(serviceName: applicationName)
                 .AddAttributes(new List<KeyValuePair<string, object>>(2)
                 {
                     new("service.name", applicationName),
-                    new("container.id", Environment.MachineName)
+                    new("container.id", taskId)
                 }));
             
             otel.WithTracing(tracing =>
