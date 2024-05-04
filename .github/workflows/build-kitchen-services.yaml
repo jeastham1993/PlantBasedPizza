@@ -4,6 +4,7 @@ on:
     push:
       branches:
         - main
+        - feature/aws-serverless
       paths:
         - .github/workflows/build-and-push-base.yaml
         - .github/workflows/build-kitchen-services.yaml

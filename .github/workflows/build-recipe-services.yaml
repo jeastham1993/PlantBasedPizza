@@ -4,6 +4,7 @@ on:
     push:
       branches:
         - main
+        - feature/aws-serverless
       paths:
         - .github/workflows/build-base.yaml
         - .github/workflows/integration-test-base.yaml
