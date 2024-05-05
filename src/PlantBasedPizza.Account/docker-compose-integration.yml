@@ -37,3 +37,4 @@ services:
       - Auth__Audience=https://plantbasedpizza.com
       - Auth__Key=This is a sample secret key - please don't use in production environment.'
       - AWS_REGION=eu-west-1
+      - SERVICE_NAME=AccountApi
