@@ -24,13 +24,6 @@ services:
     volumes:
       - ./mocks/recipe-api:/home/wiremock
 
-  rabbitmq:
-    image: rabbitmq:3-management-alpine
-    container_name: 'recipes-rabbitmq'
-    ports:
-        - 5672:5672
-        - 15672:15672
-
   local.recipe-api:
     image: ${REGISTRY}/recipe-api:${IMAGE_TAG}
     depends_on:
@@ -44,8 +37,8 @@ services:
       - ServiceDiscovery__MyUrl=
       - ServiceDiscovery__ServiceName=
       - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
-      - Messaging__HostName=rabbitmq
-      - Messaging__ExchangeName=local.plantbasedpizza
+      - Messaging__BusName=dev.recipes
       - Auth__Issuer=https://plantbasedpizza.com
       - Auth__Audience=https://plantbasedpizza.com
       - Auth__Key=This is a sample secret key - please don't use in production environment.'
+      - AWS_REGION=eu-west-1

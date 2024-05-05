@@ -24,13 +24,6 @@ services:
     volumes:
       - ./mocks/recipe-api:/home/wiremock
 
-  rabbitmq:
-    image: rabbitmq:3-management-alpine
-    container_name: 'account-rabbitmq'
-    ports:
-        - 5672:5672
-        - 15672:15672
-
   local.account-api:
     image: ${REGISTRY}/account-api:${IMAGE_TAG}
     ports:
@@ -41,8 +34,8 @@ services:
       - DatabaseConnection=mongodb://mongodb:27017
       - OtlpEndpoint=http://jaeger:4317
       - Environment=local
-      - Messaging__HostName=rabbitmq
-      - Messaging__ExchangeName=dev.accounts
+      - Messaging__BusName=dev.accounts
       - Auth__Issuer=https://plantbasedpizza.com
       - Auth__Audience=https://plantbasedpizza.com
       - Auth__Key=This is a sample secret key - please don't use in production environment.'
+      - AWS_REGION=eu-west-1

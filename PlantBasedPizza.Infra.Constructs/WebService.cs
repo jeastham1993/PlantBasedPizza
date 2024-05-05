@@ -62,6 +62,10 @@ public class WebService : Construct
             { "Auth__Issuer", "https://plantbasedpizza.com" },
             { "Auth__Audience", "https://plantbasedpizza.com" },
             { "ECS_ENABLE_CONTAINER_METADATA", "true" },
+            { "ENV", Environment.GetEnvironmentVariable("DEPLOYMENT_ENV") ?? "dev"},
+            { "DD_ENV", Environment.GetEnvironmentVariable("DEPLOYMENT_ENV") ?? "dev"},
+            { "DD_SERVICE", props.ServiceName},
+            { "DD_VERSION", props.Tag}
         };
         var baseSecrets = new Dictionary<string, Secret>()
         {
@@ -79,7 +83,7 @@ public class WebService : Construct
             ExecutionRole = ExecutionRole,
             TaskRole = TaskRole,
         });
-        taskDefinition.AddContainer("application", new ContainerDefinitionOptions()
+        var container = taskDefinition.AddContainer("application", new ContainerDefinitionOptions()
         {
             Image = ContainerImage.FromEcrRepository(repository, props.Tag ?? "latest"),
             PortMappings = new []{new PortMapping()
@@ -96,11 +100,11 @@ public class WebService : Construct
                 {
                     { "Name", "datadog" },
                     { "Host", "http-intake.logs.datadoghq.eu" },
+                    { "TLS", "on" },
                     { "dd_service", props.ServiceName },
                     { "dd_source", "aspnet" },
                     { "dd_message_key", "log" },
-                    { "dd_tags", "project:fluentbit" },
-                    { "TLS", "on" },
+                    { "dd_tags", $"project:{props.ServiceName}" },
                     { "provider", "ecs" }
                 },
                 SecretOptions = new Dictionary<string, Secret>(1)
@@ -109,29 +113,43 @@ public class WebService : Construct
                 }
             }),
         });
+        container.AddDockerLabel("com.datadoghq.tags.env", System.Environment.GetEnvironmentVariable("DEPLOYMENT_ENV") ?? "dev");
+        container.AddDockerLabel("com.datadoghq.tags.service", props.ServiceName);
+        container.AddDockerLabel("com.datadoghq.tags.version", props.Tag);
+
         taskDefinition.AddContainer("datadog-agent", new ContainerDefinitionOptions()
         {
             Image = ContainerImage.FromRegistry("public.ecr.aws/datadog/agent:latest"),
-                 PortMappings = new []
-                 {
-                     new PortMapping()
-                     {
-                         ContainerPort = 4318
-                     }
-                 },
+                 PortMappings =
+                 [
+                    new PortMapping()
+                    {
+                        ContainerPort = 4317
+                    },
+                    new PortMapping()
+                    {
+                        ContainerPort = 4318
+                    }
+                 ],
                  ContainerName = "datadog-agent",
                  Environment = new Dictionary<string, string>
                  {
                      { "DD_SITE", "datadoghq.eu" },
                      { "ECS_FARGATE", "true" },
-                     { "DD_LOGS_ENABLED", "true" },
-                     { "DD_OTLP_CONFIG_RECEIVER_PROTOCOLS_HTTP_ENDPOINT", "0.0.0.0:4318" }
+                     { "DD_LOGS_ENABLED", "false" },
+                     { "DD_OTLP_CONFIG_RECEIVER_PROTOCOLS_GRPC_ENDPOINT", "0.0.0.0:4317" },
+                     { "DD_OTLP_CONFIG_RECEIVER_PROTOCOLS_HTTP_ENDPOINT", "0.0.0.0:4318" },
+                     { "DD_OTLP_CONFIG_TRACES_PROBABILISTIC_SAMPLER_SAMPLING_PERCENTAGE", "80"},
+                     { "DD_ENV", Environment.GetEnvironmentVariable("DEPLOYMENT_ENV") ?? "dev"},
+                     { "DD_SERVICE", props.ServiceName},
+                     { "DD_VERSION", props.Tag}
                  },
                  Secrets = new Dictionary<string, Secret>(1)
                  {
                      { "DD_API_KEY", Secret.FromSsmParameter(ddApiKeyParam) }
                  }
         });
+
         taskDefinition.AddFirelensLogRouter("firelens", new FirelensLogRouterDefinitionOptions
         {
             Essential = true,
@@ -144,7 +162,7 @@ public class WebService : Construct
                 {
                     EnableECSLogMetadata = true
                 }
-            }
+            },
         });
 
         var service = new FargateService(this, $"{props.ServiceName}Service", new FargateServiceProps()
@@ -173,9 +191,9 @@ public class WebService : Construct
 
         sharedListener.AddTargetGroups("ECS", new AddApplicationTargetGroupsProps()
         {
-            Conditions = new[]{ListenerCondition.PathPatterns(new []{props.PathPattern})},
+            Conditions = [ListenerCondition.PathPatterns([props.PathPattern])],
             Priority = props.Priority,
-            TargetGroups = new IApplicationTargetGroup[1]{targetGroup}
+            TargetGroups = [targetGroup]
         });
         
         ddApiKeyParam.GrantRead(ExecutionRole);

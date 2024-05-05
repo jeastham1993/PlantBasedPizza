@@ -53,7 +53,7 @@ BsonClassMap.RegisterClassMap<UserAccount>(map =>
     map.SetIgnoreExtraElementsIsInherited(true);
 });
 
-builder.Services.AddSharedInfrastructure(builder.Configuration, Environment.GetEnvironmentVariable("SERVICE_NAME"))
+builder.Services.AddSharedInfrastructure(builder.Configuration, builder.Configuration["SERVICE_NAME"])
     .AddMessaging(builder.Configuration);
 
 var app = builder.Build();
