@@ -87,8 +87,14 @@ jobs:
           aws-region: eu-west-1
           role-to-assume: ${{secrets.deploy-role-arn}}
           role-session-name: GitHubActionsSession
+      - name: Install DD trace
+        run: dotnet tool update -g dd-trace
       - name: Run Unit Tests
-        run: dotnet test ${{ inputs.unit-test-folder }}
+        env:
+          DD_CIVISIBILITY_AGENTLESS_ENABLED: true
+          DD_API_KEY: ${{secrets.dd_api_key}}
+          DD_SITE: datadoghq.eu
+        run: dd-trace ci run --dd-service=${{inputs.service-name}} --dd-env=ci -- dotnet test ${{ inputs.unit-test-folder }}
       - name: Declare some variables
         shell: bash
         run: |
