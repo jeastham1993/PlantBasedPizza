@@ -54,8 +54,6 @@ jobs:
         run: docker-compose -f ${{ inputs.integration-test-compose-file }} up -d
       - name: Wait for docker to start - 20s
         run: sleep 20
-      - name: Wait for docker to start
-        run: docker ps
       - name: Run Integration Tests
         env:
           DD_CIVISIBILITY_AGENTLESS_ENABLED: true
