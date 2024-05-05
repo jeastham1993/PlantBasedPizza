@@ -28,8 +28,6 @@ services:
     image: ${REGISTRY}/account-api:${IMAGE_TAG}
     ports:
       - "5139:8080"
-    depends_on:
-      - rabbitmq
     environment:
       - DatabaseConnection=mongodb://mongodb:27017
       - OtlpEndpoint=http://jaeger:4317

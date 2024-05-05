@@ -26,8 +26,6 @@ services:
 
   local.recipe-api:
     image: ${REGISTRY}/recipe-api:${IMAGE_TAG}
-    depends_on:
-      - rabbitmq
     ports:
       - "5138:8080"
     environment:
