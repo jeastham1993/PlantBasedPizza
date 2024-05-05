@@ -28,14 +28,16 @@ jobs:
     secrets:
       deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
       ecr-registry: ${{secrets.ECR_REGISTRY}}
-      DD_API_KEY: ${{secrets.DD_API_KEY}}
-      DD_APP_KEY: ${{secrets.DD_APP_KEY}}
+      dd_api_key: ${{secrets.DD_API_KEY}}
+      dd_app_key: ${{secrets.DD_APP_KEY}}
   integration-test:
     uses: jeastham1993/PlantBasedPizza/.github/workflows/integration-test-base.yaml@feature/aws-serverless
     needs: build-image
     with:
+      service-name: "AccountApi"
       integration-test-compose-file: src/PlantBasedPizza.Account/docker-compose-integration.yml
       integration-test-folder: src/PlantBasedPizza.Account/tests/PlantBasedPizza.Account.IntegrationTests
     secrets:
       deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
       ecr-registry: ${{secrets.ECR_REGISTRY}}
+      dd_api_key: ${{secrets.DD_API_KEY}}

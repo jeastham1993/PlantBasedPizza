@@ -24,9 +24,9 @@ on:
         required: true
       ecr-registry:
           required: true
-      DD_API_KEY:
+      dd_api_key:
           required: true
-      DD_APP_KEY:
+      dd_app_key:
           required: true
 
 permissions:
