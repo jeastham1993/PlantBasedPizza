@@ -19,16 +19,19 @@ permissions:
 
 jobs:
   build-image:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@microservices-module-6
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@aws-serverless
     with:
+      service-name: "RecipeApi"
       unit-test-folder: src/PlantBasedPizza.Recipes/tests/PlantBasedPizza.Recipes.UnitTests
       image-name: recipe-api
       dockerfile: src/PlantBasedPizza.Recipes/applications/PlantBasedPizza.Recipes.Api/Dockerfile-x86
     secrets:
       deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
       ecr-registry: ${{secrets.ECR_REGISTRY}}
+      DD_API_KEY: ${{secrets.DD_API_KEY}}
+      DD_APP_KEY: ${{secrets.DD_APP_KEY}}
   integration-test:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/integration-test-base.yaml@microservices-module-6
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/integration-test-base.yaml@aws-serverless
     needs: build-image
     with:
       integration-test-compose-file: src/PlantBasedPizza.Recipes/docker-compose-integration.yml

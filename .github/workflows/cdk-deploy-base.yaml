@@ -1,0 +1,47 @@
+name: CDK Deploy Base
+
+on:
+  workflow_call:
+    inputs:
+      cdk-folder:
+          required: true
+          type: string
+    secrets:
+      deploy-role-arn:
+        description: 'The role for the AWS IAM role to use for deployment'
+        required: true
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v4
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-1
+          role-to-assume: ${{secrets.deploy-role-arn}}
+          role-session-name: GitHubActionsSession
+      - name: Declare some variables
+        shell: bash
+        run: |
+          echo "sha_short=$(git rev-parse --short "$GITHUB_SHA")" >> "$GITHUB_ENV"
+      - name: cdk deploy
+        uses: youyo/aws-cdk-github-actions@v2
+        env:
+          COMMIT_HASH: ${{ env.sha_short }}
+        with:
+          cdk_subcommand: 'deploy'
+          cdk_args: '--require-approval never'
+          working_dir: ${{ inputs.cdk-folder }}
+          actions_comment: false
+          
