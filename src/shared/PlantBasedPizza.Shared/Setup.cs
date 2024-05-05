@@ -61,6 +61,7 @@ namespace PlantBasedPizza.Shared
                     {
                         new("service.name", applicationName),
                         new("container.id", taskId ?? ""),
+                        new("service.version", Environment.GetEnvironmentVariable("DD_VERSION") ?? ""),
                     });
 
                 if (metadata != null)
