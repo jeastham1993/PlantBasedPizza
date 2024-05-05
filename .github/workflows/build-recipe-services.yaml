@@ -19,7 +19,7 @@ permissions:
 
 jobs:
   build-image:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@aws-serverless
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@feature/aws-serverless
     with:
       service-name: "RecipeApi"
       unit-test-folder: src/PlantBasedPizza.Recipes/tests/PlantBasedPizza.Recipes.UnitTests
@@ -31,7 +31,7 @@ jobs:
       DD_API_KEY: ${{secrets.DD_API_KEY}}
       DD_APP_KEY: ${{secrets.DD_APP_KEY}}
   integration-test:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/integration-test-base.yaml@aws-serverless
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/integration-test-base.yaml@feature/aws-serverless
     needs: build-image
     with:
       integration-test-compose-file: src/PlantBasedPizza.Recipes/docker-compose-integration.yml
