@@ -22,6 +22,7 @@ jobs:
     uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@feature/aws-serverless
     with:
       service-name: "RecipeApi"
+      project-root: src/PlantBasedPizza.Recipes
       unit-test-folder: src/PlantBasedPizza.Recipes/tests/PlantBasedPizza.Recipes.UnitTests
       image-name: recipe-api
       dockerfile: src/PlantBasedPizza.Recipes/applications/PlantBasedPizza.Recipes.Api/Dockerfile-x86

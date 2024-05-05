@@ -21,6 +21,7 @@ jobs:
     uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@feature/aws-serverless
     with:
       service-name: "AccountApi"
+      project-root: src/PlantBasedPizza.Account
       unit-test-folder: src/PlantBasedPizza.Account/tests/PlantBasedPizza.Account.UnitTests
       image-name: account-api
       dockerfile: src/PlantBasedPizza.Account/application/PlantBasedPizza.Account.Api/Dockerfile-x86
