@@ -19,22 +19,22 @@ permissions:
   contents: read
 
 jobs:
-  test-and-build:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       -
         name: Checkout
         uses: actions/checkout@v4
-      -
-        name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: eu-west-1
           role-to-assume: ${{secrets.deploy-role-arn}}
           role-session-name: GitHubActionsSession
-      - name: Declare some variables
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8'
+      - name: Set Commit Hash Environment Variables
         shell: bash
         run: |
           echo "sha_short=$(git rev-parse --short "$GITHUB_SHA")" >> "$GITHUB_ENV"
