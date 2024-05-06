@@ -38,14 +38,15 @@ jobs:
         shell: bash
         run: |
           echo "sha_short=$(git rev-parse --short "$GITHUB_SHA")" >> "$GITHUB_ENV"
-      - name: cdk deploy
-        uses: youyo/aws-cdk-github-actions@v2
+      - name: Install cdk
+        shell: bash
+        run: |
+          npm install -g aws-cdk 
+      - name: Install cdk
+        shell: bash
         env:
           COMMIT_HASH: ${{ env.sha_short }}
           DEPLOYMENT_ENV: ${{inputs.environment}}
-        with:
-          cdk_subcommand: 'deploy'
-          cdk_args: '--require-approval never'
-          working_dir: ${{ inputs.cdk-folder }}
-          actions_comment: false
-          
+        run: |
+          cd ${{ inputs.cdk-folder }}
+          cdk deploy --region eu-west-1 --require-approval never
