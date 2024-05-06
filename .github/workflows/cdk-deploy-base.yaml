@@ -6,6 +6,9 @@ on:
       cdk-folder:
           required: true
           type: string
+      environment:
+          required: true
+          type: string
     secrets:
       deploy-role-arn:
         description: 'The role for the AWS IAM role to use for deployment'
@@ -39,6 +42,7 @@ jobs:
         uses: youyo/aws-cdk-github-actions@v2
         env:
           COMMIT_HASH: ${{ env.sha_short }}
+          DEPLOYMENT_ENV: ${{inputs.environment}}
         with:
           cdk_subcommand: 'deploy'
           cdk_args: '--require-approval never'

@@ -18,11 +18,16 @@ namespace Infra
     {
         internal RecipeApiInfraStack(Construct scope, string id, IStackProps props = null) : base(scope, id, props)
         {
+            var parameterProvider = AWS.Lambda.Powertools.Parameters.ParametersManager.SsmProvider
+                .ConfigureClient(System.Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID"), System.Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY"), System.Environment.GetEnvironmentVariable("AWS_SESSION_TOKEN"));
+
+            var vpcIdParam = parameterProvider.Get("/shared/vpc-id");
+
             var bus = EventBus.FromEventBusName(this, "SharedEventBus", "PlantBasedPizzaEvents");
 
             var vpc = Vpc.FromLookup(this, "MainVpc", new VpcLookupOptions()
             {
-                VpcId = "vpc-06c60c0d760921bc6",
+                VpcId = vpcIdParam,
             });
 
             var databaseConnectionParam = StringParameter.FromSecureStringParameterAttributes(this, "DatabaseParameter",
@@ -35,7 +40,7 @@ namespace Infra
                 Vpc = vpc
             });
         
-            var commitHash = "33aa663";
+            var commitHash = System.Environment.GetEnvironmentVariable("COMMIT_HASH") ?? "latest";
 
             var recipeService = new WebService(this, "RecipeWebService", new ConstructProps(
                 vpc,

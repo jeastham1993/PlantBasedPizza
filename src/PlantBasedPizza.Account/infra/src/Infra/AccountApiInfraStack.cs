@@ -1,8 +1,8 @@
+using System;
 using System.Collections.Generic;
 using Amazon.CDK;
 using Amazon.CDK.AWS.EC2;
 using Amazon.CDK.AWS.ECS;
-using Amazon.CDK.AWS.ElasticLoadBalancingV2;
 using Amazon.CDK.AWS.Events;
 using Amazon.CDK.AWS.SSM;
 using Constructs;
@@ -14,11 +14,16 @@ public class AccountApiInfraStack : Stack
 {
     internal AccountApiInfraStack(Construct scope, string id, IStackProps props = null) : base(scope, id, props)
     {
+        var parameterProvider = AWS.Lambda.Powertools.Parameters.ParametersManager.SsmProvider
+            .ConfigureClient(System.Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID"), System.Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY"), System.Environment.GetEnvironmentVariable("AWS_SESSION_TOKEN"));
+
+        var vpcIdParam = parameterProvider.Get("/shared/vpc-id");
+        
         var bus = EventBus.FromEventBusName(this, "SharedEventBus", "PlantBasedPizzaEvents");
 
         var vpc = Vpc.FromLookup(this, "MainVpc", new VpcLookupOptions
         {
-            VpcId = "vpc-06c60c0d760921bc6"
+            VpcId = vpcIdParam
         });
 
         var databaseConnectionParam = StringParameter.FromSecureStringParameterAttributes(this, "DatabaseParameter",
@@ -32,7 +37,7 @@ public class AccountApiInfraStack : Stack
             Vpc = vpc
         });
         
-        var commitHash = "33aa663";
+        var commitHash = System.Environment.GetEnvironmentVariable("COMMIT_HASH") ?? "latest";
 
         var accountApiService = new WebService(this, "AccountWebService", new ConstructProps(
             vpc,

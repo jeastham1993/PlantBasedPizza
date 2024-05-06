@@ -1,5 +1,6 @@
 import { CfnOutput } from "aws-cdk-lib";
 import { GatewayVpcEndpointAwsService, IVpc, SecurityGroup, SubnetType, Vpc } from "aws-cdk-lib/aws-ec2";
+import { StringParameter } from "aws-cdk-lib/aws-ssm";
 import { Construct } from "constructs";
 
 export class Network extends Construct {
@@ -34,6 +35,11 @@ export class Network extends Construct {
             description: "No inbound / all outbound",
             securityGroupName: "noInboundAllOutboundSecurityGroup",
           })
+
+          const vpcIdParameter = new StringParameter(this, "VPCIdParameter", {
+            stringValue: this.vpc.vpcId,
+            parameterName: '/shared/vpc-id'
+          });
 
           new CfnOutput(this, "noInboundAllOutboundSecurityGroupOutput", {
             exportName: "noInboundAllOutboundSecurityGroup",
