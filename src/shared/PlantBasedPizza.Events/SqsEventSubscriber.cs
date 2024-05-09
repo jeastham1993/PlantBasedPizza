@@ -4,6 +4,7 @@ using System.Text.Json;
 using Amazon.SQS;
 using CloudNative.CloudEvents;
 using CloudNative.CloudEvents.SystemTextJson;
+using Serilog;
 
 namespace PlantBasedPizza.Events;
 
@@ -16,10 +17,21 @@ public class SqsEventSubscriber
         _sqsClient = sqsClient;
     }
 
+    public async Task<string> GetQueueUrl(string queue)
+    {
+        var queueName = $"{queue}-{Environment.GetEnvironmentVariable("BUILD_VERSION")}";
+        
+        var describeQueue =
+            await this._sqsClient.GetQueueUrlAsync(queueName);
+
+        return describeQueue.QueueUrl;
+    }
+
     public async Task<List<ParseEventResponse<T>>> GetMessages<T>(string queueUrl)
         where T : IntegrationEvent
     {
         var messages = await this._sqsClient.ReceiveMessageAsync(queueUrl);
+        
         var response = new List<ParseEventResponse<T>>();
 
         foreach (var message in messages.Messages)

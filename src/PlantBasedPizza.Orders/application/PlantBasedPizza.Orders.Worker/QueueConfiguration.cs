@@ -2,7 +2,7 @@ namespace PlantBasedPizza.Orders.Worker;
 
 public class QueueConfiguration
 {
-    public string DriverCollectedOrderQueueUrl { get; set; } = "";
-    public string OrderQualityCheckedQueueUrl { get; set; } = "";
-    public string LoyaltyPointsUpdatedQueueUrl { get; set; } = "";
+    public string DriverCollectedOrderQueue { get; set; } = "";
+    public string OrderQualityCheckedQueue { get; set; } = "";
+    public string LoyaltyPointsUpdatedQueue { get; set; } = "";
 }

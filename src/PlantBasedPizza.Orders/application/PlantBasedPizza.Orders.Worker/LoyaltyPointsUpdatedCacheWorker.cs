@@ -26,9 +26,11 @@ public class LoyaltyPointsUpdatedCacheWorker : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        var queueUrl = await this._eventSubscriber.GetQueueUrl(_queueConfiguration.LoyaltyPointsUpdatedQueue);
+        
         while (!stoppingToken.IsCancellationRequested)
         {
-            var messages = await _eventSubscriber.GetMessages<CustomerLoyaltyPointsUpdatedEvent>(_queueConfiguration.LoyaltyPointsUpdatedQueueUrl);
+            var messages = await _eventSubscriber.GetMessages<CustomerLoyaltyPointsUpdatedEvent>(queueUrl);
 
             foreach (var message in messages)
             {
@@ -43,7 +45,7 @@ public class LoyaltyPointsUpdatedCacheWorker : BackgroundService
 
                 this._logger.LogInformation("Cached");
                 
-                await _eventSubscriber.Ack(_queueConfiguration.LoyaltyPointsUpdatedQueueUrl, message);
+                await _eventSubscriber.Ack(queueUrl, message);
             }
             
             await Task.Delay(1000, stoppingToken);

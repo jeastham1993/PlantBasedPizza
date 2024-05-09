@@ -10,12 +10,15 @@ namespace TestInfrastructure;
 
 public class OrdersApiTestInfrastructureStack : Stack
 {
-    internal OrdersApiTestInfrastructureStack(Construct scope, string id, IStackProps props = null) : base(scope, id, props)
+    internal OrdersApiTestInfrastructureStack(Construct scope, string id, ApplicationStackProps stackProps, IStackProps props = null) : base(scope, id, props)
     {
-        var bus = new EventBus(this, "OrdersApiTestBus", new EventBusProps());
+        var bus = new EventBus(this, "OrdersApiTestBus", new EventBusProps()
+        {
+            EventBusName = $"test.orders.{stackProps.Version}"
+        });
 
-        var loyaltyPointsUpdatedQueue = MapEventToTestQueue(bus, "LoyaltyUpdatedQueue", "https://tests.orders/", "kitchen.orderQualityChecked.v1");
-        var orderQualityCheckedQueue = MapEventToTestQueue(bus, "OrderQualityCheckedQueue", "https://orders.test.plantbasedpizza/", "loyalty.customerLoyaltyPointsUpdated.v1");
+        var loyaltyPointsUpdatedQueue = MapEventToTestQueue(bus, "LoyaltyUpdatedQueue", stackProps, "https://tests.orders/", "kitchen.orderQualityChecked.v1");
+        var orderQualityCheckedQueue = MapEventToTestQueue(bus, "OrderQualityCheckedQueue", stackProps, "https://orders.test.plantbasedpizza/", "loyalty.customerLoyaltyPointsUpdated.v1");
 
         var eventBus = new CfnOutput(this, "EBOutput", new CfnOutputProps()
         {
@@ -34,14 +37,17 @@ public class OrdersApiTestInfrastructureStack : Stack
         });
     }
 
-    private Queue MapEventToTestQueue(EventBus bus, string queueName, string eventSource, string detailType)
+    private Queue MapEventToTestQueue(EventBus bus, string queueName, ApplicationStackProps stackProps, string eventSource, string detailType)
     {
         if (!eventSource.EndsWith("/"))
         {
             eventSource += "/";
         }
         
-        var queue = new Queue(this, queueName);
+        var queue = new Queue(this, $"{queueName}-{stackProps.Version}", new QueueProps()
+        {
+            QueueName = $"{queueName}-{stackProps.Version}"
+        });
 
         var rule = new Rule(this, $"{queueName}Rule", new RuleProps()
         {

@@ -7,8 +7,14 @@ namespace TestInfrastructure
     {
         public static void Main(string[] args)
         {
+            var version = System.Environment.GetEnvironmentVariable("BUILD_VERSION");
+            
             var app = new App();
-            new OrdersApiTestInfrastructureStack(app, "OrdersServiceTestInfrastructure", new StackProps()
+            new OrdersApiTestInfrastructureStack(app, "OrdersServiceTestInfrastructure", new ApplicationStackProps()
+            {
+                Version = version
+            }, 
+                new StackProps()
             {
                 Env = new Environment()
                 {

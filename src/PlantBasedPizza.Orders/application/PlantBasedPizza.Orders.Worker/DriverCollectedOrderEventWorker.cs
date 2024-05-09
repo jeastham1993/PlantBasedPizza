@@ -24,9 +24,11 @@ public class DriverCollectedOrderEventWorker : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        var queueUrl = await this._eventSubscriber.GetQueueUrl(_queueConfiguration.DriverCollectedOrderQueue);
+        
         while (!stoppingToken.IsCancellationRequested)
         {
-            var messages = await _eventSubscriber.GetMessages<DriverCollectedOrderEventV1>(_queueConfiguration.DriverCollectedOrderQueueUrl);
+            var messages = await _eventSubscriber.GetMessages<DriverCollectedOrderEventV1>(queueUrl);
 
             foreach (var message in messages)
             {
@@ -38,7 +40,7 @@ public class DriverCollectedOrderEventWorker : BackgroundService
 
                 await _eventHandler.Handle(message.EventData);
 
-                await _eventSubscriber.Ack(_queueConfiguration.OrderQualityCheckedQueueUrl, message);
+                await _eventSubscriber.Ack(queueUrl, message);
             }
             
             await Task.Delay(1000, stoppingToken);
