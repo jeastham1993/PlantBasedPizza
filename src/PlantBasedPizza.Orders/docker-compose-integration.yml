@@ -67,6 +67,7 @@ services:
       - ServiceDiscovery__MyUrl=
       - ServiceDiscovery__ServiceName=OrdersApi
       - ServiceDiscovery__ConsulServiceEndpoint=
+      - Messaging__BusName=dev.orders
       - Auth__Issuer=https://plantbasedpizza.com
       - Auth__Audience=https://plantbasedpizza.com
       - Auth__Key=This is a sample secret key - please don't use in production environment.'
