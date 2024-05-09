@@ -94,5 +94,5 @@ jobs:
           BUILD_VERSION: ${{ env.sha_short }}
         run: |
           cd ${{ inputs.test-infrastructure-folder }}
-          cdk destroy --region eu-west-1 --require-approval never
+          cdk destroy --region eu-west-1 --force ---all
           
