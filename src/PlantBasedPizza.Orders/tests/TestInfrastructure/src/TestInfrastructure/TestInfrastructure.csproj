@@ -18,8 +18,4 @@
     -->
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\PlantBasedPizza.Infra.Constructs\PlantBasedPizza.Infra.Constructs.csproj" />
-  </ItemGroup>
-
 </Project>
