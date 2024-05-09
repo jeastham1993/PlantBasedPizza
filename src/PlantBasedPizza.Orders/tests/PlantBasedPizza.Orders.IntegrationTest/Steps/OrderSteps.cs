@@ -37,8 +37,6 @@ public partial class OrderSteps
         Activity.Current = _scenarioContext.Get<Activity>("Activity");
 
         await this._driver.SimulateLoyaltyPointsUpdatedEvent(p0, p1);
-
-        await Task.Delay(TimeSpan.FromSeconds(2));
     }
 
     [Then(@"loyalty points should be cached for (.*) with a total amount of (.*)")]

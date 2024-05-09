@@ -38,8 +38,11 @@ public class OrderApiInfraStack : Stack
         
         var commitHash = System.Environment.GetEnvironmentVariable("COMMIT_HASH") ?? "latest";
 
-        var loyaltyPointsQueue = new EventQueue(this, "LoyaltyPointsQueue", new EventQueueProps(bus, "LoyaltyUpdatedQueue", "dev", "https://orders.test.plantbasedpizza/", "loyalty.customerLoyaltyPointsUpdated.v1"));
-        var orderQualityCheckedQueue = new EventQueue(this, "OrderQualityCheckedQueue", new EventQueueProps(bus, "OrderQualityCheckedQueue", "dev", "https://tests.orders/", "kitchen.orderQualityChecked.v1"));
+        var loyaltyPointsCheckedQueueName = "LoyaltyUpdatedQueue";
+        var orderQualityCheckedQueueName = "OrderQualityCheckedQueue";
+
+        var loyaltyPointsQueue = new EventQueue(this, loyaltyPointsCheckedQueueName, new EventQueueProps(bus, loyaltyPointsCheckedQueueName, "dev", "https://orders.test.plantbasedpizza/", "loyalty.customerLoyaltyPointsUpdated.v1"));
+        var orderQualityCheckedQueue = new EventQueue(this, loyaltyPointsCheckedQueueName, new EventQueueProps(bus, loyaltyPointsCheckedQueueName, "dev", "https://tests.orders/", "kitchen.orderQualityChecked.v1"));
 
         var orderApiService = new WebService(this, "OrdersWebService", new ConstructProps(
             vpc,
@@ -55,6 +58,11 @@ public class OrderApiInfraStack : Stack
                 { "Messaging__BusName", bus.EventBusName },
                 { "SERVICE_NAME", "OrderApi" },
                 { "BUILD_VERSION", "dev" },
+                { "RedisConnectionString", "" },
+                { "Services__Loyalty", ""},
+                { "Services__LoyaltyInternal", ""},
+                { "Services__PaymentInternal", ""},
+                { "Services__Recipes", ""},
             },
             new Dictionary<string, Secret>(1)
             {
@@ -66,7 +74,7 @@ public class OrderApiInfraStack : Stack
             "/order/*",
             106
         ));
-
+        
         databaseConnectionParam.GrantRead(orderApiService.ExecutionRole);
         bus.GrantPutEventsTo(orderApiService.TaskRole);
         
@@ -84,8 +92,8 @@ public class OrderApiInfraStack : Stack
         //         { "Messaging__BusName", bus.EventBusName },
         //         { "SERVICE_NAME", "OrdersWorker" },
         //         { "BUILD_VERSION", "dev" },
-        //         { "QueueConfiguration__OrderQualityCheckedQueue", ""},
-        //         { "QueueConfiguration__LoyaltyPointsUpdatedQueue", ""}
+        //         { "QueueConfiguration__OrderQualityCheckedQueue", loyaltyPointsCheckedQueueName},
+        //         { "QueueConfiguration__LoyaltyPointsUpdatedQueue", loyaltyPointsCheckedQueueName}
         //     },
         //     new Dictionary<string, Secret>(1)
         //     {

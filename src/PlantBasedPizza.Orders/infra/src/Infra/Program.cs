@@ -10,7 +10,7 @@ namespace Infra
         public static void Main(string[] args)
         {
             var app = new App();
-            new OrderApiInfraStack(app, "AccountServiceInfraStack", new StackProps()
+            new OrderApiInfraStack(app, "OrdersServicesInfraStack", new StackProps()
             {
                 Env = new Environment()
                 {
