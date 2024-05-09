@@ -50,6 +50,7 @@ jobs:
         run: |
           echo "REGISTRY=${{secrets.ecr-registry}}" >> $GITHUB_ENV
           echo "IMAGE_TAG=$(git rev-parse --short "$GITHUB_SHA")" >> $GITHUB_ENV
+          echo "DD_API_KEY=${{secrets.dd_api_key}}" >> $GITHUB_ENV
       - name: docker-compose up
         env:
           DD_API_KEY: ${{secrets.dd_api_key}}
