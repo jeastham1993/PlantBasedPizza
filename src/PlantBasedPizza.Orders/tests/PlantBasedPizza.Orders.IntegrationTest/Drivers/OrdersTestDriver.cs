@@ -35,7 +35,7 @@ public class OrdersTestDriver
             
             _eventPublisher = new EventBridgeEventPublisher(new AmazonEventBridgeClient(), Options.Create(new EventBridgeSettings()
             {
-                BusName = "OrdersServiceTestInfrastructureOrdersApiTestBus4A2DD413"
+                BusName = $"test.orders.{Environment.GetEnvironmentVariable("BUILD_VERSION")}"
             }));
         }
 

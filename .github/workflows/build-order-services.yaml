@@ -46,7 +46,7 @@ jobs:
       dd_app_key: ${{secrets.DD_APP_KEY}}
 
   integration-test:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/integration-test-base.yaml@feature/aws-serverless
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/integration-test-with-test-infra.yaml@feature/aws-serverless
     needs:
       - build-api-image
       - build-worker-image
@@ -54,6 +54,7 @@ jobs:
       service-name: "OrdersService"
       integration-test-compose-file: src/PlantBasedPizza.Orders/docker-compose-integration.yml
       integration-test-folder: src/PlantBasedPizza.Orders/tests/PlantBasedPizza.Orders.IntegrationTest
+      test-infrastructure-folder: src/PlantBasedPizza.Orders/tests/TestInfrastructure
     secrets:
       deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
       ecr-registry: ${{secrets.ECR_REGISTRY}}

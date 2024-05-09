@@ -10,7 +10,7 @@ namespace TestInfrastructure
             var version = System.Environment.GetEnvironmentVariable("BUILD_VERSION");
             
             var app = new App();
-            new OrdersApiTestInfrastructureStack(app, "OrdersServiceTestInfrastructure", new ApplicationStackProps()
+            new OrdersApiTestInfrastructureStack(app, $"OrdersServiceTestInfrastructure-{version}", new ApplicationStackProps()
             {
                 Version = version
             }, 
