@@ -22,17 +22,17 @@ public class OrdersApiTestInfrastructureStack : Stack
 
         var eventBus = new CfnOutput(this, "EBOutput", new CfnOutputProps()
         {
-            ExportName = "EventBusName",
+            ExportName = $"EventBusName-{stackProps.Version}",
             Value = bus.EventBusName
         });
         var loyaltyUpdatedQueueOutput = new CfnOutput(this, "LoyaltyQueueUrl", new CfnOutputProps()
         {
-            ExportName = "LoyaltyPointsUpdatedQueueUrl",
+            ExportName = $"LoyaltyPointsUpdatedQueueUrl-{stackProps.Version}",
             Value = loyaltyPointsUpdatedQueue.QueueUrl
         });
         var qualityCheckedQueueOutput = new CfnOutput(this, "QueueUrlOutput", new CfnOutputProps()
         {
-            ExportName = "OrderQualityCheckedQueueUrl",
+            ExportName = $"OrderQualityCheckedQueueUrl-{stackProps.Version}",
             Value = orderQualityCheckedQueue.QueueUrl
         });
     }
