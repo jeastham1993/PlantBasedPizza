@@ -85,7 +85,7 @@ public class OrderApiInfraStack : Stack
             "/shared/dd-api-key",
             "/shared/jwt-key",
             "orders-worker",
-            commitHash ?? "latest",
+            commitHash,
             8080,
             new Dictionary<string, string>
             {
