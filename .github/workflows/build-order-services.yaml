@@ -20,6 +20,7 @@ jobs:
   build-api-image:
     uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@feature/aws-serverless
     with:
+      service-name: "OrdersService"
       unit-test-folder: src/PlantBasedPizza.Orders/tests/PlantBasedPizza.Orders.UnitTest
       image-name: orders-api
       dockerfile: src/PlantBasedPizza.Orders/application/PlantBasedPizza.Orders.Api/Dockerfile-x86
@@ -30,6 +31,7 @@ jobs:
   build-worker-image:
     uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@feature/aws-serverless
     with:
+      service-name: "OrdersService"
       unit-test-folder: src/PlantBasedPizza.Orders/tests/PlantBasedPizza.Orders.UnitTest
       image-name: orders-worker
       dockerfile: src/PlantBasedPizza.Orders/application/PlantBasedPizza.Orders.Worker/Dockerfile-x86
@@ -45,6 +47,7 @@ jobs:
       - build-api-image
       - build-worker-image
     with:
+      service-name: "OrdersService"
       integration-test-compose-file: src/PlantBasedPizza.Orders/docker-compose-integration.yml
       integration-test-folder: src/PlantBasedPizza.Orders/tests/PlantBasedPizza.Orders.IntegrationTest
     secrets:
