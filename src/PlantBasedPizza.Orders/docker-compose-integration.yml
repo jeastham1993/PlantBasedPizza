@@ -73,7 +73,7 @@ services:
       - Auth__Key=This is a sample secret key - please don't use in production environment.'
       - Auth__PaymentApiKey=the api key to use, use a secret store in production
       - AWS_REGION=eu-west-1
-      - SERVICE_NAME=OrdersApi
+      - SERVICE_NAME=OrdersService
 
   local.orders-worker:
     image: ${REGISTRY}/orders-worker:${IMAGE_TAG}
@@ -95,6 +95,6 @@ services:
       - ServiceDiscovery__ConsulServiceEndpoint=
       - Messaging__BusName=dev.orders
       - AWS_REGION=eu-west-1
-      - SERVICE_NAME=OrdersWorker
+      - SERVICE_NAME=OrdersService
       - QueueConfiguration__OrderQualityCheckedQueueUrl=https://sqs.eu-west-1.amazonaws.com/730335273443/OrdersServiceTestInfrastructure-OrderQualityCheckedTestQueueAB00482-3sOwe7KNDLfO
       - QueueConfiguration__LoyaltyPointsUpdatedQueueUrl=https://sqs.eu-west-1.amazonaws.com/730335273443/OrdersServiceTestInfrastructure-LoyaltyUpdatedQueue4485A007-BODzXQGpWw6H

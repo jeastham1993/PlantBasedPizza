@@ -9,7 +9,7 @@ namespace PlantBasedPizza.Orders.IntegrationTest.Hooks;
 [Binding]
 public static class Hook
 {
-    private const string SERVICE_NAME = "OrderWorkerIntegrationTest";
+    private const string SERVICE_NAME = "OrdersService";
     
     public static ActivitySource Source { get; private set; }
     public static TracerProvider TracerProvider { get; private set; }

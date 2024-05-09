@@ -8,10 +8,8 @@ using PlantBasedPizza.Shared;
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddEnvironmentVariables();
 
-var serviceName = "OrdersWorker";
-
 builder.Services
-    .AddSharedInfrastructure(builder.Configuration, serviceName)
+    .AddSharedInfrastructure(builder.Configuration, builder.Configuration["SERVICE_NAME"])
     .AddMessaging(builder.Configuration)
     .AddOrderManagerInfrastructure(builder.Configuration);
 

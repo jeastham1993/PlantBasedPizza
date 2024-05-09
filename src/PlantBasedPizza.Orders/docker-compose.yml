@@ -21,7 +21,7 @@ services:
       - DD_ENV=test
       - DD_SITE=datadoghq.eu
       - DD_SERVICE=OrdersService
-      - DD_API_KEY=9e039695f417e6aacb5d926b2a01be9e
+      
     volumes:
      - /var/run/docker.sock:/var/run/docker.sock
      - /proc/:/host/proc/:ro
