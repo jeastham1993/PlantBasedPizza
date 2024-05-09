@@ -86,12 +86,19 @@ namespace PlantBasedPizza.OrderManager.Infrastructure
                     channel.HttpHandler = provider.GetRequiredService<ServiceRegistryHttpMessageHandler>();
                     channel.ServiceConfig = new ServiceConfig() { MethodConfigs = { defaultMethodConfig } };
                 });
-            
-            services.AddStackExchangeRedisCache(options =>
+
+            if (!string.IsNullOrEmpty(configuration["RedisConnectionString"]))
             {
-                options.Configuration = configuration["RedisConnectionString"];
-                options.InstanceName = "Orders";
-            });
+                services.AddStackExchangeRedisCache(options =>
+                {
+                    options.Configuration = configuration["RedisConnectionString"];
+                    options.InstanceName = "Orders";
+                });   
+            }
+            else
+            {
+                services.AddMemoryCache();
+            }
             
             services.AddSingleton<IOrderRepository, OrderRepository>();
             services.AddSingleton<CollectOrderCommandHandler>();

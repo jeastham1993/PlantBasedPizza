@@ -38,7 +38,7 @@ public class OrderApiInfraStack : Stack
         
         var commitHash = System.Environment.GetEnvironmentVariable("COMMIT_HASH") ?? "latest";
 
-        var accountApiService = new WebService(this, "OrdersWebService", new ConstructProps(
+        var orderApiService = new WebService(this, "OrdersWebService", new ConstructProps(
             vpc,
             cluster,
             "OrdersApi",
@@ -63,7 +63,30 @@ public class OrderApiInfraStack : Stack
             106
         ));
 
-        databaseConnectionParam.GrantRead(accountApiService.ExecutionRole);
-        bus.GrantPutEventsTo(accountApiService.TaskRole);
+        var orderWorkerService = new BackgroundService(this, "OrdersWebService", new BackgroundServiceConstructProps(
+            vpc,
+            cluster,
+            "OrdersWorker",
+            "/shared/dd-api-key",
+            "/shared/jwt-key",
+            "orders-worker",
+            commitHash ?? "latest",
+            8080,
+            new Dictionary<string, string>
+            {
+                { "Messaging__BusName", bus.EventBusName },
+                { "SERVICE_NAME", "OrdersWorker" },
+            },
+            new Dictionary<string, Secret>(1)
+            {
+                { "DatabaseConnection", Secret.FromSsmParameter(databaseConnectionParam) }
+            },
+            "/order/health"
+        ));
+
+        databaseConnectionParam.GrantRead(orderApiService.ExecutionRole);
+        databaseConnectionParam.GrantRead(orderWorkerService.ExecutionRole);
+        bus.GrantPutEventsTo(orderApiService.TaskRole);
+        bus.GrantPutEventsTo(orderWorkerService.TaskRole);
     }
 }
