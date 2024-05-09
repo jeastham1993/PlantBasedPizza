@@ -14,11 +14,6 @@ services:
     ports:
       - "6379:6379"
 
-  consul:
-    image: hashicorp/consul:latest
-    ports:
-      - 8500:8500
-
   wiremock:
     image: wiremock/wiremock:latest
     expose:
@@ -36,7 +31,7 @@ services:
     command: --stub=/proto/stubs /proto/loyalty.proto /proto/payment.proto
 
   datadog-agent:
-    image: public.ecr.aws/datadog/agent:latest
+    image: datadog/agent
     expose:
       - 4317
       - 4318
