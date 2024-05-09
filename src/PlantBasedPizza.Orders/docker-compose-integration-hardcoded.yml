@@ -30,26 +30,26 @@ services:
       - ./mocks/grpc-mocks:/proto
     command: --stub=/proto/stubs /proto/loyalty.proto /proto/payment.proto
 
-  datadog-agent:
-    image: datadog/agent
-    pid: host
-    expose:
-      - 4317
-      - 4318
-    environment:
-      - DD_OTLP_CONFIG_RECEIVER_PROTOCOLS_GRPC_ENDPOINT=0.0.0.0:4317
-      - DD_OTLP_CONFIG_RECEIVER_PROTOCOLS_HTTP_ENDPOINT-0.0.0.0:4318
-      - DD_ENV=test
-      - DD_SITE=datadoghq.eu
-      - DD_SERVICE=OrdersService
-      - DD_API_KEY=${DD_API_KEY}
-    volumes:
-     - /var/run/docker.sock:/var/run/docker.sock
-     - /proc/:/host/proc/:ro
-     - /sys/fs/cgroup:/host/sys/fs/cgroup:ro
+  # datadog-agent:
+  #   image: datadog/agent
+  #   pid: host
+  #   expose:
+  #     - 4317
+  #     - 4318
+  #   environment:
+  #     - DD_OTLP_CONFIG_RECEIVER_PROTOCOLS_GRPC_ENDPOINT=0.0.0.0:4317
+  #     - DD_OTLP_CONFIG_RECEIVER_PROTOCOLS_HTTP_ENDPOINT-0.0.0.0:4318
+  #     - DD_ENV=test
+  #     - DD_SITE=datadoghq.eu
+  #     - DD_SERVICE=OrdersService
+  #     - DD_API_KEY=${DD_API_KEY}
+  #   volumes:
+  #    - /var/run/docker.sock:/var/run/docker.sock
+  #    - /proc/:/host/proc/:ro
+  #    - /sys/fs/cgroup:/host/sys/fs/cgroup:ro
 
   local.orders-api:
-    image: ${REGISTRY}/orders-api:bc5ca84
+    image: 730335273443.dkr.ecr.eu-west-1.amazonaws.com/orders-api:bc5ca84
     depends_on:
       - cache
     restart: on-failure
@@ -75,9 +75,12 @@ services:
       - AWS_REGION=eu-west-1
       - SERVICE_NAME=OrdersService
       - BUILD_VERSION=bc5ca84
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_SESSION_TOKEN=${AWS_SESSION_TOKEN}
 
   local.orders-worker:
-    image: ${REGISTRY}/orders-worker:bc5ca84
+    image: 730335273443.dkr.ecr.eu-west-1.amazonaws.com/orders-worker:bc5ca84
     depends_on:
       - cache
     restart: on-failure
@@ -99,3 +102,6 @@ services:
       - BUILD_VERSION=bc5ca84
       - QueueConfiguration__OrderQualityCheckedQueue=OrderQualityCheckedQueue
       - QueueConfiguration__LoyaltyPointsUpdatedQueue=LoyaltyUpdatedQueue
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_SESSION_TOKEN=${AWS_SESSION_TOKEN}

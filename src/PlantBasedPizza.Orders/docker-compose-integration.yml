@@ -75,6 +75,9 @@ services:
       - AWS_REGION=eu-west-1
       - SERVICE_NAME=OrdersService
       - BUILD_VERSION=${IMAGE_TAG}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_SESSION_TOKEN=${AWS_SESSION_TOKEN}
 
   local.orders-worker:
     image: ${REGISTRY}/orders-worker:${IMAGE_TAG}
@@ -99,3 +102,6 @@ services:
       - BUILD_VERSION=${IMAGE_TAG}
       - QueueConfiguration__OrderQualityCheckedQueue=OrderQualityCheckedQueue
       - QueueConfiguration__LoyaltyPointsUpdatedQueue=LoyaltyUpdatedQueue
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_SESSION_TOKEN=${AWS_SESSION_TOKEN}
