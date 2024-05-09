@@ -97,7 +97,7 @@ namespace PlantBasedPizza.OrderManager.Infrastructure
             }
             else
             {
-                services.AddMemoryCache();
+                services.AddDistributedMemoryCache();
             }
             
             services.AddSingleton<IOrderRepository, OrderRepository>();
