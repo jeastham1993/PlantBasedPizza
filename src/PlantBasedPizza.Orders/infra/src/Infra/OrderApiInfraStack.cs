@@ -97,7 +97,7 @@ public class OrderApiInfraStack : Stack
                 { "Services__LoyaltyInternal", "http://localhost:1234"},
                 { "Services__PaymentInternal", "http://localhost:1234"},
                 { "Services__Recipes", "http://localhost:1234"},
-                { "QueueConfiguration__OrderQualityCheckedQueue", loyaltyPointsCheckedQueueName},
+                { "QueueConfiguration__OrderQualityCheckedQueue", orderQualityCheckedQueueName},
                 { "QueueConfiguration__LoyaltyPointsUpdatedQueue", loyaltyPointsCheckedQueueName}
             },
             new Dictionary<string, Secret>(1)
