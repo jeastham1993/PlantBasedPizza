@@ -48,7 +48,7 @@ public class OrdersTestDriver
             });
 
             // Delay to allow for message processing
-            await Task.Delay(TimeSpan.FromSeconds(2));
+            await Task.Delay(TimeSpan.FromSeconds(20));
         }
         
         public async Task AddNewDeliveryOrder(string orderIdentifier, string customerIdentifier)

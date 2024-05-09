@@ -32,6 +32,7 @@ services:
 
   datadog-agent:
     image: datadog/agent
+    pid: host
     expose:
       - 4317
       - 4318
@@ -42,6 +43,10 @@ services:
       - DD_SITE=datadoghq.eu
       - DD_SERVICE=OrdersService
       - DD_API_KEY=${DD_API_KEY}
+    volumes:
+     - /var/run/docker.sock:/var/run/docker.sock
+     - /proc/:/host/proc/:ro
+     - /sys/fs/cgroup:/host/sys/fs/cgroup:ro
 
   local.orders-api:
     image: ${REGISTRY}/orders-api:${IMAGE_TAG}

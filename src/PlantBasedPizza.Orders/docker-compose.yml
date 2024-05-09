@@ -9,13 +9,23 @@ services:
     ports:
       - 27017:27017
 
-  jaeger:
-    image: jaegertracing/opentelemetry-all-in-one:latest
+  datadog-agent:
+    image: datadog/agent
+    pid: host
     ports:
-      - 16686:16686
-      - 13133:13133
-      - 4317:4317
-      - 4318:4318
+      - "4317:4317"
+      - "4318:4318"
+    environment:
+      - DD_OTLP_CONFIG_RECEIVER_PROTOCOLS_GRPC_ENDPOINT=0.0.0.0:4317
+      - DD_OTLP_CONFIG_RECEIVER_PROTOCOLS_HTTP_ENDPOINT-0.0.0.0:4318
+      - DD_ENV=test
+      - DD_SITE=datadoghq.eu
+      - DD_SERVICE=OrdersService
+      - DD_API_KEY=9e039695f417e6aacb5d926b2a01be9e
+    volumes:
+     - /var/run/docker.sock:/var/run/docker.sock
+     - /proc/:/host/proc/:ro
+     - /sys/fs/cgroup:/host/sys/fs/cgroup:ro
   
   cache:
     image: redis:7.2
