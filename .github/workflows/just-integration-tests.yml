@@ -1,4 +1,4 @@
-name: Order Services CICD
+name: Just integration tests
 
 on:
     push:
@@ -7,7 +7,7 @@ on:
         - feature/aws-serverless
       paths:
         - .github/workflows/build-and-push-base.yaml
-        - .github/workflows/build-order-services.yaml
+        - .github/workflows/just-integration-tests.yaml
         - src/PlantBasedPizza.Orders/**
         - src/shared/**
     workflow_dispatch:
