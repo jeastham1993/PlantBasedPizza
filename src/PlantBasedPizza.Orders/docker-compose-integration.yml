@@ -8,14 +8,6 @@ services:
       - PGID=1000
     expose:
       - 27017
-
-  jaeger:
-    image: jaegertracing/opentelemetry-all-in-one:latest
-    expose:
-      - 16686
-      - 13133
-      - 4317
-      - 4318
   
   cache:
     image: redis:7.2
@@ -43,6 +35,19 @@ services:
       - ./mocks/grpc-mocks:/proto
     command: --stub=/proto/stubs /proto/loyalty.proto /proto/payment.proto
 
+  datadog-agent:
+    image: public.ecr.aws/datadog/agent:latest
+    expose:
+      - 4317
+      - 4318
+    environment:
+      - DD_OTLP_CONFIG_RECEIVER_PROTOCOLS_GRPC_ENDPOINT=0.0.0.0:4317
+      - DD_OTLP_CONFIG_RECEIVER_PROTOCOLS_HTTP_ENDPOINT-0.0.0.0:4318
+      - DD_ENV=test
+      - DD_SITE=datadoghq.eu
+      - DD_SERVICE=OrdersService
+      - DD_API_KEY=${DD_API_KEY}
+
   rabbitmq:
     image: rabbitmq:3-management-alpine
     container_name: 'rabbitmq'
@@ -62,7 +67,7 @@ services:
       - "5004:8080"
     environment:
       - DatabaseConnection=mongodb://mongodb:27017
-      - OtlpEndpoint=http://jaeger:4317
+      - OtlpEndpoint=http://datadog-agent:4317
       - Environment=local
       - RedisConnectionString=cache
       - Services__Loyalty=http://wiremock:8443
@@ -87,7 +92,7 @@ services:
     restart: on-failure
     environment:
       - DatabaseConnection=mongodb://mongodb:27017
-      - OtlpEndpoint=http://jaeger:4317
+      - OtlpEndpoint=http://datadog-agent:4317
       - RedisConnectionString=cache
       - Services__Loyalty=http://wiremock:8443
       - Services__LoyaltyInternal=http://gripmock:4770

@@ -51,6 +51,9 @@ jobs:
           echo "REGISTRY=${{secrets.ecr-registry}}" >> $GITHUB_ENV
           echo "IMAGE_TAG=$(git rev-parse --short "$GITHUB_SHA")" >> $GITHUB_ENV
       - name: docker-compose up
+        env:
+          DD_API_KEY: ${{secrets.dd_api_key}}
+          DD_SITE: datadoghq.eu
         run: docker-compose -f ${{ inputs.integration-test-compose-file }} up -d
       - name: Wait for docker to start - 20s
         run: sleep 20
