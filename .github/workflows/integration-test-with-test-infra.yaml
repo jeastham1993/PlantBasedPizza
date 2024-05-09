@@ -58,6 +58,7 @@ jobs:
           echo "REGISTRY=${{secrets.ecr-registry}}" >> $GITHUB_ENV
           echo "IMAGE_TAG=$(git rev-parse --short "$GITHUB_SHA")" >> $GITHUB_ENV
           echo "DD_API_KEY=${{secrets.dd_api_key}}" >> $GITHUB_ENV
+          echo "BUILD_VERSION=bc5ca84" >> $GITHUB_ENV
       - name: Deploy
         shell: bash
         env:
@@ -76,6 +77,7 @@ jobs:
         shell: bash
         run: |
           echo "sha_short=$(git rev-parse --short "$GITHUB_SHA")" >> "$GITHUB_ENV"
+          echo "BUILD_VERSION=bc5ca84" >> $GITHUB_ENV
       - name: Check running images
         shell: bash
         run: |
