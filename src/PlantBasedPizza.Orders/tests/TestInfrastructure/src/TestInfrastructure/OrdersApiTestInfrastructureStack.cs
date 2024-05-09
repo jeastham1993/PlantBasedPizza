@@ -17,8 +17,8 @@ public class OrdersApiTestInfrastructureStack : Stack
             EventBusName = $"test.orders.{stackProps.Version}"
         });
 
-        var loyaltyPointsUpdatedQueue = MapEventToTestQueue(bus, "LoyaltyUpdatedQueue", stackProps, "https://tests.orders/", "kitchen.orderQualityChecked.v1");
-        var orderQualityCheckedQueue = MapEventToTestQueue(bus, "OrderQualityCheckedQueue", stackProps, "https://orders.test.plantbasedpizza/", "loyalty.customerLoyaltyPointsUpdated.v1");
+        var loyaltyPointsUpdatedQueue = MapEventToTestQueue(bus, "LoyaltyUpdatedQueue", stackProps, "https://orders.test.plantbasedpizza/", "loyalty.customerLoyaltyPointsUpdated.v1");
+        var orderQualityCheckedQueue = MapEventToTestQueue(bus, "OrderQualityCheckedQueue", stackProps, "https://tests.orders/", "kitchen.orderQualityChecked.v1");
 
         var eventBus = new CfnOutput(this, "EBOutput", new CfnOutputProps()
         {
