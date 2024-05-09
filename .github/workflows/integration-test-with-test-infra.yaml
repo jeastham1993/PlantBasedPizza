@@ -92,6 +92,22 @@ jobs:
         run: |
           cd ${{ inputs.test-infrastructure-folder }}
           cdk deploy --region eu-west-1 --require-approval never
+      - name: Check running images
+        shell: bash
+        run: |
+          docker ps
+      - name: Get all logs
+        shell: bash
+        run: |
+          docker-compose logs
+      - name: Get API logs
+        shell: bash
+        run: |
+          docker-compose logs local.orders-api
+      - name: Get worker logs
+        shell: bash
+        run: |
+          docker-compose logs local.orders-worker
       - name: Run Integration Tests
         env:
           DD_CIVISIBILITY_AGENTLESS_ENABLED: true

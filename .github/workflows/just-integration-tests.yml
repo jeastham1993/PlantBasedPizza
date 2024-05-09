@@ -1,0 +1,30 @@
+name: Order Services CICD
+
+on:
+    push:
+      branches:
+        - main
+        - feature/aws-serverless
+      paths:
+        - .github/workflows/build-and-push-base.yaml
+        - .github/workflows/build-order-services.yaml
+        - src/PlantBasedPizza.Orders/**
+        - src/shared/**
+    workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  integration-test:
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/integration-test-with-test-infra.yaml@feature/aws-serverless
+    with:
+      service-name: "OrdersService"
+      integration-test-compose-file: src/PlantBasedPizza.Orders/docker-compose-integration-hardcoded.yml
+      integration-test-folder: src/PlantBasedPizza.Orders/tests/PlantBasedPizza.Orders.IntegrationTest
+      test-infrastructure-folder: src/PlantBasedPizza.Orders/tests/TestInfrastructure
+    secrets:
+      deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
+      ecr-registry: ${{secrets.ECR_REGISTRY}}
+      dd_api_key: ${{secrets.DD_API_KEY}}
