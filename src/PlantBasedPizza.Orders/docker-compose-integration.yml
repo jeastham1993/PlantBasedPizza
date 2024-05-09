@@ -43,15 +43,6 @@ services:
       - DD_SERVICE=OrdersService
       - DD_API_KEY=${DD_API_KEY}
 
-  rabbitmq:
-    image: rabbitmq:3-management-alpine
-    container_name: 'rabbitmq'
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    healthcheck:
-      test: rabbitmq-diagnostics -q ping
-
   local.orders-api:
     image: ${REGISTRY}/orders-api:${IMAGE_TAG}
     depends_on:
