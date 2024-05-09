@@ -61,6 +61,7 @@ var app = builder.Build();
 app.UseAuthentication();
 app.UseAuthorization();
 
+
 var accountRepository = app.Services.GetRequiredService<IUserAccountRepository>();
 var userAccountService = app.Services.GetRequiredService<UserAccountService>();
 

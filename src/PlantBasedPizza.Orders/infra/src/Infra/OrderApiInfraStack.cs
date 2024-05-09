@@ -38,6 +38,9 @@ public class OrderApiInfraStack : Stack
         
         var commitHash = System.Environment.GetEnvironmentVariable("COMMIT_HASH") ?? "latest";
 
+        var loyaltyPointsQueue = new EventQueue(this, "LoyaltyPointsQueue", new EventQueueProps(bus, "LoyaltyUpdatedQueue", "dev", "https://orders.test.plantbasedpizza/", "loyalty.customerLoyaltyPointsUpdated.v1"));
+        var orderQualityCheckedQueue = new EventQueue(this, "OrderQualityCheckedQueue", new EventQueueProps(bus, "OrderQualityCheckedQueue", "dev", "https://tests.orders/", "kitchen.orderQualityChecked.v1"));
+
         var orderApiService = new WebService(this, "OrdersWebService", new ConstructProps(
             vpc,
             cluster,
@@ -51,6 +54,7 @@ public class OrderApiInfraStack : Stack
             {
                 { "Messaging__BusName", bus.EventBusName },
                 { "SERVICE_NAME", "OrderApi" },
+                { "BUILD_VERSION", "dev" },
             },
             new Dictionary<string, Secret>(1)
             {
@@ -63,30 +67,36 @@ public class OrderApiInfraStack : Stack
             106
         ));
 
-        var orderWorkerService = new BackgroundService(this, "OrdersWebService", new BackgroundServiceConstructProps(
-            vpc,
-            cluster,
-            "OrdersWorker",
-            "/shared/dd-api-key",
-            "/shared/jwt-key",
-            "orders-worker",
-            commitHash ?? "latest",
-            8080,
-            new Dictionary<string, string>
-            {
-                { "Messaging__BusName", bus.EventBusName },
-                { "SERVICE_NAME", "OrdersWorker" },
-            },
-            new Dictionary<string, Secret>(1)
-            {
-                { "DatabaseConnection", Secret.FromSsmParameter(databaseConnectionParam) }
-            },
-            "/order/health"
-        ));
-
         databaseConnectionParam.GrantRead(orderApiService.ExecutionRole);
-        databaseConnectionParam.GrantRead(orderWorkerService.ExecutionRole);
         bus.GrantPutEventsTo(orderApiService.TaskRole);
-        bus.GrantPutEventsTo(orderWorkerService.TaskRole);
+        
+        // var orderWorkerService = new BackgroundService(this, "OrdersWebService", new BackgroundServiceConstructProps(
+        //     vpc,
+        //     cluster,
+        //     "OrdersWorker",
+        //     "/shared/dd-api-key",
+        //     "/shared/jwt-key",
+        //     "orders-worker",
+        //     commitHash ?? "latest",
+        //     8080,
+        //     new Dictionary<string, string>
+        //     {
+        //         { "Messaging__BusName", bus.EventBusName },
+        //         { "SERVICE_NAME", "OrdersWorker" },
+        //         { "BUILD_VERSION", "dev" },
+        //         { "QueueConfiguration__OrderQualityCheckedQueue", ""},
+        //         { "QueueConfiguration__LoyaltyPointsUpdatedQueue", ""}
+        //     },
+        //     new Dictionary<string, Secret>(1)
+        //     {
+        //         { "DatabaseConnection", Secret.FromSsmParameter(databaseConnectionParam) }
+        //     },
+        //     "/order/health"
+        // ));
+        //
+        // databaseConnectionParam.GrantRead(orderWorkerService.ExecutionRole);
+        // bus.GrantPutEventsTo(orderWorkerService.TaskRole);
+        // loyaltyPointsQueue.Queue.GrantConsumeMessages(orderWorkerService.TaskRole);
+        // orderQualityCheckedQueue.Queue.GrantConsumeMessages(orderWorkerService.TaskRole);
     }
 }

@@ -12,7 +12,7 @@ using EventBus = Amazon.CDK.AWS.Events.EventBus;
 
 namespace PlantBasedPizza.Infra.Constructs;
 
-public record EventQueueProps(EventBus Bus, string QueueName, string Environment, string EventSource, string DetailType);
+public record EventQueueProps(IEventBus Bus, string QueueName, string Environment, string EventSource, string DetailType);
 
 public class EventQueue : Construct
 {
