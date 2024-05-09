@@ -115,6 +115,21 @@ jobs:
           DD_SITE: datadoghq.eu
           BUILD_VERSION: ${{ env.sha_short }}
         run: dd-trace ci run --dd-service=${{inputs.service-name}} --dd-env=ci -- dotnet test ${{ inputs.integration-test-folder }}
+      - name: Get all logs
+        if: always()
+        shell: bash
+        run: |
+          docker-compose logs
+      - name: Get API logs
+        if: always()
+        shell: bash
+        run: |
+          docker-compose logs local.orders-api
+      - name: Get worker logs
+        if: always()
+        shell: bash
+        run: |
+          docker-compose logs local.orders-worker
       - name: Teardown
         run: docker-compose -f ${{ inputs.integration-test-compose-file }} down
       - name: Tear down test infrastructure
