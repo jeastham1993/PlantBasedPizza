@@ -58,13 +58,13 @@ jobs:
           echo "REGISTRY=${{secrets.ecr-registry}}" >> $GITHUB_ENV
           echo "IMAGE_TAG=$(git rev-parse --short "$GITHUB_SHA")" >> $GITHUB_ENV
           echo "DD_API_KEY=${{secrets.dd_api_key}}" >> $GITHUB_ENV
-          echo "BUILD_VERSION=bc5ca84" >> $GITHUB_ENV
+          echo "BUILD_VERSION=${{ env.sha_short }}" >> $GITHUB_ENV
       - name: Deploy
         shell: bash
         env:
-          COMMIT_HASH: bc5ca84
+          COMMIT_HASH: ${{ env.sha_short }}
           DEPLOYMENT_ENV: ${{inputs.environment}}
-          BUILD_VERSION: "bc5ca84"
+          BUILD_VERSION: "${{ env.sha_short }}"
         run: |
           cd ${{ inputs.test-infrastructure-folder }}
           cdk deploy --region eu-west-1 --require-approval never
@@ -77,7 +77,7 @@ jobs:
         shell: bash
         run: |
           echo "sha_short=$(git rev-parse --short "$GITHUB_SHA")" >> "$GITHUB_ENV"
-          echo "BUILD_VERSION=bc5ca84" >> $GITHUB_ENV
+          echo "BUILD_VERSION=${{ env.sha_short }}" >> $GITHUB_ENV
       - name: Check running images
         shell: bash
         run: |
@@ -87,31 +87,16 @@ jobs:
           DD_CIVISIBILITY_AGENTLESS_ENABLED: true
           DD_API_KEY: ${{secrets.dd_api_key}}
           DD_SITE: datadoghq.eu
-          BUILD_VERSION: bc5ca84
+          BUILD_VERSION: ${{ env.sha_short }}
           AWS_ACCESS_KEY_ID: ${{env.AWS_ACCESS_KEY_ID}}
           AWS_SECRET_ACCESS_KEY: ${{env.AWS_SECRET_ACCESS_KEY}}
           AWS_SESSION_TOKEN: ${{env.AWS_SESSION_TOKEN}}
-        run: dd-trace ci run --dd-service=${{inputs.service-name}} --dd-env=ci -- dotnet test ${{ inputs.integration-test-folder }} -e AWS_ACCESS_KEY_ID="${{env.AWS_ACCESS_KEY_ID}}" -e AWS_SECRET_ACCESS_KEY="${{env.AWS_SECRET_ACCESS_KEY}}" -e AWS_SESSION_TOKEN="${{env.AWS_SESSION_TOKEN}}" -e BUILD_VERSION="bc5ca84"
+        run: dd-trace ci run --dd-service=${{inputs.service-name}} --dd-env=ci -- dotnet test ${{ inputs.integration-test-folder }} -e AWS_ACCESS_KEY_ID="${{env.AWS_ACCESS_KEY_ID}}" -e AWS_SECRET_ACCESS_KEY="${{env.AWS_SECRET_ACCESS_KEY}}" -e AWS_SESSION_TOKEN="${{env.AWS_SESSION_TOKEN}}" -e BUILD_VERSION="${{ env.sha_short }}"
       - name: Check running images
         shell: bash
         if: always()
         run: |
           docker ps
-      - name: Get all logs
-        if: always()
-        shell: bash
-        run: |
-          docker-compose logs
-      - name: Get API logs
-        if: always()
-        shell: bash
-        run: |
-          docker-compose logs local.orders-api
-      - name: Get worker logs
-        if: always()
-        shell: bash
-        run: |
-          docker-compose logs local.orders-worker
       - name: Teardown
         run: docker-compose -f ${{ inputs.integration-test-compose-file }} down
       - name: Tear down test infrastructure

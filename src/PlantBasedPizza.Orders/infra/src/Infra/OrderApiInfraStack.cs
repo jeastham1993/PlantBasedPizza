@@ -78,33 +78,38 @@ public class OrderApiInfraStack : Stack
         databaseConnectionParam.GrantRead(orderApiService.ExecutionRole);
         bus.GrantPutEventsTo(orderApiService.TaskRole);
         
-        // var orderWorkerService = new BackgroundService(this, "OrdersWebService", new BackgroundServiceConstructProps(
-        //     vpc,
-        //     cluster,
-        //     "OrdersWorker",
-        //     "/shared/dd-api-key",
-        //     "/shared/jwt-key",
-        //     "orders-worker",
-        //     commitHash ?? "latest",
-        //     8080,
-        //     new Dictionary<string, string>
-        //     {
-        //         { "Messaging__BusName", bus.EventBusName },
-        //         { "SERVICE_NAME", "OrdersWorker" },
-        //         { "BUILD_VERSION", "dev" },
-        //         { "QueueConfiguration__OrderQualityCheckedQueue", loyaltyPointsCheckedQueueName},
-        //         { "QueueConfiguration__LoyaltyPointsUpdatedQueue", loyaltyPointsCheckedQueueName}
-        //     },
-        //     new Dictionary<string, Secret>(1)
-        //     {
-        //         { "DatabaseConnection", Secret.FromSsmParameter(databaseConnectionParam) }
-        //     },
-        //     "/order/health"
-        // ));
-        //
-        // databaseConnectionParam.GrantRead(orderWorkerService.ExecutionRole);
-        // bus.GrantPutEventsTo(orderWorkerService.TaskRole);
-        // loyaltyPointsQueue.Queue.GrantConsumeMessages(orderWorkerService.TaskRole);
-        // orderQualityCheckedQueue.Queue.GrantConsumeMessages(orderWorkerService.TaskRole);
+        var orderWorkerService = new BackgroundService(this, "OrdersWorkerService", new BackgroundServiceConstructProps(
+            vpc,
+            cluster,
+            "OrdersWorker",
+            "/shared/dd-api-key",
+            "/shared/jwt-key",
+            "orders-worker",
+            commitHash ?? "latest",
+            8080,
+            new Dictionary<string, string>
+            {
+                { "Messaging__BusName", bus.EventBusName },
+                { "SERVICE_NAME", "OrdersWorker" },
+                { "BUILD_VERSION", "dev" },
+                { "RedisConnectionString", "" },
+                { "Services__Loyalty", "http://localhost:1234"},
+                { "Services__LoyaltyInternal", "http://localhost:1234"},
+                { "Services__PaymentInternal", "http://localhost:1234"},
+                { "Services__Recipes", "http://localhost:1234"},
+                { "QueueConfiguration__OrderQualityCheckedQueue", loyaltyPointsCheckedQueueName},
+                { "QueueConfiguration__LoyaltyPointsUpdatedQueue", loyaltyPointsCheckedQueueName}
+            },
+            new Dictionary<string, Secret>(1)
+            {
+                { "DatabaseConnection", Secret.FromSsmParameter(databaseConnectionParam) }
+            },
+            "/order/health"
+        ));
+        
+        databaseConnectionParam.GrantRead(orderWorkerService.ExecutionRole);
+        bus.GrantPutEventsTo(orderWorkerService.TaskRole);
+        loyaltyPointsQueue.Queue.GrantConsumeMessages(orderWorkerService.TaskRole);
+        orderQualityCheckedQueue.Queue.GrantConsumeMessages(orderWorkerService.TaskRole);
     }
 }
