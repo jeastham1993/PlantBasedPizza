@@ -38,11 +38,11 @@ public class OrderApiInfraStack : Stack
         
         var commitHash = System.Environment.GetEnvironmentVariable("COMMIT_HASH") ?? "latest";
 
-        var loyaltyPointsCheckedQueueName = "LoyaltyUpdatedQueue";
-        var orderQualityCheckedQueueName = "OrderQualityCheckedQueue";
+        var loyaltyPointsCheckedQueueName = "Orders-LoyaltyUpdatedQueue";
+        var orderQualityCheckedQueueName = "Orders-OrderQualityCheckedQueue";
 
         var loyaltyPointsQueue = new EventQueue(this, loyaltyPointsCheckedQueueName, new EventQueueProps(bus, loyaltyPointsCheckedQueueName, "dev", "https://orders.test.plantbasedpizza/", "loyalty.customerLoyaltyPointsUpdated.v1"));
-        var orderQualityCheckedQueue = new EventQueue(this, loyaltyPointsCheckedQueueName, new EventQueueProps(bus, loyaltyPointsCheckedQueueName, "dev", "https://tests.orders/", "kitchen.orderQualityChecked.v1"));
+        var orderQualityCheckedQueue = new EventQueue(this, orderQualityCheckedQueueName, new EventQueueProps(bus, orderQualityCheckedQueueName, "dev", "https://tests.orders/", "kitchen.orderQualityChecked.v1"));
 
         var orderApiService = new WebService(this, "OrdersWebService", new ConstructProps(
             vpc,
@@ -59,10 +59,10 @@ public class OrderApiInfraStack : Stack
                 { "SERVICE_NAME", "OrderApi" },
                 { "BUILD_VERSION", "dev" },
                 { "RedisConnectionString", "" },
-                { "Services__Loyalty", ""},
-                { "Services__LoyaltyInternal", ""},
-                { "Services__PaymentInternal", ""},
-                { "Services__Recipes", ""},
+                { "Services__Loyalty", "http://localhost:1234"},
+                { "Services__LoyaltyInternal", "http://localhost:1234"},
+                { "Services__PaymentInternal", "http://localhost:1234"},
+                { "Services__Recipes", "http://localhost:1234"},
             },
             new Dictionary<string, Secret>(1)
             {
