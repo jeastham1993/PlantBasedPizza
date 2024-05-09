@@ -72,12 +72,12 @@ services:
       - ServiceDiscovery__MyUrl=
       - ServiceDiscovery__ServiceName=OrdersApi
       - ServiceDiscovery__ConsulServiceEndpoint=
-      - Messaging__HostName=rabbitmq
-      - Messaging__ExchangeName=dev.plantbasedpizza
       - Auth__Issuer=https://plantbasedpizza.com
       - Auth__Audience=https://plantbasedpizza.com
       - Auth__Key=This is a sample secret key - please don't use in production environment.'
       - Auth__PaymentApiKey=the api key to use, use a secret store in production
+      - AWS_REGION=eu-west-1
+      - SERVICE_NAME=OrdersApi
 
   local.orders-worker:
     image: ${REGISTRY}/orders-worker:${IMAGE_TAG}
@@ -97,5 +97,8 @@ services:
       - ServiceDiscovery__MyUrl=
       - ServiceDiscovery__ServiceName=OrdersWorker
       - ServiceDiscovery__ConsulServiceEndpoint=
-      - Messaging__HostName=rabbitmq
-      - Messaging__ExchangeName=dev.plantbasedpizza
+      - Messaging__BusName=dev.orders
+      - AWS_REGION=eu-west-1
+      - SERVICE_NAME=OrdersWorker
+      - QueueConfiguration__OrderQualityCheckedQueueUrl=https://sqs.eu-west-1.amazonaws.com/730335273443/OrdersServiceTestInfrastructure-OrderQualityCheckedTestQueueAB00482-3sOwe7KNDLfO
+      - QueueConfiguration__LoyaltyPointsUpdatedQueueUrl=https://sqs.eu-west-1.amazonaws.com/730335273443/OrdersServiceTestInfrastructure-LoyaltyUpdatedQueue4485A007-BODzXQGpWw6H

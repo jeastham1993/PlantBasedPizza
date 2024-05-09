@@ -21,6 +21,8 @@ builder.Services.AddStackExchangeRedisCache(options =>
     options.InstanceName = "Orders";
 });
 
+builder.Services.Configure<QueueConfiguration>(builder.Configuration.GetSection("QueueConfiguration"));
+
 builder.Services.AddSingleton<DriverCollectedOrderEventHandler>();
 builder.Services.AddSingleton<DriverDeliveredOrderEventHandler>();
 builder.Services.AddSingleton<OrderBakedEventHandler>();
@@ -28,12 +30,12 @@ builder.Services.AddSingleton<OrderPreparingEventHandler>();
 builder.Services.AddSingleton<OrderPrepCompleteEventHandler>();
 builder.Services.AddSingleton<OrderQualityCheckedEventHandler>();
 
+// builder.Services.AddHostedService<DriverCollectedOrderEventWorker>();
+// builder.Services.AddHostedService<DriverDeliveredOrderEventWorker>();
+// builder.Services.AddHostedService<OrderBakedEventWorker>();
+// builder.Services.AddHostedService<OrderPreparingEventWorker>();
+// builder.Services.AddHostedService<OrderPrepCompleteEventWorker>();
 builder.Services.AddHostedService<LoyaltyPointsUpdatedCacheWorker>();
-builder.Services.AddHostedService<DriverCollectedOrderEventWorker>();
-builder.Services.AddHostedService<DriverDeliveredOrderEventWorker>();
-builder.Services.AddHostedService<OrderBakedEventWorker>();
-builder.Services.AddHostedService<OrderPreparingEventWorker>();
-builder.Services.AddHostedService<OrderPrepCompleteEventWorker>();
 builder.Services.AddHostedService<OrderQualityCheckedEventWorker>();
 
 var app = builder.Build();

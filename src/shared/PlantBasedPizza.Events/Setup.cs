@@ -1,6 +1,7 @@
 using Amazon.EventBridge;
 using Amazon.Runtime;
 using Amazon.Runtime.CredentialManagement;
+using Amazon.SQS;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -13,7 +14,9 @@ public static class Setup
         services.Configure<EventBridgeSettings>(configuration.GetSection("Messaging"));
         
         services.AddSingleton(new AmazonEventBridgeClient());
+        services.AddSingleton(new AmazonSQSClient());
         services.AddSingleton<IEventPublisher, EventBridgeEventPublisher>();
+        services.AddSingleton<SqsEventSubscriber>();
 
         return services;
     }

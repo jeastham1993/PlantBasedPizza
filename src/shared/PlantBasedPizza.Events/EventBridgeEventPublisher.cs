@@ -49,7 +49,7 @@ public class EventBridgeEventPublisher : IEventPublisher
 
         var json = evtFormatter.ConvertToJsonElement(evtWrapper).ToString();
 
-        await _eventBridgeClient.PutEventsAsync(new PutEventsRequest()
+        var publishResponse = await _eventBridgeClient.PutEventsAsync(new PutEventsRequest()
         {
             Entries = new List<PutEventsRequestEntry>(1)
             {

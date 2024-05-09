@@ -23,7 +23,7 @@ namespace PlantBasedPizza.Shared
         {
             ApplicationLogger.Init();
             Log.Logger = new LoggerConfiguration()
-                .Filter.ByExcluding(Matching.FromSource("Microsoft"))
+                //.Filter.ByExcluding(Matching.FromSource("Microsoft"))
                 .Enrich.With(new DataDogLogEnricher())
                 .WriteTo.Console(new CompactJsonFormatter())
                 .CreateLogger();

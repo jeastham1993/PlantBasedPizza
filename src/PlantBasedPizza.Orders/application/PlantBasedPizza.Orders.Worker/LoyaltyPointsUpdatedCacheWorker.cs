@@ -1,71 +1,51 @@
 using System.Diagnostics;
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Options;
 using PlantBasedPizza.Events;
 using PlantBasedPizza.Orders.Worker.IntegrationEvents;
-using RabbitMQ.Client;
 
 namespace PlantBasedPizza.Orders.Worker;
 
 public class LoyaltyPointsUpdatedCacheWorker : BackgroundService
 {
-    private readonly RabbitMqEventSubscriber _eventSubscriber;
+    private readonly SqsEventSubscriber _eventSubscriber;
     private readonly ActivitySource _source;
     private readonly IDistributedCache _distributedCache;
     private readonly ILogger<LoyaltyPointsUpdatedCacheWorker> _logger;
+    private readonly QueueConfiguration _queueConfiguration;
 
-    public LoyaltyPointsUpdatedCacheWorker(RabbitMqEventSubscriber eventSubscriber, ActivitySource source,
-        IDistributedCache distributedCache, ILogger<LoyaltyPointsUpdatedCacheWorker> logger)
+    public LoyaltyPointsUpdatedCacheWorker(SqsEventSubscriber eventSubscriber, ActivitySource source,
+        IDistributedCache distributedCache, ILogger<LoyaltyPointsUpdatedCacheWorker> logger, IOptions<QueueConfiguration> queueConfiguration)
     {
         _eventSubscriber = eventSubscriber;
         _source = source;
         _distributedCache = distributedCache;
         _logger = logger;
+        _queueConfiguration = queueConfiguration.Value;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var queueName = "orders-loyaltyPointsUpdated-worker";
-
-        var subscription = _eventSubscriber.CreateEventConsumer(queueName, "loyalty.customerLoyaltyPointsUpdated.v1");
-
-        subscription.Consumer.Received += async (model, ea) =>
-        {
-            try
-            {
-                this._logger.LogInformation("Processing message {messageId}", ea.DeliveryTag);
-                
-                var evtDataResponse =
-                    await _eventSubscriber.ParseEventFrom<CustomerLoyaltyPointsUpdatedEvent>(ea.Body.ToArray());
-
-                using var processingActivity = _source.StartActivity("processing-order-completed-event",
-                    ActivityKind.Server, evtDataResponse.TraceParent);
-                processingActivity.AddTag("queue.time", evtDataResponse.QueueTime);
-                processingActivity.AddTag("message.id", ea.DeliveryTag);
-                processingActivity.AddTag("customerIdentifier", evtDataResponse.EventData.CustomerIdentifier);
-                processingActivity.AddTag("totalPoints", evtDataResponse.EventData.TotalLoyaltyPoints);
-
-                await _distributedCache.SetStringAsync(evtDataResponse.EventData.CustomerIdentifier.ToUpper(),
-                    evtDataResponse.EventData.TotalLoyaltyPoints.ToString("n0"), stoppingToken);
-
-                this._logger.LogInformation("Cached");
-
-                subscription.Channel.BasicAck(ea.DeliveryTag, false);
-            }
-            catch (Exception e)
-            {
-                this._logger.LogError(e, "Failure processing message");
-                
-                subscription.Channel.BasicReject(ea.DeliveryTag, true);
-            }
-        };
-
         while (!stoppingToken.IsCancellationRequested)
         {
-            subscription.Channel.BasicConsume(
-                queueName,
-                false,
-                subscription.Consumer);
+            var messages = await _eventSubscriber.GetMessages<CustomerLoyaltyPointsUpdatedEvent>(_queueConfiguration.LoyaltyPointsUpdatedQueueUrl);
 
+            foreach (var message in messages)
+            {
+                using var processingActivity = _source.StartActivity("processing-order-completed-event",
+                    ActivityKind.Server, message.TraceParent);
+                processingActivity.AddTag("queue.time", message.QueueTime);
+                processingActivity.AddTag("customerIdentifier", message.EventData.CustomerIdentifier);
+                processingActivity.AddTag("totalPoints", message.EventData.TotalLoyaltyPoints);
+
+                await _distributedCache.SetStringAsync(message.EventData.CustomerIdentifier.ToUpper(),
+                    message.EventData.TotalLoyaltyPoints.ToString("n0"), stoppingToken);
+
+                this._logger.LogInformation("Cached");
+                
+                await _eventSubscriber.Ack(_queueConfiguration.LoyaltyPointsUpdatedQueueUrl, message);
+            }
+            
             await Task.Delay(1000, stoppingToken);
         }
     }

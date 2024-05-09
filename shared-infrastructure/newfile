@@ -1,0 +1,18 @@
+  ~/.config
+   SpecFlow
+   configstore
+   gh
+   iterm2
+   jgit
+   nvim
+     lua
+   │   config
+   │   plugins
+   │  LICENSE
+   │  README.md
+   │  init.lua
+   │  lazy-lock.json
+   │  lazyvim.json
+   └  stylua.toml
+     (2 hidden items)
+   nvim.bak

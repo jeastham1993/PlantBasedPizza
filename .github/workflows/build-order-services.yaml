@@ -27,24 +27,32 @@ jobs:
       deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
       ecr-registry: ${{secrets.ECR_REGISTRY}}
 
-  build-worker-image:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@microservices-module-6
-    with:
-      unit-test-folder: src/PlantBasedPizza.Orders/tests/PlantBasedPizza.Orders.UnitTest
-      image-name: orders-worker
-      dockerfile: src/PlantBasedPizza.Orders/application/PlantBasedPizza.Orders.Worker/Dockerfile-x86
-    secrets:
-      deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
-      ecr-registry: ${{secrets.ECR_REGISTRY}}
+  # build-worker-image:
+  #   uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@microservices-module-6
+  #   with:
+  #     unit-test-folder: src/PlantBasedPizza.Orders/tests/PlantBasedPizza.Orders.UnitTest
+  #     image-name: orders-worker
+  #     dockerfile: src/PlantBasedPizza.Orders/application/PlantBasedPizza.Orders.Worker/Dockerfile-x86
+  #   secrets:
+  #     deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
+  #     ecr-registry: ${{secrets.ECR_REGISTRY}}
 
   integration-test:
     uses: jeastham1993/PlantBasedPizza/.github/workflows/integration-test-base.yaml@microservices-module-6
     needs:
       - build-api-image
-      - build-worker-image
+      # - build-worker-image
     with:
       integration-test-compose-file: src/PlantBasedPizza.Orders/docker-compose-integration.yml
       integration-test-folder: src/PlantBasedPizza.Orders/tests/PlantBasedPizza.Orders.IntegrationTest
     secrets:
       deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
       ecr-registry: ${{secrets.ECR_REGISTRY}}
+  deploy-to-dev:
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/cdk-deploy-base.yaml@feature/aws-serverless
+    needs: integration-test
+    with:
+      cdk-folder: "src/PlantBasedPizza.Orders/infra"
+      environment: "dev"
+    secrets:
+      deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}

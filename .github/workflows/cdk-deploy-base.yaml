@@ -42,7 +42,7 @@ jobs:
         shell: bash
         run: |
           npm install -g aws-cdk 
-      - name: Install cdk
+      - name: Deploy
         shell: bash
         env:
           COMMIT_HASH: ${{ env.sha_short }}
