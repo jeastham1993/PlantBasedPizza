@@ -94,7 +94,7 @@ services:
       - ServiceDiscovery__ConsulServiceEndpoint=
       - Messaging__BusName=dev.orders
       - AWS_REGION=eu-west-1
-      - SERVICE_NAME=OrdersService
+      - SERVICE_NAME=OrdersWorker
       - BUILD_VERSION=${IMAGE_TAG}
-      - QueueConfiguration__OrderQualityCheckedQueueUrl=OrderQualityCheckedQueue
-      - QueueConfiguration__LoyaltyPointsUpdatedQueueUrl=LoyaltyUpdatedQueue
+      - QueueConfiguration__OrderQualityCheckedQueue=OrderQualityCheckedQueue
+      - QueueConfiguration__LoyaltyPointsUpdatedQueue=LoyaltyUpdatedQueue
