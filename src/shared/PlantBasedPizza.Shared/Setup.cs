@@ -95,9 +95,15 @@ namespace PlantBasedPizza.Shared
 
                         return true;
                     };
+                    options.RecordException = true;
                 });
-                tracing.AddGrpcClientInstrumentation();
-                tracing.AddHttpClientInstrumentation();
+                tracing.AddGrpcClientInstrumentation(options =>
+                {
+                });
+                tracing.AddHttpClientInstrumentation(options =>
+                {
+                    options.RecordException = true;
+                });
                 tracing.AddSource(applicationName);
                 tracing.AddOtlpExporter(otlpOptions =>
                 {
