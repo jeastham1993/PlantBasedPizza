@@ -41,7 +41,7 @@ jobs:
     uses: jeastham1993/PlantBasedPizza/.github/workflows/integration-test-base.yaml@microservices-module-6
     needs:
       - build-api-image
-      # - build-worker-image
+      - build-worker-image
     with:
       integration-test-compose-file: src/PlantBasedPizza.Orders/docker-compose-integration.yml
       integration-test-folder: src/PlantBasedPizza.Orders/tests/PlantBasedPizza.Orders.IntegrationTest
