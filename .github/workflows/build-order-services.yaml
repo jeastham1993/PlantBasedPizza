@@ -27,15 +27,15 @@ jobs:
       deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
       ecr-registry: ${{secrets.ECR_REGISTRY}}
 
-  # build-worker-image:
-  #   uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@microservices-module-6
-  #   with:
-  #     unit-test-folder: src/PlantBasedPizza.Orders/tests/PlantBasedPizza.Orders.UnitTest
-  #     image-name: orders-worker
-  #     dockerfile: src/PlantBasedPizza.Orders/application/PlantBasedPizza.Orders.Worker/Dockerfile-x86
-  #   secrets:
-  #     deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
-  #     ecr-registry: ${{secrets.ECR_REGISTRY}}
+  build-worker-image:
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@microservices-module-6
+    with:
+      unit-test-folder: src/PlantBasedPizza.Orders/tests/PlantBasedPizza.Orders.UnitTest
+      image-name: orders-worker
+      dockerfile: src/PlantBasedPizza.Orders/application/PlantBasedPizza.Orders.Worker/Dockerfile-x86
+    secrets:
+      deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
+      ecr-registry: ${{secrets.ECR_REGISTRY}}
 
   integration-test:
     uses: jeastham1993/PlantBasedPizza/.github/workflows/integration-test-base.yaml@microservices-module-6
