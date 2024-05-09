@@ -103,6 +103,16 @@ namespace PlantBasedPizza.Shared
                 tracing.AddHttpClientInstrumentation(options =>
                 {
                     options.RecordException = true;
+                    options.FilterHttpRequestMessage = (req) =>
+                    {
+                        // Skip collection of AWS SDK calls
+                        if (req.RequestUri.ToString().Contains("aws"))
+                        {
+                            return false;
+                        }
+
+                        return true;
+                    };
                 });
                 tracing.AddSource(applicationName);
                 tracing.AddOtlpExporter(otlpOptions =>
