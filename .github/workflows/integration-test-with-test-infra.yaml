@@ -58,6 +58,15 @@ jobs:
           echo "REGISTRY=${{secrets.ecr-registry}}" >> $GITHUB_ENV
           echo "IMAGE_TAG=$(git rev-parse --short "$GITHUB_SHA")" >> $GITHUB_ENV
           echo "DD_API_KEY=${{secrets.dd_api_key}}" >> $GITHUB_ENV
+      - name: Deploy
+        shell: bash
+        env:
+          COMMIT_HASH: bc5ca84
+          DEPLOYMENT_ENV: ${{inputs.environment}}
+          BUILD_VERSION: "bc5ca84"
+        run: |
+          cd ${{ inputs.test-infrastructure-folder }}
+          cdk deploy --region eu-west-1 --require-approval never
       - name: docker-compose up
         env:
           DD_API_KEY: ${{secrets.dd_api_key}}
@@ -71,27 +80,6 @@ jobs:
         shell: bash
         run: |
           docker ps
-      - name: Get all logs
-        shell: bash
-        run: |
-          docker-compose logs
-      - name: Get API logs
-        shell: bash
-        run: |
-          docker-compose logs local.orders-api
-      - name: Get worker logs
-        shell: bash
-        run: |
-          docker-compose logs local.orders-worker
-      - name: Deploy
-        shell: bash
-        env:
-          COMMIT_HASH: ${{ env.sha_short }}
-          DEPLOYMENT_ENV: ${{inputs.environment}}
-          BUILD_VERSION: ${{ env.sha_short }}
-        run: |
-          cd ${{ inputs.test-infrastructure-folder }}
-          cdk deploy --region eu-west-1 --require-approval never
       - name: Check running images
         shell: bash
         run: |
