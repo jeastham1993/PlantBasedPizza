@@ -53,6 +53,11 @@ jobs:
       - uses: aws-actions/amazon-ecr-login@v2
         name: Login to Amazon ECR
         id: login-ecr
+      - name: Set Commit Hash Environment Variables
+        shell: bash
+        run: |
+          echo "sha_short=$(git rev-parse --short "$GITHUB_SHA")" >> "$GITHUB_ENV"
+          echo "BUILD_VERSION=${{ env.sha_short }}" >> $GITHUB_ENV
       - name:
         run: |
           echo "REGISTRY=${{secrets.ecr-registry}}" >> $GITHUB_ENV
@@ -73,11 +78,6 @@ jobs:
           DD_API_KEY: ${{secrets.dd_api_key}}
           DD_SITE: datadoghq.eu
         run: docker-compose -f ${{ inputs.integration-test-compose-file }} up -d
-      - name: Set Commit Hash Environment Variables
-        shell: bash
-        run: |
-          echo "sha_short=$(git rev-parse --short "$GITHUB_SHA")" >> "$GITHUB_ENV"
-          echo "BUILD_VERSION=${{ env.sha_short }}" >> $GITHUB_ENV
       - name: Check running images
         shell: bash
         run: |
