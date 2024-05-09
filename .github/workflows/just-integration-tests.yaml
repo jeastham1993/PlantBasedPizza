@@ -20,7 +20,7 @@ jobs:
   integration-test:
     uses: jeastham1993/PlantBasedPizza/.github/workflows/integration-test-with-test-infra.yaml@feature/aws-serverless
     with:
-      service-name: "OrdersServiceTest"
+      service-name: "OrdersService"
       integration-test-compose-file: src/PlantBasedPizza.Orders/docker-compose-integration-hardcoded.yml
       integration-test-folder: src/PlantBasedPizza.Orders/tests/PlantBasedPizza.Orders.IntegrationTest
       test-infrastructure-folder: src/PlantBasedPizza.Orders/tests/TestInfrastructure
