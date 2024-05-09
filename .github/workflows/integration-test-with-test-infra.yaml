@@ -91,7 +91,7 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{env.AWS_ACCESS_KEY_ID}}
           AWS_SECRET_ACCESS_KEY: ${{env.AWS_SECRET_ACCESS_KEY}}
           AWS_SESSION_TOKEN: ${{env.AWS_SESSION_TOKEN}}
-        run: dd-trace ci run --dd-service=${{inputs.service-name}} --dd-env=ci -- dotnet test ${{ inputs.integration-test-folder }}
+        run: dotnet test ${{ inputs.integration-test-folder }}
       - name: Check running images
         shell: bash
         if: always()
