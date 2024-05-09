@@ -51,7 +51,6 @@ services:
   local.orders-api:
     image: ${REGISTRY}/orders-api:${IMAGE_TAG}
     depends_on:
-      - rabbitmq
       - cache
     restart: on-failure
     ports:
@@ -78,7 +77,6 @@ services:
   local.orders-worker:
     image: ${REGISTRY}/orders-worker:${IMAGE_TAG}
     depends_on:
-      - rabbitmq
       - cache
     restart: on-failure
     environment:
