@@ -1,13 +1,10 @@
 using System.Net.Http.Json;
-using Consul;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using OpenTelemetry.Exporter;
 using PlantBasedPizza.Shared.Logging;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
-using PlantBasedPizza.Shared.ServiceDiscovery;
 using Serilog;
 using Serilog.Filters;
 using Serilog.Formatting.Compact;
@@ -29,12 +26,12 @@ namespace PlantBasedPizza.Shared
             if (Environment.GetEnvironmentVariable("TRACE_LOGS") != "Y")
             {
                 loggerConfiguration.Filter.ByExcluding(Matching.FromSource("Microsoft"));
+                loggerConfiguration.Filter.ByExcluding(Matching.FromSource("System.Net"));
             }
 
             Log.Logger = loggerConfiguration.CreateLogger();
 
             services
-                .AddLogging()
                 .AddSerilog();
             
             var otel = services.AddOpenTelemetry();
@@ -111,7 +108,7 @@ namespace PlantBasedPizza.Shared
                     options.FilterHttpRequestMessage = (req) =>
                     {
                         // Skip collection of AWS SDK calls or health check calls to other services
-                        if (req.RequestUri.ToString().Contains("aws") || req.RequestUri.ToString().Contains("health"))
+                        if (req.RequestUri.ToString().Contains("aws") || req.RequestUri.ToString().Contains("health") || req.RequestUri.ToString().Contains("127.0.0.1"))
                         {
                             return false;
                         }
@@ -132,30 +129,6 @@ namespace PlantBasedPizza.Shared
 
             services.AddSingleton<IObservabilityService, ObservabiityService>();
             services.AddHttpContextAccessor();
-
-            var consulAddress = configuration.GetSection("ServiceDiscovery")["ConsulServiceEndpoint"];
-
-            if (string.IsNullOrEmpty(consulAddress))
-            {
-                services.AddSingleton<IServiceRegistry, ConfigurationFileServiceRegistry>();
-            }
-            else
-            {
-                services.AddSingleton<IConsulClient, ConsulClient>(provider =>
-                    new ConsulClient(config => config.Address = new Uri(consulAddress)));
-                
-                services.AddSingleton<IServiceRegistry, ConsulServiceRegistry>();
-            }
-
-            // Only register the running application with Consul if it has a valid URL
-            var myUrl = configuration.GetSection("ServiceDiscovery")["MyUrl"];
-            if (!string.IsNullOrEmpty(myUrl))
-            {
-                services.AddSingleton<IHostedService, ConsulRegisterService>();   
-            }
-
-            services.Configure<ServiceDiscoverySettings>(configuration.GetSection("ServiceDiscovery"));
-            services.AddSingleton<ServiceRegistryHttpMessageHandler>();
 
             return services;
         }

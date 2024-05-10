@@ -12,7 +12,7 @@ namespace PlantBasedPizza.OrderManager.Infrastructure
 
         public RecipeService(IHttpClientFactory clientFactory, IOptions<ServiceEndpoints> endpoints)
         {
-            _httpClient = clientFactory.CreateClient("service-registry-http-client");
+            _httpClient = clientFactory.CreateClient("recipe-service");
             _serviceEndpoints = endpoints.Value;
         }
 
