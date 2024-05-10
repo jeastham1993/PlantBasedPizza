@@ -13,9 +13,9 @@ export class PlantBasedPizzaSharedInfrastructureStack extends cdk.Stack {
     super(scope, id, props);
 
     const network = new Network(this, "PlantBasedPizzaNetworkResources");
-    const dnsName = 'api.dev.plantbasedpizza.net'
-    const certArn = 'arn:aws:acm:eu-west-1:730335273443:certificate/64e99a20-a978-4d62-822e-aef30de991a9';
-    const hostedZoneId = 'Z053065510LNHV8DTCP3R'
+    const dnsName = process.env['DNS_NAME']!
+    const certArn = process.env['CERT_ARN']!;
+    const hostedZoneId = process.env['HOSTED_ZONE_ID']!;
 
     const hostedZoned = HostedZone.fromHostedZoneAttributes(
       this,
@@ -82,7 +82,7 @@ export class PlantBasedPizzaSharedInfrastructureStack extends cdk.Stack {
     });
 
     const listenerArnParameter = new StringParameter(this, "ListenerArnParam", {
-      stringValue: httpListener.listenerArn,
+      stringValue: httpsListener.listenerArn,
       parameterName: '/shared/alb-listener'
     });
     

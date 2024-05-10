@@ -18,6 +18,8 @@ public class AccountApiInfraStack : Stack
             .ConfigureClient(System.Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID"), System.Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY"), System.Environment.GetEnvironmentVariable("AWS_SESSION_TOKEN"));
 
         var vpcIdParam = parameterProvider.Get("/shared/vpc-id");
+        var albArnParam = parameterProvider.Get("/shared/alb-arn");
+        var albListener = parameterProvider.Get("/shared/alb-listener");
         
         var bus = EventBus.FromEventBusName(this, "SharedEventBus", "PlantBasedPizzaEvents");
 
@@ -57,8 +59,8 @@ public class AccountApiInfraStack : Stack
             {
                 { "DatabaseConnection", Secret.FromSsmParameter(databaseConnectionParam) }
             },
-            "arn:aws:elasticloadbalancing:eu-west-1:730335273443:loadbalancer/app/plant-based-pizza-shared-ingress/1c948325c1df4e86",
-            "arn:aws:elasticloadbalancing:eu-west-1:730335273443:listener/app/plant-based-pizza-ingress/d99d1b57574af81c/d94d758d77bfc259",
+            albArnParam,
+            albListener,
             "/account/health",
             "/account/*",
             2
