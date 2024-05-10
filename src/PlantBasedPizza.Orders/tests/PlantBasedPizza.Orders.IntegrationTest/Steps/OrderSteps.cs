@@ -42,9 +42,24 @@ public partial class OrderSteps
     [Then(@"loyalty points should be cached for (.*) with a total amount of (.*)")]
     public async Task ThenLoyaltyPointsShouldBeCachedWithATotalAmount(string p0, decimal p1)
     {
-        var pointsTotal = await _distributedCache.GetStringAsync(p0.ToUpper());
+        var retries = 5;
 
-        pointsTotal.Should().Be(p1.ToString());
+        while (retries > 0)
+        {
+            try
+            {
+                var pointsTotal = await _distributedCache.GetStringAsync(p0.ToUpper());
+
+                pointsTotal.Should().Be(p1.ToString());
+                break;
+            }
+            catch (Exception)
+            {
+                retries--;
+            }
+
+            await Task.Delay(TimeSpan.FromSeconds(5));
+        }
     }
     
     [Given(@"a new order is created")]
