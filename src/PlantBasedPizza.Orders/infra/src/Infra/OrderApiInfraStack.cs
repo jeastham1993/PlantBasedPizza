@@ -26,7 +26,7 @@ public class OrderApiInfraStack : Stack
             VpcId = vpcIdParam
         });
 
-        var loadBalancer = ApplicationLoadBalancer.FromLookup(this, "SharedLoadBalancer",
+        var internalLoadBalancer = ApplicationLoadBalancer.FromLookup(this, "SharedLoadBalancer",
             new ApplicationLoadBalancerLookupOptions()
             {
                 LoadBalancerArn =
@@ -68,7 +68,7 @@ public class OrderApiInfraStack : Stack
                 { "BUILD_VERSION", "dev" },
                 { "RedisConnectionString", "" },
                 { "Services__PaymentInternal", "http://localhost:1234"},
-                { "Services__Recipes", $"http://{loadBalancer.LoadBalancerDnsName}"},
+                { "Services__Recipes", $"http://{internalLoadBalancer.LoadBalancerDnsName}"},
                 { "Auth__PaymentApiKey", "12345" },
             },
             new Dictionary<string, Secret>(1)
@@ -76,7 +76,7 @@ public class OrderApiInfraStack : Stack
                 { "DatabaseConnection", Secret.FromSsmParameter(databaseConnectionParam) }
             },
             "arn:aws:elasticloadbalancing:eu-west-1:730335273443:loadbalancer/app/plant-based-pizza-shared-ingress/1c948325c1df4e86",
-            "arn:aws:elasticloadbalancing:eu-west-1:730335273443:listener/app/plant-based-pizza-ingress/d99d1b57574af81c/396097df348029f2",
+            "arn:aws:elasticloadbalancing:eu-west-1:730335273443:listener/app/plant-based-pizza-ingress/d99d1b57574af81c/d94d758d77bfc259",
             "/order/health",
             "/order/*",
             106
@@ -101,7 +101,7 @@ public class OrderApiInfraStack : Stack
                 { "BUILD_VERSION", "dev" },
                 { "RedisConnectionString", "" },
                 { "Services__PaymentInternal", "http://localhost:1234"},
-                { "Services__Recipes", $"http://{loadBalancer.LoadBalancerDnsName}"},
+                { "Services__Recipes", $"http://{internalLoadBalancer.LoadBalancerDnsName}"},
                 { "QueueConfiguration__OrderQualityCheckedQueue", orderQualityCheckedQueueName},
                 { "QueueConfiguration__LoyaltyPointsUpdatedQueue", loyaltyPointsCheckedQueueName},
                 { "Auth__PaymentApiKey", "12345" },

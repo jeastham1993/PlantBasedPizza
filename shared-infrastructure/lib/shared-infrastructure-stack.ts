@@ -4,23 +4,58 @@ import { Network } from './network';
 import { EventBus } from 'aws-cdk-lib/aws-events';
 import { ApplicationListener, ApplicationLoadBalancer, ListenerAction} from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import { StringParameter } from 'aws-cdk-lib/aws-ssm';
+import { ARecord, HostedZone, RecordTarget } from 'aws-cdk-lib/aws-route53';
+import { Certificate } from 'aws-cdk-lib/aws-certificatemanager';
+import { LoadBalancerTarget } from 'aws-cdk-lib/aws-route53-targets';
 
 export class PlantBasedPizzaSharedInfrastructureStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
     const network = new Network(this, "PlantBasedPizzaNetworkResources");
+    const dnsName = 'api.dev.plantbasedpizza.net'
+    const certArn = 'arn:aws:acm:eu-west-1:730335273443:certificate/64e99a20-a978-4d62-822e-aef30de991a9';
+    const hostedZoneId = 'Z053065510LNHV8DTCP3R'
 
+    const hostedZoned = HostedZone.fromHostedZoneAttributes(
+      this,
+      "HostedZone",
+      {
+        zoneName: dnsName,
+        hostedZoneId: hostedZoneId,
+      }
+     );
+
+    const certificate = Certificate.fromCertificateArn(this, 'PlantBasedPizzaCert', certArn);
+    
     const sharedAlbWithListener = new ApplicationLoadBalancer(this, "ApplicationIngressWithListener", {
       loadBalancerName: "plant-based-pizza-ingress",
       vpc: network.vpc,
-      internetFacing: true
+      internetFacing: true,
     });
+
+    new ARecord(this, "DnsRecord", {
+      zone: hostedZoned,
+      recordName: dnsName,
+      target: RecordTarget.fromAlias(new LoadBalancerTarget(sharedAlbWithListener)),
+     });
+
     const httpListener = new ApplicationListener(this, "HttpListener", {
       loadBalancer: sharedAlbWithListener,
       port: 80,
       defaultAction: ListenerAction.fixedResponse(200)
     });
+    const httpsListener = new ApplicationListener(this, "HttpsListener", {
+      loadBalancer: sharedAlbWithListener,
+      port: 443,
+      defaultAction: ListenerAction.fixedResponse(200)
+    });
+
+    httpsListener.addCertificates('PlantBasedPizzaDomain', [
+      certificate
+    ]);
+
+
     const internalSharedAlbWithListener = new ApplicationLoadBalancer(this, "InternalApplicationIngressWithListener", {
       loadBalancerName: "shared-internal-ingress",
       vpc: network.vpc,

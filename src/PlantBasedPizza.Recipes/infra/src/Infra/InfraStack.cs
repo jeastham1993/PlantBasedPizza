@@ -61,7 +61,7 @@ namespace Infra
                     { "DatabaseConnection", Secret.FromSsmParameter(databaseConnectionParam) }
                 },
                 "arn:aws:elasticloadbalancing:eu-west-1:730335273443:loadbalancer/app/plant-based-pizza-shared-ingress/1c948325c1df4e86",
-                "arn:aws:elasticloadbalancing:eu-west-1:730335273443:listener/app/plant-based-pizza-ingress/d99d1b57574af81c/396097df348029f2",
+                "arn:aws:elasticloadbalancing:eu-west-1:730335273443:listener/app/plant-based-pizza-ingress/d99d1b57574af81c/d94d758d77bfc259",
                 "/recipes/health",
                 "/recipes/*",
                 51,
