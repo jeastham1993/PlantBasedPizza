@@ -22,11 +22,16 @@ namespace PlantBasedPizza.Shared
             IConfiguration configuration, string applicationName)
         {
             ApplicationLogger.Init();
-            Log.Logger = new LoggerConfiguration()
-                .Filter.ByExcluding(Matching.FromSource("Microsoft"))
+            var loggerConfiguration = new LoggerConfiguration()
                 .Enrich.With(new DataDogLogEnricher())
-                .WriteTo.Console(new CompactJsonFormatter())
-                .CreateLogger();
+                .WriteTo.Console(new CompactJsonFormatter());
+
+            if (Environment.GetEnvironmentVariable("TRACE_LOGS") != "Y")
+            {
+                loggerConfiguration.Filter.ByExcluding(Matching.FromSource("Microsoft"));
+            }
+
+            Log.Logger = loggerConfiguration.CreateLogger();
 
             services
                 .AddLogging()
