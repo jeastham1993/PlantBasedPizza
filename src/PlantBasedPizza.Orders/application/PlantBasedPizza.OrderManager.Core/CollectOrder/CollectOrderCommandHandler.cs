@@ -9,7 +9,7 @@ public class CollectOrderCommandHandler
     private readonly IOrderRepository _orderRepository;
     private readonly IOrderEventPublisher _eventPublisher;
 
-    public CollectOrderCommandHandler(IOrderRepository orderRepository, ILoyaltyPointService loyaltyPointService, IOrderEventPublisher eventPublisher)
+    public CollectOrderCommandHandler(IOrderRepository orderRepository, IOrderEventPublisher eventPublisher)
     {
         _orderRepository = orderRepository;
         _eventPublisher = eventPublisher;

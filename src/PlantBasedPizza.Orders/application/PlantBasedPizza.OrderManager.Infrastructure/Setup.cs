@@ -67,16 +67,6 @@ namespace PlantBasedPizza.OrderManager.Infrastructure
                 }
             };
             
-            services.AddGrpcClient<Loyalty.LoyaltyClient>(o =>
-            {
-                o.Address = new Uri(configuration["Services:LoyaltyInternal"]);
-            })
-            .ConfigureChannel((provider, channel) =>
-            {
-                channel.HttpHandler = provider.GetRequiredService<ServiceRegistryHttpMessageHandler>();
-                channel.ServiceConfig = new ServiceConfig() { MethodConfigs = { defaultMethodConfig } };
-            });
-            
             services.AddGrpcClient<Payment.PaymentClient>(o =>
                 {
                     o.Address = new Uri(configuration["Services:PaymentInternal"]);
@@ -106,7 +96,6 @@ namespace PlantBasedPizza.OrderManager.Infrastructure
             services.AddSingleton<CreateDeliveryOrderCommandHandler>();
             services.AddSingleton<CreatePickupOrderCommandHandler>();
             services.AddSingleton<IRecipeService, RecipeService>();
-            services.AddSingleton<ILoyaltyPointService, LoyaltyPointService>();
             services.AddSingleton<IPaymentService, PaymentService>();
             services.AddSingleton<OrderManagerHealthChecks>();
             services.AddSingleton<IOrderEventPublisher, OrderEventPublisher>();

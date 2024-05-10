@@ -184,11 +184,6 @@ namespace PlantBasedPizza.OrderManager.Core.Entities
             }
         }
 
-        public void AddCustomerLoyaltyPoints(decimal pointsAtTimeOfOrder)
-        {
-            this.LoyaltyPointsAtOrder = pointsAtTimeOfOrder;
-        }
-
         public void SubmitOrder(string correlationId = "")
         {
             if (!this._items.Any())

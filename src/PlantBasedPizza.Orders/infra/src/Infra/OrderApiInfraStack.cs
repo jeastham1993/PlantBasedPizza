@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Amazon.CDK;
 using Amazon.CDK.AWS.EC2;
 using Amazon.CDK.AWS.ECS;
+using Amazon.CDK.AWS.ElasticLoadBalancingV2;
 using Amazon.CDK.AWS.Events;
 using Amazon.CDK.AWS.SSM;
 using Constructs;
@@ -24,6 +25,13 @@ public class OrderApiInfraStack : Stack
         {
             VpcId = vpcIdParam
         });
+
+        var loadBalancer = ApplicationLoadBalancer.FromLookup(this, "SharedLoadBalancer",
+            new ApplicationLoadBalancerLookupOptions()
+            {
+                LoadBalancerArn =
+                    "arn:aws:elasticloadbalancing:eu-west-1:730335273443:loadbalancer/app/plant-based-pizza-shared-ingress/1c948325c1df4e86",
+            });
 
         var databaseConnectionParam = StringParameter.FromSecureStringParameterAttributes(this, "DatabaseParameter",
             new SecureStringParameterAttributes
@@ -59,10 +67,8 @@ public class OrderApiInfraStack : Stack
                 { "SERVICE_NAME", "OrderApi" },
                 { "BUILD_VERSION", "dev" },
                 { "RedisConnectionString", "" },
-                { "Services__Loyalty", "http://localhost:1234"},
-                { "Services__LoyaltyInternal", "http://localhost:1234"},
                 { "Services__PaymentInternal", "http://localhost:1234"},
-                { "Services__Recipes", "http://localhost:1234"},
+                { "Services__Recipes", $"http://{loadBalancer.LoadBalancerDnsName}"},
             },
             new Dictionary<string, Secret>(1)
             {
@@ -93,10 +99,8 @@ public class OrderApiInfraStack : Stack
                 { "SERVICE_NAME", "OrdersWorker" },
                 { "BUILD_VERSION", "dev" },
                 { "RedisConnectionString", "" },
-                { "Services__Loyalty", "http://localhost:1234"},
-                { "Services__LoyaltyInternal", "http://localhost:1234"},
                 { "Services__PaymentInternal", "http://localhost:1234"},
-                { "Services__Recipes", "http://localhost:1234"},
+                { "Services__Recipes", $"http://{loadBalancer.LoadBalancerDnsName}"},
                 { "QueueConfiguration__OrderQualityCheckedQueue", orderQualityCheckedQueueName},
                 { "QueueConfiguration__LoyaltyPointsUpdatedQueue", loyaltyPointsCheckedQueueName}
             },

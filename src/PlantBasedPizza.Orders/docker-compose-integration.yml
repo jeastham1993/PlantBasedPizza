@@ -60,8 +60,6 @@ services:
       - OtlpEndpoint=http://datadog-agent:4317
       - Environment=local
       - RedisConnectionString=cache
-      - Services__Loyalty=http://wiremock:8080
-      - Services__LoyaltyInternal=http://gripmock:4770
       - Services__PaymentInternal=http://gripmock:4770
       - Services__Recipes=http://wiremock:8080
       - ServiceDiscovery__MyUrl=
@@ -88,8 +86,6 @@ services:
       - DatabaseConnection=mongodb://mongodb:27017
       - OtlpEndpoint=http://datadog-agent:4317
       - RedisConnectionString=cache
-      - Services__Loyalty=http://wiremock:8080
-      - Services__LoyaltyInternal=http://gripmock:4770
       - Services__PaymentInternal=http://gripmock:4770
       - Services__Recipes=http://wiremock:8080
       - Environment=local

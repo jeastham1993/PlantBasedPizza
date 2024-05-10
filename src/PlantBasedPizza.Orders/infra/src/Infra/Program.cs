@@ -1,6 +1,4 @@
-﻿using System;
-using Amazon;
-using Amazon.CDK;
+﻿using Amazon.CDK;
 using Environment = Amazon.CDK.Environment;
 
 namespace Infra

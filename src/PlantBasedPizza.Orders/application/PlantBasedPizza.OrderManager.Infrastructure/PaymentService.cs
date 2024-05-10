@@ -21,6 +21,9 @@ public class PaymentService : IPaymentService
 
     public async Task<TakePaymentResult> TakePaymentFor(Order order)
     {
+        // Temporary implementation until inter-service comms in ECS are resolved.
+        return new TakePaymentResult("OK", true);
+        
         var result =
             await this._paymentClient.TakePaymentAsync(new TakePaymentRequest()
             {

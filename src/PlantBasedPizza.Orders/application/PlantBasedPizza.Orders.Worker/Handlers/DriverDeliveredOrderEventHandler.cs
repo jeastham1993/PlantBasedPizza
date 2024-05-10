@@ -1,6 +1,5 @@
 using PlantBasedPizza.Events;
 using PlantBasedPizza.OrderManager.Core.Entities;
-using PlantBasedPizza.OrderManager.Core.Services;
 using PlantBasedPizza.OrderManager.Infrastructure.IntegrationEvents;
 using PlantBasedPizza.Orders.Worker.IntegrationEvents;
 
@@ -11,7 +10,7 @@ namespace PlantBasedPizza.Orders.Worker.Handlers
         private readonly IOrderRepository _orderRepository;
         private readonly IEventPublisher _eventPublisher;
 
-        public DriverDeliveredOrderEventHandler(IOrderRepository orderRepository, ILoyaltyPointService loyaltyPointService, IEventPublisher eventPublisher)
+        public DriverDeliveredOrderEventHandler(IOrderRepository orderRepository, IEventPublisher eventPublisher)
         {
             _orderRepository = orderRepository;
             _eventPublisher = eventPublisher;
