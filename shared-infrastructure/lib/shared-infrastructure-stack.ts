@@ -16,7 +16,6 @@ export class PlantBasedPizzaSharedInfrastructureStack extends cdk.Stack {
       vpc: network.vpc,
       internetFacing: true
     });
-
     const httpListener = new ApplicationListener(this, "HttpListener", {
       loadBalancer: sharedAlbWithListener,
       port: 80,
