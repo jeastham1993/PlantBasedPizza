@@ -110,8 +110,8 @@ namespace PlantBasedPizza.Shared
                     options.RecordException = true;
                     options.FilterHttpRequestMessage = (req) =>
                     {
-                        // Skip collection of AWS SDK calls
-                        if (req.RequestUri.ToString().Contains("aws"))
+                        // Skip collection of AWS SDK calls or health check calls to other services
+                        if (req.RequestUri.ToString().Contains("aws") || req.RequestUri.ToString().Contains("health"))
                         {
                             return false;
                         }
