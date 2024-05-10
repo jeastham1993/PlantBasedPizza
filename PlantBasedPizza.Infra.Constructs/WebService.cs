@@ -8,7 +8,7 @@ using Constructs;
 
 namespace PlantBasedPizza.Infra.Constructs;
 
-public record ConstructProps(IVpc Vpc, ICluster cluster, string ServiceName, string DataDogApiKeyParameterName, string JwtKeyParameterName, string RepositoryName, string Tag, double Port, Dictionary<string, string> EnvironmentVariables, Dictionary<string, Amazon.CDK.AWS.ECS.Secret> Secrets, string SharedLoadBalancerArn, string SharedListenerArn, string HealthCheckPath, string PathPattern, int Priority);
+public record ConstructProps(IVpc Vpc, ICluster cluster, string ServiceName, string DataDogApiKeyParameterName, string JwtKeyParameterName, string RepositoryName, string Tag, double Port, Dictionary<string, string> EnvironmentVariables, Dictionary<string, Amazon.CDK.AWS.ECS.Secret> Secrets, string SharedLoadBalancerArn, string SharedListenerArn, string HealthCheckPath, string PathPattern, int Priority, string InternalSharedLoadBalancerArn = null, string InternalSharedListenerArn = null);
 
 public class WebService : Construct
 {
@@ -199,5 +199,39 @@ public class WebService : Construct
         ddApiKeyParam.GrantRead(ExecutionRole);
         jwtKeyParam.GrantRead(ExecutionRole);
         repository.GrantPull(ExecutionRole);
+
+        if (!string.IsNullOrEmpty(props.InternalSharedListenerArn) && !string.IsNullOrEmpty(props.InternalSharedLoadBalancerArn))
+        {
+            var internalTargetGroup = new ApplicationTargetGroup(this, $"{props.ServiceName}InternalTargetGroup", new ApplicationTargetGroupProps()
+            {
+                Port = 8080,
+                Targets = new List<IApplicationLoadBalancerTarget>(1)
+                {
+                    service
+                }.ToArray(),
+                HealthCheck = new Amazon.CDK.AWS.ElasticLoadBalancingV2.HealthCheck()
+                {
+                    Port = props.Port.ToString(),
+                    Path = props.HealthCheckPath,
+                    HealthyHttpCodes = "200-404"
+                },
+                Vpc = props.Vpc
+            });
+            
+            var internalListener = ApplicationListener.FromLookup(this, "InternalHttpListener",
+                new ApplicationListenerLookupOptions()
+                {
+                    LoadBalancerArn =
+                        props.InternalSharedLoadBalancerArn,
+                    ListenerPort = 80,
+                    ListenerArn = props.InternalSharedListenerArn
+                });
+            internalListener.AddTargetGroups("ECS", new AddApplicationTargetGroupsProps()
+            {
+                Conditions = [ListenerCondition.PathPatterns([props.PathPattern])],
+                Priority = props.Priority,
+                TargetGroups = [internalTargetGroup]
+            });
+        }
     }
 }

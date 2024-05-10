@@ -64,7 +64,9 @@ namespace Infra
                 "arn:aws:elasticloadbalancing:eu-west-1:730335273443:listener/app/plant-based-pizza-ingress/d99d1b57574af81c/396097df348029f2",
                 "/recipes/health",
                 "/recipes/*",
-                51
+                51,
+                "arn:aws:elasticloadbalancing:eu-west-1:730335273443:loadbalancer/app/shared-internal-ingress/9de88d725cd4f625",
+                "arn:aws:elasticloadbalancing:eu-west-1:730335273443:listener/app/shared-internal-ingress/9de88d725cd4f625/f8d74568dc44c789"
             ));
 
             databaseConnectionParam.GrantRead(recipeService.ExecutionRole);

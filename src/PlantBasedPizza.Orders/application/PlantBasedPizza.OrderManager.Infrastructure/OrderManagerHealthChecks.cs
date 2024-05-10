@@ -21,7 +21,7 @@ public class OrderManagerHealthChecks
         
         try
         {
-            var res = await _httpClient.GetAsync($"{_serviceEndpoints.Recipes}/health");
+            var res = await _httpClient.GetAsync($"{_serviceEndpoints.Recipes}/recipes/health");
 
             if (!res.IsSuccessStatusCode)
             {

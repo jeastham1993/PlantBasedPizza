@@ -21,6 +21,16 @@ export class PlantBasedPizzaSharedInfrastructureStack extends cdk.Stack {
       port: 80,
       defaultAction: ListenerAction.fixedResponse(200)
     });
+    const internalSharedAlbWithListener = new ApplicationLoadBalancer(this, "InternalApplicationIngressWithListener", {
+      loadBalancerName: "shared-internal-ingress",
+      vpc: network.vpc,
+      internetFacing: false
+    });
+    const internalHttpListener = new ApplicationListener(this, "InternalHttpListener", {
+      loadBalancer: internalSharedAlbWithListener,
+      port: 80,
+      defaultAction: ListenerAction.fixedResponse(200)
+    });
 
     const eventBus = new EventBus(this, "PlantBasedPizzaEventBus", {
       eventBusName: 'PlantBasedPizzaEvents'
@@ -39,6 +49,21 @@ export class PlantBasedPizzaSharedInfrastructureStack extends cdk.Stack {
     const listenerArnParameter = new StringParameter(this, "ListenerArnParam", {
       stringValue: httpListener.listenerArn,
       parameterName: '/shared/alb-listener'
+    });
+    
+    const internalAlbEndpointParameter = new StringParameter(this, "InternalALBEndpointParam", {
+      stringValue: `http://${internalSharedAlbWithListener.loadBalancerDnsName}`,
+      parameterName: '/shared/internal-alb-endpoint'
+    });
+
+    const internalAlbArnParameter = new StringParameter(this, "InternalALBArnParam", {
+      stringValue: internalSharedAlbWithListener.loadBalancerArn,
+      parameterName: '/shared/internal-alb-arn'
+    });
+
+    const internalListenerArnParameter = new StringParameter(this, "InternalListenerArnParam", {
+      stringValue: internalHttpListener.listenerArn,
+      parameterName: '/shared/internal-alb-listener'
     });
 
     const eventBusName = new StringParameter(this, "EventBusNameParam", {

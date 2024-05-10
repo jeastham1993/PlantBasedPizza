@@ -30,7 +30,7 @@ public class OrderApiInfraStack : Stack
             new ApplicationLoadBalancerLookupOptions()
             {
                 LoadBalancerArn =
-                    "arn:aws:elasticloadbalancing:eu-west-1:730335273443:loadbalancer/app/plant-based-pizza-shared-ingress/1c948325c1df4e86",
+                    "arn:aws:elasticloadbalancing:eu-west-1:730335273443:loadbalancer/app/shared-internal-ingress/9de88d725cd4f625",
             });
 
         var databaseConnectionParam = StringParameter.FromSecureStringParameterAttributes(this, "DatabaseParameter",
@@ -68,7 +68,7 @@ public class OrderApiInfraStack : Stack
                 { "BUILD_VERSION", "dev" },
                 { "RedisConnectionString", "" },
                 { "Services__PaymentInternal", "http://localhost:1234"},
-                { "Services__Recipes", $"http://{loadBalancer.LoadBalancerDnsName}/recipes"},
+                { "Services__Recipes", $"http://{loadBalancer.LoadBalancerDnsName}"},
                 { "Auth__PaymentApiKey", "12345" },
             },
             new Dictionary<string, Secret>(1)
@@ -101,7 +101,7 @@ public class OrderApiInfraStack : Stack
                 { "BUILD_VERSION", "dev" },
                 { "RedisConnectionString", "" },
                 { "Services__PaymentInternal", "http://localhost:1234"},
-                { "Services__Recipes", $"http://{loadBalancer.LoadBalancerDnsName}/recipes"},
+                { "Services__Recipes", $"http://{loadBalancer.LoadBalancerDnsName}"},
                 { "QueueConfiguration__OrderQualityCheckedQueue", orderQualityCheckedQueueName},
                 { "QueueConfiguration__LoyaltyPointsUpdatedQueue", loyaltyPointsCheckedQueueName},
                 { "Auth__PaymentApiKey", "12345" },
