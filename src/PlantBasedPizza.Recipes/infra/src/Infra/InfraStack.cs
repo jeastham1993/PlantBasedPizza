@@ -41,7 +41,8 @@ namespace Infra
                 });
 
             var cluster = new Cluster(this, "RecipeServiceCluster", new ClusterProps(){
-                Vpc = vpc
+                Vpc = vpc,
+                EnableFargateCapacityProviders = true,
             });
         
             var commitHash = System.Environment.GetEnvironmentVariable("COMMIT_HASH") ?? "latest";
@@ -53,7 +54,7 @@ namespace Infra
                 "/shared/dd-api-key",
                 "/shared/jwt-key",
                 "recipe-api",
-                commitHash ?? "latest",
+                commitHash,
                 8080,
                 new Dictionary<string, string>
                 {

@@ -44,7 +44,8 @@ public class OrderApiInfraStack : Stack
 
         var cluster = new Cluster(this, "OrdersServiceCluster", new ClusterProps
         {
-            Vpc = vpc
+            Vpc = vpc,
+            EnableFargateCapacityProviders = true,
         });
         
         var commitHash = System.Environment.GetEnvironmentVariable("COMMIT_HASH") ?? "latest";

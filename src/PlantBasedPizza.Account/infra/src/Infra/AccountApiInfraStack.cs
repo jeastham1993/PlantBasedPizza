@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using Amazon.CDK;
+using Amazon.CDK.AWS.AutoScaling;
 using Amazon.CDK.AWS.EC2;
 using Amazon.CDK.AWS.ECS;
 using Amazon.CDK.AWS.Events;
 using Amazon.CDK.AWS.SSM;
 using Constructs;
 using PlantBasedPizza.Infra.Constructs;
+using IBlockDevice = Amazon.CDK.AWS.AutoScaling.IBlockDevice;
 
 namespace Infra;
 
@@ -36,7 +38,9 @@ public class AccountApiInfraStack : Stack
 
         var cluster = new Cluster(this, "AccountServiceCluster", new ClusterProps
         {
-            Vpc = vpc
+            EnableFargateCapacityProviders = true,
+            Vpc = vpc,
+
         });
         
         var commitHash = System.Environment.GetEnvironmentVariable("COMMIT_HASH") ?? "latest";
@@ -48,7 +52,7 @@ public class AccountApiInfraStack : Stack
             "/shared/dd-api-key",
             "/shared/jwt-key",
             "account-api",
-            commitHash ?? "latest",
+            commitHash,
             8080,
             new Dictionary<string, string>
             {
