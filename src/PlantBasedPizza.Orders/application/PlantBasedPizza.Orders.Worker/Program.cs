@@ -28,11 +28,11 @@ builder.Services.AddSingleton<OrderPreparingEventHandler>();
 builder.Services.AddSingleton<OrderPrepCompleteEventHandler>();
 builder.Services.AddSingleton<OrderQualityCheckedEventHandler>();
 
-// builder.Services.AddHostedService<DriverCollectedOrderEventWorker>();
-// builder.Services.AddHostedService<DriverDeliveredOrderEventWorker>();
-// builder.Services.AddHostedService<OrderBakedEventWorker>();
-// builder.Services.AddHostedService<OrderPreparingEventWorker>();
-// builder.Services.AddHostedService<OrderPrepCompleteEventWorker>();
+builder.Services.AddHostedService<DriverCollectedOrderEventWorker>();
+builder.Services.AddHostedService<DriverDeliveredOrderEventWorker>();
+builder.Services.AddHostedService<OrderBakedEventWorker>();
+builder.Services.AddHostedService<OrderPreparingEventWorker>();
+builder.Services.AddHostedService<OrderPrepCompleteEventWorker>();
 builder.Services.AddHostedService<LoyaltyPointsUpdatedCacheWorker>();
 builder.Services.AddHostedService<OrderQualityCheckedEventWorker>();
 

@@ -17,8 +17,15 @@ public class OrdersApiTestInfrastructureStack : Stack
             EventBusName = $"test.orders.{stackProps.Version}"
         });
 
-        var loyaltyPointsUpdatedQueue = MapEventToTestQueue(bus, "LoyaltyUpdatedQueue", stackProps, "https://orders.test.plantbasedpizza/", "loyalty.customerLoyaltyPointsUpdated.v1");
+        var ordersTestSource = "https://orders.test.plantbasedpizza/";
+        
+        var preparingQueue = MapEventToTestQueue(bus, "OrderPreparingQueue", stackProps, ordersTestSource, "kitchen.orderPreparing.v1");
+        var prepCompleteQueue = MapEventToTestQueue(bus, "OrderPrepCompleteQueue", stackProps, ordersTestSource, "kitchen.orderPrepComplete.v1");
+        var bakedQueue = MapEventToTestQueue(bus, "OrderBakedQueue", stackProps, ordersTestSource, "kitchen.orderBaked.v1");
         var orderQualityCheckedQueue = MapEventToTestQueue(bus, "OrderQualityCheckedQueue", stackProps, "https://tests.orders/", "kitchen.orderQualityChecked.v1");
+        var driverDeliveredQueue = MapEventToTestQueue(bus, "DriverDeliveredOrderQueue", stackProps, ordersTestSource, "delivery.driverDeliveredOrder.v1");
+        var driverCollectedQueue = MapEventToTestQueue(bus, "DriverCollectedOrderQueue", stackProps, ordersTestSource, "delivery.driverCollectedOrder.v1");
+        var loyaltyPointsUpdatedQueue = MapEventToTestQueue(bus, "LoyaltyUpdatedQueue", stackProps, ordersTestSource, "loyalty.customerLoyaltyPointsUpdated.v1");
 
         var eventBus = new CfnOutput(this, "EBOutput", new CfnOutputProps()
         {
@@ -39,7 +46,7 @@ public class OrdersApiTestInfrastructureStack : Stack
 
     private Queue MapEventToTestQueue(EventBus bus, string queueName, ApplicationStackProps stackProps, string eventSource, string detailType)
     {
-        if (!eventSource.EndsWith("/"))
+        if (!eventSource.EndsWith('/'))
         {
             eventSource += "/";
         }
