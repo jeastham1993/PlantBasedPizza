@@ -16,3 +16,23 @@ Scenario: OrderCanBeCreated
 @CanProcessOrderPreparingEvent
 Scenario: CanHandleOrderPreparingEvent
     Given a OrderPreparingEvent is published for customer james
+    
+@CanProcessOrderBakedEvent
+Scenario: CanHandleOrderBakedEvent
+    Given a OrderBakedEvent is published for customer james
+    
+@CanProcessOrderPrepCompleteEvent
+Scenario: CanHandleOrderPrepCompleteEvent
+    Given a OrderPrepCompleteEvent is published for customer james
+    
+@CanProcessOrderQualityCheckedEvent
+Scenario: CanHandleOrderQualityCheckedEvent
+    Given a OrderQualityCheckedEvent is published for customer james
+    
+@CanProcessDriverDeliveredEvent
+Scenario: CanHandleDriverDeliveredEvent
+    Given a DriverDeliveredOrderEvent is published for customer james
+  
+@CanProcessDriverCollectedEvent
+Scenario: CanHandleDriverCollectedEvent
+    Given a DriverCollectedOrderEvent is published for customer james

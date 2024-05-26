@@ -46,7 +46,7 @@ public class OrdersTestDriver
             });
 
             // Delay to allow for message processing
-            await Task.Delay(TimeSpan.FromSeconds(20));
+            await Task.Delay(TimeSpan.FromSeconds(2));
         }
 
         public async Task SimulateOrderPreparingEvent(string kitchenIdentifier, string orderIdentifier)
@@ -58,7 +58,66 @@ public class OrdersTestDriver
             });
 
             // Delay to allow for message processing
-            await Task.Delay(TimeSpan.FromSeconds(20));
+            await Task.Delay(TimeSpan.FromSeconds(2));
+        }
+
+        public async Task SimulateOrderPrepCompleteEvent(string kitchenIdentifier, string orderIdentifier)
+        {
+            await this._eventPublisher.Publish(new OrderPrepCompleteEventV1()
+            {
+                KitchenIdentifier = kitchenIdentifier,
+                OrderIdentifier = orderIdentifier
+            });
+
+            // Delay to allow for message processing
+            await Task.Delay(TimeSpan.FromSeconds(2));
+        }
+
+        public async Task SimulateOrderBakedEvent(string kitchenIdentifier, string orderIdentifier)
+        {
+            await this._eventPublisher.Publish(new OrderBakedEventV1()
+            {
+                KitchenIdentifier = kitchenIdentifier,
+                OrderIdentifier = orderIdentifier
+            });
+
+            // Delay to allow for message processing
+            await Task.Delay(TimeSpan.FromSeconds(2));
+        }
+
+        public async Task SimulateOrderQualityCheckedEvent(string kitchenIdentifier, string orderIdentifier)
+        {
+            await this._eventPublisher.Publish(new OrderQualityCheckedEventV1()
+            {
+                KitchenIdentifier = kitchenIdentifier,
+                OrderIdentifier = orderIdentifier
+            });
+
+            // Delay to allow for message processing
+            await Task.Delay(TimeSpan.FromSeconds(2));
+        }
+
+        public async Task SimulateDriverCollectedEvent(string kitchenIdentifier, string orderIdentifier)
+        {
+            await this._eventPublisher.Publish(new DriverCollectedOrderEventV1()
+            {
+                DriverName = "james",
+                OrderIdentifier = orderIdentifier
+            });
+
+            // Delay to allow for message processing
+            await Task.Delay(TimeSpan.FromSeconds(2));
+        }
+
+        public async Task SimulateDriverDeliveredEvent(string kitchenIdentifier, string orderIdentifier)
+        {
+            await this._eventPublisher.Publish(new DriverDeliveredOrderEventV1()
+            {
+                OrderIdentifier = orderIdentifier,
+            });
+
+            // Delay to allow for message processing
+            await Task.Delay(TimeSpan.FromSeconds(2));
         }
         
         public async Task AddNewDeliveryOrder(string orderIdentifier, string customerIdentifier)
