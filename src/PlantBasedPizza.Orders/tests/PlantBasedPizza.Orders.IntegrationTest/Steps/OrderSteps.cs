@@ -3,7 +3,6 @@ using FluentAssertions;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.Extensions.Options;
-using PlantBasedPizza.OrderManager.Core.Entities;
 using PlantBasedPizza.Orders.IntegrationTest.Drivers;
 using StackExchange.Redis;
 using TechTalk.SpecFlow;
@@ -38,11 +37,19 @@ public partial class OrderSteps
 
         await this._driver.SimulateLoyaltyPointsUpdatedEvent(p0, p1);
     }
+    
+    [Given(@"a OrderPreparingEvent is published for customer (.*)")]
+    public async Task GivenAnOrderPreparingEventIsPublished(string p0)
+    {
+        Activity.Current = _scenarioContext.Get<Activity>("Activity");
+
+        await this._driver.SimulateOrderPreparingEvent("kitchen-id", p0);
+    }
 
     [Then(@"loyalty points should be cached for (.*) with a total amount of (.*)")]
     public async Task ThenLoyaltyPointsShouldBeCachedWithATotalAmount(string p0, decimal p1)
     {
-        var retries = 5;
+        var retries = 2;
 
         while (retries > 0)
         {
@@ -58,7 +65,7 @@ public partial class OrderSteps
                 retries--;
             }
 
-            await Task.Delay(TimeSpan.FromSeconds(5));
+            await Task.Delay(TimeSpan.FromSeconds(1));
         }
     }
     

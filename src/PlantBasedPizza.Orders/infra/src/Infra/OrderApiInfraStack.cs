@@ -4,6 +4,10 @@ using Amazon.CDK.AWS.EC2;
 using Amazon.CDK.AWS.ECS;
 using Amazon.CDK.AWS.ElasticLoadBalancingV2;
 using Amazon.CDK.AWS.Events;
+using Amazon.CDK.AWS.IAM;
+using Amazon.CDK.AWS.Lambda;
+using Amazon.CDK.AWS.Lambda.DotNet;
+using Amazon.CDK.AWS.Lambda.EventSources;
 using Amazon.CDK.AWS.SSM;
 using Constructs;
 using PlantBasedPizza.Infra.Constructs;
@@ -96,6 +100,10 @@ public class OrderApiInfraStack : Stack
             "/order/*",
             106
         ));
+
+        var backgroundWorker = new BackgroundWorker(this, "OrdersWorkerFunctions",
+            new BackgroundWorkerProps(new SharedInfrastructureProps(vpc, bus, internalLoadBalancer, commitHash, "dev"),
+                "../application", databaseConnectionParam, loyaltyPointsQueue.Queue, driverCollectedOrderQueue.Queue, driverDeliveredOrderQueue.Queue, orderBakedQueue.Queue, orderPrepCompleteQueue.Queue, orderPreparingQueue.Queue, orderQualityCheckedQueue.Queue));
         
         databaseConnectionParam.GrantRead(orderApiService.ExecutionRole);
         bus.GrantPutEventsTo(orderApiService.TaskRole);

@@ -1,0 +1,134 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Transform": "AWS::Serverless-2016-10-31",
+  "Description": "An AWS Serverless Application. This template is partially managed by Amazon.Lambda.Annotations (v1.2.0.0).",
+  "Resources": {
+    "BackgroundWorkersFunctionsHandleLoyaltyPointsUpdateGenerated": {
+      "Type": "AWS::Serverless::Function",
+      "Metadata": {
+        "Tool": "Amazon.Lambda.Annotations"
+      },
+      "Properties": {
+        "Runtime": "dotnet6",
+        "CodeUri": ".",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Policies": [
+          "AWSLambdaBasicExecutionRole"
+        ],
+        "PackageType": "Zip",
+        "Handler": "BackgroundWorkers::BackgroundWorkers.Functions_HandleLoyaltyPointsUpdate_Generated::HandleLoyaltyPointsUpdate"
+      }
+    },
+    "BackgroundWorkersFunctionsHandleDriverCollectedOrderGenerated": {
+      "Type": "AWS::Serverless::Function",
+      "Metadata": {
+        "Tool": "Amazon.Lambda.Annotations"
+      },
+      "Properties": {
+        "Runtime": "dotnet6",
+        "CodeUri": ".",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Policies": [
+          "AWSLambdaBasicExecutionRole"
+        ],
+        "PackageType": "Zip",
+        "Handler": "BackgroundWorkers::BackgroundWorkers.Functions_HandleDriverCollectedOrder_Generated::HandleDriverCollectedOrder"
+      }
+    },
+    "BackgroundWorkersFunctionsHandleDriverDeliveredOrderGenerated": {
+      "Type": "AWS::Serverless::Function",
+      "Metadata": {
+        "Tool": "Amazon.Lambda.Annotations"
+      },
+      "Properties": {
+        "Runtime": "dotnet6",
+        "CodeUri": ".",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Policies": [
+          "AWSLambdaBasicExecutionRole"
+        ],
+        "PackageType": "Zip",
+        "Handler": "BackgroundWorkers::BackgroundWorkers.Functions_HandleDriverDeliveredOrder_Generated::HandleDriverDeliveredOrder"
+      }
+    },
+    "BackgroundWorkersFunctionsHandleOrderBakedEventGenerated": {
+      "Type": "AWS::Serverless::Function",
+      "Metadata": {
+        "Tool": "Amazon.Lambda.Annotations"
+      },
+      "Properties": {
+        "Runtime": "dotnet6",
+        "CodeUri": ".",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Policies": [
+          "AWSLambdaBasicExecutionRole"
+        ],
+        "PackageType": "Zip",
+        "Handler": "BackgroundWorkers::BackgroundWorkers.Functions_HandleOrderBakedEvent_Generated::HandleOrderBakedEvent"
+      }
+    },
+    "BackgroundWorkersFunctionsHandleOrderPreparingEventGenerated": {
+      "Type": "AWS::Serverless::Function",
+      "Metadata": {
+        "Tool": "Amazon.Lambda.Annotations"
+      },
+      "Properties": {
+        "Runtime": "dotnet6",
+        "CodeUri": ".",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Policies": [
+          "AWSLambdaBasicExecutionRole"
+        ],
+        "PackageType": "Zip",
+        "Handler": "BackgroundWorkers::BackgroundWorkers.Functions_HandleOrderPreparingEvent_Generated::HandleOrderPreparingEvent"
+      }
+    },
+    "BackgroundWorkersFunctionsHandleOrderPrepCompleteEventGenerated": {
+      "Type": "AWS::Serverless::Function",
+      "Metadata": {
+        "Tool": "Amazon.Lambda.Annotations"
+      },
+      "Properties": {
+        "Runtime": "dotnet6",
+        "CodeUri": ".",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Policies": [
+          "AWSLambdaBasicExecutionRole"
+        ],
+        "PackageType": "Zip",
+        "Handler": "BackgroundWorkers::BackgroundWorkers.Functions_HandleOrderPrepCompleteEvent_Generated::HandleOrderPrepCompleteEvent"
+      }
+    },
+    "BackgroundWorkersFunctionsHandleOrderQualityCheckedEventGenerated": {
+      "Type": "AWS::Serverless::Function",
+      "Metadata": {
+        "Tool": "Amazon.Lambda.Annotations"
+      },
+      "Properties": {
+        "Runtime": "dotnet6",
+        "CodeUri": ".",
+        "MemorySize": 256,
+        "Timeout": 30,
+        "Policies": [
+          "AWSLambdaBasicExecutionRole"
+        ],
+        "PackageType": "Zip",
+        "Handler": "BackgroundWorkers::BackgroundWorkers.Functions_HandleOrderQualityCheckedEvent_Generated::HandleOrderQualityCheckedEvent"
+      }
+    }
+  },
+  "Outputs": {
+    "ApiURL": {
+      "Description": "API endpoint URL for Prod environment",
+      "Value": {
+        "Fn::Sub": "https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com/"
+      }
+    }
+  }
+}

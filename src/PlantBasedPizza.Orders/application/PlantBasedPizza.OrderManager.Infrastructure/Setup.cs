@@ -21,11 +21,11 @@ namespace PlantBasedPizza.OrderManager.Infrastructure
     public static class Setup
     {
         public static IServiceCollection AddOrderManagerInfrastructure(this IServiceCollection services,
-            IConfiguration configuration)
+            IConfiguration configuration, string overrideDatabaseConnection = null)
         {
             services.Configure<ServiceEndpoints>(configuration.GetSection("Services"));
             
-            var client = new MongoClient(configuration["DatabaseConnection"]);
+            var client = new MongoClient(overrideDatabaseConnection ?? configuration["DatabaseConnection"]);
 
             services.AddSingleton(client);
             

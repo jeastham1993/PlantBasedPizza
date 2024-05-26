@@ -21,6 +21,7 @@ namespace PlantBasedPizza.Shared
             ApplicationLogger.Init();
             var loggerConfiguration = new LoggerConfiguration()
                 .Enrich.With(new DataDogLogEnricher())
+                .Enrich.FromLogContext()
                 .WriteTo.Console(new CompactJsonFormatter());
 
             if (Environment.GetEnvironmentVariable("TRACE_LOGS") != "Y")

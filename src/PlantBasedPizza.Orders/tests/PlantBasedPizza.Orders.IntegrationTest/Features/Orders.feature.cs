@@ -80,16 +80,16 @@ namespace PlantBasedPizza.Orders.IntegrationTest.Features
             this.TestTearDown();
         }
         
-        [Xunit.SkippableFactAttribute(DisplayName="Loyalty Point Updates are cached")]
+        [Xunit.SkippableFactAttribute(DisplayName="LoyaltyPointsUpdatedAreCached")]
         [Xunit.TraitAttribute("FeatureTitle", "Orders")]
-        [Xunit.TraitAttribute("Description", "Loyalty Point Updates are cached")]
+        [Xunit.TraitAttribute("Description", "LoyaltyPointsUpdatedAreCached")]
         [Xunit.TraitAttribute("Category", "LoyaltyPointUpdatesAreCached")]
-        public void LoyaltyPointUpdatesAreCached()
+        public void LoyaltyPointsUpdatedAreCached()
         {
             string[] tagsOfScenario = new string[] {
                     "LoyaltyPointUpdatesAreCached"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Loyalty Point Updates are cached", null, tagsOfScenario, argumentsOfScenario, featureTags);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("LoyaltyPointsUpdatedAreCached", null, tagsOfScenario, argumentsOfScenario, featureTags);
 #line 5
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
@@ -111,16 +111,16 @@ this.ScenarioInitialize(scenarioInfo);
             this.ScenarioCleanup();
         }
         
-        [Xunit.SkippableFactAttribute(DisplayName="Order can be created")]
+        [Xunit.SkippableFactAttribute(DisplayName="OrderCanBeCreated")]
         [Xunit.TraitAttribute("FeatureTitle", "Orders")]
-        [Xunit.TraitAttribute("Description", "Order can be created")]
+        [Xunit.TraitAttribute("Description", "OrderCanBeCreated")]
         [Xunit.TraitAttribute("Category", "OrderWorkflow")]
         public void OrderCanBeCreated()
         {
             string[] tagsOfScenario = new string[] {
                     "OrderWorkflow"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Order can be created", null, tagsOfScenario, argumentsOfScenario, featureTags);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("OrderCanBeCreated", null, tagsOfScenario, argumentsOfScenario, featureTags);
 #line 10
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
@@ -142,6 +142,33 @@ this.ScenarioInitialize(scenarioInfo);
 #line hidden
 #line 14
     testRunner.Then("order should contain a Submitted order. event", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [Xunit.SkippableFactAttribute(DisplayName="CanHandleOrderPreparingEvent")]
+        [Xunit.TraitAttribute("FeatureTitle", "Orders")]
+        [Xunit.TraitAttribute("Description", "CanHandleOrderPreparingEvent")]
+        [Xunit.TraitAttribute("Category", "CanProcessOrderPreparingEvent")]
+        public void CanHandleOrderPreparingEvent()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "CanProcessOrderPreparingEvent"};
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("CanHandleOrderPreparingEvent", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 17
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 18
+    testRunner.Given("a OrderPreparingEvent is published for customer james", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
             }
             this.ScenarioCleanup();

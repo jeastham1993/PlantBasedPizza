@@ -9,14 +9,12 @@ namespace PlantBasedPizza.Orders.IntegrationTest.Hooks;
 [Binding]
 public static class Hook
 {
-    private const string SERVICE_NAME = "OrdersService";
+    private const string SERVICE_NAME = "OrdersIntegrationTests";
     
     public static ActivitySource Source { get; private set; }
     public static TracerProvider TracerProvider { get; private set; }
     
     public static Activity CurrentActivity { get; private set; }
-    
-    public static Activity RootActivity { get; private set; }
     
     [BeforeTestRun]
     public static void BeforeTestRun()
@@ -37,13 +35,14 @@ public static class Hook
 
         TracerProvider = traceConfig.Build();
         Source = new ActivitySource(SERVICE_NAME);
-        RootActivity = Source.StartActivity("integration-test-run");
     }
 
     [BeforeScenario]
     public static void BeforeScenario(ScenarioContext scenarioContext)
     {
-        CurrentActivity = Source.StartActivity(scenarioContext.ScenarioInfo.Title, ActivityKind.Client, RootActivity.Context);
+        CurrentActivity = Source.StartActivity(scenarioContext.ScenarioInfo.Title, ActivityKind.Client);
+        CurrentActivity.AddTag("integration-test", true);
+        CurrentActivity.AddTag("build-version", Environment.GetEnvironmentVariable("BUILD_VERSION"));
         
         scenarioContext.Add("Activity", CurrentActivity);
     }
@@ -52,12 +51,6 @@ public static class Hook
     public static void AfterScenario()
     {
         CurrentActivity.Stop();
-    }
-
-    [AfterTestRun]
-    public static void AfterTestRun()
-    {
-        RootActivity.Stop();
         TracerProvider.ForceFlush();
     }
 }

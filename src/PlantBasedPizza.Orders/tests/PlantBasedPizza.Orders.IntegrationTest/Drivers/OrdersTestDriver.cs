@@ -1,7 +1,7 @@
 using System.Net.Http.Headers;
 using System.Text;
 using Amazon.EventBridge;
-using Microsoft.Extensions.Logging;
+using BackgroundWorkers.IntegrationEvents;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using PlantBasedPizza.Events;
@@ -11,8 +11,6 @@ using PlantBasedPizza.OrderManager.Core.CollectOrder;
 using PlantBasedPizza.OrderManager.Core.CreateDeliveryOrder;
 using PlantBasedPizza.OrderManager.Core.CreatePickupOrder;
 using PlantBasedPizza.Orders.IntegrationTest.ViewModels;
-using PlantBasedPizza.Orders.Worker.IntegrationEvents;
-using Serilog.Extensions.Logging;
 
 namespace PlantBasedPizza.Orders.IntegrationTest.Drivers;
 
@@ -45,6 +43,18 @@ public class OrdersTestDriver
             {
                 CustomerIdentifier = customerIdentifier,
                 TotalLoyaltyPoints = totalPoints
+            });
+
+            // Delay to allow for message processing
+            await Task.Delay(TimeSpan.FromSeconds(20));
+        }
+
+        public async Task SimulateOrderPreparingEvent(string kitchenIdentifier, string orderIdentifier)
+        {
+            await this._eventPublisher.Publish(new OrderPreparingEventV1()
+            {
+                KitchenIdentifier = kitchenIdentifier,
+                OrderIdentifier = orderIdentifier
             });
 
             // Delay to allow for message processing
