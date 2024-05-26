@@ -110,8 +110,10 @@ public class KitchenInfraStack : Stack
             "/kitchen/health"
         ));
         
-        orderSubmittedQueue.Queue.GrantConsumeMessages(kitchenApiService.TaskRole);
+        orderSubmittedQueue.Queue.GrantConsumeMessages(kitchenWorker.TaskRole);
         databaseConnectionParam.GrantRead(kitchenApiService.ExecutionRole);
         bus.GrantPutEventsTo(kitchenApiService.TaskRole);
+        databaseConnectionParam.GrantRead(kitchenWorker.ExecutionRole);
+        bus.GrantPutEventsTo(kitchenWorker.TaskRole);
     }
 }
