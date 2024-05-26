@@ -8,24 +8,11 @@ services:
       - PGID=1000
     expose:
       - 27017
-
-  jaeger:
-    image: jaegertracing/opentelemetry-all-in-one:latest
-    expose:
-      - 16686
-      - 13133
-      - 4317
-      - 4318
   
   cache:
     image: redis:7.2
     ports:
       - "6379:6379"
-
-  consul:
-    image: hashicorp/consul:latest
-    ports:
-      - 8500:8500
 
   wiremock:
     image: wiremock/wiremock:latest
@@ -34,12 +21,23 @@ services:
     volumes:
       - ./mocks/recipe-api:/home/wiremock
 
-  rabbitmq:
-    image: rabbitmq:3-management-alpine
-    ports:
-        - "5672:5672"
-    healthcheck:
-      test: rabbitmq-diagnostics -q ping
+  datadog-agent:
+    image: datadog/agent
+    pid: host
+    expose:
+      - 4317
+      - 4318
+    environment:
+      - DD_OTLP_CONFIG_RECEIVER_PROTOCOLS_GRPC_ENDPOINT=0.0.0.0:4317
+      - DD_OTLP_CONFIG_RECEIVER_PROTOCOLS_HTTP_ENDPOINT-0.0.0.0:4318
+      - DD_ENV=${IMAGE_TAG}
+      - DD_SITE=datadoghq.eu
+      - DD_SERVICE=OrdersService
+      - DD_API_KEY=${DD_API_KEY}
+    volumes:
+     - /var/run/docker.sock:/var/run/docker.sock
+     - /proc/:/host/proc/:ro
+     - /sys/fs/cgroup:/host/sys/fs/cgroup:ro
 
   local.kitchen-api:
     image: ${REGISTRY}/kitchen-api:${IMAGE_TAG}
@@ -58,11 +56,16 @@ services:
       - ServiceDiscovery__MyUrl=
       - ServiceDiscovery__ServiceName=KitchenApi
       - ServiceDiscovery__ConsulServiceEndpoint=
-      - Messaging__HostName=rabbitmq
-      - Messaging__ExchangeName=dev.kitchen
       - Auth__Issuer=https://plantbasedpizza.com
       - Auth__Audience=https://plantbasedpizza.com
       - Auth__Key=This is a sample secret key - please don't use in production environment.'
+      - Messaging__BusName=dev.kitchen
+      - AWS_REGION=eu-west-1
+      - SERVICE_NAME=KitchenService
+      - BUILD_VERSION=${IMAGE_TAG}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_SESSION_TOKEN=${AWS_SESSION_TOKEN}
 
   local.kitchen-worker:
     image: ${REGISTRY}/kitchen-worker:${IMAGE_TAG}
@@ -79,5 +82,10 @@ services:
       - ServiceDiscovery__MyUrl=
       - ServiceDiscovery__ServiceName=KitchenWorker
       - ServiceDiscovery__ConsulServiceEndpoint=
-      - Messaging__HostName=rabbitmq
-      - Messaging__ExchangeName=dev.kitchen
+      - Messaging__BusName=dev.kitchen
+      - AWS_REGION=eu-west-1
+      - SERVICE_NAME=KitchenService
+      - BUILD_VERSION=${IMAGE_TAG}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_SESSION_TOKEN=${AWS_SESSION_TOKEN}
