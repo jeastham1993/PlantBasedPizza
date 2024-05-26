@@ -100,7 +100,7 @@ public class KitchenInfraStack : Stack
                 { "RedisConnectionString", "" },
                 { "Services__PaymentInternal", "http://localhost:1234"},
                 { "Services__Recipes", $"http://{internalLoadBalancer.LoadBalancerDnsName}"},
-                { "QueueConfiguration__OrderSubmittedQueue", orderSubmittedQueue.Queue.QueueName},
+                { "QueueConfiguration__OrderSubmittedQueue", orderSubmittedQueueName},
                 { "Auth__PaymentApiKey", "12345" },
             },
             new Dictionary<string, Secret>(1)
@@ -109,7 +109,7 @@ public class KitchenInfraStack : Stack
             },
             "/kitchen/health"
         ));
-
+        
         orderSubmittedQueue.Queue.GrantConsumeMessages(kitchenApiService.TaskRole);
         databaseConnectionParam.GrantRead(kitchenApiService.ExecutionRole);
         bus.GrantPutEventsTo(kitchenApiService.TaskRole);
