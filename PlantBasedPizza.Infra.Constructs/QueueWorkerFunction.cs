@@ -20,7 +20,7 @@ public class QueueWorkerFunction : Construct
         
         var defaultEnvironmentVariables = new Dictionary<string, string>()
         {
-            { "SERVICE_NAME", functionName },
+            { "SERVICE_NAME", props.ServiceName },
             { "BUILD_VERSION", "dev" },
             { "OtlpEndpoint", "http://localhost:4318/v1/traces" },
             { "OtlpUseHttp", "Y" },
@@ -32,7 +32,7 @@ public class QueueWorkerFunction : Construct
             { "Auth__Audience", "https://plantbasedpizza.com" },
             { "ENV", System.Environment.GetEnvironmentVariable("DEPLOYMENT_ENV") ?? "dev" },
             { "DD_ENV", System.Environment.GetEnvironmentVariable("DEPLOYMENT_ENV") ?? "dev" },
-            { "DD_SERVICE", functionName },
+            { "DD_SERVICE", props.ServiceName },
             { "DD_VERSION", props.CommitHash },
             { "DD_API_KEY", System.Environment.GetEnvironmentVariable("DATADOG_API_KEY") ?? "" },
             { "DD_OTLP_CONFIG_RECEIVER_PROTOCOLS_HTTP_ENDPOINT", "localhost:4318" },

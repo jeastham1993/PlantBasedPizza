@@ -38,6 +38,10 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8'
+      - name: Install .NET Lambda tooling
+        shell: bash
+        run: |
+          dotnet tool install -g Amazon.Lambda.Tools
       - name: Install DD trace
         run: dotnet tool update -g dd-trace
       - name: Configure AWS Credentials
@@ -64,7 +68,7 @@ jobs:
           echo "IMAGE_TAG=$(git rev-parse --short "$GITHUB_SHA")" >> $GITHUB_ENV
           echo "DD_API_KEY=${{secrets.dd_api_key}}" >> $GITHUB_ENV
           echo "BUILD_VERSION=${{ env.sha_short }}" >> $GITHUB_ENV
-      - name: Deploy
+      - name: Deploy Test Infrastructure
         shell: bash
         env:
           COMMIT_HASH: ${{ env.sha_short }}
