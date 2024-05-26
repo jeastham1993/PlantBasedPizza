@@ -38,7 +38,7 @@ public class OrdersApiTestInfrastructureStack : Stack
         var loyaltyPointsQueue = new EventQueue(this, "LoyaltyUpdatedQueue", new EventQueueProps(bus, "LoyaltyUpdatedQueue", "dev", ordersTestSource, "loyalty.customerLoyaltyPointsUpdated.v1"));
 
         var backgroundWorker = new BackgroundWorker(this, "OrdersWorkerTestFunction",
-            new BackgroundWorkerProps(new SharedInfrastructureProps(null, bus, null, "int-test", "dev"),
+            new BackgroundWorkerProps(new SharedInfrastructureProps(null, bus, null, "int-test", stackProps.Version),
                 "../../application", databaseConnectionParam, loyaltyPointsQueue.Queue, driverCollectedQueue.Queue, driverDeliveredQueue.Queue, bakedQueue.Queue, prepCompleteQueue.Queue, preparingQueue.Queue, orderQualityCheckedQueue.Queue));
 
         var eventBus = new CfnOutput(this, "EBOutput", new CfnOutputProps()

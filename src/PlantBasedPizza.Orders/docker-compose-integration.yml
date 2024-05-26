@@ -39,7 +39,7 @@ services:
     environment:
       - DD_OTLP_CONFIG_RECEIVER_PROTOCOLS_GRPC_ENDPOINT=0.0.0.0:4317
       - DD_OTLP_CONFIG_RECEIVER_PROTOCOLS_HTTP_ENDPOINT-0.0.0.0:4318
-      - DD_ENV=test
+      - DD_ENV=${IMAGE_TAG}
       - DD_SITE=datadoghq.eu
       - DD_SERVICE=OrdersService
       - DD_API_KEY=${DD_API_KEY}
