@@ -11,8 +11,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "application", "application"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Orders.Api", "application\PlantBasedPizza.Orders.Api\PlantBasedPizza.Orders.Api.csproj", "{41F0172E-A539-4383-A933-90359FE7A3D9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Orders.Worker", "application\PlantBasedPizza.Orders.Worker\PlantBasedPizza.Orders.Worker.csproj", "{A8B8657F-E3EE-4478-810E-9405E7906A0D}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.OrderManager.Core", "application\PlantBasedPizza.OrderManager.Core\PlantBasedPizza.OrderManager.Core.csproj", "{DFA46E1A-67E4-4487-91B4-AC3EF75D1236}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.OrderManager.Infrastructure", "application\PlantBasedPizza.OrderManager.Infrastructure\PlantBasedPizza.OrderManager.Infrastructure.csproj", "{3B406C76-F7C9-4EE1-8892-528AA941E14C}"
@@ -54,10 +52,6 @@ Global
 		{41F0172E-A539-4383-A933-90359FE7A3D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{41F0172E-A539-4383-A933-90359FE7A3D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{41F0172E-A539-4383-A933-90359FE7A3D9}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A8B8657F-E3EE-4478-810E-9405E7906A0D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A8B8657F-E3EE-4478-810E-9405E7906A0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A8B8657F-E3EE-4478-810E-9405E7906A0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A8B8657F-E3EE-4478-810E-9405E7906A0D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DFA46E1A-67E4-4487-91B4-AC3EF75D1236}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DFA46E1A-67E4-4487-91B4-AC3EF75D1236}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DFA46E1A-67E4-4487-91B4-AC3EF75D1236}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -93,7 +87,6 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{41F0172E-A539-4383-A933-90359FE7A3D9} = {2924F5AF-B05B-4CB7-B014-B63EB001CAF3}
-		{A8B8657F-E3EE-4478-810E-9405E7906A0D} = {2924F5AF-B05B-4CB7-B014-B63EB001CAF3}
 		{DFA46E1A-67E4-4487-91B4-AC3EF75D1236} = {2924F5AF-B05B-4CB7-B014-B63EB001CAF3}
 		{3B406C76-F7C9-4EE1-8892-528AA941E14C} = {2924F5AF-B05B-4CB7-B014-B63EB001CAF3}
 		{6CC45480-EB3E-420F-9B60-CAA817538791} = {998837E2-79F7-4A7A-AA07-232AA72E1C76}
