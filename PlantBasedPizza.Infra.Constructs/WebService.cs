@@ -2,13 +2,14 @@ using Amazon.CDK.AWS.EC2;
 using Amazon.CDK.AWS.ECR;
 using Amazon.CDK.AWS.ECS;
 using Amazon.CDK.AWS.ElasticLoadBalancingV2;
+using Amazon.CDK.AWS.FSx;
 using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.SSM;
 using Constructs;
 
 namespace PlantBasedPizza.Infra.Constructs;
 
-public record ConstructProps(IVpc Vpc, ICluster cluster, string ServiceName, string DataDogApiKeyParameterName, string JwtKeyParameterName, string RepositoryName, string Tag, double Port, Dictionary<string, string> EnvironmentVariables, Dictionary<string, Amazon.CDK.AWS.ECS.Secret> Secrets, string SharedLoadBalancerArn, string SharedListenerArn, string HealthCheckPath, string PathPattern, int Priority, string InternalSharedLoadBalancerArn = null, string InternalSharedListenerArn = null);
+public record ConstructProps(IVpc Vpc, ICluster cluster, string ServiceName, string Environment, string DataDogApiKeyParameterName, string JwtKeyParameterName, string RepositoryName, string Tag, double Port, Dictionary<string, string> EnvironmentVariables, Dictionary<string, Amazon.CDK.AWS.ECS.Secret> Secrets, string SharedLoadBalancerArn, string SharedListenerArn, string HealthCheckPath, string PathPattern, int Priority, string InternalSharedLoadBalancerArn = null, string InternalSharedListenerArn = null);
 
 public class WebService : Construct
 {
@@ -55,15 +56,15 @@ public class WebService : Construct
         {
             { "OtlpEndpoint", "http://127.0.0.1:4318/v1/traces" },
             { "OtlpUseHttp", "Y" },
-            { "Environment", "dev" },
+            { "Environment", props.Environment },
             { "ServiceDiscovery__MyUrl", "" },
             { "ServiceDiscovery__ServiceName", "" },
             { "ServiceDiscovery__ConsulServiceEndpoint", "" },
             { "Auth__Issuer", "https://plantbasedpizza.com" },
             { "Auth__Audience", "https://plantbasedpizza.com" },
             { "ECS_ENABLE_CONTAINER_METADATA", "true" },
-            { "ENV", Environment.GetEnvironmentVariable("DEPLOYMENT_ENV") ?? "dev"},
-            { "DD_ENV", Environment.GetEnvironmentVariable("DEPLOYMENT_ENV") ?? "dev"},
+            { "ENV", props.Environment},
+            { "DD_ENV", props.Environment},
             { "DD_SERVICE", props.ServiceName},
             { "DD_VERSION", props.Tag}
         };
@@ -113,7 +114,7 @@ public class WebService : Construct
                 }
             }),
         });
-        container.AddDockerLabel("com.datadoghq.tags.env", System.Environment.GetEnvironmentVariable("DEPLOYMENT_ENV") ?? "dev");
+        container.AddDockerLabel("com.datadoghq.tags.env", props.Environment);
         container.AddDockerLabel("com.datadoghq.tags.service", props.ServiceName);
         container.AddDockerLabel("com.datadoghq.tags.version", props.Tag);
 
@@ -140,7 +141,7 @@ public class WebService : Construct
                      { "DD_OTLP_CONFIG_RECEIVER_PROTOCOLS_GRPC_ENDPOINT", "0.0.0.0:4317" },
                      { "DD_OTLP_CONFIG_RECEIVER_PROTOCOLS_HTTP_ENDPOINT", "0.0.0.0:4318" },
                      { "DD_OTLP_CONFIG_TRACES_PROBABILISTIC_SAMPLER_SAMPLING_PERCENTAGE", "80"},
-                     { "DD_ENV", Environment.GetEnvironmentVariable("DEPLOYMENT_ENV") ?? "dev"},
+                     { "DD_ENV", props.Environment},
                      { "DD_SERVICE", props.ServiceName},
                      { "DD_VERSION", props.Tag}
                  },
