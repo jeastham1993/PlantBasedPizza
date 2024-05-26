@@ -10,7 +10,7 @@ namespace Infra
         public static void Main(string[] args)
         {
             var app = new App();
-            new KitchenInfraStack(app, "AccountServiceInfraStack", new StackProps()
+            new KitchenInfraStack(app, "KitchenServiceInfraStack", new StackProps()
             {
                 Env = new Environment()
                 {
