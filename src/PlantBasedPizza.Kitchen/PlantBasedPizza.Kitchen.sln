@@ -10,6 +10,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlantBasedPizza.Kitchen.UnitTests", "tests\PlantBasedPizza.Kitchen.UnitTests\PlantBasedPizza.Kitchen.UnitTests.csproj", "{B9E3D152-AC8F-4F31-88FB-4C644F91434E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "application", "application", "{7864F94B-A0E7-4986-8947-E4D507C132AF}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose-integration.yml = docker-compose-integration.yml
+		docker-compose.yml = docker-compose.yml
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlantBasedPizza.Kitchen.Worker", "application\PlantBasedPizza.Kitchen.Worker\PlantBasedPizza.Kitchen.Worker.csproj", "{70EBE558-1A12-4052-B7DC-446354C022B5}"
 EndProject
