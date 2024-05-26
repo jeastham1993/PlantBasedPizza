@@ -18,7 +18,7 @@ permissions:
 
 jobs:
   build-api-image:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@microservices-module-6
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@feature/aws-serverless
     with:
       unit-test-folder: src/PlantBasedPizza.Kitchen/tests/PlantBasedPizza.Kitchen.UnitTests
       image-name: kitchen-api
@@ -27,7 +27,7 @@ jobs:
       deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
       ecr-registry: ${{secrets.ECR_REGISTRY}}
   build-worker-image:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@microservices-module-6
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@feature/aws-serverless
     with:
       unit-test-folder: src/PlantBasedPizza.Kitchen/tests/PlantBasedPizza.Kitchen.UnitTests
       image-name: kitchen-worker
@@ -36,7 +36,7 @@ jobs:
       deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
       ecr-registry: ${{secrets.ECR_REGISTRY}}
   integration-test:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/integration-test-base.yaml@microservices-module-6
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/integration-test-base.yaml@feature/aws-serverless
     needs:
       - build-api-image
       - build-worker-image
