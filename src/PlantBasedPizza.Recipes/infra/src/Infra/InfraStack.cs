@@ -29,6 +29,8 @@ namespace Infra
 
             var bus = EventBus.FromEventBusName(this, "SharedEventBus", "PlantBasedPizzaEvents");
 
+            var environment = System.Environment.GetEnvironmentVariable("ENV") ?? "test";
+
             var vpc = Vpc.FromLookup(this, "MainVpc", new VpcLookupOptions()
             {
                 VpcId = vpcIdParam,
@@ -51,6 +53,7 @@ namespace Infra
                 vpc,
                 cluster,
                 "RecipeApi",
+                environment,
                 "/shared/dd-api-key",
                 "/shared/jwt-key",
                 "recipe-api",
