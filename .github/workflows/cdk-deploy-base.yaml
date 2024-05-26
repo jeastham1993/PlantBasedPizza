@@ -34,6 +34,10 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8'
+      - name: Install .NET Lambda tooling
+        shell: bash
+        run: |
+          dotnet tool install -g Amazon.Lambda.Tools
       - name: Set Commit Hash Environment Variables
         shell: bash
         run: |

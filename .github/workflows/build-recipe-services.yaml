@@ -45,6 +45,9 @@ jobs:
   deploy-to-dev:
     uses: jeastham1993/PlantBasedPizza/.github/workflows/cdk-deploy-base.yaml@feature/aws-serverless
     needs: integration-test
+    concurrency:
+      group: orders-dev-deploy
+      cancel-in-progress: false
     with:
       cdk-folder: "src/PlantBasedPizza.Recipes/infra"
       environment: "dev"
