@@ -26,6 +26,7 @@ public class OrderApiInfraStack : Stack
         var albListener = parameterProvider.Get("/shared/alb-listener");
         var internalAlbArnParam = parameterProvider.Get("/shared/internal-alb-arn");
         var internalAlbListener = parameterProvider.Get("/shared/internal-alb-listener");
+        
         var environment = System.Environment.GetEnvironmentVariable("ENV");
         
         var bus = EventBus.FromEventBusName(this, "SharedEventBus", "PlantBasedPizzaEvents");

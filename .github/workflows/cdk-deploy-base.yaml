@@ -46,7 +46,7 @@ jobs:
         shell: bash
         env:
           COMMIT_HASH: ${{ env.sha_short }}
-          DEPLOYMENT_ENV: ${{inputs.environment}}
+          ENV: ${{inputs.environment}}
         run: |
           cd ${{ inputs.cdk-folder }}
           cdk deploy --region eu-west-1 --require-approval never

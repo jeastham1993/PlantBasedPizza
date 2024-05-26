@@ -72,7 +72,7 @@ jobs:
         shell: bash
         env:
           COMMIT_HASH: ${{ env.sha_short }}
-          DEPLOYMENT_ENV: ${{inputs.environment}}
+          ENV: ${{inputs.environment}}
           BUILD_VERSION: "${{ env.sha_short }}"
         run: |
           cd ${{ inputs.test-infrastructure-folder }}
@@ -108,7 +108,7 @@ jobs:
         shell: bash
         env:
           COMMIT_HASH: ${{ env.sha_short }}
-          DEPLOYMENT_ENV: ${{inputs.environment}}
+          ENV: ${{inputs.environment}}
           BUILD_VERSION: ${{ env.sha_short }}
         run: |
           cd ${{ inputs.test-infrastructure-folder }}
