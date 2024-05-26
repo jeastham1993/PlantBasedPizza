@@ -1,11 +1,9 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
-using PlantBasedPizza.Events;
 using PlantBasedPizza.Kitchen.Core.Entities;
 using PlantBasedPizza.Kitchen.Core.Services;
 using PlantBasedPizza.Kitchen.Infrastructure.IntegrationEvents;
-using PlantBasedPizza.Shared.ServiceDiscovery;
 using Polly;
 using Polly.Contrib.WaitAndRetry;
 using Polly.Extensions.Http;
@@ -31,8 +29,7 @@ namespace PlantBasedPizza.Kitchen.Infrastructure
                 map.SetIgnoreExtraElementsIsInherited(true);
             });
             
-            services.AddHttpClient("service-registry-http-client")
-                .AddHttpMessageHandler<ServiceRegistryHttpMessageHandler>()
+            services.AddHttpClient("recipe-service")
                 .SetHandlerLifetime(TimeSpan.FromMinutes(5))
                 .AddPolicyHandler(GetRetryPolicy());
             

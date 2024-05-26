@@ -6,6 +6,8 @@ using Amazon.SQS;
 using Amazon.SQS.Model;
 using CloudNative.CloudEvents;
 using CloudNative.CloudEvents.SystemTextJson;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.Extensions.Logging;
 using Serilog;
 
 namespace PlantBasedPizza.Events;
@@ -13,15 +15,19 @@ namespace PlantBasedPizza.Events;
 public class SqsEventSubscriber
 {
     private readonly AmazonSQSClient _sqsClient;
+    private readonly ILogger<SqsEventSubscriber> _logger;
 
-    public SqsEventSubscriber(AmazonSQSClient sqsClient)
+    public SqsEventSubscriber(AmazonSQSClient sqsClient, ILogger<SqsEventSubscriber> logger)
     {
         _sqsClient = sqsClient;
+        _logger = logger;
     }
 
     public async Task<string> GetQueueUrl(string queue)
     {
         var queueName = $"{queue}-{Environment.GetEnvironmentVariable("BUILD_VERSION")}";
+        
+        this._logger.LogInformation(queueName);
         
         var describeQueue =
             await this._sqsClient.GetQueueUrlAsync(queueName);

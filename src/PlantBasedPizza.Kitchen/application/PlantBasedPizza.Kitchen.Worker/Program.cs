@@ -16,6 +16,8 @@ builder.Services
     .AddMessaging(builder.Configuration)
     .AddKitchenInfrastructure(builder.Configuration);
 
+builder.Services.Configure<QueueConfiguration>(builder.Configuration.GetSection("QueueConfiguration"));
+
 builder.Services.AddSingleton<OrderSubmittedEventHandler>();
 
 builder.Services.AddHostedService<OrderSubmittedEventWorker>();
