@@ -22,6 +22,7 @@ public class AccountApiInfraStack : Stack
         var vpcIdParam = parameterProvider.Get("/shared/vpc-id");
         var albArnParam = parameterProvider.Get("/shared/alb-arn");
         var albListener = parameterProvider.Get("/shared/alb-listener");
+        var environment = System.Environment.GetEnvironmentVariable("ENV") ?? "test";
         
         var bus = EventBus.FromEventBusName(this, "SharedEventBus", "PlantBasedPizzaEvents");
 
@@ -49,6 +50,7 @@ public class AccountApiInfraStack : Stack
             vpc,
             cluster,
             "AccountApi",
+            environment,
             "/shared/dd-api-key",
             "/shared/jwt-key",
             "account-api",
