@@ -19,9 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="PlantBasedPizza.Infra.Constructs">
-      <HintPath>..\..\..\..\..\..\PlantBasedPizza.Infra.Constructs\bin\Debug\net8.0\PlantBasedPizza.Infra.Constructs.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\..\..\..\..\..\PlantBasedPizza.Infra.Constructs\PlantBasedPizza.Infra.Constructs.csproj" />
   </ItemGroup>
 
 </Project>

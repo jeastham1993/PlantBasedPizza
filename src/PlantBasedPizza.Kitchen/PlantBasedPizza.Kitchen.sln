@@ -33,6 +33,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Shared", ".
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Events", "..\shared\PlantBasedPizza.Events\PlantBasedPizza.Events.csproj", "{F035A222-200E-4000-9694-26D40C94C36A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Infra.Constructs", "..\..\PlantBasedPizza.Infra.Constructs\PlantBasedPizza.Infra.Constructs.csproj", "{A8A43D08-0542-468D-A027-B73E646A02C2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -79,6 +81,10 @@ Global
 		{F035A222-200E-4000-9694-26D40C94C36A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F035A222-200E-4000-9694-26D40C94C36A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F035A222-200E-4000-9694-26D40C94C36A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A8A43D08-0542-468D-A027-B73E646A02C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A8A43D08-0542-468D-A027-B73E646A02C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A8A43D08-0542-468D-A027-B73E646A02C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A8A43D08-0542-468D-A027-B73E646A02C2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -95,6 +101,7 @@ Global
 		{9BD2D85F-E8A4-40BB-8463-89E556468D55} = {5EA189E3-6433-4DAC-B832-5FBF0B7D12B8}
 		{499A55C1-4B25-4EAA-9370-98E50F01BAEB} = {771DFC57-4080-47BE-9403-3585A10512B5}
 		{F035A222-200E-4000-9694-26D40C94C36A} = {771DFC57-4080-47BE-9403-3585A10512B5}
+		{A8A43D08-0542-468D-A027-B73E646A02C2} = {771DFC57-4080-47BE-9403-3585A10512B5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {87752EEE-5BFA-4930-80E4-9EAE529BC0E5}
