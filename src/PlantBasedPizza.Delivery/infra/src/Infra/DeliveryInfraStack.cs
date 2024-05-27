@@ -49,7 +49,7 @@ public class DeliveryInfraStack : Stack
                 ParameterName = "/shared/database-connection"
             });
 
-        var cluster = new Cluster(this, "KitchenServiceCluster", new ClusterProps
+        var cluster = new Cluster(this, "DeliveryServiceCluster", new ClusterProps
         {
             EnableFargateCapacityProviders = true,
             Vpc = vpc,
