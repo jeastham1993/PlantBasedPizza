@@ -63,6 +63,7 @@ jobs:
     concurrency:
       group: kitchen-dev-deploy
       cancel-in-progress: false
+      
     with:
       cdk-folder: "src/PlantBasedPizza.Kitchen/infra"
       environment: "dev"

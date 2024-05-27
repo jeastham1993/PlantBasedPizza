@@ -1,5 +1,5 @@
 import { CfnOutput } from "aws-cdk-lib";
-import { GatewayVpcEndpointAwsService, IVpc, SecurityGroup, SubnetType, Vpc } from "aws-cdk-lib/aws-ec2";
+import { CfnRoute, GatewayVpcEndpointAwsService, IVpc, SecurityGroup, SubnetType, Vpc } from "aws-cdk-lib/aws-ec2";
 import { StringParameter } from "aws-cdk-lib/aws-ssm";
 import { Construct } from "constructs";
 
@@ -9,6 +9,8 @@ export class Network extends Construct {
 
     constructor(scope: Construct, id: string) {
         super(scope, id);
+
+        const natInstanceId = process.env['NAT_INSTANCE_ID']!;
 
         this.vpc = new Vpc(this, "PlantBasedPizzaNetwork", {
             natGateways: 0,
@@ -33,6 +35,15 @@ export class Network extends Construct {
           this.vpc.addGatewayEndpoint("s3Endpoint", {
             service: GatewayVpcEndpointAwsService.S3,
           });
+
+          this.vpc.privateSubnets.forEach(({ routeTable: { routeTableId } }, index) => {
+            new CfnRoute(this, 'PrivateSubnetOutboundToNatInstance' + index, {
+              destinationCidrBlock: '0.0.0.0/0',
+              routeTableId,
+              instanceId: natInstanceId
+            })
+            
+          })
       
           const noInboundAllOutboundSecurityGroup = new SecurityGroup(this, "noInboundAllOutboundSecurityGroup", {
             vpc: this.vpc,
