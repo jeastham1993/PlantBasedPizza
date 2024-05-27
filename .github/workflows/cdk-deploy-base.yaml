@@ -13,6 +13,9 @@ on:
       deploy-role-arn:
         description: 'The role for the AWS IAM role to use for deployment'
         required: true
+      dd-api-key:
+        description: 'The role for the AWS IAM role to use for deployment'
+        required: true
 
 permissions:
   id-token: write
@@ -51,6 +54,7 @@ jobs:
         env:
           COMMIT_HASH: ${{ env.sha_short }}
           ENV: ${{inputs.environment}}
+          DD_API_KEY: ${{secrets.dd-api-key}}
         run: |
           cd ${{ inputs.cdk-folder }}
           cdk deploy --region eu-west-1 --require-approval never

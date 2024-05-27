@@ -21,6 +21,8 @@ public class OrderRepository : IOrderRepository
 
     public async Task<Order> Retrieve(string orderIdentifier)
     {
+        using var dataAccessActivity = Activity.Current?.Source.StartActivity("DataAccess");
+        
         var queryBuilder = Builders<Order>.Filter.Eq(p => p.OrderIdentifier, orderIdentifier);
 
         var order = await this._orders.Find(queryBuilder).FirstOrDefaultAsync().ConfigureAwait(false);
@@ -36,6 +38,8 @@ public class OrderRepository : IOrderRepository
 
     public async Task<bool> Exists(string orderIdentifier)
     {
+        using var dataAccessActivity = Activity.Current?.Source.StartActivity("DataAccess");
+        
         var queryBuilder = Builders<Order>.Filter.Eq(p => p.OrderIdentifier, orderIdentifier);
 
         var order = await this._orders.Find(queryBuilder).FirstOrDefaultAsync().ConfigureAwait(false);
@@ -45,6 +49,8 @@ public class OrderRepository : IOrderRepository
 
     public async Task<List<Order>> GetAwaitingCollection()
     {
+        using var dataAccessActivity = Activity.Current?.Source.StartActivity("DataAccess");
+        
         var order = await this._orders.Find(p => p.OrderType == OrderType.Pickup && p.AwaitingCollection).ToListAsync();
 
         return order;
@@ -52,6 +58,8 @@ public class OrderRepository : IOrderRepository
 
     public async Task Update(Order order)
     {
+        using var dataAccessActivity = Activity.Current?.Source.StartActivity("DataAccess");
+        
         var queryBuilder = Builders<Order>.Filter.Eq(ord => ord.OrderIdentifier, order.OrderIdentifier);
 
         await this._orders.ReplaceOneAsync(queryBuilder, order);

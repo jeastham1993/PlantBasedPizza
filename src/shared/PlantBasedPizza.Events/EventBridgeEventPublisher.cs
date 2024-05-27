@@ -21,14 +21,18 @@ public class EventBridgeEventPublisher : IEventPublisher
     public async Task Publish(IntegrationEvent evt)
     {
         var eventType = $"{evt.EventName}.{evt.EventVersion}";
+
+        using var publishActivity = Activity.Current?.Source.StartActivity($"Publishing{eventType}");
         
         var eventId = Guid.NewGuid()
             .ToString();
 
-        Activity.Current?.AddTag("messaging.eventId", eventId);
-        Activity.Current?.AddTag("messaging.eventType", evt.EventName);
-        Activity.Current?.AddTag("messaging.eventVersion", evt.EventVersion);
-        Activity.Current?.AddTag("messaging.eventSource", evt.Source);
+        publishActivity.AddTag("messaging.eventId", eventId);
+        publishActivity.AddTag("messaging.eventType", eventType);
+        publishActivity.AddTag("messaging.eventName", evt.EventName);
+        publishActivity.AddTag("messaging.eventVersion", evt.EventVersion);
+        publishActivity.AddTag("messaging.eventSource", evt.Source);
+        publishActivity.AddTag("messaging.busName", _settings.BusName);
 
         var evtWrapper = new CloudEvent
         {
@@ -62,5 +66,7 @@ public class EventBridgeEventPublisher : IEventPublisher
                 }
             }
         });
+
+        publishActivity.AddTag("messaging.failures", publishResponse.FailedEntryCount);
     }
 }
