@@ -30,7 +30,7 @@ public class KitchenServiceTestInfrastructure : Stack
 
         var eventBus = new CfnOutput(this, "EBOutput", new CfnOutputProps()
         {
-            ExportName = $"EventBusName-{stackProps.Version}",
+            ExportName = $"Kitche-EventBusName-{stackProps.Version}",
             Value = bus.EventBusName
         });
     }

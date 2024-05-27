@@ -43,7 +43,7 @@ public class OrdersApiTestInfrastructureStack : Stack
 
         var eventBus = new CfnOutput(this, "EBOutput", new CfnOutputProps()
         {
-            ExportName = $"EventBusName-{stackProps.Version}",
+            ExportName = $"Orders-EventBusName-{stackProps.Version}",
             Value = bus.EventBusName
         });
     }
