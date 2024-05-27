@@ -1,0 +1,98 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "application", "application", "{CADE2131-4F80-4960-BBA1-3484E0C3AE27}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.LoyaltyPoints", "application\PlantBasedPizza.LoyaltyPoints.Api\PlantBasedPizza.LoyaltyPoints.csproj", "{F359F972-D1D7-4FD4-B640-913608FC8539}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackgroundWorkers", "application\BackgroundWorkers\BackgroundWorkers.csproj", "{F3ADE187-A9DF-4C43-AD83-B7C1855EF69C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.LoyaltyPoints.Shared", "application\PlantBasedPizza.LoyaltyPoints.Shared\PlantBasedPizza.LoyaltyPoints.Shared.csproj", "{FD54FA54-9030-4CB1-B2A0-2F470F708A93}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.LoyaltyPoints.Internal", "application\PlantBasedPizza.LoyaltyPoints.Internal\PlantBasedPizza.LoyaltyPoints.Internal.csproj", "{19C9ED3D-42DE-4210-8930-C84972E45789}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "infra", "infra", "{312AA3D1-DC57-4FFA-A2D1-267DF5CD7304}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{214BF5BA-2E08-45E3-A497-85A4AFF1AC1E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infra", "infra\src\Infra\Infra.csproj", "{BCE6971E-C217-46E9-9774-84988E41A732}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{9E61DCAB-015F-428A-8889-74492303E060}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.LoyaltyPoints.UnitTest", "tests\PlantBasedPizza.LoyaltyPoints.UnitTest\PlantBasedPizza.LoyaltyPoints.UnitTest.csproj", "{B88D381C-AC10-468E-8ED4-A53EC699B943}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.LoyaltyPoints.IntegrationTest", "tests\PlantBasedPizza.LoyaltyPoints.IntegrationTest\PlantBasedPizza.LoyaltyPoints.IntegrationTest.csproj", "{0800A5FF-11EB-4A1C-9AC3-37D3E7E6042E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "TestInfrastructure", "TestInfrastructure", "{8D414050-6720-43E7-8DA6-025FA5237AC5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{A064F7D1-DA42-45B3-9FC2-C333508140B4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestInfrastructure", "tests\TestInfrastructure\src\TestInfrastructure\TestInfrastructure.csproj", "{364E8897-C8EB-4BAF-9D5E-AAB818E3D2CD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "shared", "shared", "{27CDF56D-A28F-4199-9A06-CC19C2280258}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Infra.Constructs", "..\..\PlantBasedPizza.Infra.Constructs\PlantBasedPizza.Infra.Constructs.csproj", "{54422D81-2AB7-4C65-B8B4-98CB2C51901E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F359F972-D1D7-4FD4-B640-913608FC8539}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F359F972-D1D7-4FD4-B640-913608FC8539}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F359F972-D1D7-4FD4-B640-913608FC8539}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F359F972-D1D7-4FD4-B640-913608FC8539}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3ADE187-A9DF-4C43-AD83-B7C1855EF69C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3ADE187-A9DF-4C43-AD83-B7C1855EF69C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3ADE187-A9DF-4C43-AD83-B7C1855EF69C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3ADE187-A9DF-4C43-AD83-B7C1855EF69C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD54FA54-9030-4CB1-B2A0-2F470F708A93}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD54FA54-9030-4CB1-B2A0-2F470F708A93}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD54FA54-9030-4CB1-B2A0-2F470F708A93}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD54FA54-9030-4CB1-B2A0-2F470F708A93}.Release|Any CPU.Build.0 = Release|Any CPU
+		{19C9ED3D-42DE-4210-8930-C84972E45789}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19C9ED3D-42DE-4210-8930-C84972E45789}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19C9ED3D-42DE-4210-8930-C84972E45789}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19C9ED3D-42DE-4210-8930-C84972E45789}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BCE6971E-C217-46E9-9774-84988E41A732}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BCE6971E-C217-46E9-9774-84988E41A732}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BCE6971E-C217-46E9-9774-84988E41A732}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BCE6971E-C217-46E9-9774-84988E41A732}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B88D381C-AC10-468E-8ED4-A53EC699B943}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B88D381C-AC10-468E-8ED4-A53EC699B943}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B88D381C-AC10-468E-8ED4-A53EC699B943}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B88D381C-AC10-468E-8ED4-A53EC699B943}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0800A5FF-11EB-4A1C-9AC3-37D3E7E6042E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0800A5FF-11EB-4A1C-9AC3-37D3E7E6042E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0800A5FF-11EB-4A1C-9AC3-37D3E7E6042E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0800A5FF-11EB-4A1C-9AC3-37D3E7E6042E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{364E8897-C8EB-4BAF-9D5E-AAB818E3D2CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{364E8897-C8EB-4BAF-9D5E-AAB818E3D2CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{364E8897-C8EB-4BAF-9D5E-AAB818E3D2CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{364E8897-C8EB-4BAF-9D5E-AAB818E3D2CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{54422D81-2AB7-4C65-B8B4-98CB2C51901E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{54422D81-2AB7-4C65-B8B4-98CB2C51901E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{54422D81-2AB7-4C65-B8B4-98CB2C51901E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{54422D81-2AB7-4C65-B8B4-98CB2C51901E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F359F972-D1D7-4FD4-B640-913608FC8539} = {CADE2131-4F80-4960-BBA1-3484E0C3AE27}
+		{F3ADE187-A9DF-4C43-AD83-B7C1855EF69C} = {CADE2131-4F80-4960-BBA1-3484E0C3AE27}
+		{FD54FA54-9030-4CB1-B2A0-2F470F708A93} = {CADE2131-4F80-4960-BBA1-3484E0C3AE27}
+		{19C9ED3D-42DE-4210-8930-C84972E45789} = {CADE2131-4F80-4960-BBA1-3484E0C3AE27}
+		{214BF5BA-2E08-45E3-A497-85A4AFF1AC1E} = {312AA3D1-DC57-4FFA-A2D1-267DF5CD7304}
+		{BCE6971E-C217-46E9-9774-84988E41A732} = {214BF5BA-2E08-45E3-A497-85A4AFF1AC1E}
+		{B88D381C-AC10-468E-8ED4-A53EC699B943} = {9E61DCAB-015F-428A-8889-74492303E060}
+		{0800A5FF-11EB-4A1C-9AC3-37D3E7E6042E} = {9E61DCAB-015F-428A-8889-74492303E060}
+		{8D414050-6720-43E7-8DA6-025FA5237AC5} = {9E61DCAB-015F-428A-8889-74492303E060}
+		{A064F7D1-DA42-45B3-9FC2-C333508140B4} = {8D414050-6720-43E7-8DA6-025FA5237AC5}
+		{364E8897-C8EB-4BAF-9D5E-AAB818E3D2CD} = {A064F7D1-DA42-45B3-9FC2-C333508140B4}
+		{54422D81-2AB7-4C65-B8B4-98CB2C51901E} = {27CDF56D-A28F-4199-9A06-CC19C2280258}
+	EndGlobalSection
+EndGlobal

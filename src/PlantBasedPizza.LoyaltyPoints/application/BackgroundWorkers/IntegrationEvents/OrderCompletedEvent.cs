@@ -1,6 +1,6 @@
 using PlantBasedPizza.Events;
 
-namespace PlantBasedPizza.LoyaltyPoints.Worker;
+namespace BackgroundWorkers.IntegrationEvents;
 
 public class OrderCompletedEvent : IntegrationEvent
 {

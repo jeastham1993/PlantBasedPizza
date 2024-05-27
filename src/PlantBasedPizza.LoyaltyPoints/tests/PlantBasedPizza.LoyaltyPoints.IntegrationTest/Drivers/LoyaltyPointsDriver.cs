@@ -1,6 +1,7 @@
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using Amazon.EventBridge;
 using Grpc.Net.Client;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -29,11 +30,10 @@ public class LoyaltyPointsDriver
             var channel = GrpcChannel.ForAddress(TestConstants.InternalTestEndpoint);
             this._loyaltyClient = new Loyalty.LoyaltyClient(channel);
 
-            _eventPublisher = new RabbitMQEventPublisher(new OptionsWrapper<RabbitMqSettings>(new RabbitMqSettings()
+            _eventPublisher = new EventBridgeEventPublisher(new AmazonEventBridgeClient(), Options.Create(new EventBridgeSettings()
             {
-                ExchangeName = "dev.loyalty",
-                HostName = "localhost"
-            }), new Logger<RabbitMQEventPublisher>(new SerilogLoggerFactory()), new RabbitMQConnection("localhost"));
+                BusName = $"test.loyalty.{Environment.GetEnvironmentVariable("BUILD_VERSION")}"
+            }));
         }
 
         public async Task AddLoyaltyPoints(string orderIdentifier, decimal orderValue)

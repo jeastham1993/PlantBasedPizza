@@ -9,7 +9,7 @@ using Constructs;
 
 namespace PlantBasedPizza.Infra.Constructs;
 
-public record ConstructProps(IVpc Vpc, ICluster cluster, string ServiceName, string Environment, string DataDogApiKeyParameterName, string JwtKeyParameterName, string RepositoryName, string Tag, double Port, Dictionary<string, string> EnvironmentVariables, Dictionary<string, Amazon.CDK.AWS.ECS.Secret> Secrets, string SharedLoadBalancerArn, string SharedListenerArn, string HealthCheckPath, string PathPattern, int Priority, string InternalSharedLoadBalancerArn = null, string InternalSharedListenerArn = null, bool DeployInPrivateSubnet = false);
+public record ConstructProps(IVpc Vpc, ICluster cluster, string ServiceName, string Environment, string DataDogApiKeyParameterName, string JwtKeyParameterName, string RepositoryName, string Tag, double Port, Dictionary<string, string> EnvironmentVariables, Dictionary<string, Amazon.CDK.AWS.ECS.Secret> Secrets, string? SharedLoadBalancerArn, string? SharedListenerArn, string HealthCheckPath, string PathPattern, int Priority, string InternalSharedLoadBalancerArn = null, string InternalSharedListenerArn = null, bool DeployInPrivateSubnet = false);
 
 public class WebService : Construct
 {
@@ -19,15 +19,6 @@ public class WebService : Construct
     
     public WebService(Construct scope, string id, ConstructProps props) : base(scope, id)
     {
-        var sharedListener = ApplicationListener.FromLookup(this, "SharedHttpListener",
-            new ApplicationListenerLookupOptions()
-            {
-                LoadBalancerArn =
-                    props.SharedLoadBalancerArn,
-                ListenerPort = 80,
-                ListenerArn = props.SharedListenerArn
-            });
-        
         var ddApiKeyParam = StringParameter.FromSecureStringParameterAttributes(this, "DDApiKey",
             new SecureStringParameterAttributes
             {
@@ -175,37 +166,50 @@ public class WebService : Construct
             TaskDefinition = taskDefinition,
             DesiredCount = 1,
             AssignPublicIp = !props.DeployInPrivateSubnet,
-            VpcSubnets = new SubnetSelection(){
+            VpcSubnets = new SubnetSelection()
+            {
                 Subnets = props.DeployInPrivateSubnet ? props.Vpc.PrivateSubnets : props.Vpc.PublicSubnets
             }
-        });
-
-        var targetGroup = new ApplicationTargetGroup(this, $"{props.ServiceName}TargetGroup", new ApplicationTargetGroupProps()
-        {
-            Port = 8080,
-            Targets = new List<IApplicationLoadBalancerTarget>(1)
-            {
-                service
-            }.ToArray(),
-            HealthCheck = new Amazon.CDK.AWS.ElasticLoadBalancingV2.HealthCheck()
-            {
-                Port = props.Port.ToString(),
-                Path = props.HealthCheckPath,
-                HealthyHttpCodes = "200-404"
-            },
-            Vpc = props.Vpc
-        });
-
-        sharedListener.AddTargetGroups("ECS", new AddApplicationTargetGroupsProps()
-        {
-            Conditions = [ListenerCondition.PathPatterns([props.PathPattern])],
-            Priority = props.Priority,
-            TargetGroups = [targetGroup]
         });
         
         ddApiKeyParam.GrantRead(ExecutionRole);
         jwtKeyParam.GrantRead(ExecutionRole);
         repository.GrantPull(ExecutionRole);
+        
+        if (!string.IsNullOrEmpty(props.SharedListenerArn) && !string.IsNullOrEmpty(props.SharedLoadBalancerArn))
+        {
+            var targetGroup = new ApplicationTargetGroup(this, $"{props.ServiceName}TargetGroup", new ApplicationTargetGroupProps()
+            {
+                Port = 8080,
+                Targets = new List<IApplicationLoadBalancerTarget>(1)
+                {
+                    service
+                }.ToArray(),
+                HealthCheck = new Amazon.CDK.AWS.ElasticLoadBalancingV2.HealthCheck()
+                {
+                    Port = props.Port.ToString(),
+                    Path = props.HealthCheckPath,
+                    HealthyHttpCodes = "200-404"
+                },
+                Vpc = props.Vpc
+            });
+            
+            var sharedListener = ApplicationListener.FromLookup(this, "SharedHttpListener",
+                new ApplicationListenerLookupOptions()
+                {
+                    LoadBalancerArn =
+                        props.SharedLoadBalancerArn,
+                    ListenerPort = 80,
+                    ListenerArn = props.SharedListenerArn
+                });
+            
+            sharedListener.AddTargetGroups("ECS", new AddApplicationTargetGroupsProps()
+            {
+                Conditions = [ListenerCondition.PathPatterns([props.PathPattern])],
+                Priority = props.Priority,
+                TargetGroups = [targetGroup]
+            });
+        }
 
         if (!string.IsNullOrEmpty(props.InternalSharedListenerArn) && !string.IsNullOrEmpty(props.InternalSharedLoadBalancerArn))
         {
