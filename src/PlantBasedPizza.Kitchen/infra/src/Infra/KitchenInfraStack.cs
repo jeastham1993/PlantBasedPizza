@@ -93,38 +93,7 @@ public class KitchenInfraStack : Stack
             databaseConnectionParam,
             orderSubmittedQueue.Queue));
         
-        var kitchenWorker = new BackgroundService(this, "KitchenWorkerService", new BackgroundServiceConstructProps(
-            vpc,
-            cluster,
-            "KitchenWorker",
-            environment,
-            "/shared/dd-api-key",
-            "/shared/jwt-key",
-            "kitchen-worker",
-            commitHash,
-            8080,
-            new Dictionary<string, string>
-            {
-                { "Messaging__BusName", bus.EventBusName },
-                { "SERVICE_NAME", "KitchenWorker" },
-                { "BUILD_VERSION", "dev" },
-                { "RedisConnectionString", "" },
-                { "Services__PaymentInternal", "http://localhost:1234"},
-                { "Services__Recipes", $"http://{internalLoadBalancer.LoadBalancerDnsName}"},
-                { "QueueConfiguration__OrderSubmittedQueue", orderSubmittedQueueName},
-                { "Auth__PaymentApiKey", "12345" },
-            },
-            new Dictionary<string, Secret>(1)
-            {
-                { "DatabaseConnection", Secret.FromSsmParameter(databaseConnectionParam) }
-            },
-            "/kitchen/health"
-        ));
-        
-        orderSubmittedQueue.Queue.GrantConsumeMessages(kitchenWorker.TaskRole);
         databaseConnectionParam.GrantRead(kitchenApiService.ExecutionRole);
         bus.GrantPutEventsTo(kitchenApiService.TaskRole);
-        databaseConnectionParam.GrantRead(kitchenWorker.ExecutionRole);
-        bus.GrantPutEventsTo(kitchenWorker.TaskRole);
     }
 }
