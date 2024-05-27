@@ -33,7 +33,7 @@ public class BackgroundWorker : Construct
             { "Auth__PaymentApiKey", "12345" },
             { "DATABASE_CONNECTION_PARAM_NAME", props.DatabaseConnectionParameter.ParameterName }
         };
-        var serviceName = "OrdersWorker";
+        var serviceName = "OrderWorker";
         
         this.LoyaltyPointsUpdatedFunction = new QueueWorkerFunction(this, "LoyaltyPointsFunction",
             new QueueWorkerFunctionProps(
