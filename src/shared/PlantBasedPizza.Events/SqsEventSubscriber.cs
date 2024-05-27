@@ -14,20 +14,18 @@ namespace PlantBasedPizza.Events;
 
 public class SqsEventSubscriber
 {
+    private const string TRACEPARENT_STRING = "traceparent";
+    
     private readonly AmazonSQSClient _sqsClient;
-    private readonly ILogger<SqsEventSubscriber> _logger;
 
-    public SqsEventSubscriber(AmazonSQSClient sqsClient, ILogger<SqsEventSubscriber> logger)
+    public SqsEventSubscriber(AmazonSQSClient sqsClient)
     {
         _sqsClient = sqsClient;
-        _logger = logger;
     }
 
     public async Task<string> GetQueueUrl(string queue)
     {
         var queueName = $"{queue}-{Environment.GetEnvironmentVariable("BUILD_VERSION")}";
-        
-        this._logger.LogInformation(queueName);
         
         var describeQueue =
             await this._sqsClient.GetQueueUrlAsync(queueName);
@@ -49,14 +47,14 @@ public class SqsEventSubscriber
             var formatter = new JsonEventFormatter<T>();
             var evtWrapper = await formatter.DecodeStructuredModeMessageAsync(new MemoryStream(Encoding.UTF8.GetBytes(eventBridgeEventWrapper.Detail.ToJsonString())), new ContentType("application/json"), new List<CloudEventAttribute>(1)
             {
-                CloudEventAttribute.CreateExtension("traceparent", CloudEventAttributeType.String)
+                CloudEventAttribute.CreateExtension(TRACEPARENT_STRING, CloudEventAttributeType.String)
             });
         
             var traceParent = "";
             
             foreach (var (attribute, value) in evtWrapper.GetPopulatedAttributes())
             {
-                if (attribute.Name == "traceparent")
+                if (attribute.Name == TRACEPARENT_STRING)
                 {
                     traceParent = value.ToString();
                 }
@@ -90,14 +88,14 @@ public class SqsEventSubscriber
             var formatter = new JsonEventFormatter<T>();
             var evtWrapper = await formatter.DecodeStructuredModeMessageAsync(new MemoryStream(Encoding.UTF8.GetBytes(eventBridgeEventWrapper.Detail.ToJsonString())), new ContentType("application/json"), new List<CloudEventAttribute>(1)
             {
-                CloudEventAttribute.CreateExtension("traceparent", CloudEventAttributeType.String)
+                CloudEventAttribute.CreateExtension(TRACEPARENT_STRING, CloudEventAttributeType.String)
             });
         
             var traceParent = "";
             
             foreach (var (attribute, value) in evtWrapper.GetPopulatedAttributes())
             {
-                if (attribute.Name == "traceparent")
+                if (attribute.Name == TRACEPARENT_STRING)
                 {
                     traceParent = value.ToString();
                 }
