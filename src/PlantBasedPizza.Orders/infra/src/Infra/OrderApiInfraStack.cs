@@ -111,7 +111,7 @@ public class OrderApiInfraStack : Stack
         var orderPreparingQueue = new EventQueue(this, orderPreparingQueueName, new EventQueueProps(bus, orderPreparingQueueName, environment, kitchenServiceSource, "kitchen.orderPreparing.v1"));
         var orderPrepCompleteQueue = new EventQueue(this, orderPrepCompleteQueueName, new EventQueueProps(bus, orderPrepCompleteQueueName, environment, kitchenServiceSource, "kitchen.orderPrepComplete.v1"));
         var orderBakedQueue = new EventQueue(this, orderBakedQueueName, new EventQueueProps(bus, orderBakedQueueName, environment, kitchenServiceSource, "kitchen.orderBaked.v1"));
-        var orderQualityCheckedQueue = new EventQueue(this, orderQualityCheckedQueueName, new EventQueueProps(bus, orderQualityCheckedQueueName, environment, kitchenServiceSource, "kitchen.orderQualityChecked.v1"));
+        var orderQualityCheckedQueue = new EventQueue(this, orderQualityCheckedQueueName, new EventQueueProps(bus, orderQualityCheckedQueueName, environment, kitchenServiceSource, "kitchen.qualityChecked.v1"));
         var driverDeliveredOrderQueue = new EventQueue(this, driverDeliveredOrderQueueName, new EventQueueProps(bus, driverDeliveredOrderQueueName, environment, deliveryServiceSource, "delivery.driverDeliveredOrder.v1"));
         var driverCollectedOrderQueue = new EventQueue(this, driverCollectedOrderQueueName, new EventQueueProps(bus, driverCollectedOrderQueueName, environment, deliveryServiceSource, "delivery.driverCollectedOrder.v1"));
 
