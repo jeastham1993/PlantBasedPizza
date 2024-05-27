@@ -1,6 +1,8 @@
+using PlantBasedPizza.Events;
+
 namespace PlantBasedPizza.Deliver.Core.IntegrationEvents;
 
-public class OrderReadyForDeliveryEventV1
+public class OrderReadyForDeliveryEventV1 : IntegrationEvent
 {
     public string OrderIdentifier { get; init; } = "";
     
@@ -15,4 +17,7 @@ public class OrderReadyForDeliveryEventV1
     public string DeliveryAddressLine5 { get; init; } = "";
         
     public string Postcode { get; init; } = "";
+    public override string EventName => "order.readyForDelivery";
+    public override string EventVersion => "v1";
+    public override Uri Source => new Uri("https://orders.plantbasedpizza");
 }

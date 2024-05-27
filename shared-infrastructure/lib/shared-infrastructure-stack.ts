@@ -14,6 +14,7 @@ export class PlantBasedPizzaSharedInfrastructureStack extends cdk.Stack {
 
     const network = new Network(this, "PlantBasedPizzaNetworkResources");
     const dnsName = process.env['DNS_NAME']!
+    const internalDnsName = process.env['INTERNAL_DNS_NAME']!
     const certArn = process.env['CERT_ARN']!;
     const hostedZoneId = process.env['HOSTED_ZONE_ID']!;
 
@@ -61,11 +62,27 @@ export class PlantBasedPizzaSharedInfrastructureStack extends cdk.Stack {
       vpc: network.vpc,
       internetFacing: false
     });
+
+    new ARecord(this, "InternalDnsRecord", {
+      zone: hostedZoned,
+      recordName: internalDnsName,
+      target: RecordTarget.fromAlias(new LoadBalancerTarget(internalSharedAlbWithListener)),
+     });
+
     const internalHttpListener = new ApplicationListener(this, "InternalHttpListener", {
       loadBalancer: internalSharedAlbWithListener,
       port: 80,
       defaultAction: ListenerAction.fixedResponse(200)
     });
+    const internalHttpsListener = new ApplicationListener(this, "InternalHttpsListener", {
+      loadBalancer: internalSharedAlbWithListener,
+      port: 443,
+      defaultAction: ListenerAction.fixedResponse(200)
+    });
+
+    internalHttpsListener.addCertificates('InternalPlantBasedPizzaDomain', [
+      certificate
+    ]);
 
     const eventBus = new EventBus(this, "PlantBasedPizzaEventBus", {
       eventBusName: 'PlantBasedPizzaEvents'
@@ -97,7 +114,7 @@ export class PlantBasedPizzaSharedInfrastructureStack extends cdk.Stack {
     });
 
     const internalListenerArnParameter = new StringParameter(this, "InternalListenerArnParam", {
-      stringValue: internalHttpListener.listenerArn,
+      stringValue: internalHttpsListener.listenerArn,
       parameterName: '/shared/internal-alb-listener'
     });
 

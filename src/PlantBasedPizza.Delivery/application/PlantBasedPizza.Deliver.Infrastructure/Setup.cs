@@ -13,9 +13,9 @@ namespace PlantBasedPizza.Deliver.Infrastructure
     public static class Setup
     {
         public static IServiceCollection AddDeliveryInfrastructure(this IServiceCollection services,
-            IConfiguration configuration)
+            IConfiguration configuration, string overrideDatabaseConnection = null)
         {
-            var client = new MongoClient(configuration["DatabaseConnection"]);
+            var client = new MongoClient(overrideDatabaseConnection ?? configuration["DatabaseConnection"]);
 
             services.AddSingleton(client);
             
