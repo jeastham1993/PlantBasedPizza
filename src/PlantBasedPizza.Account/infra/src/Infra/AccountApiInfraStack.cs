@@ -69,7 +69,8 @@ public class AccountApiInfraStack : Stack
             albListener,
             "/account/health",
             "/account/*",
-            2
+            2,
+            DeployInPrivateSubnet: true
         ));
 
         databaseConnectionParam.GrantRead(accountApiService.ExecutionRole);

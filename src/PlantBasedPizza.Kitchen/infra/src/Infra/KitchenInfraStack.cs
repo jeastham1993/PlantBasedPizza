@@ -53,7 +53,6 @@ public class KitchenInfraStack : Stack
         {
             EnableFargateCapacityProviders = true,
             Vpc = vpc,
-
         });
         
         var commitHash = System.Environment.GetEnvironmentVariable("COMMIT_HASH") ?? "latest";

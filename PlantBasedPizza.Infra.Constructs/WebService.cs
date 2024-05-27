@@ -9,7 +9,7 @@ using Constructs;
 
 namespace PlantBasedPizza.Infra.Constructs;
 
-public record ConstructProps(IVpc Vpc, ICluster cluster, string ServiceName, string Environment, string DataDogApiKeyParameterName, string JwtKeyParameterName, string RepositoryName, string Tag, double Port, Dictionary<string, string> EnvironmentVariables, Dictionary<string, Amazon.CDK.AWS.ECS.Secret> Secrets, string SharedLoadBalancerArn, string SharedListenerArn, string HealthCheckPath, string PathPattern, int Priority, string InternalSharedLoadBalancerArn = null, string InternalSharedListenerArn = null);
+public record ConstructProps(IVpc Vpc, ICluster cluster, string ServiceName, string Environment, string DataDogApiKeyParameterName, string JwtKeyParameterName, string RepositoryName, string Tag, double Port, Dictionary<string, string> EnvironmentVariables, Dictionary<string, Amazon.CDK.AWS.ECS.Secret> Secrets, string SharedLoadBalancerArn, string SharedListenerArn, string HealthCheckPath, string PathPattern, int Priority, string InternalSharedLoadBalancerArn = null, string InternalSharedListenerArn = null, bool DeployInPrivateSubnet = false);
 
 public class WebService : Construct
 {
@@ -172,7 +172,10 @@ public class WebService : Construct
             Cluster = props.cluster,
             TaskDefinition = taskDefinition,
             DesiredCount = 1,
-            AssignPublicIp = true
+            AssignPublicIp = !props.DeployInPrivateSubnet,
+            VpcSubnets = new SubnetSelection(){
+                Subnets = props.DeployInPrivateSubnet ? props.Vpc.PrivateSubnets : props.Vpc.PublicSubnets
+            }
         });
 
         var targetGroup = new ApplicationTargetGroup(this, $"{props.ServiceName}TargetGroup", new ApplicationTargetGroupProps()
