@@ -14,7 +14,7 @@ on:
         description: 'The role for the AWS IAM role to use for deployment'
         required: true
       dd-api-key:
-        description: 'The role for the AWS IAM role to use for deployment'
+        description: 'DataDog API Key'
         required: true
 
 permissions:

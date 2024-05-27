@@ -15,6 +15,7 @@ public class WebService : Construct
 {
     public IRole ExecutionRole { get; private set; }
     public IRole TaskRole { get; private set; }
+    public IApplicationLoadBalancer LoadBalancer { get; private set; }
     
     public WebService(Construct scope, string id, ConstructProps props) : base(scope, id)
     {

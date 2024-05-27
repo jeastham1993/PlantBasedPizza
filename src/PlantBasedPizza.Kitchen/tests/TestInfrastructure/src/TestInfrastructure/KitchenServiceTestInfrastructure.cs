@@ -31,7 +31,7 @@ public class KitchenServiceTestInfrastructure : Stack
         
         var worker = new BackgroundWorker(this, "KitchenWorker", new BackgroundWorkerProps(
             new SharedInfrastructureProps(null, bus, null, "int-test", stackProps.Version),
-            "../application",
+            "../../application",
             databaseConnectionParam,
             orderSubmittedQueue.Queue));
 

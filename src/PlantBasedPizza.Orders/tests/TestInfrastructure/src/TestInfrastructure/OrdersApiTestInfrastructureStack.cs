@@ -1,4 +1,5 @@
 using Amazon.CDK;
+using Amazon.CDK.AWS.EC2;
 using Amazon.CDK.AWS.Events;
 using Amazon.CDK.AWS.Events.Targets;
 using Amazon.CDK.AWS.Lambda.EventSources;
@@ -16,6 +17,11 @@ public class OrdersApiTestInfrastructureStack : Stack
 {
     internal OrdersApiTestInfrastructureStack(Construct scope, string id, ApplicationStackProps stackProps, IStackProps props = null) : base(scope, id, props)
     {
+        var parameterProvider = AWS.Lambda.Powertools.Parameters.ParametersManager.SsmProvider
+            .ConfigureClient(System.Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID"), System.Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY"), System.Environment.GetEnvironmentVariable("AWS_SESSION_TOKEN"));
+
+        var vpcIdParam = parameterProvider.Get("/shared/vpc-id");
+        
         var databaseConnectionParam = StringParameter.FromSecureStringParameterAttributes(this, "DatabaseParameter",
             new SecureStringParameterAttributes
             {

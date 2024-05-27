@@ -31,6 +31,12 @@ public class KitchenInfraStack : Stack
             VpcId = vpcIdParam
         });
         
+        var publicLoadBalancer = ApplicationLoadBalancer.FromLookup(this, "PublicSharedLoadBalancer",
+            new ApplicationLoadBalancerLookupOptions()
+            {
+                LoadBalancerArn = albArnParam,
+            });
+        
         var internalLoadBalancer = ApplicationLoadBalancer.FromLookup(this, "SharedLoadBalancer",
             new ApplicationLoadBalancerLookupOptions()
             {
@@ -83,7 +89,7 @@ public class KitchenInfraStack : Stack
         var orderSubmittedQueue = new EventQueue(this, orderSubmittedQueueName, new EventQueueProps(bus, orderSubmittedQueueName, environment, "https://orders.plantbasedpizza/", "order.orderSubmitted.v1"));
 
         var worker = new BackgroundWorker(this, "KitchenWorker", new BackgroundWorkerProps(
-            new SharedInfrastructureProps(vpc, bus, internalLoadBalancer, commitHash, environment),
+            new SharedInfrastructureProps(null, bus, publicLoadBalancer, commitHash, environment),
             "../application",
             databaseConnectionParam,
             orderSubmittedQueue.Queue));

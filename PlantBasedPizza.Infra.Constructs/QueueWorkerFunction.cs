@@ -41,7 +41,7 @@ public class QueueWorkerFunction : Construct
             { "DD_SITE", "datadoghq.eu" },
         };
         
-        Function = new DotNetFunction(this, "LoyaltyPointsUpdatedFunction",
+        Function = new DotNetFunction(this, id,
             new DotNetFunctionProps
             {
                 ProjectDir = props.ProjectPath,

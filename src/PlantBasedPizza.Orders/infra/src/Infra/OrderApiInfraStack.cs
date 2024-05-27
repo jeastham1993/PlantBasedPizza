@@ -35,6 +35,12 @@ public class OrderApiInfraStack : Stack
         {
             VpcId = vpcIdParam
         });
+        
+        var publicLoadBalancer = ApplicationLoadBalancer.FromLookup(this, "PublicSharedLoadBalancer",
+            new ApplicationLoadBalancerLookupOptions()
+            {
+                LoadBalancerArn = albArnParam,
+            });
 
         var internalLoadBalancer = ApplicationLoadBalancer.FromLookup(this, "SharedLoadBalancer",
             new ApplicationLoadBalancerLookupOptions()
@@ -110,7 +116,7 @@ public class OrderApiInfraStack : Stack
         var driverCollectedOrderQueue = new EventQueue(this, driverCollectedOrderQueueName, new EventQueueProps(bus, driverCollectedOrderQueueName, environment, deliveryServiceSource, "delivery.driverCollectedOrder.v1"));
 
         var backgroundWorker = new BackgroundWorker(this, "OrdersWorkerFunctions",
-            new BackgroundWorkerProps(new SharedInfrastructureProps(vpc, bus, internalLoadBalancer, commitHash, environment),
+            new BackgroundWorkerProps(new SharedInfrastructureProps(null, bus, publicLoadBalancer, commitHash, environment),
                 "../application", databaseConnectionParam, loyaltyPointsQueue.Queue, driverCollectedOrderQueue.Queue, driverDeliveredOrderQueue.Queue, orderBakedQueue.Queue, orderPrepCompleteQueue.Queue, orderPreparingQueue.Queue, orderQualityCheckedQueue.Queue));
     }
 }
