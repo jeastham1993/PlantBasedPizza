@@ -3,6 +3,7 @@ using Amazon.CDK.AWS.EC2;
 using Amazon.CDK.AWS.Lambda;
 using Amazon.CDK.AWS.Lambda.DotNet;
 using Amazon.CDK.AWS.Lambda.EventSources;
+using Amazon.CDK.AWS.Logs;
 using Amazon.CDK.AWS.SQS;
 using Constructs;
 
@@ -62,6 +63,7 @@ public class QueueWorkerFunction : Construct
                 {
                     Subnets = props.Vpc.PublicSubnets
                 },
+                LogRetention = RetentionDays.ONE_DAY
             });
 
         this.Function.AddEventSource(new SqsEventSource(props.Queue, new SqsEventSourceProps()
