@@ -65,6 +65,8 @@ namespace PlantBasedPizza.Shared
                         new("service.name", applicationName),
                         new("container.id", taskId ?? ""),
                         new("service.version", Environment.GetEnvironmentVariable("DD_VERSION") ?? ""),
+                        new("git.commit.sha", Environment.GetEnvironmentVariable("BUILD_VERSION") ?? ""),
+                        new("git.repository_url", "https://github.com/jeastham1993/PlantBasedPizza"),
                     });
 
                 if (metadata != null)

@@ -40,6 +40,8 @@ public class QueueWorkerFunction : Construct
             {"DD_TRACE_OTEL_ENABLED", "true"},
             { "AWS_LAMBDA_EXEC_WRAPPER", "/opt/datadog_wrapper" },
             { "DD_SITE", "datadoghq.eu" },
+            { "DD_GIT_COMMIT_SHA", props.CommitHash},
+            { "DD_GIT_REPOSITORY_URL", "https://github.com/jeastham1993/PlantBasedPizza"},
         };
         
         Function = new DotNetFunction(this, id,

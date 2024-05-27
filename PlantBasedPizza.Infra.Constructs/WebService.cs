@@ -67,7 +67,9 @@ public class WebService : Construct
             { "ENV", props.Environment},
             { "DD_ENV", props.Environment},
             { "DD_SERVICE", props.ServiceName},
-            { "DD_VERSION", props.Tag}
+            { "DD_VERSION", props.Tag},
+            { "DD_GIT_COMMIT_SHA", props.Tag},
+            { "DD_GIT_REPOSITORY_URL", "https://github.com/jeastham1993/PlantBasedPizza"},
         };
         var baseSecrets = new Dictionary<string, Secret>()
         {
