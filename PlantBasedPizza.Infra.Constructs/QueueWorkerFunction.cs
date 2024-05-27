@@ -37,6 +37,7 @@ public class QueueWorkerFunction : Construct
             { "DD_VERSION", props.CommitHash },
             { "DD_API_KEY", System.Environment.GetEnvironmentVariable("DD_API_KEY") ?? "" },
             { "DD_OTLP_CONFIG_RECEIVER_PROTOCOLS_HTTP_ENDPOINT", "localhost:4318" },
+            {"DD_TRACE_OTEL_ENABLED", "true"},
             { "AWS_LAMBDA_EXEC_WRAPPER", "/opt/datadog_wrapper" },
             { "DD_SITE", "datadoghq.eu" },
         };

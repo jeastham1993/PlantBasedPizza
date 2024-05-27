@@ -112,7 +112,8 @@ public class SqsEventSubscriber
                 QueueTime = (DateTimeOffset.Now - evtWrapper.Time!.Value).Milliseconds,
                 EventId = evtWrapper.Id!,
                 MessageId = message.MessageId,
-                ReceiptHandle = message.ReceiptHandle
+                ReceiptHandle = message.ReceiptHandle,
+                EventPublishDate = evtWrapper.Time!.Value.DateTime
             });
         }
 

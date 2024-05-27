@@ -46,7 +46,7 @@ public class Functions
     }
 
     [LambdaFunction]
-    public async Task<SQSBatchResponse> HandleLoyaltyPointsUpdate(SQSEvent sqsEvent)
+    public async Task<SQSBatchResponse> HandleLoyaltyPointsUpdate(SQSEvent sqsEvent, ILambdaContext context)
     {
         var batchItemFailures = new List<SQSBatchResponse.BatchItemFailure>();
         
@@ -61,6 +61,12 @@ public class Functions
                 
                 try
                 {
+                    context.AddToTrace();
+
+                    using var queueActivity = _source.StartActivity("queue-time", ActivityKind.Internal,
+                        message.TraceParent, startTime: message.EventPublishDate);
+                    queueActivity.Stop();
+                    
                     this._logger.LogInformation("Processing {messageId}", message.MessageId);
                     
                     processingActivity?.AddTag("queue.time", message.QueueTime);
@@ -96,7 +102,7 @@ public class Functions
     
 
     [LambdaFunction]
-    public async Task<SQSBatchResponse> HandleDriverCollectedOrder(SQSEvent sqsEvent)
+    public async Task<SQSBatchResponse> HandleDriverCollectedOrder(SQSEvent sqsEvent, ILambdaContext context)
     {
         var batchItemFailures = new List<SQSBatchResponse.BatchItemFailure>();
         
@@ -110,6 +116,12 @@ public class Functions
                                      ActivityKind.Server, message.TraceParent);
                 try
                 {
+                    context.AddToTrace();
+
+                    using var queueActivity = _source.StartActivity("queue-time", ActivityKind.Internal,
+                        message.TraceParent, startTime: message.EventPublishDate);
+                    queueActivity.Stop();
+                    
                     this._logger.LogInformation("Processing {messageId}", message.MessageId);
                     
                     processingActivity?.AddTag("queue.time", message.QueueTime);
@@ -142,7 +154,7 @@ public class Functions
     }
     
     [LambdaFunction]
-    public async Task<SQSBatchResponse> HandleDriverDeliveredOrder(SQSEvent sqsEvent)
+    public async Task<SQSBatchResponse> HandleDriverDeliveredOrder(SQSEvent sqsEvent, ILambdaContext context)
     {
         var batchItemFailures = new List<SQSBatchResponse.BatchItemFailure>();
         
@@ -156,6 +168,12 @@ public class Functions
                                      ActivityKind.Server, message.TraceParent);
                 try
                 {
+                    context.AddToTrace();
+
+                    using var queueActivity = _source.StartActivity("queue-time", ActivityKind.Internal,
+                        message.TraceParent, startTime: message.EventPublishDate);
+                    queueActivity.Stop();
+                    
                     this._logger.LogInformation("Processing {messageId}", message.MessageId);
                     
                     processingActivity?.AddTag("queue.time", message.QueueTime);
@@ -188,7 +206,7 @@ public class Functions
     }
     
     [LambdaFunction]
-    public async Task<SQSBatchResponse> HandleOrderBakedEvent(SQSEvent sqsEvent)
+    public async Task<SQSBatchResponse> HandleOrderBakedEvent(SQSEvent sqsEvent, ILambdaContext context)
     {
         var batchItemFailures = new List<SQSBatchResponse.BatchItemFailure>();
         
@@ -202,6 +220,12 @@ public class Functions
                                      ActivityKind.Server, message.TraceParent);
                 try
                 {
+                    context.AddToTrace();
+
+                    using var queueActivity = _source.StartActivity("queue-time", ActivityKind.Internal,
+                        message.TraceParent, startTime: message.EventPublishDate);
+                    queueActivity.Stop();
+                    
                     this._logger.LogInformation("Processing {messageId}", message.MessageId);
                     
                     processingActivity?.AddTag("queue.time", message.QueueTime);
@@ -234,7 +258,7 @@ public class Functions
     }
     
     [LambdaFunction]
-    public async Task<SQSBatchResponse> HandleOrderPreparingEvent(SQSEvent sqsEvent)
+    public async Task<SQSBatchResponse> HandleOrderPreparingEvent(SQSEvent sqsEvent, ILambdaContext context)
     {
         var batchItemFailures = new List<SQSBatchResponse.BatchItemFailure>();
         
@@ -249,6 +273,12 @@ public class Functions
                 
                 try
                 {
+                    context.AddToTrace();
+
+                    using var queueActivity = _source.StartActivity("queue-time", ActivityKind.Internal,
+                        message.TraceParent, startTime: message.EventPublishDate);
+                    queueActivity.Stop();
+                    
                     this._logger.LogInformation("Processing {messageId}", message.MessageId);
                     
                     processingActivity?.AddTag("queue.time", message.QueueTime);
@@ -282,7 +312,7 @@ public class Functions
     }
     
     [LambdaFunction]
-    public async Task<SQSBatchResponse> HandleOrderPrepCompleteEvent(SQSEvent sqsEvent)
+    public async Task<SQSBatchResponse> HandleOrderPrepCompleteEvent(SQSEvent sqsEvent, ILambdaContext context)
     {
         var batchItemFailures = new List<SQSBatchResponse.BatchItemFailure>();
         
@@ -296,6 +326,12 @@ public class Functions
                                      ActivityKind.Server, message.TraceParent);
                 try
                 {
+                    context.AddToTrace();
+
+                    using var queueActivity = _source.StartActivity("queue-time", ActivityKind.Internal,
+                        message.TraceParent, startTime: message.EventPublishDate);
+                    queueActivity.Stop();
+                    
                     this._logger.LogInformation("Processing {messageId}", message.MessageId);
                     
                     processingActivity?.AddTag("queue.time", message.QueueTime);
@@ -327,7 +363,7 @@ public class Functions
         return new SQSBatchResponse(batchItemFailures);
     }
     [LambdaFunction]
-    public async Task<SQSBatchResponse> HandleOrderQualityCheckedEvent(SQSEvent sqsEvent)
+    public async Task<SQSBatchResponse> HandleOrderQualityCheckedEvent(SQSEvent sqsEvent, ILambdaContext context)
     {
         var batchItemFailures = new List<SQSBatchResponse.BatchItemFailure>();
         
@@ -337,11 +373,19 @@ public class Functions
 
             foreach (var message in messages)
             {
+                context.AddToTrace();
+
+                using var queueActivity = _source.StartActivity("queue-time", ActivityKind.Internal,
+                    message.TraceParent, startTime: message.EventPublishDate);
+                queueActivity.Stop();
+                
                 using var processingActivity = _source.StartActivity("processing-order-baked-event",
                                      ActivityKind.Server, message.TraceParent);
                 try
                 {
                     this._logger.LogInformation("Processing {messageId}", message.MessageId);
+                    
+                    
                     
                     processingActivity?.AddTag("queue.time", message.QueueTime);
                     processingActivity?.AddTag("orderIdentifier", message.EventData.OrderIdentifier);

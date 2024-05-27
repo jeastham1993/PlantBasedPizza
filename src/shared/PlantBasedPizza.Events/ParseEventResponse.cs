@@ -10,6 +10,8 @@ public class ParseEventResponse<T>
     
     public int QueueTime { get; init; }
     
+    public DateTime EventPublishDate { get; init; }
+    
     public string? EventId { get; init; }
     
     public string MessageId { get; init; }
