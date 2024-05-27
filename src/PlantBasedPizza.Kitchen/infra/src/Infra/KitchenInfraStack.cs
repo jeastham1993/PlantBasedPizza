@@ -81,6 +81,12 @@ public class KitchenInfraStack : Stack
         var orderSubmittedQueueName = "Kitchen-OrderSubmitted";
         
         var orderSubmittedQueue = new EventQueue(this, orderSubmittedQueueName, new EventQueueProps(bus, orderSubmittedQueueName, environment, "https://orders.plantbasedpizza/", "order.orderSubmitted.v1"));
+
+        var worker = new BackgroundWorker(this, "KitchenWorker", new BackgroundWorkerProps(
+            new SharedInfrastructureProps(vpc, bus, internalLoadBalancer, commitHash, environment),
+            "../application",
+            databaseConnectionParam,
+            orderSubmittedQueue.Queue));
         
         var kitchenWorker = new BackgroundService(this, "KitchenWorkerService", new BackgroundServiceConstructProps(
             vpc,
@@ -95,7 +101,7 @@ public class KitchenInfraStack : Stack
             new Dictionary<string, string>
             {
                 { "Messaging__BusName", bus.EventBusName },
-                { "SERVICE_NAME", "OrdersWorker" },
+                { "SERVICE_NAME", "KitchenWorker" },
                 { "BUILD_VERSION", "dev" },
                 { "RedisConnectionString", "" },
                 { "Services__PaymentInternal", "http://localhost:1234"},

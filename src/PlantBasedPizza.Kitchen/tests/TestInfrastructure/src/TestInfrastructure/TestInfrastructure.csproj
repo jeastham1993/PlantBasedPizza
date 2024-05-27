@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\..\PlantBasedPizza.Infra.Constructs\PlantBasedPizza.Infra.Constructs.csproj" />
+    <ProjectReference Include="..\..\..\..\infra\src\Infra\Infra.csproj" />
   </ItemGroup>
 
 </Project>

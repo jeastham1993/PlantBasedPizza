@@ -1,6 +1,7 @@
 using Amazon.CDK;
 using Amazon.CDK.AWS.SSM;
 using Constructs;
+using Infra;
 using PlantBasedPizza.Infra.Constructs;
 using EventBus = Amazon.CDK.AWS.Events.EventBus;
 using EventBusProps = Amazon.CDK.AWS.Events.EventBusProps;
@@ -17,7 +18,7 @@ public class KitchenServiceTestInfrastructure : Stack
                 ParameterName = "/shared/database-connection"
             });
         
-        var bus = new EventBus(this, "OrdersApiTestBus", new EventBusProps()
+        var bus = new EventBus(this, "KitchenApiTestBus", new EventBusProps()
         {
             EventBusName = $"test.kitchen.{stackProps.Version}"
         });
@@ -27,6 +28,12 @@ public class KitchenServiceTestInfrastructure : Stack
         var orderSubmittedQueueName = "Kitchen-OrderSubmitted";
         
         var orderSubmittedQueue = new EventQueue(this, orderSubmittedQueueName, new EventQueueProps(bus, orderSubmittedQueueName, stackProps.Version, kitchenTestSource, "order.orderSubmitted.v1"));
+        
+        var worker = new BackgroundWorker(this, "KitchenWorker", new BackgroundWorkerProps(
+            new SharedInfrastructureProps(null, bus, null, "int-test", stackProps.Version),
+            "../application",
+            databaseConnectionParam,
+            orderSubmittedQueue.Queue));
 
         var eventBus = new CfnOutput(this, "EBOutput", new CfnOutputProps()
         {

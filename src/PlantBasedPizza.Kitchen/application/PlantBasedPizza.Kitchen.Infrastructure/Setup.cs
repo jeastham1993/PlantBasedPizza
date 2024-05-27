@@ -15,9 +15,9 @@ namespace PlantBasedPizza.Kitchen.Infrastructure
     public static class Setup
     {
         public static IServiceCollection AddKitchenInfrastructure(this IServiceCollection services,
-            IConfiguration configuration)
+            IConfiguration configuration, string overrideDatabaseConnection = null)
         {
-            var client = new MongoClient(configuration["DatabaseConnection"]);
+            var client = new MongoClient(overrideDatabaseConnection ?? configuration["DatabaseConnection"]);
 
             services.AddSingleton(client);
             services.Configure<ServiceEndpoints>(configuration.GetSection("Services"));
