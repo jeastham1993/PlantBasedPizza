@@ -74,7 +74,8 @@ namespace Infra
                 "/recipes/*",
                 51,
                 internalAlbArnParam,
-                internalAlbListener
+                internalAlbListener,
+                DeployInPrivateSubnet: true
             ));
 
             databaseConnectionParam.GrantRead(recipeService.ExecutionRole);
