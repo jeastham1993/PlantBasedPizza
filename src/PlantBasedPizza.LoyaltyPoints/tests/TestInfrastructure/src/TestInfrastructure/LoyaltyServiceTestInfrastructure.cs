@@ -37,7 +37,7 @@ public class LoyaltyServiceTestInfrastructure : Stack
 
         var eventBus = new CfnOutput(this, "EBOutput", new CfnOutputProps()
         {
-            ExportName = $"Kitche-EventBusName-{stackProps.Version}",
+            ExportName = $"Loyalty-EventBusName-{stackProps.Version}",
             Value = bus.EventBusName
         });
     }
