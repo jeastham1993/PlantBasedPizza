@@ -19,6 +19,11 @@ export class Network extends Construct {
                 subnetType: SubnetType.PUBLIC,
                 cidrMask: 24,
               },
+              {
+                name: "private-subnet",
+                subnetType: SubnetType.PRIVATE_WITH_EGRESS,
+                cidrMask: 24,
+              },
             ],
           });
       
