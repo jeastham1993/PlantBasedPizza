@@ -15,8 +15,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "application", "application"
 		docker-compose.yml = docker-compose.yml
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlantBasedPizza.Kitchen.Worker", "application\PlantBasedPizza.Kitchen.Worker\PlantBasedPizza.Kitchen.Worker.csproj", "{70EBE558-1A12-4052-B7DC-446354C022B5}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlantBasedPizza.Kitchen.Infrastructure", "application\PlantBasedPizza.Kitchen.Infrastructure\PlantBasedPizza.Kitchen.Infrastructure.csproj", "{D6901331-4A40-449B-8AD5-9C96FD9D42B2}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlantBasedPizza.Kitchen.Core", "application\PlantBasedPizza.Kitchen.Core\PlantBasedPizza.Kitchen.Core.csproj", "{BD35EDD7-F25C-49B0-8368-BBE50927B121}"
@@ -55,10 +53,6 @@ Global
 		{B9E3D152-AC8F-4F31-88FB-4C644F91434E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B9E3D152-AC8F-4F31-88FB-4C644F91434E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B9E3D152-AC8F-4F31-88FB-4C644F91434E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{70EBE558-1A12-4052-B7DC-446354C022B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{70EBE558-1A12-4052-B7DC-446354C022B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{70EBE558-1A12-4052-B7DC-446354C022B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{70EBE558-1A12-4052-B7DC-446354C022B5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D6901331-4A40-449B-8AD5-9C96FD9D42B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D6901331-4A40-449B-8AD5-9C96FD9D42B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D6901331-4A40-449B-8AD5-9C96FD9D42B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -102,7 +96,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{A68121F4-0007-4764-A8A6-30D590BB4DE6} = {5EA189E3-6433-4DAC-B832-5FBF0B7D12B8}
 		{B9E3D152-AC8F-4F31-88FB-4C644F91434E} = {5EA189E3-6433-4DAC-B832-5FBF0B7D12B8}
-		{70EBE558-1A12-4052-B7DC-446354C022B5} = {7864F94B-A0E7-4986-8947-E4D507C132AF}
 		{D6901331-4A40-449B-8AD5-9C96FD9D42B2} = {7864F94B-A0E7-4986-8947-E4D507C132AF}
 		{BD35EDD7-F25C-49B0-8368-BBE50927B121} = {7864F94B-A0E7-4986-8947-E4D507C132AF}
 		{51D05165-340E-44CD-B9BD-648C325221D6} = {7864F94B-A0E7-4986-8947-E4D507C132AF}

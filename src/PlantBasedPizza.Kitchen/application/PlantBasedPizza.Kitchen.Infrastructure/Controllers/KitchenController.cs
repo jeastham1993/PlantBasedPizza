@@ -1,10 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PlantBasedPizza.Events;
 using PlantBasedPizza.Kitchen.Core.Entities;
 using PlantBasedPizza.Kitchen.Infrastructure.DataTransfer;
-using PlantBasedPizza.Kitchen.Infrastructure.IntegrationEvents;
-using PlantBasedPizza.Shared.Logging;
 
 namespace PlantBasedPizza.Kitchen.Infrastructure.Controllers
 {
@@ -13,12 +10,10 @@ namespace PlantBasedPizza.Kitchen.Infrastructure.Controllers
     {
         private readonly IKitchenRequestRepository _kitchenRequestRepository;
         private readonly IKitchenEventPublisher _eventPublisher;
-        private readonly IObservabilityService _observabilityService;
 
-        public KitchenController(IKitchenRequestRepository kitchenRequestRepository, IObservabilityService observabilityService, IKitchenEventPublisher eventPublisher)
+        public KitchenController(IKitchenRequestRepository kitchenRequestRepository, IKitchenEventPublisher eventPublisher)
         {
             _kitchenRequestRepository = kitchenRequestRepository;
-            this._observabilityService = observabilityService;
             _eventPublisher = eventPublisher;
         }
 
@@ -38,7 +33,6 @@ namespace PlantBasedPizza.Kitchen.Infrastructure.Controllers
             }
             catch (Exception ex)
             {
-                this._observabilityService.Error(ex, "Error processing");
                 return new List<KitchenRequestDto>();
             }
         }
@@ -52,8 +46,6 @@ namespace PlantBasedPizza.Kitchen.Infrastructure.Controllers
         [Authorize(Roles = "staff")]
         public async Task<KitchenRequest> Preparing(string orderIdentifier)
         {
-            ApplicationLogger.Info("Received request to prepare order");
-
             var kitchenRequest = this._kitchenRequestRepository.Retrieve(orderIdentifier).Result;
 
             kitchenRequest.Preparing(this.Request.Headers["CorrelationId"].ToString());
@@ -80,7 +72,6 @@ namespace PlantBasedPizza.Kitchen.Infrastructure.Controllers
             }
             catch (Exception ex)
             {
-                this._observabilityService.Error(ex, "Error processing");
                 return new List<KitchenRequestDto>();
             }
         }
@@ -120,7 +111,6 @@ namespace PlantBasedPizza.Kitchen.Infrastructure.Controllers
             }
             catch (Exception ex)
             {
-                this._observabilityService.Error(ex, "Error processing");
                 return new List<KitchenRequestDto>();
             }
         }
@@ -179,7 +169,6 @@ namespace PlantBasedPizza.Kitchen.Infrastructure.Controllers
             }
             catch (Exception ex)
             {
-                this._observabilityService.Error(ex, "Error processing");
                 return new List<KitchenRequestDto>();
             }
         }

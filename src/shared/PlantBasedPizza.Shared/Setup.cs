@@ -18,7 +18,6 @@ namespace PlantBasedPizza.Shared
         public static IServiceCollection AddSharedInfrastructure(this IServiceCollection services,
             IConfiguration configuration, string applicationName)
         {
-            ApplicationLogger.Init();
             var loggerConfiguration = new LoggerConfiguration()
                 .Enrich.With(new DataDogLogEnricher())
                 .Enrich.FromLogContext()
@@ -33,6 +32,7 @@ namespace PlantBasedPizza.Shared
             Log.Logger = loggerConfiguration.CreateLogger();
 
             services
+                .AddLogging()
                 .AddSerilog();
             
             var otel = services.AddOpenTelemetry();
@@ -129,8 +129,7 @@ namespace PlantBasedPizza.Shared
                     otlpOptions.Protocol = otlpUseHttp == "Y" ? OtlpExportProtocol.HttpProtobuf : OtlpExportProtocol.Grpc;
                 });
             });
-
-            services.AddSingleton<IObservabilityService, ObservabiityService>();
+            
             services.AddHttpContextAccessor();
 
             return services;

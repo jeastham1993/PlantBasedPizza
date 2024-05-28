@@ -33,15 +33,9 @@ namespace PlantBasedPizza.Events
                 Activity.Current?.SetTag("events.eventName", evt.EventName);
                 Activity.Current?.SetTag("events.eventVersion", evt.EventVersion);
                 Activity.Current?.SetTag("correlationId", evt.CorrelationId);
-                
-                var observability = Container.GetService<IObservabilityService>();
-                
-                observability?.Info($"[EVENT MANAGER] Raising event {evt.EventName}");
 
                 foreach (var handler in Container.GetServices<IHandles<T>>())
                 {
-                    observability?.Info($"[EVENT MANAGER] Handling event with handler {handler.GetType().Name}");
-                    
                     await handler.Handle(evt);
                 }
             }

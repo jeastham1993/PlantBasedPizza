@@ -20,7 +20,7 @@ public class DeliveryServiceTestInfrastructure : Stack
         
         var bus = new EventBus(this, "KitchenApiTestBus", new EventBusProps()
         {
-            EventBusName = $"test.kitchen.{stackProps.Version}"
+            EventBusName = $"test.delivery.{stackProps.Version}"
         });
 
         var deliveryTestSource = "https://delivery.test.plantbasedpizza/";

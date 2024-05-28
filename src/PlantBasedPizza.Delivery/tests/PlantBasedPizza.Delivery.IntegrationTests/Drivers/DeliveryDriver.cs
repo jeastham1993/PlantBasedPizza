@@ -36,7 +36,7 @@ namespace PlantBasedPizza.Delivery.IntegrationTests.Drivers
 
             _eventPublisher = new EventBridgeEventPublisher(new AmazonEventBridgeClient(), Options.Create(new EventBridgeSettings()
             {
-                BusName = $"test.kitchen.{Environment.GetEnvironmentVariable("BUILD_VERSION")}"
+                BusName = $"test.delivery.{Environment.GetEnvironmentVariable("BUILD_VERSION")}"
             }));
         }
 

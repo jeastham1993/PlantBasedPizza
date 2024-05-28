@@ -12,13 +12,11 @@ namespace PlantBasedPizza.Recipes.Infrastructure.Controllers
     public class RecipeController : ControllerBase
     {
         private readonly IRecipeRepository _recipeRepository;
-        private readonly IObservabilityService _observability;
         private readonly IEventPublisher _eventPublisher;
 
-        public RecipeController(IRecipeRepository recipeRepository, IObservabilityService observability, IEventPublisher eventPublisher)
+        public RecipeController(IRecipeRepository recipeRepository, IEventPublisher eventPublisher)
         {
             _recipeRepository = recipeRepository;
-            _observability = observability;
             _eventPublisher = eventPublisher;
         }
 
@@ -29,8 +27,6 @@ namespace PlantBasedPizza.Recipes.Infrastructure.Controllers
         [HttpGet("")]
         public async Task<IEnumerable<Recipe>> List()
         {
-            this._observability.Info("Retrieved request to list recipes");
-
             return await this._recipeRepository.List();
         }
 

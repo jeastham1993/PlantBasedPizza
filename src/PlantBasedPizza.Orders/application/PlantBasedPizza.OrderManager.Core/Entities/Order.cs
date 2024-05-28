@@ -40,8 +40,6 @@ namespace PlantBasedPizza.OrderManager.Core.Entities
                 throw new ArgumentException("If order type is delivery a delivery address must be specified",
                     nameof(deliveryDetails));
             }
-            
-            ApplicationLogger.Info($"Creating a new order with type {type}");
 
             var order = new Order()
             {
@@ -107,7 +105,6 @@ namespace PlantBasedPizza.OrderManager.Core.Entities
         {
             if (this.OrderSubmittedOn.HasValue)
             {
-                ApplicationLogger.Warn("Attempting to add an order item to an order that has already been submitted, skipping");
                 return;
             }
             
