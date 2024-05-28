@@ -20,6 +20,7 @@ jobs:
   integration-test:
     uses: jeastham1993/PlantBasedPizza/.github/workflows/integration-test-base.yaml@feature/aws-serverless
     with:
+      service-name: "PaymentService"
       integration-test-compose-file: src/PlantBasedPizza.Payments/docker-compose-integration.yml
       integration-test-folder: src/PlantBasedPizza.Payments/tests/PlantBasedPizza.Payments.IntegrationTests
     secrets:
