@@ -49,10 +49,14 @@ public class OrderEventPublisher : IOrderEventPublisher
         await this._eventPublisher.Publish(new OrderSubmittedEventV1()
         {
             OrderIdentifier = order.OrderIdentifier,
+            CustomerIdentifier = order.CustomerIdentifier,
+            TotalPrice = order.TotalPrice,
             Items = order.Items.Select(item => new OrderSubmittedEventItem()
             {
                 ItemName = item.ItemName,
-                RecipeIdentifier = item.RecipeIdentifier
+                RecipeIdentifier = item.RecipeIdentifier,
+                UnitPrice = item.Price,
+                Quantity = item.Quantity
             }).ToList()
         });
     }
