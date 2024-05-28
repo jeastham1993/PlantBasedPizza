@@ -85,7 +85,7 @@ public class KitchenInfraStack : Stack
 
         var orderSubmittedQueueName = "Kitchen-OrderSubmitted";
         
-        var orderSubmittedQueue = new EventQueue(this, orderSubmittedQueueName, new EventQueueProps(bus, orderSubmittedQueueName, environment, "https://orders.plantbasedpizza/", "order.orderSubmitted.v1"));
+        var orderSubmittedQueue = new EventQueue(this, orderSubmittedQueueName, new EventQueueProps(bus, orderSubmittedQueueName, environment, "https://orders.plantbasedpizza/", "order.orderConfirmed.v1"));
 
         var worker = new BackgroundWorker(this, "KitchenWorker", new BackgroundWorkerProps(
             new SharedInfrastructureProps(null, bus, publicLoadBalancer, commitHash, environment),

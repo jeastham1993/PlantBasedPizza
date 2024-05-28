@@ -7,20 +7,20 @@ using PlantBasedPizza.Shared.Logging;
 
 namespace BackgroundWorkers.Handlers
 {
-    public class OrderSubmittedEventHandler
+    public class OrderConfirmedEventHandler
     {
         private readonly IKitchenEventPublisher _eventPublisher;
         private readonly IKitchenRequestRepository _kitchenRequestRepository;
         private readonly IRecipeService _recipeService;
 
-        public OrderSubmittedEventHandler(IKitchenRequestRepository kitchenRequestRepository, IRecipeService recipeService, IKitchenEventPublisher eventPublisher)
+        public OrderConfirmedEventHandler(IKitchenRequestRepository kitchenRequestRepository, IRecipeService recipeService, IKitchenEventPublisher eventPublisher)
         {
             _kitchenRequestRepository = kitchenRequestRepository;
             _recipeService = recipeService;
             _eventPublisher = eventPublisher;
         }
         
-        public async Task Handle(OrderSubmittedEventV1 evt)
+        public async Task Handle(OrderConfirmedEventV1 evt)
         {
             Guard.AgainstNull(evt, nameof(evt));
 

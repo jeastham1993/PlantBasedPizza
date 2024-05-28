@@ -23,6 +23,6 @@ public class Startup
             .AddMessaging(configuration)
             .AddKitchenInfrastructure(configuration, databaseConnectionParam);
 
-        services.AddSingleton<OrderSubmittedEventHandler>();
+        services.AddSingleton<OrderConfirmedEventHandler>();
     }
 }

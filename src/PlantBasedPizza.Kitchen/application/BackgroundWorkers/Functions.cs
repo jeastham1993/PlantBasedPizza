@@ -22,14 +22,14 @@ public class Functions
     private readonly TracerProvider _tracerProvider;
     private readonly ActivitySource _source;
     private readonly ILogger<Functions> _logger;
-    private readonly OrderSubmittedEventHandler _orderSubmittedEventHandler;
+    private readonly OrderConfirmedEventHandler _orderConfirmedEventHandler;
     
-    public Functions(SqsEventSubscriber eventSubscriber, TracerProvider tracerProvider, ILogger<Functions> logger, OrderSubmittedEventHandler orderSubmittedEventHandler)
+    public Functions(SqsEventSubscriber eventSubscriber, TracerProvider tracerProvider, ILogger<Functions> logger, OrderConfirmedEventHandler orderConfirmedEventHandler)
     {
         _eventSubscriber = eventSubscriber;
         _tracerProvider = tracerProvider;
         _logger = logger;
-        _orderSubmittedEventHandler = orderSubmittedEventHandler;
+        _orderConfirmedEventHandler = orderConfirmedEventHandler;
         _source = new ActivitySource(Environment.GetEnvironmentVariable("SERVICE_NAME"));;
     }
 
@@ -40,7 +40,7 @@ public class Functions
         
         try
         {
-            var messages = await _eventSubscriber.ParseMessages<OrderSubmittedEventV1>(sqsEvent.Records);
+            var messages = await _eventSubscriber.ParseMessages<OrderConfirmedEventV1>(sqsEvent.Records);
 
             foreach (var message in messages)
             {
@@ -54,7 +54,7 @@ public class Functions
                     processingActivity?.AddTag("queue.time", message.QueueTime);
                     processingActivity?.AddTag("orderIdentifier", message.EventData.OrderIdentifier);
 
-                    await this._orderSubmittedEventHandler.Handle(message.EventData);
+                    await this._orderConfirmedEventHandler.Handle(message.EventData);
                 }
                 catch (Exception ex)
                 {
