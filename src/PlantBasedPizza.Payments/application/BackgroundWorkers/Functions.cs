@@ -34,7 +34,7 @@ public class Functions
     }
 
     [LambdaFunction]
-    public async Task<SQSBatchResponse> HandleOrderReadyForDelivery(SQSEvent sqsEvent)
+    public async Task<SQSBatchResponse> HandleOrderSubmitted(SQSEvent sqsEvent)
     {
         var batchItemFailures = new List<SQSBatchResponse.BatchItemFailure>();
         

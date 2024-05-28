@@ -3,7 +3,7 @@
   "Transform": "AWS::Serverless-2016-10-31",
   "Description": "An AWS Serverless Application. This template is partially managed by Amazon.Lambda.Annotations (v1.2.0.0).",
   "Resources": {
-    "BackgroundWorkersFunctionsHandleOrderReadyForDeliveryGenerated": {
+    "BackgroundWorkersFunctionsHandleOrderSubmittedGenerated": {
       "Type": "AWS::Serverless::Function",
       "Metadata": {
         "Tool": "Amazon.Lambda.Annotations"
@@ -17,7 +17,7 @@
           "AWSLambdaBasicExecutionRole"
         ],
         "PackageType": "Zip",
-        "Handler": "BackgroundWorkers::BackgroundWorkers.Functions_HandleOrderReadyForDelivery_Generated::HandleOrderReadyForDelivery"
+        "Handler": "BackgroundWorkers::BackgroundWorkers.Functions_HandleOrderSubmitted_Generated::HandleOrderSubmitted"
       }
     }
   },

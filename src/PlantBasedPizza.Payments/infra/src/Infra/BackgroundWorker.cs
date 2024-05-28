@@ -19,7 +19,7 @@ public class BackgroundWorker : Construct
         {
             { "Messaging__BusName", props.SharedProps.Bus.EventBusName },
         };
-        var serviceName = "LoyaltyWorker";
+        var serviceName = "PaymentWorker";
 
         this.TakePaymentFunction = new QueueWorkerFunction(this, "TakePaymentFunction",
             new QueueWorkerFunctionProps(
@@ -27,7 +27,7 @@ public class BackgroundWorker : Construct
                 "TakePaymentFunction",
                 props.SharedProps.Environment,
                 $"{props.ApplicationRoot}/BackgroundWorkers",
-                "BackgroundWorkers::BackgroundWorkers.Functions_HandleOrderCompleted_Generated::HandleOrderCompleted",
+                "BackgroundWorkers::BackgroundWorkers.Functions_HandleOrderSubmitted_Generated::HandleOrderSubmitted",
                 props.OrderSubmittedQueue,
                 props.SharedProps.Vpc,
                 props.SharedProps.CommitHash,
