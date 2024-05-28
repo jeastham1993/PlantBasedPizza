@@ -1,6 +1,4 @@
-using PlantBasedPizza.OrderManager.Core.Entities;
-
-namespace PlantBasedPizza.OrderManager.Infrastructure.IntegrationEvents;
+namespace PlantBasedPizza.OrderManager.Core.Entities;
 
 public interface IOrderEventPublisher
 {
@@ -9,4 +7,6 @@ public interface IOrderEventPublisher
     Task PublishOrderReadyForDeliveryEventV1(Order order);
     
     Task PublishOrderSubmittedEventV1(Order order);
+    
+    Task PublishOrderConfirmedEventV1(Order order);
 }

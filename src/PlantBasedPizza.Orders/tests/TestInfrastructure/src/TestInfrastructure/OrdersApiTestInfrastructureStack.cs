@@ -42,10 +42,11 @@ public class OrdersApiTestInfrastructureStack : Stack
         var driverDeliveredQueue = new EventQueue(this, "DriverDeliveredOrderQueue", new EventQueueProps(bus, "DriverDeliveredOrderQueue", stackProps.Version, ordersTestSource, "delivery.driverDeliveredOrder.v1"));
         var driverCollectedQueue = new EventQueue(this, "DriverCollectedOrderQueue", new EventQueueProps(bus, "DriverCollectedOrderQueue", stackProps.Version, ordersTestSource, "delivery.driverCollectedOrder.v1"));
         var loyaltyPointsQueue = new EventQueue(this, "LoyaltyUpdatedQueue", new EventQueueProps(bus, "LoyaltyUpdatedQueue", stackProps.Version, ordersTestSource, "loyalty.customerLoyaltyPointsUpdated.v1"));
+        var paymentSuccessQueue = new EventQueue(this, "PaymentSuccessQueue", new EventQueueProps(bus, "PaymentSuccessQueue", stackProps.Version, ordersTestSource, "payments.paymentSuccessful.v1"));
 
         var backgroundWorker = new BackgroundWorker(this, "OrdersWorkerTestFunction",
             new BackgroundWorkerProps(new SharedInfrastructureProps(null, bus, null, "int-test", stackProps.Version),
-                "../../application", databaseConnectionParam, loyaltyPointsQueue.Queue, driverCollectedQueue.Queue, driverDeliveredQueue.Queue, bakedQueue.Queue, prepCompleteQueue.Queue, preparingQueue.Queue, orderQualityCheckedQueue.Queue));
+                "../../application", databaseConnectionParam, loyaltyPointsQueue.Queue, driverCollectedQueue.Queue, driverDeliveredQueue.Queue, bakedQueue.Queue, prepCompleteQueue.Queue, preparingQueue.Queue, orderQualityCheckedQueue.Queue, paymentSuccessQueue.Queue));
 
         var eventBus = new CfnOutput(this, "EBOutput", new CfnOutputProps()
         {

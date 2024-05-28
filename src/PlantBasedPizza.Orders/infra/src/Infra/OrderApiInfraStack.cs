@@ -103,9 +103,11 @@ public class OrderApiInfraStack : Stack
         var orderQualityCheckedQueueName = "Orders-OrderQualityCheckedQueue";
         var driverDeliveredOrderQueueName = "Orders-DriverDeliveredOrderQueue";
         var driverCollectedOrderQueueName = "Orders-DriverCollectedOrderQueue";
+        var paymentsuccessfulQueueName = "Orders-PaymentSuccessfulQueue";
         
         var kitchenServiceSource = "https://kitchen.plantbasedpizza/";
         var deliveryServiceSource = "https://delivery.plantbasedpizza/";
+        var paymentServiceSource = "https://payments.plantbasedpizza/";
 
         var loyaltyPointsQueue = new EventQueue(this, loyaltyPointsCheckedQueueName, new EventQueueProps(bus, loyaltyPointsCheckedQueueName, environment, "https://orders.test.plantbasedpizza/", "loyalty.customerLoyaltyPointsUpdated.v1"));
         var orderPreparingQueue = new EventQueue(this, orderPreparingQueueName, new EventQueueProps(bus, orderPreparingQueueName, environment, kitchenServiceSource, "kitchen.orderPreparing.v1"));
@@ -114,9 +116,10 @@ public class OrderApiInfraStack : Stack
         var orderQualityCheckedQueue = new EventQueue(this, orderQualityCheckedQueueName, new EventQueueProps(bus, orderQualityCheckedQueueName, environment, kitchenServiceSource, "kitchen.qualityChecked.v1"));
         var driverDeliveredOrderQueue = new EventQueue(this, driverDeliveredOrderQueueName, new EventQueueProps(bus, driverDeliveredOrderQueueName, environment, deliveryServiceSource, "delivery.driverDeliveredOrder.v1"));
         var driverCollectedOrderQueue = new EventQueue(this, driverCollectedOrderQueueName, new EventQueueProps(bus, driverCollectedOrderQueueName, environment, deliveryServiceSource, "delivery.driverCollectedOrder.v1"));
+        var paymentSuccessfulQueue = new EventQueue(this, paymentsuccessfulQueueName, new EventQueueProps(bus, paymentsuccessfulQueueName, environment, paymentServiceSource, "payments.paymentSuccessful.v1"));
 
         var backgroundWorker = new BackgroundWorker(this, "OrdersWorkerFunctions",
             new BackgroundWorkerProps(new SharedInfrastructureProps(null, bus, publicLoadBalancer, commitHash, environment),
-                "../application", databaseConnectionParam, loyaltyPointsQueue.Queue, driverCollectedOrderQueue.Queue, driverDeliveredOrderQueue.Queue, orderBakedQueue.Queue, orderPrepCompleteQueue.Queue, orderPreparingQueue.Queue, orderQualityCheckedQueue.Queue));
+                "../application", databaseConnectionParam, loyaltyPointsQueue.Queue, driverCollectedOrderQueue.Queue, driverDeliveredOrderQueue.Queue, orderBakedQueue.Queue, orderPrepCompleteQueue.Queue, orderPreparingQueue.Queue, orderQualityCheckedQueue.Queue, paymentSuccessfulQueue.Queue));
     }
 }

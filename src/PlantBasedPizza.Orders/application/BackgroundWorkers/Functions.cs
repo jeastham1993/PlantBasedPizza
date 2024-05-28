@@ -29,8 +29,9 @@ public class Functions
     private readonly OrderPreparingEventHandler _orderPreparingEventHandler;
     private readonly OrderPrepCompleteEventHandler _orderPrepCompleteEventHandler;
     private readonly OrderQualityCheckedEventHandler _orderQualityCheckedEventHandler;
+    private readonly PaymentSuccessfulEventHandler _paymentSuccessfulEventHandler;
     
-    public Functions(SqsEventSubscriber eventSubscriber, IDistributedCache distributedCache, TracerProvider tracerProvider, ILogger<Functions> logger, DriverCollectedOrderEventHandler driverCollectedOrderEventHandler, DriverDeliveredOrderEventHandler driverDeliveredOrderEventHandler, OrderPrepCompleteEventHandler orderPrepCompleteEventHandler, OrderPreparingEventHandler orderPreparingEventHandler, OrderBakedEventHandler orderBakedEventHandler, OrderQualityCheckedEventHandler orderQualityCheckedEventHandler)
+    public Functions(SqsEventSubscriber eventSubscriber, IDistributedCache distributedCache, TracerProvider tracerProvider, ILogger<Functions> logger, DriverCollectedOrderEventHandler driverCollectedOrderEventHandler, DriverDeliveredOrderEventHandler driverDeliveredOrderEventHandler, OrderPrepCompleteEventHandler orderPrepCompleteEventHandler, OrderPreparingEventHandler orderPreparingEventHandler, OrderBakedEventHandler orderBakedEventHandler, OrderQualityCheckedEventHandler orderQualityCheckedEventHandler, PaymentSuccessfulEventHandler paymentSuccessfulEventHandler)
     {
         _eventSubscriber = eventSubscriber;
         _distributedCache = distributedCache;
@@ -42,6 +43,7 @@ public class Functions
         _orderPreparingEventHandler = orderPreparingEventHandler;
         _orderBakedEventHandler = orderBakedEventHandler;
         _orderQualityCheckedEventHandler = orderQualityCheckedEventHandler;
+        _paymentSuccessfulEventHandler = paymentSuccessfulEventHandler;
         _source = new ActivitySource(Environment.GetEnvironmentVariable("SERVICE_NAME"));;
     }
 
@@ -391,6 +393,58 @@ public class Functions
                     processingActivity?.AddTag("orderIdentifier", message.EventData.OrderIdentifier);
 
                     await this._orderQualityCheckedEventHandler.Handle(message.EventData);
+                }
+                catch (Exception ex)
+                {
+                    this._logger.LogError(ex, "Failure handling SQS messages");
+                    processingActivity.RecordException(ex);
+                    batchItemFailures.Add(new SQSBatchResponse.BatchItemFailure()
+                    {
+                        ItemIdentifier = message.MessageId
+                    });
+                }
+            }
+
+        }
+        catch (Exception ex)
+        {
+            this._logger.LogError(ex, "Failure handling SQS messages");
+        }
+        finally
+        {
+            this._tracerProvider.ForceFlush();   
+        }
+
+        return new SQSBatchResponse(batchItemFailures);
+    }
+    
+    [LambdaFunction]
+    public async Task<SQSBatchResponse> HandlePaymentSuccessfulEvent(SQSEvent sqsEvent, ILambdaContext context)
+    {
+        var batchItemFailures = new List<SQSBatchResponse.BatchItemFailure>();
+        
+        try
+        {
+            var messages = await _eventSubscriber.ParseMessages<PaymentSuccessfulEventV1>(sqsEvent.Records);
+
+            foreach (var message in messages)
+            {
+                context.AddToTrace();
+
+                using var queueActivity = _source.StartActivity("queue-time", ActivityKind.Internal,
+                    message.TraceParent, startTime: message.EventPublishDate);
+                queueActivity.Stop();
+                
+                using var processingActivity = _source.StartActivity("processing-payment-success-event",
+                                     ActivityKind.Server, message.TraceParent);
+                try
+                {
+                    this._logger.LogInformation("Processing {messageId}", message.MessageId);
+                    
+                    processingActivity?.AddTag("queue.time", message.QueueTime);
+                    processingActivity?.AddTag("orderIdentifier", message.EventData.OrderIdentifier);
+
+                    await this._paymentSuccessfulEventHandler.Handle(message.EventData);
                 }
                 catch (Exception ex)
                 {

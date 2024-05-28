@@ -43,7 +43,7 @@ public class OrderEventPublisher : IOrderEventPublisher
     }
 
     [Channel("order.orderSubmitted.v1")]
-    [PublishOperation(typeof(OrderSubmittedEventV1), Summary = "Published when an order is submitted and paid for.")]
+    [PublishOperation(typeof(OrderSubmittedEventV1), Summary = "Published when an order is submitted.")]
     public async Task PublishOrderSubmittedEventV1(Order order)
     {
         await this._eventPublisher.Publish(new OrderSubmittedEventV1()
@@ -52,6 +52,25 @@ public class OrderEventPublisher : IOrderEventPublisher
             CustomerIdentifier = order.CustomerIdentifier,
             TotalPrice = order.TotalPrice,
             Items = order.Items.Select(item => new OrderSubmittedEventItem()
+            {
+                ItemName = item.ItemName,
+                RecipeIdentifier = item.RecipeIdentifier,
+                UnitPrice = item.Price,
+                Quantity = item.Quantity
+            }).ToList()
+        });
+    }
+
+    [Channel("order.orderConfirmed.v1")]
+    [PublishOperation(typeof(OrderConfirmedEventV1), Summary = "Published when an order is submitted and paid for.")]
+    public async Task PublishOrderConfirmedEventV1(Order order)
+    {
+        await this._eventPublisher.Publish(new OrderConfirmedEventV1()
+        {
+            OrderIdentifier = order.OrderIdentifier,
+            CustomerIdentifier = order.CustomerIdentifier,
+            TotalPrice = order.TotalPrice,
+            Items = order.Items.Select(item => new OrderConfirmedEventItem()
             {
                 ItemName = item.ItemName,
                 RecipeIdentifier = item.RecipeIdentifier,

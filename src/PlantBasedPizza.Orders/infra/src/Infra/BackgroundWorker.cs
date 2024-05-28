@@ -7,7 +7,7 @@ using PlantBasedPizza.Infra.Constructs;
 
 namespace Infra;
 
-public record BackgroundWorkerProps(SharedInfrastructureProps SharedProps, string ApplicationRoot, IStringParameter DatabaseConnectionParameter, IQueue LoyaltyPointsUpdatedQueue, IQueue DriverCollectedOrderQueue, IQueue DriverDeliveredOrderQueue, IQueue OrderBakedQueue, IQueue OrderPrepCompleteQueue, IQueue OrderPreparingQueue, IQueue OrderQualityCheckedQueue);
+public record BackgroundWorkerProps(SharedInfrastructureProps SharedProps, string ApplicationRoot, IStringParameter DatabaseConnectionParameter, IQueue LoyaltyPointsUpdatedQueue, IQueue DriverCollectedOrderQueue, IQueue DriverDeliveredOrderQueue, IQueue OrderBakedQueue, IQueue OrderPrepCompleteQueue, IQueue OrderPreparingQueue, IQueue OrderQualityCheckedQueue, IQueue PaymentSuccessfulQueue);
 
 public class BackgroundWorker : Construct
 {
@@ -18,6 +18,8 @@ public class BackgroundWorker : Construct
     public IFunction OrderQualityCheckedEventFunction { get; private set; }
     public IFunction DriverCollectedEventFunction { get; private set; }
     public IFunction DriverDeliveredEventFunction { get; private set; }
+    
+    public IFunction PaymentSuccessfulEventFunction { get; private set; }
     
     public BackgroundWorker(Construct scope, string id, BackgroundWorkerProps props) : base(scope, id)
     {
@@ -116,6 +118,18 @@ public class BackgroundWorker : Construct
                 props.SharedProps.CommitHash,
                 queueWorkerEnvVars)).Function;
         
+        this.PaymentSuccessfulEventFunction = new QueueWorkerFunction(this, "PaymentSuccessfulFunction",
+            new QueueWorkerFunctionProps(
+                serviceName,
+                "PaymentSuccessfulFunction",
+                props.SharedProps.Environment,
+                $"{props.ApplicationRoot}/BackgroundWorkers",
+                "BackgroundWorkers::BackgroundWorkers.Functions_HandlePaymentSuccessfulEvent_Generated::HandlePaymentSuccessfulEvent",
+                props.PaymentSuccessfulQueue,
+                props.SharedProps.Vpc,
+                props.SharedProps.CommitHash,
+                queueWorkerEnvVars)).Function;
+        
         props.DatabaseConnectionParameter.GrantRead(this.LoyaltyPointsUpdatedFunction);
         props.DatabaseConnectionParameter.GrantRead(this.DriverCollectedEventFunction);
         props.DatabaseConnectionParameter.GrantRead(this.DriverDeliveredEventFunction);
@@ -123,6 +137,8 @@ public class BackgroundWorker : Construct
         props.DatabaseConnectionParameter.GrantRead(this.OrderPreparingEventFunction);
         props.DatabaseConnectionParameter.GrantRead(this.OrderPrepCompleteEventFunction);
         props.DatabaseConnectionParameter.GrantRead(this.OrderQualityCheckedEventFunction);
+        props.DatabaseConnectionParameter.GrantRead(this.PaymentSuccessfulEventFunction);
+        
         props.SharedProps.Bus.GrantPutEventsTo(this.LoyaltyPointsUpdatedFunction);
         props.SharedProps.Bus.GrantPutEventsTo(this.DriverCollectedEventFunction);
         props.SharedProps.Bus.GrantPutEventsTo(this.DriverDeliveredEventFunction);
@@ -130,5 +146,6 @@ public class BackgroundWorker : Construct
         props.SharedProps.Bus.GrantPutEventsTo(this.OrderPreparingEventFunction);
         props.SharedProps.Bus.GrantPutEventsTo(this.OrderPrepCompleteEventFunction);
         props.SharedProps.Bus.GrantPutEventsTo(this.OrderQualityCheckedEventFunction);
+        props.SharedProps.Bus.GrantPutEventsTo(this.PaymentSuccessfulEventFunction);
     }
 }
