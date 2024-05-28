@@ -30,24 +30,11 @@ jobs:
       ecr-registry: ${{secrets.ECR_REGISTRY}}
       dd_api_key: ${{secrets.DD_API_KEY}}
       dd_app_key: ${{secrets.DD_APP_KEY}}
-  build-worker-image:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@feature/aws-serverless
-    with:
-      service-name: "KitchenService"
-      project-root: src/PlantBasedPizza.Kitchen
-      unit-test-folder: src/PlantBasedPizza.Kitchen/tests/PlantBasedPizza.Kitchen.UnitTests
-      image-name: kitchen-worker
-      dockerfile: src/PlantBasedPizza.Kitchen/application/PlantBasedPizza.Kitchen.Worker/Dockerfile-x86
-    secrets:
-      deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
-      ecr-registry: ${{secrets.ECR_REGISTRY}}
-      dd_api_key: ${{secrets.DD_API_KEY}}
-      dd_app_key: ${{secrets.DD_APP_KEY}}
+      
   integration-test:
     uses: jeastham1993/PlantBasedPizza/.github/workflows/integration-test-with-test-infra.yaml@feature/aws-serverless
     needs:
       - build-api-image
-      - build-worker-image
     with:
       service-name: "KitchenService"
       integration-test-compose-file: src/PlantBasedPizza.Kitchen/docker-compose-integration.yml
@@ -57,6 +44,7 @@ jobs:
       deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
       ecr-registry: ${{secrets.ECR_REGISTRY}}
       dd_api_key: ${{secrets.DD_API_KEY}}
+
   deploy-to-dev:
     uses: jeastham1993/PlantBasedPizza/.github/workflows/cdk-deploy-base.yaml@feature/aws-serverless
     needs: integration-test
