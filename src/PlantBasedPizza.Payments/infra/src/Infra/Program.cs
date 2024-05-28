@@ -10,7 +10,7 @@ namespace Infra
         public static void Main(string[] args)
         {
             var app = new App();
-            new PaymentInfraStack(app, "LoyaltyServiceInfraStack", new StackProps()
+            new PaymentInfraStack(app, "PaymentServiceInfraStack", new StackProps()
             {
                 Env = new Environment()
                 {
