@@ -32,15 +32,13 @@ builder.Services.AddAuthentication(options =>
 var corsPolicyName = "_allowSpecificOrigins";
 
 builder.Services.AddCors(options =>
-{
-    options.AddPolicy(name: corsPolicyName,
-                      policy  =>
-                      {
-                          policy.AllowAnyOrigin()
-                              .AllowAnyHeader()
-                                                  .AllowAnyMethod();
-                      });
-});
+    {
+        options.AddPolicy("CorsPolicy",
+            builder => builder.AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials() );
+    });
 
 builder.Services.AddAuthorization();
 
@@ -57,7 +55,7 @@ var app = builder.Build();
 var recipeRepo = app.Services.GetRequiredService<IRecipeRepository>();
 await recipeRepo.SeedRecipes();
 
-app.UseCors(corsPolicyName);
+app.UseCors("CorsPolicy");
 
 app.UseAuthentication();
 app.UseAuthorization();
