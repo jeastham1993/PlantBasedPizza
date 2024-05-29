@@ -36,9 +36,9 @@ builder.Services.AddCors(options =>
     options.AddPolicy(name: corsPolicyName,
                       policy  =>
                       {
-                          policy.WithOrigins("http://localhost*",
-                                             "http://localhost",
-                                              "https://dev.plantbasedpizza.net");
+                          policy.WithOrigins("*")
+                              .AllowAnyHeader()
+                                                  .AllowAnyMethod();
                       });
 });
 
