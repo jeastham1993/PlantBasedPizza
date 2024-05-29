@@ -54,13 +54,13 @@ builder.Services.AddControllers();
 
 var app = builder.Build();
 
+var recipeRepo = app.Services.GetRequiredService<IRecipeRepository>();
+await recipeRepo.SeedRecipes();
+
 app.UseCors(corsPolicyName);
 
 app.UseAuthentication();
 app.UseAuthorization();
-
-var recipeRepo = app.Services.GetRequiredService<IRecipeRepository>();
-await recipeRepo.SeedRecipes();
 
 app.MapControllers();
 
