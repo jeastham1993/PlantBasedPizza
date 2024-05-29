@@ -29,6 +29,19 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+var corsPolicyName = "_allowSpecificOrigins";
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: corsPolicyName,
+                      policy  =>
+                      {
+                          policy.WithOrigins("http://localhost*",
+                                             "http://localhost",
+                                              "https://dev.plantbasedpizza.net");
+                      });
+});
+
 builder.Services.AddAuthorization();
 
 builder.Services.AddRecipeInfrastructure(builder.Configuration);
@@ -40,6 +53,8 @@ builder.Services.AddHttpClient();
 builder.Services.AddControllers();
 
 var app = builder.Build();
+
+app.UseCors(corsPolicyName);
 
 app.UseAuthentication();
 app.UseAuthorization();
