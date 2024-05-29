@@ -80,7 +80,8 @@ public class DeliveryInfraStack : Stack
             albListener,
             "/delivery/health",
             "/delivery/*",
-            72
+            72,
+            DeployInPrivateSubnet: true
         ));
 
         var orderReadyForDeliveryQueueName = "Delivery-OrderReadyForDelivery";
