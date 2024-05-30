@@ -145,7 +145,7 @@ public class WebService : Construct
                      { "DD_ENV", props.Environment},
                      { "DD_SERVICE", props.ServiceName},
                      { "DD_VERSION", props.Tag},
-                     { "DD_APM_IGNORE_RESOURCES", "(GET|POST) /health"}
+                     { "DD_APM_IGNORE_RESOURCES", $"(GET) {props.HealthCheckPath}"}
                  },
                  Secrets = new Dictionary<string, Secret>(1)
                  {
