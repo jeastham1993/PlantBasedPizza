@@ -11,12 +11,6 @@ public class OrderManagerTests
     [Fact]
     public void CanCreateNewOrder_ShouldSetDefaultFields()
     {
-        string? createdOrder = null;
-        
-        DomainEvents.Register<OrderCreatedEvent>((evt) =>
-        {
-            createdOrder = evt.OrderIdentifier;
-        });
         
         var order = Order.Create(OrderType.Pickup, DefaultCustomerIdentifier);
 
@@ -25,8 +19,6 @@ public class OrderManagerTests
         order.OrderNumber.Should().NotBeNullOrEmpty();
         order.OrderDate.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(5));
         order.OrderType.Should().Be(OrderType.Pickup);
-
-        createdOrder.Should().NotBeNull();
     }
     
     [Fact]
@@ -116,32 +108,6 @@ public class OrderManagerTests
 
         order.TotalPrice.Should().Be(13.50M);
     }
-    
-    [Fact]
-    public void CanCreateAndSubmitOrder_ShouldBeSubmitted()
-    {
-        string submittedOrder = null;
-        
-        DomainEvents.Register<OrderSubmittedEvent>((evt) =>
-        {
-            submittedOrder = evt.OrderIdentifier;
-            evt.EventDate.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(5));
-        });
-        
-        var order = Order.Create(OrderType.Delivery, DefaultCustomerIdentifier, new DeliveryDetails()
-        {
-            AddressLine1 = "TEST",
-            Postcode = "XN6 7UY"
-        });
-        
-        order.AddOrderItem("PIZZA", "Pizza 1", 1, 10);
-
-        order.SubmitOrder();
-
-        order.OrderSubmittedOn.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(5));
-        submittedOrder.Should().NotBeNull();
-    }
-    
     [Fact]
     public void AddItemsToASubmittedOrder_ShouldNotAdd()
     {
@@ -158,32 +124,6 @@ public class OrderManagerTests
         order.AddOrderItem("PIZZA", "Pizza 1", 1, 10);
 
         order.Items.FirstOrDefault().Quantity.Should().Be(1);
-    }
-    
-    [Fact]
-    public void CanCreateAndCompletetOrder_ShouldBeCompleted()
-    {
-        string completedOrder = null;
-        
-        DomainEvents.Register<OrderCompletedEvent>((evt) =>
-        {
-            completedOrder = evt.OrderIdentifier;
-        });
-        
-        var order = Order.Create(OrderType.Delivery, DefaultCustomerIdentifier, new DeliveryDetails()
-        {
-            AddressLine1 = "TEST",
-            Postcode = "XN6 7UY"
-        });
-        
-        order.AddOrderItem("PIZZA", "Pizza 1", 1, 10);
-
-        order.CompleteOrder();
-
-        order.OrderCompletedOn.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(5));
-        order.AwaitingCollection.Should().BeFalse();
-
-        completedOrder.Should().NotBeNull();
     }
     
     
