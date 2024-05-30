@@ -116,6 +116,13 @@ public class SqsEventSubscriber
                 }
             }
 
+            var integrationSpan = Tracer.Instance.StartActive("queue-time", new SpanCreationSettings()
+            {
+                Parent = new SpanContext(traceId, spanId, SamplingPriority.AutoKeep, "integration-latency"),
+                StartTime = eventBridgeEventWrapper.Time ?? evtWrapper.Time,
+            });
+            integrationSpan.Close();
+
             var evtData = evtWrapper.Data as T;
 
             response.Add(new ParseEventResponse<T>()
