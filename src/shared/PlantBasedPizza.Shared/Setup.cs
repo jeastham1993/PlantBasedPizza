@@ -11,8 +11,6 @@ namespace PlantBasedPizza.Shared
 {
     public static class Setup
     {
-        private const string OTEL_DEFAULT_GRPC_ENDPOINT = "http://localhost:4317";
-        
         public static IServiceCollection AddSharedInfrastructure(this IServiceCollection services,
             IConfiguration configuration, string applicationName)
         {

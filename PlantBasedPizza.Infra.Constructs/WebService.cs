@@ -126,6 +126,10 @@ public class WebService : Construct
                     new PortMapping()
                     {
                         ContainerPort = 4318
+                    },
+                    new PortMapping()
+                    {
+                        ContainerPort = 8126
                     }
                  ],
                  ContainerName = "datadog-agent",
