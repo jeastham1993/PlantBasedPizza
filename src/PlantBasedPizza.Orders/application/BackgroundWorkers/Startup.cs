@@ -21,7 +21,7 @@ public class Startup
         services
             .AddSharedInfrastructure(configuration, Environment.GetEnvironmentVariable("SERVICE_NAME"))
             .AddMessaging(configuration)
-            .AddOrderManagerInfrastructure(configuration, databaseConnectionParam);
+            .AddOrderManagerInfrastructure(configuration);
 
         services.AddSingleton<DriverCollectedOrderEventHandler>();
         services.AddSingleton<DriverDeliveredOrderEventHandler>();

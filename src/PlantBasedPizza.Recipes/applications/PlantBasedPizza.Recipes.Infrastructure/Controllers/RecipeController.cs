@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using PlantBasedPizza.Events;
 using PlantBasedPizza.Recipes.Core.Commands;
