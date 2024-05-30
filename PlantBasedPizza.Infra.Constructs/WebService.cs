@@ -138,6 +138,7 @@ public class WebService : Construct
                      { "DD_SITE", "datadoghq.eu" },
                      { "ECS_FARGATE", "true" },
                      { "DD_LOGS_ENABLED", "false" },
+                     { "DD_PROCESS_AGENT_ENABLED", "true" },
                      { "DD_APM_ENABLED", "true"},
                      { "DD_APM_NON_LOCAL_TRAFFIC", "true"},
                      { "DD_DOGSTATSD_NON_LOCAL_TRAFFIC", "true"},
@@ -195,7 +196,7 @@ public class WebService : Construct
                 {
                     Port = props.Port.ToString(),
                     Path = props.HealthCheckPath,
-                    HealthyHttpCodes = "200-404"
+                    HealthyHttpCodes = "200-404",
                 },
                 Vpc = props.Vpc
             });
