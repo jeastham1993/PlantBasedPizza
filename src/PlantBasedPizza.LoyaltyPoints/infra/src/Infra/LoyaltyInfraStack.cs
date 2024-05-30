@@ -80,7 +80,8 @@ public class LoyaltyInfraStack : Stack
             albListener,
             "/loyalty/health",
             "/loyalty/*",
-            82
+            82,
+            DeployInPrivateSubnet: true
         ));
         
         var loyaltyInternalService = new WebService(this, "LoyaltyInternalWebService", new ConstructProps(

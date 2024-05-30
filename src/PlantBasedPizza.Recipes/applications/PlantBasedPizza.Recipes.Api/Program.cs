@@ -29,6 +29,17 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+var corsPolicyName = "_allowSpecificOrigins";
+
+builder.Services.AddCors(options =>
+    {
+        options.AddPolicy("CorsPolicy",
+            builder => builder.AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials() );
+    });
+
 builder.Services.AddAuthorization();
 
 builder.Services.AddRecipeInfrastructure(builder.Configuration);
@@ -41,11 +52,13 @@ builder.Services.AddControllers();
 
 var app = builder.Build();
 
-app.UseAuthentication();
-app.UseAuthorization();
-
 var recipeRepo = app.Services.GetRequiredService<IRecipeRepository>();
 await recipeRepo.SeedRecipes();
+
+app.UseCors("CorsPolicy");
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 

@@ -84,7 +84,8 @@ public class OrderApiInfraStack : Stack
             albListener,
             "/order/health",
             "/order/*",
-            106
+            106,
+            DeployInPrivateSubnet: true
         ));
         
         bus.GrantPutEventsTo(orderApiService.TaskRole);

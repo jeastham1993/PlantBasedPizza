@@ -8,6 +8,7 @@ using PlantBasedPizza.Shared.Logging;
 
 namespace PlantBasedPizza.Recipes.Infrastructure.Controllers
 {
+    [EnableCors("CorsPolicy")]
     [Route("recipes")]
     public class RecipeController : ControllerBase
     {

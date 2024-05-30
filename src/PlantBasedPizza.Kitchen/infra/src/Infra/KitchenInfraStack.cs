@@ -80,7 +80,8 @@ public class KitchenInfraStack : Stack
             albListener,
             "/kitchen/health",
             "/kitchen/*",
-            32
+            32,
+            DeployInPrivateSubnet: true
         ));
 
         var orderSubmittedQueueName = "Kitchen-OrderSubmitted";

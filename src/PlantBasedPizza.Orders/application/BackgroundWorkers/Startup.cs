@@ -29,5 +29,7 @@ public class Startup
         services.AddSingleton<OrderPreparingEventHandler>();
         services.AddSingleton<OrderPrepCompleteEventHandler>();
         services.AddSingleton<OrderQualityCheckedEventHandler>();
+        
+        services.AddSingleton<PaymentSuccessfulEventHandler>();
     }
 }
