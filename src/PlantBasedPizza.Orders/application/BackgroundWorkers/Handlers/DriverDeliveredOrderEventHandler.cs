@@ -26,7 +26,7 @@ namespace BackgroundWorkers.Handlers
 
             await this._eventPublisher.Publish(new OrderCompletedIntegrationEventV1()
             {
-                OrderIdentifier = order.OrderIdentifier,
+                OrderIdentifier = order.OrderNumber,
                 CustomerIdentifier = order.CustomerIdentifier,
                 OrderValue = order.TotalPrice
             });

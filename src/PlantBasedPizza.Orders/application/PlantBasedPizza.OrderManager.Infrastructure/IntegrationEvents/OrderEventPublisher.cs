@@ -20,7 +20,7 @@ public class OrderEventPublisher : IOrderEventPublisher
     {
         await this._eventPublisher.Publish(new OrderCompletedIntegrationEventV1()
         {
-            OrderIdentifier = order.OrderIdentifier,
+            OrderIdentifier = order.OrderNumber,
             CustomerIdentifier = order.CustomerIdentifier,
             OrderValue = order.TotalPrice
         });
@@ -32,7 +32,7 @@ public class OrderEventPublisher : IOrderEventPublisher
     {
         await this._eventPublisher.Publish(new OrderReadyForDeliveryEventV1()
         {
-            OrderIdentifier = order.OrderIdentifier,
+            OrderIdentifier = order.OrderNumber,
             DeliveryAddressLine1 = order.DeliveryDetails.AddressLine1,
             DeliveryAddressLine2 = order.DeliveryDetails.AddressLine2,
             DeliveryAddressLine3 = order.DeliveryDetails.AddressLine3,
@@ -48,7 +48,7 @@ public class OrderEventPublisher : IOrderEventPublisher
     {
         await this._eventPublisher.Publish(new OrderSubmittedEventV1()
         {
-            OrderIdentifier = order.OrderIdentifier,
+            OrderIdentifier = order.OrderNumber,
             CustomerIdentifier = order.CustomerIdentifier,
             TotalPrice = order.TotalPrice,
             Items = order.Items.Select(item => new OrderSubmittedEventItem()
@@ -67,7 +67,7 @@ public class OrderEventPublisher : IOrderEventPublisher
     {
         await this._eventPublisher.Publish(new OrderConfirmedEventV1()
         {
-            OrderIdentifier = order.OrderIdentifier,
+            OrderIdentifier = order.OrderNumber,
             CustomerIdentifier = order.CustomerIdentifier,
             TotalPrice = order.TotalPrice,
             Items = order.Items.Select(item => new OrderConfirmedEventItem()

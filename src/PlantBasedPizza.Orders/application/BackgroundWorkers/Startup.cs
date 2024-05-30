@@ -12,10 +12,6 @@ public class Startup
 {
     public void ConfigureServices(IServiceCollection services)
     {
-        var parameterProvider = AWS.Lambda.Powertools.Parameters.ParametersManager.SsmProvider.WithDecryption();
-        var databaseConnectionParam =
-            parameterProvider.Get<string>(Environment.GetEnvironmentVariable("DATABASE_CONNECTION_PARAM_NAME")); 
-            
         var configuration = new ConfigurationBuilder().AddEnvironmentVariables().Build();
         
         services

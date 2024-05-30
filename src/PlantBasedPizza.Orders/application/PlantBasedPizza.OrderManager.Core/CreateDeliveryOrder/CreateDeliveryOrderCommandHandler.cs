@@ -14,12 +14,7 @@ public class CreateDeliveryOrderCommandHandler
 
     public async Task<OrderDto?> Handle(CreateDeliveryOrder request)
     {
-        if (await this._orderRepository.Exists(request.CustomerIdentifier, request.OrderIdentifier))
-        {
-            return null;
-        }
-
-        var order = Order.Create(request.OrderIdentifier, request.OrderType, request.CustomerIdentifier,
+        var order = Order.Create(request.OrderType, request.CustomerIdentifier,
             new DeliveryDetails
             {
                 AddressLine1 = request.AddressLine1,
@@ -28,7 +23,7 @@ public class CreateDeliveryOrderCommandHandler
                 AddressLine4 = request.AddressLine4,
                 AddressLine5 = request.AddressLine5,
                 Postcode = request.Postcode
-            }, CorrelationContext.GetCorrelationId());
+            });
 
         await _orderRepository.Add(order);
 

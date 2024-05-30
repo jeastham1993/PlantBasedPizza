@@ -1,4 +1,6 @@
 using System.Diagnostics;
+using Datadog.Trace;
+using Datadog.Trace.Annotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PlantBasedPizza.OrderManager.Core.AddItemToOrder;
@@ -43,11 +45,11 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
             try
             {
                 var accountId = User.Claims.ExtractAccountId();
-                
+                    
                 Activity.Current?.SetTag("orderIdentifier", orderIdentifier);
-                
+                    
                 var order = await this._orderRepository.Retrieve(accountId, orderIdentifier).ConfigureAwait(false);
-                
+                    
                 return new OrderDto(order);
             }
             catch (OrderNotFoundException)

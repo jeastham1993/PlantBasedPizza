@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Datadog.Trace;
 using Serilog.Core;
 using Serilog.Events;
 
@@ -19,11 +20,11 @@ public class DataDogLogEnricher : ILogEventEnricher
         var traceProperty = propertyFactory
             .CreateProperty(
                 "dd.trace_id",
-                Activity.Current?.TraceId.ToString());
+                Tracer.Instance.ActiveScope.Span.TraceId);
         var spanProperty = propertyFactory
             .CreateProperty(
                 "dd.span_id",
-                Activity.Current?.SpanId.ToString());
+                Tracer.Instance.ActiveScope.Span.SpanId);
         
         logEvent.AddOrUpdateProperty(envProperty);
         logEvent.AddOrUpdateProperty(serviceProperty);

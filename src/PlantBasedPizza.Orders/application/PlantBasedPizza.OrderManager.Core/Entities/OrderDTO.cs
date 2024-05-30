@@ -6,7 +6,6 @@ public record OrderDto
 {
     public OrderDto(Order order)
     {
-        this.OrderIdentifier = order.OrderIdentifier;
         this.OrderNumber = order.OrderNumber;
         this.OrderDate = order.OrderDate;
         this.AwaitingCollection = order.AwaitingCollection;

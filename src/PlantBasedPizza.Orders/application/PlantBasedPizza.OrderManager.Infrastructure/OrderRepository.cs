@@ -2,6 +2,7 @@
 using System.Text.Json;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
+using Datadog.Trace;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using PlantBasedPizza.OrderManager.Core.Entities;
@@ -26,16 +27,16 @@ public class OrderRepository : IOrderRepository
         var ddbAttributes = new Dictionary<string, AttributeValue>()
         {
             { "PK", new AttributeValue(order.CustomerIdentifier) },
-            { "SK", new AttributeValue(order.OrderIdentifier) },
+            { "SK", new AttributeValue(order.OrderNumber) },
             { "Type", new AttributeValue("Order") },
             { "Data", new AttributeValue(JsonSerializer.Serialize(order)) },
-            { "GSI2PK", new AttributeValue(order.OrderIdentifier) }
+            { "GSI2PK", new AttributeValue(order.OrderNumber) }
         };
 
         if (order.OrderType == OrderType.Pickup && order.AwaitingCollection)
         {
             ddbAttributes.Add("GSI1PK", new AttributeValue("AWAITINGCOLLECTION"));
-            ddbAttributes.Add("GSI1SK", new AttributeValue(order.OrderIdentifier));
+            ddbAttributes.Add("GSI1SK", new AttributeValue(order.OrderNumber));
         }
 
         await this._ddbClient.PutItemAsync(new PutItemRequest(_dbSettings.TableName,
@@ -45,8 +46,6 @@ public class OrderRepository : IOrderRepository
 
     public async Task<Order> Retrieve(string customerIdentifier, string orderIdentifier)
     {
-        using var dataAccessActivity = Activity.Current?.Source.StartActivity("DataAccess-RetrieveOrder");
-
         var order = await this._ddbClient.GetItemAsync(this._dbSettings.TableName,
             new Dictionary<string, AttributeValue>(2)
             {
@@ -56,7 +55,8 @@ public class OrderRepository : IOrderRepository
 
         if (!order.IsItemSet)
         {
-            Activity.Current?.AddTag("order.notFound", true);
+            Tracer.Instance.ActiveScope.Span.SetTag("order.notFound", "true");
+            
             throw new OrderNotFoundException(orderIdentifier);
         }
         
@@ -137,16 +137,16 @@ public class OrderRepository : IOrderRepository
         var ddbAttributes = new Dictionary<string, AttributeValue>()
         {
             { "PK", new AttributeValue(order.CustomerIdentifier) },
-            { "SK", new AttributeValue(order.OrderIdentifier) },
+            { "SK", new AttributeValue(order.OrderNumber) },
             { "Type", new AttributeValue("Order") },
             { "Data", new AttributeValue(JsonSerializer.Serialize(order)) },
-            { "GSI2PK", new AttributeValue(order.OrderIdentifier) }
+            { "GSI2PK", new AttributeValue(order.OrderNumber) }
         };
 
         if (order.OrderType == OrderType.Pickup && order.AwaitingCollection)
         {
             ddbAttributes.Add("GSI1PK", new AttributeValue("AWAITINGCOLLECTION"));
-            ddbAttributes.Add("GSI1SK", new AttributeValue(order.OrderIdentifier));
+            ddbAttributes.Add("GSI1SK", new AttributeValue(order.OrderNumber));
         }
 
         await this._ddbClient.PutItemAsync(new PutItemRequest(_dbSettings.TableName,

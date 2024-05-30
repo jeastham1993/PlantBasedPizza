@@ -7,7 +7,6 @@ namespace PlantBasedPizza.Orders.UnitTest;
 public class OrderManagerTests
 {
     internal const string DefaultCustomerIdentifier = "James";
-    internal const string DefaultOrderIdentifier = "MYTESTORDER";
     
     [Fact]
     public void CanCreateNewOrder_ShouldSetDefaultFields()
@@ -19,7 +18,7 @@ public class OrderManagerTests
             createdOrder = evt.OrderIdentifier;
         });
         
-        var order = Order.Create(DefaultOrderIdentifier, OrderType.Pickup, DefaultCustomerIdentifier);
+        var order = Order.Create(OrderType.Pickup, DefaultCustomerIdentifier);
 
         order.Items.Should().NotBeNull();
         order.Items.Should().BeEmpty();
@@ -33,7 +32,7 @@ public class OrderManagerTests
     [Fact]
     public void CanCreateOrderAndAddHistory_ShouldAddHistoryItem()
     {
-        var order = Order.Create(DefaultOrderIdentifier, OrderType.Pickup, DefaultCustomerIdentifier);
+        var order = Order.Create(OrderType.Pickup, DefaultCustomerIdentifier);
 
         order.AddHistory("Bake complete");
 
@@ -43,7 +42,7 @@ public class OrderManagerTests
     [Fact]
     public void CanSetIsAwaitingCollection_ShouldMarkAwaitingAndAddHistory()
     {
-        var order = Order.Create(DefaultOrderIdentifier, OrderType.Pickup, DefaultCustomerIdentifier);
+        var order = Order.Create(OrderType.Pickup, DefaultCustomerIdentifier);
 
         order.IsAwaitingCollection();
 
@@ -54,7 +53,7 @@ public class OrderManagerTests
     [Fact]
     public void CanCreateNewOrderAndAddItems_ShouldAddToItemArray()
     {
-        var order = Order.Create(DefaultOrderIdentifier, OrderType.Pickup, DefaultCustomerIdentifier);
+        var order = Order.Create(OrderType.Pickup, DefaultCustomerIdentifier);
 
         var recipeId = "PIZZA1";
         
@@ -70,7 +69,7 @@ public class OrderManagerTests
     [Fact]
     public void CanCreateNewOrderAndRemoveItems_ShouldRemove()
     {
-        var order = Order.Create(DefaultOrderIdentifier, OrderType.Pickup, DefaultCustomerIdentifier);
+        var order = Order.Create(OrderType.Pickup, DefaultCustomerIdentifier);
 
         var recipeId = "PIZZA1";
         
@@ -90,7 +89,7 @@ public class OrderManagerTests
     [Fact]
     public void CanCreateNewDeliveryOrder_ShouldGetDeliveryDetails()
     {
-        var order = Order.Create(DefaultOrderIdentifier, OrderType.Delivery, DefaultCustomerIdentifier, new DeliveryDetails()
+        var order = Order.Create(OrderType.Delivery, DefaultCustomerIdentifier, new DeliveryDetails()
         {
             AddressLine1 = "TEST",
             Postcode = "XN6 7UY"
@@ -107,7 +106,7 @@ public class OrderManagerTests
     [Fact]
     public void CanCreateNewDeliveryOrder_ShouldAddDeliveryCharge()
     {
-        var order = Order.Create(DefaultOrderIdentifier, OrderType.Delivery, DefaultCustomerIdentifier, new DeliveryDetails()
+        var order = Order.Create(OrderType.Delivery, DefaultCustomerIdentifier, new DeliveryDetails()
         {
             AddressLine1 = "TEST",
             Postcode = "XN6 7UY"
@@ -129,7 +128,7 @@ public class OrderManagerTests
             evt.EventDate.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(5));
         });
         
-        var order = Order.Create(DefaultOrderIdentifier, OrderType.Delivery, DefaultCustomerIdentifier, new DeliveryDetails()
+        var order = Order.Create(OrderType.Delivery, DefaultCustomerIdentifier, new DeliveryDetails()
         {
             AddressLine1 = "TEST",
             Postcode = "XN6 7UY"
@@ -146,7 +145,7 @@ public class OrderManagerTests
     [Fact]
     public void AddItemsToASubmittedOrder_ShouldNotAdd()
     {
-        var order = Order.Create(DefaultOrderIdentifier, OrderType.Delivery, DefaultCustomerIdentifier, new DeliveryDetails()
+        var order = Order.Create(OrderType.Delivery, DefaultCustomerIdentifier, new DeliveryDetails()
         {
             AddressLine1 = "TEST",
             Postcode = "XN6 7UY"
@@ -171,7 +170,7 @@ public class OrderManagerTests
             completedOrder = evt.OrderIdentifier;
         });
         
-        var order = Order.Create(DefaultOrderIdentifier, OrderType.Delivery, DefaultCustomerIdentifier, new DeliveryDetails()
+        var order = Order.Create(OrderType.Delivery, DefaultCustomerIdentifier, new DeliveryDetails()
         {
             AddressLine1 = "TEST",
             Postcode = "XN6 7UY"
@@ -193,7 +192,7 @@ public class OrderManagerTests
     {
         Assert.Throws<ArgumentException>(() =>
         {
-            var order = Order.Create(DefaultOrderIdentifier, OrderType.Pickup, DefaultCustomerIdentifier);
+            var order = Order.Create(OrderType.Pickup, DefaultCustomerIdentifier);
             
             order.SubmitOrder();
         });
@@ -205,7 +204,7 @@ public class OrderManagerTests
     {
         Assert.Throws<ArgumentNullException>(() =>
         {
-            Order.Create(DefaultOrderIdentifier, OrderType.Pickup, string.Empty);
+            Order.Create(OrderType.Pickup, string.Empty);
         });
     }
     
@@ -215,7 +214,7 @@ public class OrderManagerTests
     {
         Assert.Throws<ArgumentException>(() =>
         {
-            Order.Create(DefaultOrderIdentifier, OrderType.Delivery, DefaultCustomerIdentifier);
+            Order.Create(OrderType.Delivery, DefaultCustomerIdentifier);
         });
     }
 }

@@ -18,9 +18,9 @@ public class CollectOrderCommandHandler
     {
         try
         {
-            var existingOrder = await this._orderRepository.Retrieve(command.CustomerIdentifier, command.OrderIdentifier);
+            var existingOrder = await this._orderRepository.RetrieveByOrderId(command.OrderIdentifier);
             
-            if (existingOrder.OrderType == OrderType.Delivery || !existingOrder.AwaitingCollection)
+            if (existingOrder.OrderType == OrderType.Delivery)
             {
                 return new OrderDto(existingOrder);
             }

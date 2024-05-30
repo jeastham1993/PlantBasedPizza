@@ -3,6 +3,7 @@ using Amazon.EventBridge;
 using Amazon.EventBridge.Model;
 using CloudNative.CloudEvents;
 using CloudNative.CloudEvents.SystemTextJson;
+using Datadog.Trace;
 using Microsoft.Extensions.Options;
 
 namespace PlantBasedPizza.Events;
@@ -48,6 +49,12 @@ public class EventBridgeEventPublisher : IEventPublisher
         {
             evtWrapper.SetAttributeFromString("traceparent", Activity.Current?.Id!);   
         }
+        
+        if (Tracer.Instance.ActiveScope?.Span != null)
+        {
+            evtWrapper.SetAttributeFromString("ddtraceid", Tracer.Instance.ActiveScope.Span.TraceId.ToString());
+            evtWrapper.SetAttributeFromString("ddspanid", Tracer.Instance.ActiveScope.Span.SpanId.ToString());
+        }
 
         var evtFormatter = new JsonEventFormatter();
 
@@ -66,7 +73,5 @@ public class EventBridgeEventPublisher : IEventPublisher
                 }
             }
         });
-
-        publishActivity.AddTag("messaging.failures", publishResponse.FailedEntryCount);
     }
 }

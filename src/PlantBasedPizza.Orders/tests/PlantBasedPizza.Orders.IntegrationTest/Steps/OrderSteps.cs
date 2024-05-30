@@ -10,108 +10,105 @@ using TechTalk.SpecFlow;
 namespace PlantBasedPizza.Orders.IntegrationTest.Steps;
 
 [Binding]
-public partial class OrderSteps
+public class OrderSteps
 {
     private readonly OrdersTestDriver _driver;
     private readonly ScenarioContext _scenarioContext;
     private readonly ConnectionMultiplexer _connectionMultiplexer;
     private readonly IDistributedCache _distributedCache;
-    
+
     public OrderSteps(ScenarioContext scenarioContext)
     {
         _scenarioContext = scenarioContext;
         _driver = new OrdersTestDriver();
         _connectionMultiplexer = ConnectionMultiplexer.Connect("localhost");
         _connectionMultiplexer.GetDatabase();
-        _distributedCache = new RedisCache(Options.Create(new RedisCacheOptions()
+        _distributedCache = new RedisCache(Options.Create(new RedisCacheOptions
         {
             InstanceName = "Orders",
             Configuration = "localhost:6379"
         }));
     }
-    
+
     [Given(@"a LoyaltyPointsUpdatedEvent is published for customer (.*), with a points total of (.*)")]
     public async Task GivenALoyaltyPointsUpdatedEventIsPublishedForCustomerWithAPointsTotalOf(string p0, decimal p1)
     {
-        Activity.Current = _scenarioContext.Get<Activity>("Activity");
+        
 
-        await this._driver.SimulateLoyaltyPointsUpdatedEvent(p0, p1);
+        await _driver.SimulateLoyaltyPointsUpdatedEvent(p0, p1);
     }
 
     [Given("an order is created and submitted")]
     public async Task GivenAnOrderIsCreatedAndSubmitted()
     {
-        Activity.Current = _scenarioContext.Get<Activity>("Activity");
-
-        var orderId = Guid.NewGuid().ToString();
+        var orderId = await _driver.AddNewOrder("", "james").ConfigureAwait(false);
         _scenarioContext.Add("orderId", orderId);
-            
-        await this._driver.AddNewOrder(orderId, "james").ConfigureAwait(false);
-        await this._driver.AddItemToOrder(orderId, "marg", 1);
-        await this._driver.SubmitOrder(orderId);
+        
+        await _driver.AddItemToOrder(orderId, "marg", 1);
+        await _driver.SubmitOrder(orderId);
     }
-    
+
     [When("the payment is successful")]
     public async Task WhenThePaymentIsSuccessful()
     {
-        Activity.Current = _scenarioContext.Get<Activity>("Activity");
+        
         var orderId = _scenarioContext.Get<string>("orderId");
 
-        await this._driver.SimulatePaymentSuccessEvent("user-account", orderId);
+        await _driver.SimulatePaymentSuccessEvent("user-account", orderId);
     }
-    
+
     [When(@"a OrderPreparingEvent is published")]
     public async Task GivenAnOrderPreparingEventIsPublished()
     {
-        Activity.Current = _scenarioContext.Get<Activity>("Activity");
+        
         var orderId = _scenarioContext.Get<string>("orderId");
 
-        await this._driver.SimulateOrderPreparingEvent("kitchen-id", orderId);
+        await _driver.SimulateOrderPreparingEvent("kitchen-id", orderId);
     }
-    
+
     [When(@"a OrderBakedEvent is published")]
     public async Task GivenAnOrderBakedEventEventIsPublished()
     {
-        Activity.Current = _scenarioContext.Get<Activity>("Activity");
+        
         var orderId = _scenarioContext.Get<string>("orderId");
 
-        await this._driver.SimulateOrderBakedEvent("kitchen-id", orderId);
+        await _driver.SimulateOrderBakedEvent("kitchen-id", orderId);
     }
-    
+
     [When(@"a OrderPrepCompleteEvent is published")]
     public async Task GivenAnOrderPrepCompleteEventIsPublished()
     {
-        Activity.Current = _scenarioContext.Get<Activity>("Activity");
+        
         var orderId = _scenarioContext.Get<string>("orderId");
 
-        await this._driver.SimulateOrderPrepCompleteEvent("kitchen-id", orderId);
+        await _driver.SimulateOrderPrepCompleteEvent("kitchen-id", orderId);
     }
-    
+
     [When(@"a OrderQualityCheckedEvent is published")]
     public async Task GivenAnOrderQualityCheckedEventIsPublished()
     {
-        Activity.Current = _scenarioContext.Get<Activity>("Activity");
+        
         var orderId = _scenarioContext.Get<string>("orderId");
 
-        await this._driver.SimulateOrderQualityCheckedEvent("kitchen-id", orderId);
+        await _driver.SimulateOrderQualityCheckedEvent("kitchen-id", orderId);
     }
-    
+
     [When(@"a DriverDeliveredOrderEvent is published")]
     public async Task GivenADriverDeliveredOrderEventIsPublished()
     {
-        Activity.Current = _scenarioContext.Get<Activity>("Activity");
+        
         var orderId = _scenarioContext.Get<string>("orderId");
 
-        await this._driver.SimulateDriverDeliveredEvent("kitchen-id", orderId);
+        await _driver.SimulateDriverDeliveredEvent("kitchen-id", orderId);
     }
-    
+
     [When(@"a DriverCollectedOrderEvent is published")]
     public async Task GivenADriverCollectedOrderEventIsPublished()
     {
-        Activity.Current = _scenarioContext.Get<Activity>("Activity");
+        
         var orderId = _scenarioContext.Get<string>("orderId");
 
-        await this._driver.SimulateDriverCollectedEvent("kitchen-id", orderId);
+        await _driver.SimulateDriverCollectedEvent("kitchen-id", orderId);
     }
 
     [Then(@"loyalty points should be cached for (.*) with a total amount of (.*)")]
@@ -136,93 +133,82 @@ public partial class OrderSteps
             await Task.Delay(TimeSpan.FromSeconds(1));
         }
     }
-    
+
     [Given(@"a new order is created")]
-        public async Task GivenANewOrderIsCreatedWithIdentifierOrd()
-        {
-            Activity.Current = _scenarioContext.Get<Activity>("Activity");
+    public async Task GivenANewOrderIsCreatedWithIdentifierOrd()
+    {
+        var orderId = await _driver.AddNewOrder("", "james").ConfigureAwait(false);
+        _scenarioContext.Add("orderId", orderId);
+    }
 
-            var orderId = Guid.NewGuid().ToString();
-            _scenarioContext.Add("orderId", orderId);
-            
-            await this._driver.AddNewOrder(orderId, "james").ConfigureAwait(false);
-        }
+    [When(@"a (.*) is added to order")]
+    public async Task WhenAnItemIsAdded(string p0)
+    {
+        
+        var orderId = _scenarioContext.Get<string>("orderId");
 
-        [When(@"a (.*) is added to order")]
-        public async Task WhenAnItemIsAdded(string p0)
-        {
-            Activity.Current = _scenarioContext.Get<Activity>("Activity");
-            var orderId = _scenarioContext.Get<string>("orderId");
-            
-            await this._driver.AddItemToOrder(orderId, p0, 1);
-        }
+        await _driver.AddItemToOrder(orderId, p0, 1);
+    }
 
-        [When(@"order is submitted")]
-        public async Task WhenOrderOrdIsSubmitted()
-        {
-            Activity.Current = _scenarioContext.Get<Activity>("Activity");
-            
-            var orderId = _scenarioContext.Get<string>("orderId");
-            
-            await this._driver.SubmitOrder(orderId);
-        }
+    [When(@"order is submitted")]
+    public async Task WhenOrderOrdIsSubmitted()
+    {
+        
 
-        [Then(@"order should be marked as (.*)")]
-        public async Task ThenOrderOrdShouldBeMarkedAsCompleted(string p0)
-        {
-            Activity.Current = _scenarioContext.Get<Activity>("Activity");
-            
-            var orderId = _scenarioContext.Get<string>("orderId");
-            
-            var order = await this._driver.GetOrder(orderId).ConfigureAwait(false);
+        var orderId = _scenarioContext.Get<string>("orderId");
 
-            order.OrderCompletedOn.Should().NotBeNull();
-        }
+        await _driver.SubmitOrder(orderId);
+    }
 
-        [Then(@"order should contain a (.*) event")]
-        public async Task ThenOrderOrdShouldContainAOrderQualityCheckedEvent(string p0)
-        {
-            // Allow async processes to catch up
-            await Task.Delay(TimeSpan.FromSeconds(10));
-            
-            Activity.Current = _scenarioContext.Get<Activity>("Activity");
-            var orderId = _scenarioContext.Get<string>("orderId");
-            
-            var order = await this._driver.GetOrder(orderId).ConfigureAwait(false);
+    [Then(@"order should be marked as (.*)")]
+    public async Task ThenOrderOrdShouldBeMarkedAsCompleted(string p0)
+    {
+        
 
-            order.History.Exists(p => p.Description == p0).Should().BeTrue($"Order should contain a {p0} event");
-        }
+        var orderId = _scenarioContext.Get<string>("orderId");
 
-        [Then(@"order should be awaiting collection")]
-        public async Task ThenOrderOrdShouldBeAwaitingCollection()
-        {
-            Activity.Current = _scenarioContext.Get<Activity>("Activity");
-            
-            var orderId = _scenarioContext.Get<string>("orderId");
-            
-            var order = await this._driver.GetOrder(orderId).ConfigureAwait(false);
+        var order = await _driver.GetOrder(orderId).ConfigureAwait(false);
 
-            order.AwaitingCollection.Should().BeTrue();
-        }
+        order.OrderCompletedOn.Should().NotBeNull();
+    }
 
-        [When(@"order is collected")]
-        public async Task WhenOrderOrdIsCollected()
-        {
-            Activity.Current = _scenarioContext.Get<Activity>("Activity");
-            
-            var orderId = _scenarioContext.Get<string>("orderId");
-            
-            await this._driver.CollectOrder(orderId).ConfigureAwait(false);
-        }
+    [Then(@"order should contain a (.*) event")]
+    public async Task ThenOrderOrdShouldContainAOrderQualityCheckedEvent(string p0)
+    {
+        // Allow async processes to catch up
+        await Task.Delay(TimeSpan.FromSeconds(10));
 
-        [Given(@"a new delivery order is created for customer (.*)")]
-        public async Task GivenANewDeliveryOrderIsCreatedWithIdentifierDeliver(string p0)
-        {
-            Activity.Current = _scenarioContext.Get<Activity>("Activity");
+        var orderId = _scenarioContext.Get<string>("orderId");
 
-            var orderId = Guid.NewGuid().ToString();
-            _scenarioContext.Add("orderId", orderId);
-            
-            await this._driver.AddNewDeliveryOrder(orderId, p0);
-        }
+        var order = await _driver.GetOrder(orderId).ConfigureAwait(false);
+
+        order.History.Exists(p => p.Description == p0).Should().BeTrue($"Order should contain a {p0} event");
+    }
+
+    [Then(@"order should be awaiting collection")]
+    public async Task ThenOrderOrdShouldBeAwaitingCollection()
+    {
+        var orderId = _scenarioContext.Get<string>("orderId");
+
+        var order = await _driver.GetOrder(orderId).ConfigureAwait(false);
+
+        order.AwaitingCollection.Should().BeTrue();
+    }
+
+    [When(@"order is collected")]
+    public async Task WhenOrderOrdIsCollected()
+    {
+        var orderId = _scenarioContext.Get<string>("orderId");
+
+        await _driver.CollectOrder(orderId).ConfigureAwait(false);
+    }
+
+    [Given(@"a new delivery order is created for customer (.*)")]
+    public async Task GivenANewDeliveryOrderIsCreatedWithIdentifierDeliver(string p0)
+    {
+        var orderId = await _driver.AddNewOrder("", "james").ConfigureAwait(false);
+        _scenarioContext.Add("orderId", orderId);
+
+        await _driver.AddNewDeliveryOrder(orderId, p0);
+    }
 }

@@ -5,6 +5,7 @@ using PlantBasedPizza.Events;
 using PlantBasedPizza.OrderManager.Infrastructure;
 using PlantBasedPizza.OrderManager.Infrastructure.IntegrationEvents;
 using PlantBasedPizza.Shared;
+using PlantBasedPizza.Shared.Logging;
 using Saunter;
 using Saunter.AsyncApiSchema.v2;
 
@@ -62,6 +63,8 @@ builder.Services.AddHttpClient();
 builder.Services.AddControllers();
 
 var app = builder.Build();
+
+app.UseMiddleware<TraceMiddleware>();
 
 app.UseAuthentication();
 

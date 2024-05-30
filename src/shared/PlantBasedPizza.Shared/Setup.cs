@@ -1,10 +1,8 @@
-using System.Net.Http.Json;
+using Datadog.Trace;
+using Datadog.Trace.Configuration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using OpenTelemetry.Exporter;
 using PlantBasedPizza.Shared.Logging;
-using OpenTelemetry.Resources;
-using OpenTelemetry.Trace;
 using Serilog;
 using Serilog.Filters;
 using Serilog.Formatting.Compact;
@@ -35,9 +33,13 @@ namespace PlantBasedPizza.Shared
                 .AddLogging()
                 .AddSerilog();
             
-            var otel = services.AddOpenTelemetry();
+            // read default configuration sources (env vars or datadog.json)
+            var settings = TracerSettings.FromDefaultSources();
 
-            var metadataUri =
+            // configure the global Tracer settings
+            Tracer.Configure(settings);
+
+            /*var metadataUri =
                 Environment.GetEnvironmentVariable("ECS_CONTAINER_METADATA_URI_V4");
 
             var taskId = Environment.MachineName;
@@ -128,7 +130,7 @@ namespace PlantBasedPizza.Shared
                     otlpOptions.Endpoint = new Uri(otlpEndpoint ?? OTEL_DEFAULT_GRPC_ENDPOINT);
                     otlpOptions.Protocol = otlpUseHttp == "Y" ? OtlpExportProtocol.HttpProtobuf : OtlpExportProtocol.Grpc;
                 });
-            });
+            });*/
             
             services.AddHttpContextAccessor();
 

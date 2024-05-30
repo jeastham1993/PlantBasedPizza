@@ -46,7 +46,6 @@ public class WebService : Construct
 
         var baseEnvironmentVariables = new Dictionary<string, string>
         {
-            { "OtlpEndpoint", "http://127.0.0.1:4318/v1/traces" },
             { "OtlpUseHttp", "Y" },
             { "Environment", props.Environment },
             { "ServiceDiscovery__MyUrl", "" },
@@ -59,6 +58,10 @@ public class WebService : Construct
             { "DD_ENV", props.Environment},
             { "DD_SERVICE", props.ServiceName},
             { "DD_VERSION", props.Tag},
+            { "DD_GIT_COMMIT_SHA", props.Tag},
+            { "DD_AGENT_HOST", "127.0.0.1"},
+            { "DD_TRACE_ROUTE_TEMPLATE_RESOURCE_NAMES_ENABLED", "true"},
+            { "DD_RUNTIME_METRICS_ENABLED", "true"},
             { "DD_GIT_COMMIT_SHA", props.Tag},
             { "DD_GIT_REPOSITORY_URL", "https://github.com/jeastham1993/PlantBasedPizza"},
         };
@@ -132,9 +135,9 @@ public class WebService : Construct
                      { "DD_SITE", "datadoghq.eu" },
                      { "ECS_FARGATE", "true" },
                      { "DD_LOGS_ENABLED", "false" },
-                     { "DD_OTLP_CONFIG_RECEIVER_PROTOCOLS_GRPC_ENDPOINT", "0.0.0.0:4317" },
-                     { "DD_OTLP_CONFIG_RECEIVER_PROTOCOLS_HTTP_ENDPOINT", "0.0.0.0:4318" },
-                     { "DD_OTLP_CONFIG_TRACES_PROBABILISTIC_SAMPLER_SAMPLING_PERCENTAGE", "80"},
+                     { "DD_APM_ENABLED", "true"},
+                     { "DD_APM_NON_LOCAL_TRAFFIC", "true"},
+                     { "DD_DOGSTATSD_NON_LOCAL_TRAFFIC", "true"},
                      { "DD_ENV", props.Environment},
                      { "DD_SERVICE", props.ServiceName},
                      { "DD_VERSION", props.Tag}

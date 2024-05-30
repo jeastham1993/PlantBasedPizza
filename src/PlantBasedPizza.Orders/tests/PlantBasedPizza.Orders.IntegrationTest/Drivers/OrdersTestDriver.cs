@@ -137,7 +137,6 @@ public class OrdersTestDriver
             await this._userHttpClient.PostAsync(new Uri($"{TestConstants.DefaultTestUrl}/order/deliver"), new StringContent(
                 JsonConvert.SerializeObject(new CreateDeliveryOrder()
                 {
-                    OrderIdentifier = orderIdentifier,
                     CustomerIdentifier = customerIdentifier,
                     AddressLine1 = "My test address",
                     AddressLine2 = string.Empty,
@@ -148,16 +147,19 @@ public class OrdersTestDriver
                 }), Encoding.UTF8, "application/json")).ConfigureAwait(false);
         }
 
-        public async Task AddNewOrder(string orderIdentifier, string customerIdentifier)
+        public async Task<string> AddNewOrder(string orderIdentifier, string customerIdentifier)
         {
             await Task.Delay(TimeSpan.FromSeconds(5));
             
-            await this._userHttpClient.PostAsync(new Uri($"{TestConstants.DefaultTestUrl}/order/pickup"), new StringContent(
+            var createdOrder = await this._userHttpClient.PostAsync(new Uri($"{TestConstants.DefaultTestUrl}/order/pickup"), new StringContent(
                 JsonConvert.SerializeObject(new CreatePickupOrderCommand()
                 {
-                    OrderIdentifier = orderIdentifier,
                     CustomerIdentifier = customerIdentifier
                 }), Encoding.UTF8, "application/json")).ConfigureAwait(false);
+
+            var order = JsonConvert.DeserializeObject<Order>(await createdOrder.Content.ReadAsStringAsync());
+
+            return order.OrderNumber;
         }
 
         public async Task AddItemToOrder(string orderIdentifier, string recipeIdentifier, int quantity)

@@ -8,6 +8,10 @@ public class ParseEventResponse<T>
     
     public string? TraceParent { get; init; }
     
+    public ulong TraceId { get; init; }
+    
+    public ulong SpanId { get; init; }
+    
     public int QueueTime { get; init; }
     
     public DateTime EventPublishDate { get; init; }

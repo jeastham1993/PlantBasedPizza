@@ -22,18 +22,16 @@ namespace PlantBasedPizza.OrderManager.Core.Entities
             {
                 orderNumber = Guid.NewGuid().ToString();
             }
-
-            this.OrderIdentifier = "";
+            
             this.CustomerIdentifier = "";
             this.OrderNumber = orderNumber;
             this._items = new List<OrderItem>();
             this._history = new List<OrderHistory>();
         }
 
-        public static Order Create(string orderIdentifier, OrderType type, string customerIdentifier, DeliveryDetails? deliveryDetails = null, string correlationId = "")
+        public static Order Create(OrderType type, string customerIdentifier, DeliveryDetails? deliveryDetails = null)
         {
             Guard.AgainstNullOrEmpty(customerIdentifier, nameof(customerIdentifier));
-            Guard.AgainstNullOrEmpty(orderIdentifier, nameof(orderIdentifier));
             
             if (type == OrderType.Delivery && deliveryDetails == null)
             {
@@ -44,7 +42,7 @@ namespace PlantBasedPizza.OrderManager.Core.Entities
             var order = new Order()
             {
                 OrderType = type,
-                OrderIdentifier = orderIdentifier,
+                OrderNumber = Guid.NewGuid().ToString(),
                 CustomerIdentifier = customerIdentifier,
                 OrderDate = DateTime.Now,
                 DeliveryDetails = deliveryDetails
@@ -52,16 +50,8 @@ namespace PlantBasedPizza.OrderManager.Core.Entities
 
             order.AddHistory("Order created");
 
-            DomainEvents.Raise(new OrderCreatedEvent(orderIdentifier)
-            {
-                CorrelationId = correlationId
-            });
-
             return order;
         }
-
-        [JsonPropertyName("orderIdentifier")]
-        public string OrderIdentifier { get; init; }
         
         [JsonPropertyName("orderNumber")]
         public string OrderNumber { get; init; }
@@ -181,11 +171,6 @@ namespace PlantBasedPizza.OrderManager.Core.Entities
             this.OrderSubmittedOn = DateTime.Now;
             
             this.AddHistory($"Submitted order.");
-
-            DomainEvents.Raise(new OrderSubmittedEvent(OrderIdentifier)
-            {
-                CorrelationId = correlationId
-            }).Wait();
         }
 
         public void IsAwaitingCollection(string correlationId = "")
@@ -201,11 +186,6 @@ namespace PlantBasedPizza.OrderManager.Core.Entities
             this.AwaitingCollection = false;
             
             this.AddHistory($"Order completed.");
-
-            DomainEvents.Raise(new OrderCompletedEvent(this.OrderIdentifier)
-            {
-                CorrelationId = correlationId
-            });
         }
     }
 }
