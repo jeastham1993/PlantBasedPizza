@@ -19,18 +19,15 @@ namespace BackgroundWorkers;
 public class Functions
 {
     private readonly SqsEventSubscriber _eventSubscriber;
-    private readonly TracerProvider _tracerProvider;
-    private readonly ActivitySource _source;
     private readonly ILogger<Functions> _logger;
     private readonly PaymentService _paymentService;
     
-    public Functions(SqsEventSubscriber eventSubscriber, TracerProvider tracerProvider, ILogger<Functions> logger, PaymentService paymentService)
+    public Functions(SqsEventSubscriber eventSubscriber, ILogger<Functions> logger, PaymentService paymentService)
     {
         _eventSubscriber = eventSubscriber;
         _tracerProvider = tracerProvider;
         _logger = logger;
         _paymentService = paymentService;
-        _source = new ActivitySource(Environment.GetEnvironmentVariable("SERVICE_NAME"));;
     }
 
     [LambdaFunction]
@@ -44,15 +41,15 @@ public class Functions
 
             foreach (var message in messages)
             {
-                using var processingActivity = _source.StartActivity("processing-order-submitted-event",
-                    ActivityKind.Server, message.TraceParent);
-                
                 try
                 {
+                    using var parent_trace = Datadog.Trace.Tracer.Instance.StartActive("HandleOrderSubmittedEvent",
+                        new SpanCreationSettings()
+                        {
+                            Parent = new SpanContext(message.TraceId, message.SpanId, SamplingPriority.AutoKeep)
+                        });
+
                     this._logger.LogInformation("Processing {messageId}", message.MessageId);
-                    
-                    processingActivity?.AddTag("queue.time", message.QueueTime);
-                    processingActivity?.AddTag("orderIdentifier", message.EventData.OrderIdentifier);
 
                     await this._paymentService.TakePayment(new TakePaymentRequest()
                     {
@@ -62,7 +59,6 @@ public class Functions
                 catch (Exception ex)
                 {
                     this._logger.LogError(ex, "Failure handling SQS messages");
-                    processingActivity.RecordException(ex);
                     batchItemFailures.Add(new SQSBatchResponse.BatchItemFailure()
                     {
                         ItemIdentifier = message.MessageId
@@ -74,10 +70,6 @@ public class Functions
         catch (Exception ex)
         {
             this._logger.LogError(ex, "Failure handling SQS messages");
-        }
-        finally
-        {
-            this._tracerProvider.ForceFlush();   
         }
 
         return new SQSBatchResponse(batchItemFailures);
