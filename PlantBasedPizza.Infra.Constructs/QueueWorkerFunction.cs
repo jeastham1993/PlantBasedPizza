@@ -59,7 +59,8 @@ public class QueueWorkerFunction : Construct
                 FunctionName = functionName,
                 Layers =
                 [
-                    LayerVersion.FromLayerVersionArn(this, "DDExtension", "arn:aws:lambda:eu-west-1:464622532012:layer:Datadog-Extension-ARM:57")
+                    LayerVersion.FromLayerVersionArn(this, "DDExtension", "arn:aws:lambda:eu-west-1:464622532012:layer:Datadog-Extension-ARM:57"),
+                    LayerVersion.FromLayerVersionArn(this, "DDTrace", "arn:aws:lambda:eu-west-1:464622532012:layer:dd-trace-dotnet-ARM:15"),
                 ],
                 Vpc = props.Vpc,
                 VpcSubnets = props.Vpc == null ? null : new SubnetSelection()
