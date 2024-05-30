@@ -111,7 +111,7 @@ public class SqsEventSubscriber
                 EventId = evtWrapper.Id!,
                 MessageId = message.MessageId,
                 ReceiptHandle = message.ReceiptHandle,
-                EventPublishDate = evtWrapper.Time!.Value.DateTime
+                EventPublishDate = evtWrapper.Time!.Value.LocalDateTime
             });
         }
 

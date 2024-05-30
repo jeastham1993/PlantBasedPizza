@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 using PlantBasedPizza.Events;
 using PlantBasedPizza.Shared.Guards;
 using PlantBasedPizza.Shared.Logging;
@@ -9,14 +9,14 @@ namespace PlantBasedPizza.OrderManager.Core.Entities
     {
         private const decimal DefaultDeliveryPrice = 3.50M;
 
-        [JsonProperty("items")]
-        private List<OrderItem> _items;
+        [JsonPropertyName("items")]
+        public List<OrderItem> _items { get; init; }
         
-        [JsonProperty("history")]
-        private List<OrderHistory> _history;
+        [JsonPropertyName("history")]
+        public List<OrderHistory> _history { get; init; }
         
         [JsonConstructor]
-        internal Order(string? orderNumber = null)
+        internal Order(string orderNumber = null)
         {
             if (string.IsNullOrEmpty(orderNumber))
             {
@@ -60,26 +60,26 @@ namespace PlantBasedPizza.OrderManager.Core.Entities
             return order;
         }
 
-        [JsonProperty]
-        public string OrderIdentifier { get; private set; }
+        [JsonPropertyName("orderIdentifier")]
+        public string OrderIdentifier { get; init; }
         
-        [JsonProperty]
-        public string OrderNumber { get; private set; }
+        [JsonPropertyName("orderNumber")]
+        public string OrderNumber { get; init; }
 
-        [JsonProperty]
-        public DateTime OrderDate { get; private set; }
+        [JsonPropertyName("orderDate")]
+        public DateTime OrderDate { get; init; }
 
-        [JsonProperty]
-        public decimal LoyaltyPointsAtOrder { get; private set; }
+        [JsonPropertyName("loyaltyPointsAtOrder")]
+        public decimal LoyaltyPointsAtOrder { get; init; }
         
-        [JsonProperty]
-        public bool AwaitingCollection { get; private set; }
+        [JsonPropertyName("awaitingCollection")]
+        public bool AwaitingCollection { get; set; }
 
-        [JsonProperty]
-        public DateTime? OrderSubmittedOn { get; private set; }
+        [JsonPropertyName("orderSubmittedOn")]
+        public DateTime? OrderSubmittedOn { get; set; }
 
-        [JsonProperty]
-        public DateTime? OrderCompletedOn { get; private set; }
+        [JsonPropertyName("orderCompletedOn")]
+        public DateTime? OrderCompletedOn { get; set; }
 
         [JsonIgnore]
         public IReadOnlyCollection<OrderItem> Items => this._items;
@@ -89,28 +89,23 @@ namespace PlantBasedPizza.OrderManager.Core.Entities
             return this._history.OrderBy(p => p.HistoryDate).ToList();
         }
 
-        [JsonProperty]
-        public OrderType OrderType { get; private set; }
+        [JsonPropertyName("orderType")]
+        public OrderType OrderType { get; init; }
 
-        [JsonProperty]
-        public string CustomerIdentifier { get; private set; }
+        [JsonPropertyName("customerIdentifier")]
+        public string CustomerIdentifier { get; init; }
 
-        [JsonProperty]
-        public decimal TotalPrice { get; private set; }
+        [JsonPropertyName("totalPrice")]
+        public decimal TotalPrice { get; set; }
 
-        [JsonProperty]
-        public DeliveryDetails? DeliveryDetails { get; private set; }
+        [JsonPropertyName("deliveryDetails")]
+        public DeliveryDetails? DeliveryDetails { get; init; }
 
         public void AddOrderItem(string recipeIdentifier, string itemName, int quantity, decimal price)
         {
             if (this.OrderSubmittedOn.HasValue)
             {
                 return;
-            }
-            
-            if (this._items == null)
-            {
-                this._items = new List<OrderItem>(1);
             }
             
             var existingItem = this._items.Find(p =>
@@ -163,11 +158,6 @@ namespace PlantBasedPizza.OrderManager.Core.Entities
 
         public void AddHistory(string description)
         {
-            if (this._history == null)
-            {
-                this._history = new List<OrderHistory>(1);
-            }
-            
             this._history.Add(new OrderHistory(description, DateTime.Now));
         }
 

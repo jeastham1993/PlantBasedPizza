@@ -324,7 +324,7 @@ public class Functions
 
             foreach (var message in messages)
             {
-                using var processingActivity = _source.StartActivity("processing-order-baked-event",
+                using var processingActivity = _source.StartActivity("processing-order-prep-complete-event",
                                      ActivityKind.Server, message.TraceParent);
                 try
                 {
@@ -364,6 +364,7 @@ public class Functions
 
         return new SQSBatchResponse(batchItemFailures);
     }
+    
     [LambdaFunction]
     public async Task<SQSBatchResponse> HandleOrderQualityCheckedEvent(SQSEvent sqsEvent, ILambdaContext context)
     {

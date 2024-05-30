@@ -1,3 +1,5 @@
 {
-    "recipeIdentifier": "Pizza"
+    "recipeIdentifier": "Pizza",
+    "name": "Pizza",
+    "price": 4.99
 }

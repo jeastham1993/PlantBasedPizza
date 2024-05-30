@@ -7,23 +7,13 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
-  <ItemGroup>
-      <Protobuf Include="Protos\payment.proto" GrpcServices="Client" />
-  </ItemGroup>
 
   <ItemGroup>
+      <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.303.12" />
       <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.4" />
-      <PackageReference Include="Google.Protobuf" Version="3.26.1" />
-      <PackageReference Include="Grpc.Net.Client" Version="2.61.0" />
-      <PackageReference Include="Grpc.Net.ClientFactory" Version="2.61.0" />
-      <PackageReference Include="Grpc.Tools" Version="2.62.0">
-        <PrivateAssets>all</PrivateAssets>
-        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      </PackageReference>
       <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="8.0.0" />
       <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.3" />
       <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="8.0.3" />
-    <PackageReference Include="MongoDB.Driver" Version="2.24.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.1" />

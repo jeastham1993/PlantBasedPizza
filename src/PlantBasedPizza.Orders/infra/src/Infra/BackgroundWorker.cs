@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Amazon.CDK.AWS.DynamoDB;
 using Amazon.CDK.AWS.Lambda;
 using Amazon.CDK.AWS.SQS;
 using Amazon.CDK.AWS.SSM;
@@ -7,7 +8,7 @@ using PlantBasedPizza.Infra.Constructs;
 
 namespace Infra;
 
-public record BackgroundWorkerProps(SharedInfrastructureProps SharedProps, string ApplicationRoot, IStringParameter DatabaseConnectionParameter, IQueue LoyaltyPointsUpdatedQueue, IQueue DriverCollectedOrderQueue, IQueue DriverDeliveredOrderQueue, IQueue OrderBakedQueue, IQueue OrderPrepCompleteQueue, IQueue OrderPreparingQueue, IQueue OrderQualityCheckedQueue, IQueue PaymentSuccessfulQueue);
+public record BackgroundWorkerProps(SharedInfrastructureProps SharedProps, string ApplicationRoot, ITable Persistence, IQueue LoyaltyPointsUpdatedQueue, IQueue DriverCollectedOrderQueue, IQueue DriverDeliveredOrderQueue, IQueue OrderBakedQueue, IQueue OrderPrepCompleteQueue, IQueue OrderPreparingQueue, IQueue OrderQualityCheckedQueue, IQueue PaymentSuccessfulQueue);
 
 public class BackgroundWorker : Construct
 {
@@ -30,7 +31,7 @@ public class BackgroundWorker : Construct
             { "Services__PaymentInternal", "http://localhost:1234" },
             { "Services__Recipes", $"https://api.{props.SharedProps.Environment}.plantbasedpizza.net"},
             { "Auth__PaymentApiKey", "12345" },
-            { "DATABASE_CONNECTION_PARAM_NAME", props.DatabaseConnectionParameter.ParameterName }
+            { "DatabaseSettings__TableName", props.Persistence.TableName}
         };
         var serviceName = "OrderWorker";
         
@@ -130,15 +131,6 @@ public class BackgroundWorker : Construct
                 props.SharedProps.CommitHash,
                 queueWorkerEnvVars)).Function;
         
-        props.DatabaseConnectionParameter.GrantRead(this.LoyaltyPointsUpdatedFunction);
-        props.DatabaseConnectionParameter.GrantRead(this.DriverCollectedEventFunction);
-        props.DatabaseConnectionParameter.GrantRead(this.DriverDeliveredEventFunction);
-        props.DatabaseConnectionParameter.GrantRead(this.OrderBakedEventFunction);
-        props.DatabaseConnectionParameter.GrantRead(this.OrderPreparingEventFunction);
-        props.DatabaseConnectionParameter.GrantRead(this.OrderPrepCompleteEventFunction);
-        props.DatabaseConnectionParameter.GrantRead(this.OrderQualityCheckedEventFunction);
-        props.DatabaseConnectionParameter.GrantRead(this.PaymentSuccessfulEventFunction);
-        
         props.SharedProps.Bus.GrantPutEventsTo(this.LoyaltyPointsUpdatedFunction);
         props.SharedProps.Bus.GrantPutEventsTo(this.DriverCollectedEventFunction);
         props.SharedProps.Bus.GrantPutEventsTo(this.DriverDeliveredEventFunction);
@@ -147,5 +139,14 @@ public class BackgroundWorker : Construct
         props.SharedProps.Bus.GrantPutEventsTo(this.OrderPrepCompleteEventFunction);
         props.SharedProps.Bus.GrantPutEventsTo(this.OrderQualityCheckedEventFunction);
         props.SharedProps.Bus.GrantPutEventsTo(this.PaymentSuccessfulEventFunction);
+
+        props.Persistence.GrantReadWriteData(this.LoyaltyPointsUpdatedFunction);
+        props.Persistence.GrantReadWriteData(this.DriverCollectedEventFunction);
+        props.Persistence.GrantReadWriteData(this.DriverDeliveredEventFunction);
+        props.Persistence.GrantReadWriteData(this.OrderBakedEventFunction);
+        props.Persistence.GrantReadWriteData(this.OrderPreparingEventFunction);
+        props.Persistence.GrantReadWriteData(this.OrderPrepCompleteEventFunction);
+        props.Persistence.GrantReadWriteData(this.OrderQualityCheckedEventFunction);
+        props.Persistence.GrantReadWriteData(this.PaymentSuccessfulEventFunction);
     }
 }

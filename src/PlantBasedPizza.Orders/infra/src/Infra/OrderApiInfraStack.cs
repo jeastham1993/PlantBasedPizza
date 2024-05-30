@@ -48,11 +48,7 @@ public class OrderApiInfraStack : Stack
                 LoadBalancerArn = internalAlbArnParam,
             });
 
-        var databaseConnectionParam = StringParameter.FromSecureStringParameterAttributes(this, "DatabaseParameter",
-            new SecureStringParameterAttributes
-            {
-                ParameterName = "/shared/database-connection"
-            });
+        var persistence = new Persistence(this, "Persistence", new PersistenceProps(environment));
 
         var cluster = new Cluster(this, "OrdersServiceCluster", new ClusterProps
         {
@@ -81,11 +77,9 @@ public class OrderApiInfraStack : Stack
                 { "Services__PaymentInternal", "http://localhost:1234"},
                 { "Services__Recipes", $"https://api.{environment}.plantbasedpizza.net"},
                 { "Auth__PaymentApiKey", "12345" },
+                { "DatabaseSettings__TableName", persistence.Table.TableName}
             },
-            new Dictionary<string, Secret>(1)
-            {
-                { "DatabaseConnection", Secret.FromSsmParameter(databaseConnectionParam) }
-            },
+            new Dictionary<string, Secret>(0),
             albArnParam,
             albListener,
             "/order/health",
@@ -93,8 +87,8 @@ public class OrderApiInfraStack : Stack
             106
         ));
         
-        databaseConnectionParam.GrantRead(orderApiService.ExecutionRole);
         bus.GrantPutEventsTo(orderApiService.TaskRole);
+        persistence.Table.GrantReadWriteData(orderApiService.TaskRole);
 
         var loyaltyPointsCheckedQueueName = "Orders-LoyaltyUpdatedQueue";
         var orderPreparingQueueName = "Orders-OrderPreparingQueue";
@@ -120,6 +114,6 @@ public class OrderApiInfraStack : Stack
 
         var backgroundWorker = new BackgroundWorker(this, "OrdersWorkerFunctions",
             new BackgroundWorkerProps(new SharedInfrastructureProps(null, bus, publicLoadBalancer, commitHash, environment),
-                "../application", databaseConnectionParam, loyaltyPointsQueue.Queue, driverCollectedOrderQueue.Queue, driverDeliveredOrderQueue.Queue, orderBakedQueue.Queue, orderPrepCompleteQueue.Queue, orderPreparingQueue.Queue, orderQualityCheckedQueue.Queue, paymentSuccessfulQueue.Queue));
+                "../application", persistence.Table, loyaltyPointsQueue.Queue, driverCollectedOrderQueue.Queue, driverDeliveredOrderQueue.Queue, orderBakedQueue.Queue, orderPrepCompleteQueue.Queue, orderPreparingQueue.Queue, orderQualityCheckedQueue.Queue, paymentSuccessfulQueue.Queue));
     }
 }

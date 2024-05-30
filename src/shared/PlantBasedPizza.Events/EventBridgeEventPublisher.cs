@@ -27,12 +27,12 @@ public class EventBridgeEventPublisher : IEventPublisher
         var eventId = Guid.NewGuid()
             .ToString();
 
-        publishActivity.AddTag("messaging.eventId", eventId);
-        publishActivity.AddTag("messaging.eventType", eventType);
-        publishActivity.AddTag("messaging.eventName", evt.EventName);
-        publishActivity.AddTag("messaging.eventVersion", evt.EventVersion);
-        publishActivity.AddTag("messaging.eventSource", evt.Source);
-        publishActivity.AddTag("messaging.busName", _settings.BusName);
+        publishActivity?.AddTag("messaging.eventId", eventId);
+        publishActivity?.AddTag("messaging.eventType", eventType);
+        publishActivity?.AddTag("messaging.eventName", evt.EventName);
+        publishActivity?.AddTag("messaging.eventVersion", evt.EventVersion);
+        publishActivity?.AddTag("messaging.eventSource", evt.Source);
+        publishActivity?.AddTag("messaging.busName", _settings.BusName);
 
         var evtWrapper = new CloudEvent
         {

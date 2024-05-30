@@ -22,16 +22,12 @@ public class OrdersApiTestInfrastructureStack : Stack
 
         var vpcIdParam = parameterProvider.Get("/shared/vpc-id");
         
-        var databaseConnectionParam = StringParameter.FromSecureStringParameterAttributes(this, "DatabaseParameter",
-            new SecureStringParameterAttributes
-            {
-                ParameterName = "/shared/database-connection"
-            });
-        
         var bus = new EventBus(this, "OrdersApiTestBus", new EventBusProps()
         {
             EventBusName = $"test.orders.{stackProps.Version}"
         });
+        
+        var persistence = new Persistence(this, "Persistence", new PersistenceProps(stackProps.Version));
 
         var ordersTestSource = "https://orders.test.plantbasedpizza/";
 
@@ -46,7 +42,7 @@ public class OrdersApiTestInfrastructureStack : Stack
 
         var backgroundWorker = new BackgroundWorker(this, "OrdersWorkerTestFunction",
             new BackgroundWorkerProps(new SharedInfrastructureProps(null, bus, null, "int-test", stackProps.Version),
-                "../../application", databaseConnectionParam, loyaltyPointsQueue.Queue, driverCollectedQueue.Queue, driverDeliveredQueue.Queue, bakedQueue.Queue, prepCompleteQueue.Queue, preparingQueue.Queue, orderQualityCheckedQueue.Queue, paymentSuccessQueue.Queue));
+                "../../application", persistence.Table, loyaltyPointsQueue.Queue, driverCollectedQueue.Queue, driverDeliveredQueue.Queue, bakedQueue.Queue, prepCompleteQueue.Queue, preparingQueue.Queue, orderQualityCheckedQueue.Queue, paymentSuccessQueue.Queue));
 
         var eventBus = new CfnOutput(this, "EBOutput", new CfnOutputProps()
         {

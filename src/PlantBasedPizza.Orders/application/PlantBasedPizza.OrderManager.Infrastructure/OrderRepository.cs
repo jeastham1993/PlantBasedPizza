@@ -1,67 +1,156 @@
 ﻿using System.Diagnostics;
-using MongoDB.Driver;
+using System.Text.Json;
+using Amazon.DynamoDBv2;
+using Amazon.DynamoDBv2.Model;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using PlantBasedPizza.OrderManager.Core.Entities;
 
 namespace PlantBasedPizza.OrderManager.Infrastructure;
 
 public class OrderRepository : IOrderRepository
 {
-    private readonly IMongoCollection<Order> _orders;
+    private readonly AmazonDynamoDBClient _ddbClient;
+    private readonly DatabaseSettings _dbSettings;
+    private readonly ILogger<OrderRepository> _logger;
 
-    public OrderRepository(MongoClient client)
+    public OrderRepository(AmazonDynamoDBClient ddbClient, IOptions<DatabaseSettings> dbSettings, ILogger<OrderRepository> logger)
     {
-        var database = client.GetDatabase("PlantBasedPizza-Orders");
-        this._orders = database.GetCollection<Order>("orders");
+        _ddbClient = ddbClient;
+        _logger = logger;
+        _dbSettings = dbSettings.Value;
     }
 
     public async Task Add(Order order)
     {
-        await this._orders.InsertOneAsync(order).ConfigureAwait(false);
+        var ddbAttributes = new Dictionary<string, AttributeValue>()
+        {
+            { "PK", new AttributeValue(order.CustomerIdentifier) },
+            { "SK", new AttributeValue(order.OrderIdentifier) },
+            { "Type", new AttributeValue("Order") },
+            { "Data", new AttributeValue(JsonSerializer.Serialize(order)) },
+            { "GSI2PK", new AttributeValue(order.OrderIdentifier) }
+        };
+
+        if (order.OrderType == OrderType.Pickup && order.AwaitingCollection)
+        {
+            ddbAttributes.Add("GSI1PK", new AttributeValue("AWAITINGCOLLECTION"));
+            ddbAttributes.Add("GSI1SK", new AttributeValue(order.OrderIdentifier));
+        }
+
+        await this._ddbClient.PutItemAsync(new PutItemRequest(_dbSettings.TableName,
+            ddbAttributes
+            ));
     }
 
-    public async Task<Order> Retrieve(string orderIdentifier)
+    public async Task<Order> Retrieve(string customerIdentifier, string orderIdentifier)
     {
-        using var dataAccessActivity = Activity.Current?.Source.StartActivity("DataAccess");
-        
-        var queryBuilder = Builders<Order>.Filter.Eq(p => p.OrderIdentifier, orderIdentifier);
+        using var dataAccessActivity = Activity.Current?.Source.StartActivity("DataAccess-RetrieveOrder");
 
-        var order = await this._orders.Find(queryBuilder).FirstOrDefaultAsync().ConfigureAwait(false);
+        var order = await this._ddbClient.GetItemAsync(this._dbSettings.TableName,
+            new Dictionary<string, AttributeValue>(2)
+            {
+                { "PK", new AttributeValue(customerIdentifier) },
+                { "SK", new AttributeValue(orderIdentifier) },
+            });
 
-        if (order == null)
+        if (!order.IsItemSet)
         {
             Activity.Current?.AddTag("order.notFound", true);
             throw new OrderNotFoundException(orderIdentifier);
         }
+        
+        this._logger.LogInformation("Found order:");
+        this._logger.LogInformation(order.Item["Data"].S);
 
-        return order;
+        return JsonSerializer.Deserialize<Order>(order.Item["Data"].S);
     }
 
-    public async Task<bool> Exists(string orderIdentifier)
+    public async Task<Order> RetrieveByOrderId(string orderIdentifier)
     {
-        using var dataAccessActivity = Activity.Current?.Source.StartActivity("DataAccess");
+        using var dataAccessActivity = Activity.Current?.Source.StartActivity("DataAccess-GetByOrderId");
+
+        var queryResult = await this._ddbClient.QueryAsync(new QueryRequest()
+        {
+            TableName = _dbSettings.TableName,
+            IndexName = "GSI2",
+            KeyConditionExpression = "GSI2PK = :v_PK",
+            ExpressionAttributeValues = new Dictionary<string, AttributeValue>
+            {
+                { ":v_PK", new AttributeValue { S = orderIdentifier } }
+            }
+        });
+
+        var orders = new List<Order>(queryResult.Count);
+
+        foreach (var ddbItem in queryResult.Items)
+        {
+            orders.Add(JsonSerializer.Deserialize<Order>(ddbItem["Data"].S));
+        }
         
-        var queryBuilder = Builders<Order>.Filter.Eq(p => p.OrderIdentifier, orderIdentifier);
+        return orders.FirstOrDefault();
+    }
 
-        var order = await this._orders.Find(queryBuilder).FirstOrDefaultAsync().ConfigureAwait(false);
+    public async Task<bool> Exists(string customerIdentifier, string orderIdentifier)
+    {
+        try
+        {
+            await this.Retrieve(customerIdentifier, orderIdentifier);
 
-        return order != null;
+            return true;
+        }
+        catch (OrderNotFoundException)
+        {
+            return false;
+        }
     }
 
     public async Task<List<Order>> GetAwaitingCollection()
     {
-        using var dataAccessActivity = Activity.Current?.Source.StartActivity("DataAccess");
-        
-        var order = await this._orders.Find(p => p.OrderType == OrderType.Pickup && p.AwaitingCollection).ToListAsync();
+        using var dataAccessActivity = Activity.Current?.Source.StartActivity("DataAccess-GetAwaitingCollection");
 
-        return order;
+        var queryResult = await this._ddbClient.QueryAsync(new QueryRequest()
+        {
+            TableName = _dbSettings.TableName,
+            IndexName = "GSI1",
+            KeyConditionExpression = "GSI1PK = :v_PK",
+            ExpressionAttributeValues = new Dictionary<string, AttributeValue>
+            {
+                { ":v_PK", new AttributeValue { S = "AWAITINGCOLLECTION" } }
+            }
+        });
+
+        var orders = new List<Order>(queryResult.Count);
+
+        foreach (var ddbItem in queryResult.Items)
+        {
+            orders.Add(JsonSerializer.Deserialize<Order>(ddbItem["Data"].S));
+        }
+        
+        return orders;
     }
 
     public async Task Update(Order order)
     {
-        using var dataAccessActivity = Activity.Current?.Source.StartActivity("DataAccess");
+        using var dataAccessActivity = Activity.Current?.Source.StartActivity("DataAccess-UpdateOrder");
         
-        var queryBuilder = Builders<Order>.Filter.Eq(ord => ord.OrderIdentifier, order.OrderIdentifier);
+        var ddbAttributes = new Dictionary<string, AttributeValue>()
+        {
+            { "PK", new AttributeValue(order.CustomerIdentifier) },
+            { "SK", new AttributeValue(order.OrderIdentifier) },
+            { "Type", new AttributeValue("Order") },
+            { "Data", new AttributeValue(JsonSerializer.Serialize(order)) },
+            { "GSI2PK", new AttributeValue(order.OrderIdentifier) }
+        };
 
-        await this._orders.ReplaceOneAsync(queryBuilder, order);
+        if (order.OrderType == OrderType.Pickup && order.AwaitingCollection)
+        {
+            ddbAttributes.Add("GSI1PK", new AttributeValue("AWAITINGCOLLECTION"));
+            ddbAttributes.Add("GSI1SK", new AttributeValue(order.OrderIdentifier));
+        }
+
+        await this._ddbClient.PutItemAsync(new PutItemRequest(_dbSettings.TableName,
+            ddbAttributes
+        ));
     }
 }

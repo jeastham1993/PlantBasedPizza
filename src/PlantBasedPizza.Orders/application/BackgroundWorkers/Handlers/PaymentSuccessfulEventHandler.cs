@@ -18,7 +18,7 @@ namespace BackgroundWorkers.Handlers
         
         public async Task Handle(PaymentSuccessfulEventV1 evt)
         {
-            var order = await this._orderRepository.Retrieve(evt.OrderIdentifier);
+            var order = await this._orderRepository.RetrieveByOrderId(evt.OrderIdentifier);
             
             order.AddHistory("Payment successful");
             

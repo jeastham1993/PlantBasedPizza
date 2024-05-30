@@ -80,16 +80,16 @@ namespace PlantBasedPizza.Orders.IntegrationTest.Features
             this.TestTearDown();
         }
         
-        [Xunit.SkippableFactAttribute(DisplayName="LoyaltyPointsUpdatedAreCached")]
+        [Xunit.SkippableFactAttribute(DisplayName="OrderCanBeCreated")]
         [Xunit.TraitAttribute("FeatureTitle", "Orders")]
-        [Xunit.TraitAttribute("Description", "LoyaltyPointsUpdatedAreCached")]
-        [Xunit.TraitAttribute("Category", "LoyaltyPointUpdatesAreCached")]
-        public void LoyaltyPointsUpdatedAreCached()
+        [Xunit.TraitAttribute("Description", "OrderCanBeCreated")]
+        [Xunit.TraitAttribute("Category", "OrderWorkflow")]
+        public void OrderCanBeCreated()
         {
             string[] tagsOfScenario = new string[] {
-                    "LoyaltyPointUpdatesAreCached"};
+                    "OrderWorkflow"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("LoyaltyPointsUpdatedAreCached", null, tagsOfScenario, argumentsOfScenario, featureTags);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("OrderCanBeCreated", null, tagsOfScenario, argumentsOfScenario, featureTags);
 #line 5
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
@@ -101,209 +101,82 @@ this.ScenarioInitialize(scenarioInfo);
             {
                 this.ScenarioStart();
 #line 6
- testRunner.Given("a LoyaltyPointsUpdatedEvent is published for customer james, with a points total " +
-                        "of 50.00", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line hidden
-#line 7
- testRunner.Then("loyalty points should be cached for james with a total amount of 50", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line hidden
-            }
-            this.ScenarioCleanup();
-        }
-        
-        [Xunit.SkippableFactAttribute(DisplayName="OrderCanBeCreated")]
-        [Xunit.TraitAttribute("FeatureTitle", "Orders")]
-        [Xunit.TraitAttribute("Description", "OrderCanBeCreated")]
-        [Xunit.TraitAttribute("Category", "OrderWorkflow")]
-        public void OrderCanBeCreated()
-        {
-            string[] tagsOfScenario = new string[] {
-                    "OrderWorkflow"};
-            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("OrderCanBeCreated", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 10
-this.ScenarioInitialize(scenarioInfo);
-#line hidden
-            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
-            {
-                testRunner.SkipScenario();
-            }
-            else
-            {
-                this.ScenarioStart();
-#line 11
     testRunner.Given("a new order is created", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
-#line 12
+#line 7
     testRunner.When("a CREATEORDERTEST is added to order", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 13
+#line 8
     testRunner.And("order is submitted", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 14
+#line 9
     testRunner.Then("order should contain a Submitted order. event", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             }
             this.ScenarioCleanup();
         }
         
-        [Xunit.SkippableFactAttribute(DisplayName="CanHandleOrderPreparingEvent")]
+        [Xunit.SkippableFactAttribute(DisplayName="OrderProcessEndToEndFlow")]
         [Xunit.TraitAttribute("FeatureTitle", "Orders")]
-        [Xunit.TraitAttribute("Description", "CanHandleOrderPreparingEvent")]
-        [Xunit.TraitAttribute("Category", "CanProcessOrderPreparingEvent")]
-        public void CanHandleOrderPreparingEvent()
+        [Xunit.TraitAttribute("Description", "OrderProcessEndToEndFlow")]
+        [Xunit.TraitAttribute("Category", "OrderWorkflow")]
+        public void OrderProcessEndToEndFlow()
         {
             string[] tagsOfScenario = new string[] {
-                    "CanProcessOrderPreparingEvent"};
+                    "OrderWorkflow"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("CanHandleOrderPreparingEvent", null, tagsOfScenario, argumentsOfScenario, featureTags);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("OrderProcessEndToEndFlow", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 12
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 13
+    testRunner.Given("an order is created and submitted", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line hidden
+#line 14
+    testRunner.When("the payment is successful", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+#line 15
+    testRunner.Then("order should contain a Payment successful event", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+#line 16
+    testRunner.When("a OrderPreparingEvent is published", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
 #line 17
-this.ScenarioInitialize(scenarioInfo);
+    testRunner.Then("order should contain a Order prep started event", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
-            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
-            {
-                testRunner.SkipScenario();
-            }
-            else
-            {
-                this.ScenarioStart();
 #line 18
-    testRunner.Given("a OrderPreparingEvent is published for customer james", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+    testRunner.When("a OrderPrepCompleteEvent is published", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-            }
-            this.ScenarioCleanup();
-        }
-        
-        [Xunit.SkippableFactAttribute(DisplayName="CanHandleOrderBakedEvent")]
-        [Xunit.TraitAttribute("FeatureTitle", "Orders")]
-        [Xunit.TraitAttribute("Description", "CanHandleOrderBakedEvent")]
-        [Xunit.TraitAttribute("Category", "CanProcessOrderBakedEvent")]
-        public void CanHandleOrderBakedEvent()
-        {
-            string[] tagsOfScenario = new string[] {
-                    "CanProcessOrderBakedEvent"};
-            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("CanHandleOrderBakedEvent", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 19
+    testRunner.Then("order should contain a Order prep complete event", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+#line 20
+    testRunner.When("a OrderBakedEvent is published", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
 #line 21
-this.ScenarioInitialize(scenarioInfo);
+    testRunner.Then("order should contain a Order baked event", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
-            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
-            {
-                testRunner.SkipScenario();
-            }
-            else
-            {
-                this.ScenarioStart();
 #line 22
-    testRunner.Given("a OrderBakedEvent is published for customer james", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+    testRunner.When("a OrderQualityCheckedEvent is published", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-            }
-            this.ScenarioCleanup();
-        }
-        
-        [Xunit.SkippableFactAttribute(DisplayName="CanHandleOrderPrepCompleteEvent")]
-        [Xunit.TraitAttribute("FeatureTitle", "Orders")]
-        [Xunit.TraitAttribute("Description", "CanHandleOrderPrepCompleteEvent")]
-        [Xunit.TraitAttribute("Category", "CanProcessOrderPrepCompleteEvent")]
-        public void CanHandleOrderPrepCompleteEvent()
-        {
-            string[] tagsOfScenario = new string[] {
-                    "CanProcessOrderPrepCompleteEvent"};
-            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("CanHandleOrderPrepCompleteEvent", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 23
+    testRunner.Then("order should contain a Order quality checked event", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+#line 24
+    testRunner.And("order should be awaiting collection", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
 #line 25
-this.ScenarioInitialize(scenarioInfo);
+    testRunner.When("order is collected", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
-            {
-                testRunner.SkipScenario();
-            }
-            else
-            {
-                this.ScenarioStart();
 #line 26
-    testRunner.Given("a OrderPrepCompleteEvent is published for customer james", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line hidden
-            }
-            this.ScenarioCleanup();
-        }
-        
-        [Xunit.SkippableFactAttribute(DisplayName="CanHandleOrderQualityCheckedEvent")]
-        [Xunit.TraitAttribute("FeatureTitle", "Orders")]
-        [Xunit.TraitAttribute("Description", "CanHandleOrderQualityCheckedEvent")]
-        [Xunit.TraitAttribute("Category", "CanProcessOrderQualityCheckedEvent")]
-        public void CanHandleOrderQualityCheckedEvent()
-        {
-            string[] tagsOfScenario = new string[] {
-                    "CanProcessOrderQualityCheckedEvent"};
-            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("CanHandleOrderQualityCheckedEvent", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 29
-this.ScenarioInitialize(scenarioInfo);
-#line hidden
-            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
-            {
-                testRunner.SkipScenario();
-            }
-            else
-            {
-                this.ScenarioStart();
-#line 30
-    testRunner.Given("a OrderQualityCheckedEvent is published for customer james", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line hidden
-            }
-            this.ScenarioCleanup();
-        }
-        
-        [Xunit.SkippableFactAttribute(DisplayName="CanHandleDriverDeliveredEvent")]
-        [Xunit.TraitAttribute("FeatureTitle", "Orders")]
-        [Xunit.TraitAttribute("Description", "CanHandleDriverDeliveredEvent")]
-        [Xunit.TraitAttribute("Category", "CanProcessDriverDeliveredEvent")]
-        public void CanHandleDriverDeliveredEvent()
-        {
-            string[] tagsOfScenario = new string[] {
-                    "CanProcessDriverDeliveredEvent"};
-            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("CanHandleDriverDeliveredEvent", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 33
-this.ScenarioInitialize(scenarioInfo);
-#line hidden
-            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
-            {
-                testRunner.SkipScenario();
-            }
-            else
-            {
-                this.ScenarioStart();
-#line 34
-    testRunner.Given("a DriverDeliveredOrderEvent is published for customer james", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line hidden
-            }
-            this.ScenarioCleanup();
-        }
-        
-        [Xunit.SkippableFactAttribute(DisplayName="CanHandleDriverCollectedEvent")]
-        [Xunit.TraitAttribute("FeatureTitle", "Orders")]
-        [Xunit.TraitAttribute("Description", "CanHandleDriverCollectedEvent")]
-        [Xunit.TraitAttribute("Category", "CanProcessDriverCollectedEvent")]
-        public void CanHandleDriverCollectedEvent()
-        {
-            string[] tagsOfScenario = new string[] {
-                    "CanProcessDriverCollectedEvent"};
-            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("CanHandleDriverCollectedEvent", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 37
-this.ScenarioInitialize(scenarioInfo);
-#line hidden
-            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
-            {
-                testRunner.SkipScenario();
-            }
-            else
-            {
-                this.ScenarioStart();
-#line 38
-    testRunner.Given("a DriverCollectedOrderEvent is published for customer james", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+    testRunner.Then("order should contain a Order completed. event", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             }
             this.ScenarioCleanup();

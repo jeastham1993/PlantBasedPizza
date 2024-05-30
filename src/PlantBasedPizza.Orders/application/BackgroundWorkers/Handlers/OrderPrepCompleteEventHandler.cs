@@ -14,9 +14,9 @@ namespace BackgroundWorkers.Handlers
         
         public async Task Handle(OrderPrepCompleteEventV1 evt)
         {
-            var order = await this._orderRepository.Retrieve(evt.OrderIdentifier);
+            var order = await this._orderRepository.RetrieveByOrderId(evt.OrderIdentifier);
             
-            order.AddHistory("Order prep completed");
+            order.AddHistory("Order prep complete");
             
             await this._orderRepository.Update(order);
         }

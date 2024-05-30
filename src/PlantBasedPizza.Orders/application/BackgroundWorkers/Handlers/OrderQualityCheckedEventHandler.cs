@@ -17,7 +17,7 @@ namespace BackgroundWorkers.Handlers
         
         public async Task Handle(OrderQualityCheckedEventV1 evt)
         {
-            var order = await this._orderRepository.Retrieve(evt.OrderIdentifier);
+            var order = await this._orderRepository.RetrieveByOrderId(evt.OrderIdentifier);
 
             order.AddHistory("Order quality checked");
 

@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PlantBasedPizza.Events;
 using PlantBasedPizza.OrderManager.Core.AddItemToOrder;
 using PlantBasedPizza.OrderManager.Core.CollectOrder;
 using PlantBasedPizza.OrderManager.Core.CreateDeliveryOrder;
@@ -9,7 +8,6 @@ using PlantBasedPizza.OrderManager.Core.CreatePickupOrder;
 using PlantBasedPizza.OrderManager.Core.Entities;
 using PlantBasedPizza.OrderManager.Core.Services;
 using PlantBasedPizza.OrderManager.Infrastructure.Extensions;
-using PlantBasedPizza.OrderManager.Infrastructure.IntegrationEvents;
 
 namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
 {
@@ -17,21 +15,19 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
     public class OrderController : ControllerBase 
     {
         private readonly IOrderRepository _orderRepository;
-        private readonly IPaymentService _paymentService;
         private readonly IOrderEventPublisher _eventPublisher;
         private readonly CollectOrderCommandHandler _collectOrderCommandHandler;
         private readonly AddItemToOrderHandler _addItemToOrderHandler;
         private readonly CreateDeliveryOrderCommandHandler _createDeliveryOrderCommandHandler;
         private readonly CreatePickupOrderCommandHandler _createPickupOrderCommandHandler;
 
-        public OrderController(IOrderRepository orderRepository, CollectOrderCommandHandler collectOrderCommandHandler, AddItemToOrderHandler addItemToOrderHandler, CreateDeliveryOrderCommandHandler createDeliveryOrderCommandHandler, CreatePickupOrderCommandHandler createPickupOrderCommandHandler, IPaymentService paymentService, IOrderEventPublisher eventPublisher)
+        public OrderController(IOrderRepository orderRepository, CollectOrderCommandHandler collectOrderCommandHandler, AddItemToOrderHandler addItemToOrderHandler, CreateDeliveryOrderCommandHandler createDeliveryOrderCommandHandler, CreatePickupOrderCommandHandler createPickupOrderCommandHandler, IOrderEventPublisher eventPublisher)
         {
             _orderRepository = orderRepository;
             _collectOrderCommandHandler = collectOrderCommandHandler;
             _addItemToOrderHandler = addItemToOrderHandler;
             _createDeliveryOrderCommandHandler = createDeliveryOrderCommandHandler;
             _createPickupOrderCommandHandler = createPickupOrderCommandHandler;
-            _paymentService = paymentService;
             _eventPublisher = eventPublisher;
         }
 
@@ -50,12 +46,7 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
                 
                 Activity.Current?.SetTag("orderIdentifier", orderIdentifier);
                 
-                var order = await this._orderRepository.Retrieve(orderIdentifier).ConfigureAwait(false);
-
-                if (order.CustomerIdentifier != accountId)
-                {
-                    throw new OrderNotFoundException(orderIdentifier);
-                }
+                var order = await this._orderRepository.Retrieve(accountId, orderIdentifier).ConfigureAwait(false);
                 
                 return new OrderDto(order);
             }
@@ -129,15 +120,8 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
         {
             var accountId = User.Claims.ExtractAccountId();
             
-            var order = await this._orderRepository.Retrieve(orderIdentifier);
-            
-            if (order.CustomerIdentifier != accountId)
-            {
-                throw new OrderNotFoundException(orderIdentifier);
-            }
+            var order = await this._orderRepository.Retrieve(accountId, orderIdentifier);
 
-            await this._paymentService.TakePaymentFor(order);
-            
             order.SubmitOrder();
 
             await this._orderRepository.Update(order);
@@ -166,7 +150,12 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
         /// <returns></returns>
         [HttpPost("collected")]
         [Authorize(Roles = "staff")]
-        public async Task<OrderDto?> OrderCollected([FromBody] CollectOrderRequest request) =>
-            await this._collectOrderCommandHandler.Handle(request);
+        public async Task<OrderDto?> OrderCollected([FromBody] CollectOrderRequest request)
+        {
+            var accountId = User.Claims.ExtractAccountId();
+            request.CustomerIdentifier = accountId;
+            
+            return await this._collectOrderCommandHandler.Handle(request);
+        }
     }
 }

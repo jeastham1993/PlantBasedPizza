@@ -46,7 +46,7 @@ public class OrdersTestDriver
             });
 
             // Delay to allow for message processing
-            await Task.Delay(TimeSpan.FromSeconds(2));
+            await Task.Delay(TimeSpan.FromSeconds(5));
         }
 
         public async Task SimulateOrderPreparingEvent(string kitchenIdentifier, string orderIdentifier)
@@ -58,7 +58,7 @@ public class OrdersTestDriver
             });
 
             // Delay to allow for message processing
-            await Task.Delay(TimeSpan.FromSeconds(2));
+            await Task.Delay(TimeSpan.FromSeconds(5));
         }
 
         public async Task SimulateOrderPrepCompleteEvent(string kitchenIdentifier, string orderIdentifier)
@@ -70,7 +70,19 @@ public class OrdersTestDriver
             });
 
             // Delay to allow for message processing
-            await Task.Delay(TimeSpan.FromSeconds(2));
+            await Task.Delay(TimeSpan.FromSeconds(5));
+        }
+
+        public async Task SimulatePaymentSuccessEvent(string customerIdentifier, string orderIdentifier)
+        {
+            await this._eventPublisher.Publish(new PaymentSuccessfulEventV1()
+            {
+                OrderIdentifier = orderIdentifier,
+                CustomerIdentifier = customerIdentifier
+            });
+
+            // Delay to allow for message processing
+            await Task.Delay(TimeSpan.FromSeconds(5));
         }
 
         public async Task SimulateOrderBakedEvent(string kitchenIdentifier, string orderIdentifier)
@@ -82,7 +94,7 @@ public class OrdersTestDriver
             });
 
             // Delay to allow for message processing
-            await Task.Delay(TimeSpan.FromSeconds(2));
+            await Task.Delay(TimeSpan.FromSeconds(5));
         }
 
         public async Task SimulateOrderQualityCheckedEvent(string kitchenIdentifier, string orderIdentifier)
@@ -94,7 +106,7 @@ public class OrdersTestDriver
             });
 
             // Delay to allow for message processing
-            await Task.Delay(TimeSpan.FromSeconds(2));
+            await Task.Delay(TimeSpan.FromSeconds(5));
         }
 
         public async Task SimulateDriverCollectedEvent(string kitchenIdentifier, string orderIdentifier)
@@ -106,7 +118,7 @@ public class OrdersTestDriver
             });
 
             // Delay to allow for message processing
-            await Task.Delay(TimeSpan.FromSeconds(2));
+            await Task.Delay(TimeSpan.FromSeconds(5));
         }
 
         public async Task SimulateDriverDeliveredEvent(string kitchenIdentifier, string orderIdentifier)
@@ -117,7 +129,7 @@ public class OrdersTestDriver
             });
 
             // Delay to allow for message processing
-            await Task.Delay(TimeSpan.FromSeconds(2));
+            await Task.Delay(TimeSpan.FromSeconds(5));
         }
         
         public async Task AddNewDeliveryOrder(string orderIdentifier, string customerIdentifier)
@@ -173,7 +185,7 @@ public class OrdersTestDriver
         public async Task CollectOrder(string orderIdentifier)
         {
             // Delay to allow async processing to catch up
-            await Task.Delay(TimeSpan.FromSeconds(2));
+            await Task.Delay(TimeSpan.FromSeconds(5));
             
             var res = await this._staffHttpClient.PostAsync(new Uri($"{TestConstants.DefaultTestUrl}/order/collected"), new StringContent(
                 JsonConvert.SerializeObject(new CollectOrderRequest()
@@ -199,6 +211,12 @@ public class OrdersTestDriver
 
         private async Task checkRecipeExists(string recipeIdentifier)
         {
+            // Skip this if running locally, WireMock used instead
+            if (TestConstants.DefaultTestUrl.Contains("localhost"))
+            {
+                return;
+            }
+            
             await this._userHttpClient.PostAsync($"{TestConstants.DefaultTestUrl}/recipes", new StringContent(
                 JsonConvert.SerializeObject(new CreateRecipeCommand()
                 {

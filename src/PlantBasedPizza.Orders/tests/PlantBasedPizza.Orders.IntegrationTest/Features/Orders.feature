@@ -1,10 +1,5 @@
 Feature: Orders
 	OrdersFeature
-
-@LoyaltyPointUpdatesAreCached
-Scenario: LoyaltyPointsUpdatedAreCached
-	Given a LoyaltyPointsUpdatedEvent is published for customer james, with a points total of 50.00
-	Then loyalty points should be cached for james with a total amount of 50
 	
 @OrderWorkflow
 Scenario: OrderCanBeCreated
@@ -13,26 +8,19 @@ Scenario: OrderCanBeCreated
     And order is submitted
     Then order should contain a Submitted order. event
     
-@CanProcessOrderPreparingEvent
-Scenario: CanHandleOrderPreparingEvent
-    Given a OrderPreparingEvent is published for customer james
-    
-@CanProcessOrderBakedEvent
-Scenario: CanHandleOrderBakedEvent
-    Given a OrderBakedEvent is published for customer james
-    
-@CanProcessOrderPrepCompleteEvent
-Scenario: CanHandleOrderPrepCompleteEvent
-    Given a OrderPrepCompleteEvent is published for customer james
-    
-@CanProcessOrderQualityCheckedEvent
-Scenario: CanHandleOrderQualityCheckedEvent
-    Given a OrderQualityCheckedEvent is published for customer james
-    
-@CanProcessDriverDeliveredEvent
-Scenario: CanHandleDriverDeliveredEvent
-    Given a DriverDeliveredOrderEvent is published for customer james
-  
-@CanProcessDriverCollectedEvent
-Scenario: CanHandleDriverCollectedEvent
-    Given a DriverCollectedOrderEvent is published for customer james
+@OrderWorkflow
+Scenario: OrderProcessEndToEndFlow
+    Given an order is created and submitted
+    When the payment is successful
+    Then order should contain a Payment successful event
+    When a OrderPreparingEvent is published
+    Then order should contain a Order prep started event
+    When a OrderPrepCompleteEvent is published
+    Then order should contain a Order prep complete event
+    When a OrderBakedEvent is published
+    Then order should contain a Order baked event
+    When a OrderQualityCheckedEvent is published
+    Then order should contain a Order quality checked event
+    And order should be awaiting collection
+    When order is collected
+    Then order should contain a Order completed. event

@@ -14,7 +14,7 @@ public class CreateDeliveryOrderCommandHandler
 
     public async Task<OrderDto?> Handle(CreateDeliveryOrder request)
     {
-        if (await this._orderRepository.Exists(request.OrderIdentifier))
+        if (await this._orderRepository.Exists(request.CustomerIdentifier, request.OrderIdentifier))
         {
             return null;
         }

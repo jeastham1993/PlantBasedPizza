@@ -18,7 +18,7 @@ namespace BackgroundWorkers.Handlers
 
         public async Task Handle(DriverDeliveredOrderEventV1 evt)
         {
-            var order = await this._orderRepository.Retrieve(evt.OrderIdentifier);
+            var order = await this._orderRepository.RetrieveByOrderId(evt.OrderIdentifier);
 
             order.CompleteOrder();
             
