@@ -6,7 +6,7 @@ using BackgroundWorkers.Services;
 using BackgroundWorkers.SubscribedEvents;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
-using OpenTelemetry.Trace;
+using Datadog.Trace;
 using PlantBasedPizza.Events;
 
 [assembly: LambdaSerializer(typeof(Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer))]
@@ -25,7 +25,6 @@ public class Functions
     public Functions(SqsEventSubscriber eventSubscriber, ILogger<Functions> logger, PaymentService paymentService)
     {
         _eventSubscriber = eventSubscriber;
-        _tracerProvider = tracerProvider;
         _logger = logger;
         _paymentService = paymentService;
     }
