@@ -19,6 +19,7 @@ public class TraceMiddleware
 
         using var requestTrace = Tracer.Instance.StartActive(methodPath);
         
+        
         await _next(context);
     }
 }
