@@ -144,7 +144,8 @@ public class WebService : Construct
                      { "DD_DOGSTATSD_NON_LOCAL_TRAFFIC", "true"},
                      { "DD_ENV", props.Environment},
                      { "DD_SERVICE", props.ServiceName},
-                     { "DD_VERSION", props.Tag}
+                     { "DD_VERSION", props.Tag},
+                     { "DD_APM_IGNORE_RESOURCES", "(GET|POST) /health"}
                  },
                  Secrets = new Dictionary<string, Secret>(1)
                  {
