@@ -59,11 +59,10 @@ public class WebService : Construct
             { "DD_SERVICE", props.ServiceName},
             { "DD_VERSION", props.Tag},
             { "DD_GIT_COMMIT_SHA", props.Tag},
+            { "DD_GIT_REPOSITORY_URL", "https://github.com/jeastham1993/PlantBasedPizza"},
             { "DD_AGENT_HOST", "127.0.0.1"},
             { "DD_TRACE_ROUTE_TEMPLATE_RESOURCE_NAMES_ENABLED", "true"},
             { "DD_RUNTIME_METRICS_ENABLED", "true"},
-            { "DD_GIT_COMMIT_SHA", props.Tag},
-            { "DD_GIT_REPOSITORY_URL", "https://github.com/jeastham1993/PlantBasedPizza"},
         };
         var baseSecrets = new Dictionary<string, Secret>()
         {
