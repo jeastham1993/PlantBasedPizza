@@ -75,15 +75,13 @@ var app = builder.Build();
 
 app.UseCors("CorsPolicy");
 
-app.UseMiddleware<TraceMiddleware>();
-
 app.UseAuthentication();
-
-app.UseRouting();
 
 app.UseAuthorization();
 
 var orderManagerHealthChecks = app.Services.GetRequiredService<OrderManagerHealthChecks>();
+
+app.MapControllers();
 
 app.Map("/order/health", async () =>
 {
@@ -91,8 +89,6 @@ app.Map("/order/health", async () =>
     
     return Results.Ok(healthCheckResult);
 });
-
-app.MapControllers();
 
 if (generateAsyncApi)
 {
