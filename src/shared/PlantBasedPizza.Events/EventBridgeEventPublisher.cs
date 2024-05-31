@@ -4,6 +4,7 @@ using Amazon.EventBridge.Model;
 using CloudNative.CloudEvents;
 using CloudNative.CloudEvents.SystemTextJson;
 using Datadog.Trace;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace PlantBasedPizza.Events;
@@ -12,6 +13,7 @@ public class EventBridgeEventPublisher : IEventPublisher
 {
     private readonly AmazonEventBridgeClient _eventBridgeClient;
     private readonly EventBridgeSettings _settings;
+    private readonly ILogger<EventBridgeEventPublisher> _logger;
 
     public EventBridgeEventPublisher(AmazonEventBridgeClient eventBridgeClient, IOptions<EventBridgeSettings> settings)
     {
@@ -22,18 +24,16 @@ public class EventBridgeEventPublisher : IEventPublisher
     public async Task Publish(IntegrationEvent evt)
     {
         var eventType = $"{evt.EventName}.{evt.EventVersion}";
-
-        using var publishActivity = Activity.Current?.Source.StartActivity($"Publishing{eventType}");
         
         var eventId = Guid.NewGuid()
             .ToString();
 
-        publishActivity?.AddTag("messaging.eventId", eventId);
-        publishActivity?.AddTag("messaging.eventType", eventType);
-        publishActivity?.AddTag("messaging.eventName", evt.EventName);
-        publishActivity?.AddTag("messaging.eventVersion", evt.EventVersion);
-        publishActivity?.AddTag("messaging.eventSource", evt.Source);
-        publishActivity?.AddTag("messaging.busName", _settings.BusName);
+        Tracer.Instance.ActiveScope?.Span.SetTag("messaging.eventId", eventId);
+        Tracer.Instance.ActiveScope?.Span.SetTag("messaging.eventType", eventType);
+        Tracer.Instance.ActiveScope?.Span.SetTag("messaging.eventName", evt.EventName);
+        Tracer.Instance.ActiveScope?.Span.SetTag("messaging.eventVersion", evt.EventVersion);
+        Tracer.Instance.ActiveScope?.Span.SetTag("messaging.eventSource", evt.Source.ToString());
+        Tracer.Instance.ActiveScope?.Span.SetTag("messaging.busName", _settings.BusName);
 
         var evtWrapper = new CloudEvent
         {
@@ -73,5 +73,15 @@ public class EventBridgeEventPublisher : IEventPublisher
                 }
             }
         });
+
+        Tracer.Instance.ActiveScope?.Span.SetTag("messaging.failedEvents", publishResponse.FailedEntryCount);
+
+        if (publishResponse.FailedEntryCount > 0)
+        {
+            foreach (var failedEvent in publishResponse.Entries.Where(p => string.IsNullOrEmpty(p.EventId)))
+            {
+                this._logger.LogError("Event publish failed with {ErrorCode} and {ErrorMessage}", failedEvent.ErrorCode, failedEvent.ErrorMessage);
+            }
+        }
     }
 }
