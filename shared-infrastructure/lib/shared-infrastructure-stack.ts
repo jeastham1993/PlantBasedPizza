@@ -6,8 +6,8 @@ import { ApplicationListener, ApplicationLoadBalancer, ListenerAction} from 'aws
 import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 import { ARecord, HostedZone, RecordTarget } from 'aws-cdk-lib/aws-route53';
 import { Certificate } from 'aws-cdk-lib/aws-certificatemanager';
-import { LoadBalancerTarget } from 'aws-cdk-lib/aws-route53-targets';
-import { LoadBalancerV2Origin } from 'aws-cdk-lib/aws-cloudfront-origins';
+import { LoadBalancerTarget, CloudFrontTarget } from 'aws-cdk-lib/aws-route53-targets';
+import { LoadBalancerV2Origin, HttpOrigin } from 'aws-cdk-lib/aws-cloudfront-origins';
 import { CachePolicy, Distribution, ResponseHeadersPolicy, ViewerProtocolPolicy } from 'aws-cdk-lib/aws-cloudfront';
 
 export class PlantBasedPizzaSharedInfrastructureStack extends cdk.Stack {
@@ -15,6 +15,7 @@ export class PlantBasedPizzaSharedInfrastructureStack extends cdk.Stack {
     super(scope, id, props);
 
     const network = new Network(this, "PlantBasedPizzaNetworkResources");
+    const cloudfrontDnsName = process.env['CLOUDFRONT_DNS_NAME']!
     const dnsName = process.env['DNS_NAME']!
     const internalDnsName = process.env['INTERNAL_DNS_NAME']!
     const certArn = process.env['CERT_ARN']!;
@@ -47,13 +48,23 @@ export class PlantBasedPizzaSharedInfrastructureStack extends cdk.Stack {
 
     var cloudfrontDistro = new Distribution(this, 'distro', {
       defaultBehavior: {
-        origin: new LoadBalancerV2Origin(sharedAlbWithListener),
+        origin: new HttpOrigin(dnsName, {
+          customHeaders: {
+            "CloudFrontForwarded": "thisisacustomheader"
+          }
+        }),
         responseHeadersPolicy: ResponseHeadersPolicy.CORS_ALLOW_ALL_ORIGINS,
         viewerProtocolPolicy: ViewerProtocolPolicy.HTTPS_ONLY,
       },
       certificate: usEast1Cert,
-      domainNames: [dnsName]
+      domainNames: [cloudfrontDnsName]
     });
+
+    new ARecord(this, "CloudFrontDnsRecord", {
+      zone: hostedZoned,
+      recordName: cloudfrontDnsName,
+      target: RecordTarget.fromAlias(new CloudFrontTarget(cloudfrontDistro)),
+     });
 
     const httpListener = new ApplicationListener(this, "HttpListener", {
       loadBalancer: sharedAlbWithListener,

@@ -1,4 +1,5 @@
-﻿using MongoDB.Driver;
+﻿using Microsoft.Extensions.Logging;
+using MongoDB.Driver;
 using PlantBasedPizza.Recipes.Core.Entities;
 
 namespace PlantBasedPizza.Recipes.Infrastructure;
@@ -6,9 +7,11 @@ namespace PlantBasedPizza.Recipes.Infrastructure;
 public class RecipeRepository : IRecipeRepository
 {
     private readonly IMongoCollection<Recipe> _recipes;
+    private readonly ILogger<RecipeRepository> _logger;
 
-    public RecipeRepository(MongoClient client)
+    public RecipeRepository(MongoClient client, ILogger<RecipeRepository> logger)
     {
+        _logger = logger;
         var database = client.GetDatabase("PlantBasedPizza");
         this._recipes = database.GetCollection<Recipe>("recipes");
     }
@@ -18,6 +21,11 @@ public class RecipeRepository : IRecipeRepository
         var queryBuilder = Builders<Recipe>.Filter.Eq(p => p.RecipeIdentifier, recipeIdentifier);
 
         var recipe = await this._recipes.Find(queryBuilder).FirstOrDefaultAsync();
+
+        if (recipe == null)
+        {
+            throw new RecipeNotFoundException();
+        }
 
         return recipe;
     }
@@ -45,11 +53,17 @@ public class RecipeRepository : IRecipeRepository
 
     public async Task SeedRecipes()
     {
-        var existing = await this.Retrieve("marg");
-
-        if (existing is null)
+        try
         {
+            await this.Retrieve("marg");
+            
+            this._logger.LogInformation("Recipe exists, skipping database seed.");
+
             return;
+        }
+        catch (RecipeNotFoundException)
+        {
+            this._logger.LogInformation("Recipe not found, seeding data");
         }
 
         var marg = new Recipe(RecipeCategory.Pizza, "marg", "Margherita", 4.99M);
