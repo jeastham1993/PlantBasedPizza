@@ -45,6 +45,13 @@ public class RecipeRepository : IRecipeRepository
 
     public async Task SeedRecipes()
     {
+        var existing = await this.Retrieve("marg");
+
+        if (existing is null)
+        {
+            return;
+        }
+
         var marg = new Recipe(RecipeCategory.Pizza, "marg", "Margherita", 4.99M);
         marg.AddIngredient("Tomatoes", 1);
         marg.AddIngredient("Cheese", 6);

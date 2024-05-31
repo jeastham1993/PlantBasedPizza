@@ -56,6 +56,7 @@ await recipeRepo.SeedRecipes();
 app.UseCors("CorsPolicy");
 
 app.UseAuthentication();
+
 app.UseAuthorization();
 
 app.MapControllers();

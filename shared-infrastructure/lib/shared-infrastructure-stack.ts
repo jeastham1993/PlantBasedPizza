@@ -7,6 +7,8 @@ import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 import { ARecord, HostedZone, RecordTarget } from 'aws-cdk-lib/aws-route53';
 import { Certificate } from 'aws-cdk-lib/aws-certificatemanager';
 import { LoadBalancerTarget } from 'aws-cdk-lib/aws-route53-targets';
+import { LoadBalancerV2Origin } from 'aws-cdk-lib/aws-cloudfront-origins';
+import { CachePolicy, Distribution, ResponseHeadersPolicy, ViewerProtocolPolicy } from 'aws-cdk-lib/aws-cloudfront';
 
 export class PlantBasedPizzaSharedInfrastructureStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -16,6 +18,7 @@ export class PlantBasedPizzaSharedInfrastructureStack extends cdk.Stack {
     const dnsName = process.env['DNS_NAME']!
     const internalDnsName = process.env['INTERNAL_DNS_NAME']!
     const certArn = process.env['CERT_ARN']!;
+    const usEastCertArn = process.env['US_EAST_1_CERT_ARN']!;
     const hostedZoneId = process.env['HOSTED_ZONE_ID']!;
 
     const hostedZoned = HostedZone.fromHostedZoneAttributes(
@@ -28,7 +31,8 @@ export class PlantBasedPizzaSharedInfrastructureStack extends cdk.Stack {
      );
 
     const certificate = Certificate.fromCertificateArn(this, 'PlantBasedPizzaCert', certArn);
-    
+    const usEast1Cert = Certificate.fromCertificateArn(this, "UsEast1Cert", usEastCertArn);
+
     const sharedAlbWithListener = new ApplicationLoadBalancer(this, "ApplicationIngressWithListener", {
       loadBalancerName: "plant-based-pizza-ingress",
       vpc: network.vpc,
@@ -40,6 +44,16 @@ export class PlantBasedPizzaSharedInfrastructureStack extends cdk.Stack {
       recordName: dnsName,
       target: RecordTarget.fromAlias(new LoadBalancerTarget(sharedAlbWithListener)),
      });
+
+    var cloudfrontDistro = new Distribution(this, 'distro', {
+      defaultBehavior: {
+        origin: new LoadBalancerV2Origin(sharedAlbWithListener),
+        responseHeadersPolicy: ResponseHeadersPolicy.CORS_ALLOW_ALL_ORIGINS,
+        viewerProtocolPolicy: ViewerProtocolPolicy.HTTPS_ONLY,
+      },
+      certificate: usEast1Cert,
+      domainNames: [dnsName]
+    });
 
     const httpListener = new ApplicationListener(this, "HttpListener", {
       loadBalancer: sharedAlbWithListener,
