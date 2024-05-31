@@ -2,6 +2,7 @@ using System.Diagnostics;
 using Datadog.Trace;
 using Datadog.Trace.Annotations;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using PlantBasedPizza.OrderManager.Core.AddItemToOrder;
 using PlantBasedPizza.OrderManager.Core.CollectOrder;
@@ -14,6 +15,7 @@ using PlantBasedPizza.OrderManager.Infrastructure.Extensions;
 namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
 {
     [Route("order")]
+    [EnableCors("CorsPolicy")]
     public class OrderController : ControllerBase 
     {
         private readonly IOrderRepository _orderRepository;
