@@ -79,7 +79,7 @@ var userAccountService = app.Services.GetRequiredService<UserAccountService>();
 
 await accountRepository.SeedInitialUser();
 
-app.MapGet("/account/health", () => Task.FromResult("OK"));
+app.MapGet("/account/health", () => Task.FromResult("OK")).RequireCors("CorsPolicy");
 
 app.MapPost("/account/login", [AllowAnonymous] async (LoginCommand login) =>
 {
@@ -93,7 +93,7 @@ app.MapPost("/account/login", [AllowAnonymous] async (LoginCommand login) =>
     {
         return Results.Unauthorized();
     }
-});
+}).RequireCors("CorsPolicy");
 
 app.MapPost("/account/register", [AllowAnonymous] async (RegisterUserCommand register) =>
 {
@@ -110,7 +110,7 @@ app.MapPost("/account/register", [AllowAnonymous] async (RegisterUserCommand reg
     {
         return Results.BadRequest("User exists");
     }
-});
+}).RequireCors("CorsPolicy");
 
 app.MapPost("/account/driver/register", [AllowAnonymous] async (RegisterUserCommand register) =>
 {
@@ -127,7 +127,7 @@ app.MapPost("/account/driver/register", [AllowAnonymous] async (RegisterUserComm
     {
         return Results.BadRequest("User exists");
     }
-}).RequireAuthorization(policyBuilder => policyBuilder.RequireRole(["staff","admin"]));
+}).RequireAuthorization(policyBuilder => policyBuilder.RequireRole(["staff","admin"])).RequireCors("CorsPolicy");
 
 app.MapPost("/account/staff/register", [AllowAnonymous] async (RegisterUserCommand register) =>
 {
@@ -144,6 +144,6 @@ app.MapPost("/account/staff/register", [AllowAnonymous] async (RegisterUserComma
     {
         return Results.BadRequest("User exists");
     }
-}).RequireAuthorization(policyBuilder => policyBuilder.RequireRole("admin"));
+}).RequireAuthorization(policyBuilder => policyBuilder.RequireRole("admin")).RequireCors("CorsPolicy");
 
 app.Run();
