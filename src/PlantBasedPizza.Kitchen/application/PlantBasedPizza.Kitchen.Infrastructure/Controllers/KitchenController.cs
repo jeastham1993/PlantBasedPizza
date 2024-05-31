@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using PlantBasedPizza.Kitchen.Core.Entities;
 using PlantBasedPizza.Kitchen.Infrastructure.DataTransfer;
@@ -6,6 +7,7 @@ using PlantBasedPizza.Kitchen.Infrastructure.DataTransfer;
 namespace PlantBasedPizza.Kitchen.Infrastructure.Controllers
 {
     [Route("kitchen")]
+    [EnableCors("CorsPolicy")]
     public class KitchenController : ControllerBase
     {
         private readonly IKitchenRequestRepository _kitchenRequestRepository;
