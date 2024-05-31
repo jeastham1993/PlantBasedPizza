@@ -68,8 +68,6 @@ public class OrderRepository : IOrderRepository
 
     public async Task<Order> RetrieveByOrderId(string orderIdentifier)
     {
-        using var dataAccessActivity = Activity.Current?.Source.StartActivity("DataAccess-GetByOrderId");
-
         var queryResult = await this._ddbClient.QueryAsync(new QueryRequest()
         {
             TableName = _dbSettings.TableName,
@@ -107,8 +105,6 @@ public class OrderRepository : IOrderRepository
 
     public async Task<List<Order>> GetAwaitingCollection()
     {
-        using var dataAccessActivity = Activity.Current?.Source.StartActivity("DataAccess-GetAwaitingCollection");
-
         var queryResult = await this._ddbClient.QueryAsync(new QueryRequest()
         {
             TableName = _dbSettings.TableName,
@@ -132,8 +128,6 @@ public class OrderRepository : IOrderRepository
 
     public async Task Update(Order order)
     {
-        using var dataAccessActivity = Activity.Current?.Source.StartActivity("DataAccess-UpdateOrder");
-        
         var ddbAttributes = new Dictionary<string, AttributeValue>()
         {
             { "PK", new AttributeValue(order.CustomerIdentifier) },

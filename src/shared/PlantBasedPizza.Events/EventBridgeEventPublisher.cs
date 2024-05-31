@@ -44,11 +44,6 @@ public class EventBridgeEventPublisher : IEventPublisher
             Id = eventId,
             Data = evt,
         };
-
-        if (!string.IsNullOrEmpty(Activity.Current?.Id))
-        {
-            evtWrapper.SetAttributeFromString("traceparent", Activity.Current?.Id!);   
-        }
         
         if (Tracer.Instance.ActiveScope?.Span != null)
         {

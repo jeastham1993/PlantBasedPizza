@@ -27,13 +27,9 @@ public class OrderManagerHealthChecks
             {
                 result.RecipeHttpStatus = "Offline";
             }
-            
-            Activity.Current?.AddTag("recipe.api", res.IsSuccessStatusCode);
         }
         catch (Exception)
         {
-            Activity.Current?.AddTag("recipe.healthy", false);
-        
             result.RecipeHttpStatus = "Offline";
         }
 

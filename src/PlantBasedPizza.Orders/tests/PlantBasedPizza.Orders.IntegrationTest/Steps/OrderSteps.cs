@@ -41,7 +41,7 @@ public class OrderSteps
     [Given("an order is created and submitted")]
     public async Task GivenAnOrderIsCreatedAndSubmitted()
     {
-        var orderId = await _driver.AddNewOrder("", "james").ConfigureAwait(false);
+        var orderId = await _driver.AddNewOrder("james").ConfigureAwait(false);
         _scenarioContext.Add("orderId", orderId);
         
         await _driver.AddItemToOrder(orderId, "marg", 1);
@@ -51,7 +51,6 @@ public class OrderSteps
     [When("the payment is successful")]
     public async Task WhenThePaymentIsSuccessful()
     {
-        
         var orderId = _scenarioContext.Get<string>("orderId");
 
         await _driver.SimulatePaymentSuccessEvent("user-account", orderId);
@@ -137,7 +136,7 @@ public class OrderSteps
     [Given(@"a new order is created")]
     public async Task GivenANewOrderIsCreatedWithIdentifierOrd()
     {
-        var orderId = await _driver.AddNewOrder("", "james").ConfigureAwait(false);
+        var orderId = await _driver.AddNewOrder("james").ConfigureAwait(false);
         _scenarioContext.Add("orderId", orderId);
     }
 
@@ -206,7 +205,7 @@ public class OrderSteps
     [Given(@"a new delivery order is created for customer (.*)")]
     public async Task GivenANewDeliveryOrderIsCreatedWithIdentifierDeliver(string p0)
     {
-        var orderId = await _driver.AddNewOrder("", "james").ConfigureAwait(false);
+        var orderId = await _driver.AddNewOrder("james").ConfigureAwait(false);
         _scenarioContext.Add("orderId", orderId);
 
         await _driver.AddNewDeliveryOrder(orderId, p0);

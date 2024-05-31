@@ -46,7 +46,7 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
             {
                 var accountId = User.Claims.ExtractAccountId();
                     
-                Activity.Current?.SetTag("orderIdentifier", orderIdentifier);
+                Tracer.Instance.ActiveScope?.Span.SetTag("orderIdentifier", orderIdentifier);
                     
                 var order = await this._orderRepository.Retrieve(accountId, orderIdentifier).ConfigureAwait(false);
                     
@@ -55,7 +55,7 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
             catch (OrderNotFoundException)
             {
                 this.Response.StatusCode = 404;
-                Activity.Current?.AddTag("order.notFound", true);
+                Tracer.Instance.ActiveScope?.Span.SetTag("order.notFound", "true");
 
                 return null;
             }

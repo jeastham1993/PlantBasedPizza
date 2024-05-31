@@ -1,4 +1,5 @@
 using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Text;
 using Amazon.EventBridge;
 using BackgroundWorkers.IntegrationEvents;
@@ -147,17 +148,15 @@ public class OrdersTestDriver
                 }), Encoding.UTF8, "application/json")).ConfigureAwait(false);
         }
 
-        public async Task<string> AddNewOrder(string orderIdentifier, string customerIdentifier)
+        public async Task<string> AddNewOrder(string customerIdentifier)
         {
-            await Task.Delay(TimeSpan.FromSeconds(5));
-            
             var createdOrder = await this._userHttpClient.PostAsync(new Uri($"{TestConstants.DefaultTestUrl}/order/pickup"), new StringContent(
                 JsonConvert.SerializeObject(new CreatePickupOrderCommand()
                 {
                     CustomerIdentifier = customerIdentifier
                 }), Encoding.UTF8, "application/json")).ConfigureAwait(false);
 
-            var order = JsonConvert.DeserializeObject<Order>(await createdOrder.Content.ReadAsStringAsync());
+            var order = await createdOrder.Content.ReadFromJsonAsync<Order>();
 
             return order.OrderNumber;
         }
