@@ -68,6 +68,6 @@ app.MapGet("/loyalty", async (ClaimsPrincipal user) =>
     }
 
     return Results.Ok(new LoyaltyPointsDto(loyalty));
-}).RequireAuthorization(policyBuilder => policyBuilder.RequireRole("user"));
+}).RequireAuthorization(policyBuilder => policyBuilder.RequireRole("user")).RequireCors("CorsPolicy");
 
 app.Run();
