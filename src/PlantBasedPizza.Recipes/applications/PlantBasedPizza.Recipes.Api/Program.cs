@@ -29,16 +29,14 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-var corsPolicyName = "_allowSpecificOrigins";
-
 builder.Services.AddCors(options =>
-    {
-        options.AddPolicy("CorsPolicy",
-            builder => builder.AllowAnyOrigin()
+{
+    options.AddPolicy("CorsPolicy",
+        builder => builder
+            .AllowAnyOrigin()
             .AllowAnyMethod()
-            .AllowAnyHeader()
-            .AllowCredentials() );
-    });
+            .AllowAnyHeader());
+});
 
 builder.Services.AddAuthorization();
 
