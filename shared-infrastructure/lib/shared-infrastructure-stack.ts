@@ -55,6 +55,7 @@ export class PlantBasedPizzaSharedInfrastructureStack extends cdk.Stack {
         }),
         responseHeadersPolicy: ResponseHeadersPolicy.CORS_ALLOW_ALL_ORIGINS,
         viewerProtocolPolicy: ViewerProtocolPolicy.HTTPS_ONLY,
+        cachePolicy: CachePolicy.CACHING_DISABLED
       },
       certificate: usEast1Cert,
       domainNames: [cloudfrontDnsName]

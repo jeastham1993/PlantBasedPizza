@@ -213,7 +213,7 @@ public class WebService : Construct
             
             sharedListener.AddTargetGroups("ECS", new AddApplicationTargetGroupsProps()
             {
-                Conditions = [ListenerCondition.PathPatterns([props.PathPattern])],
+                Conditions = [ListenerCondition.PathPatterns([props.PathPattern]), ListenerCondition.HttpHeader("CloudFrontForwarded", new []{"thisisacustomheader"})],
                 Priority = props.Priority,
                 TargetGroups = [targetGroup]
             });
@@ -247,7 +247,7 @@ public class WebService : Construct
                 });
             internalListener.AddTargetGroups("ECS", new AddApplicationTargetGroupsProps()
             {
-                Conditions = [ListenerCondition.PathPatterns([props.PathPattern]), ListenerCondition.HttpHeader("CloudFrontForwarded", new []{"thisisacustomheader"}), ],
+                Conditions = [ListenerCondition.PathPatterns([props.PathPattern]) ],
                 Priority = props.Priority,
                 TargetGroups = [internalTargetGroup]
             });
