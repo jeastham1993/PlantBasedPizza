@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using PlantBasedPizza.Deliver.Core.Commands;
 using PlantBasedPizza.Deliver.Core.Entities;
@@ -11,6 +12,7 @@ using PlantBasedPizza.Events;
 namespace PlantBasedPizza.Deliver.Infrastructure.Controllers
 {
     [Route("delivery")]
+    [EnableCors("CorsPolicy")]
     public class DeliveryRequestController : ControllerBase 
     {
         private readonly IDeliveryRequestRepository _deliveryRequestRepository;
