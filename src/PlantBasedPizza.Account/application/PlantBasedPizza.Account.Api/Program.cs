@@ -35,6 +35,16 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true
     };
 });
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CorsPolicy",
+        builder => builder
+            .AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader());
+});
+
 builder.Services.AddSerilog();
 
 builder.Services.AddAuthorization();
@@ -57,6 +67,8 @@ builder.Services.AddSharedInfrastructure(builder.Configuration, builder.Configur
     .AddMessaging(builder.Configuration);
 
 var app = builder.Build();
+
+app.UseCors("CorsPolicy");
 
 app.UseAuthentication();
 app.UseAuthorization();

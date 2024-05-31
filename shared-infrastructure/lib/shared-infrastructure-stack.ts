@@ -8,7 +8,7 @@ import { ARecord, HostedZone, RecordTarget } from 'aws-cdk-lib/aws-route53';
 import { Certificate } from 'aws-cdk-lib/aws-certificatemanager';
 import { LoadBalancerTarget, CloudFrontTarget } from 'aws-cdk-lib/aws-route53-targets';
 import { LoadBalancerV2Origin, HttpOrigin } from 'aws-cdk-lib/aws-cloudfront-origins';
-import { CachePolicy, Distribution, ResponseHeadersPolicy, ViewerProtocolPolicy } from 'aws-cdk-lib/aws-cloudfront';
+import { AllowedMethods, CachePolicy, Distribution, ResponseHeadersPolicy, ViewerProtocolPolicy } from 'aws-cdk-lib/aws-cloudfront';
 
 export class PlantBasedPizzaSharedInfrastructureStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -51,14 +51,15 @@ export class PlantBasedPizzaSharedInfrastructureStack extends cdk.Stack {
         origin: new HttpOrigin(dnsName, {
           customHeaders: {
             "CloudFrontForwarded": "thisisacustomheader"
-          }
+          },
         }),
+        allowedMethods: AllowedMethods.ALLOW_ALL,
         responseHeadersPolicy: ResponseHeadersPolicy.CORS_ALLOW_ALL_ORIGINS,
         viewerProtocolPolicy: ViewerProtocolPolicy.HTTPS_ONLY,
-        cachePolicy: CachePolicy.CACHING_DISABLED
+        cachePolicy: CachePolicy.CACHING_DISABLED,
       },
       certificate: usEast1Cert,
-      domainNames: [cloudfrontDnsName]
+      domainNames: [cloudfrontDnsName],
     });
 
     new ARecord(this, "CloudFrontDnsRecord", {
