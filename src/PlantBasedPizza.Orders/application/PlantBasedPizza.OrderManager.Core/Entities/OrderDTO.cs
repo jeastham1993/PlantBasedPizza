@@ -38,9 +38,6 @@ public record OrderDto
         }
     }
     
-    [JsonPropertyName("orderIdentifier")]
-    public string OrderIdentifier { get; set; }
-    
     [JsonPropertyName("orderNumber")]
     public string OrderNumber { get; set; }
     

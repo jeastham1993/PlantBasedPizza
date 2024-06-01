@@ -44,6 +44,28 @@ public class OrderRepository : IOrderRepository
             ));
     }
 
+    public async Task<List<Order>> RetrieveCustomerOrders(string customerIdentifier)
+    {
+        var queryResult = await this._ddbClient.QueryAsync(new QueryRequest()
+        {
+            TableName = _dbSettings.TableName,
+            KeyConditionExpression = "PK = :v_PK",
+            ExpressionAttributeValues = new Dictionary<string, AttributeValue>
+            {
+                { ":v_PK", new AttributeValue { S = customerIdentifier } }
+            }
+        });
+
+        var orders = new List<Order>(queryResult.Count);
+
+        foreach (var ddbItem in queryResult.Items)
+        {
+            orders.Add(JsonSerializer.Deserialize<Order>(ddbItem["Data"].S));
+        }
+        
+        return orders;
+    }
+
     public async Task<Order> Retrieve(string customerIdentifier, string orderIdentifier)
     {
         var order = await this._ddbClient.GetItemAsync(this._dbSettings.TableName,

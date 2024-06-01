@@ -62,6 +62,33 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
                 return null;
             }
         }
+        
+        
+
+        /// <summary>
+        /// Get the details of a given order.
+        /// </summary>
+        /// <param name="orderIdentifier">The order identifier.</param>
+        /// <returns></returns>
+        [HttpGet("")]
+        [Authorize(Roles = "user")]
+        public async Task<IEnumerable<OrderDto>> Get()
+        {
+            try
+            {
+                var accountId = User.Claims.ExtractAccountId();
+                    
+                var orders = await this._orderRepository.RetrieveCustomerOrders(accountId).ConfigureAwait(false);
+                    
+                return orders.Select(ord => new OrderDto(ord));
+            }
+            catch (Exception)
+            {
+                this.Response.StatusCode = 400;
+
+                return new List<OrderDto>();
+            }
+        }
 
         /// <summary>
         /// Create a new order for pickup.
