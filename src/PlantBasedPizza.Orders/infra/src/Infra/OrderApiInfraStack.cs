@@ -75,7 +75,7 @@ public class OrderApiInfraStack : Stack
                 { "BUILD_VERSION", commitHash },
                 { "RedisConnectionString", "" },
                 { "Services__PaymentInternal", "http://localhost:1234"},
-                { "Services__Recipes", $"https://api.{environment}.plantbasedpizza.net"},
+                { "Services__Recipes", $"https:/app.{environment}.plantbasedpizza.net"},
                 { "Auth__PaymentApiKey", "12345" },
                 { "DatabaseSettings__TableName", persistence.Table.TableName}
             },
