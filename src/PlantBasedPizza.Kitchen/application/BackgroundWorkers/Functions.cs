@@ -40,14 +40,14 @@ public class Functions
 
             foreach (var message in messages)
             {
+                using var parent_trace = Datadog.Trace.Tracer.Instance.StartActive("HandleOrderSubmittedEvent",
+                    new SpanCreationSettings()
+                    {
+                        Parent = new SpanContext(message.TraceId, message.SpanId, SamplingPriority.AutoKeep)
+                    });
+                
                 try
                 {
-                    using var parent_trace = Datadog.Trace.Tracer.Instance.StartActive("HandleOrderSubmittedEvent",
-                        new SpanCreationSettings()
-                        {
-                            Parent = new SpanContext(message.TraceId, message.SpanId, SamplingPriority.AutoKeep)
-                        });
-
                     this._logger.LogInformation("Processing {messageId}", message.MessageId);
 
                     await this._orderConfirmedEventHandler.Handle(message.EventData);
