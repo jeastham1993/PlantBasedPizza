@@ -125,10 +125,12 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
         /// <returns></returns>
         [HttpPost("{orderIdentifier}/items")]
         [Authorize(Roles = "user")]
-        public async Task<OrderDto?> AddItemToOrder([FromBody] AddItemToOrderCommand request)
+        public async Task<OrderDto?> AddItemToOrder(string orderIdentifier, [FromBody] AddItemToOrderCommand request)
         {
             request.AddToTelemetry();
+            
             request.CustomerIdentifier = User.Claims.ExtractAccountId();
+            request.OrderIdentifier = orderIdentifier;
 
             var order = await this._addItemToOrderHandler.Handle(request);
 

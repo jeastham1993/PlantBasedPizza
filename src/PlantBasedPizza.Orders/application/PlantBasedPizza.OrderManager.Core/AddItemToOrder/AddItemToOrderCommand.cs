@@ -1,10 +1,14 @@
+using System.Text.Json.Serialization;
+
 namespace PlantBasedPizza.OrderManager.Core.AddItemToOrder
 {
     public class AddItemToOrderCommand
     {
+        [JsonIgnore]
         public string CustomerIdentifier { get; set; } = "";
         
-        public string OrderIdentifier { get; init; } = "";
+        [JsonIgnore]
+        public string OrderIdentifier { get; set; } = "";
         
         public string RecipeIdentifier { get; init; } = "";
         

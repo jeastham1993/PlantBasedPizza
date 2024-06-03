@@ -12,8 +12,7 @@ public static class ObservabilityExtensions
         {
             return;
         }
-
-        Tracer.Instance.ActiveScope?.Span.SetTag("orderIdentifier", command.OrderIdentifier);
+        
         Tracer.Instance.ActiveScope?.Span.SetTag("recipeIdentifier", command.RecipeIdentifier);
         Tracer.Instance.ActiveScope?.Span.SetTag("quantity", command.Quantity);
     }
