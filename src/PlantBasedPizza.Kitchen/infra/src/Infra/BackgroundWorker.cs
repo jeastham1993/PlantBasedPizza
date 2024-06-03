@@ -19,7 +19,7 @@ public class BackgroundWorker : Construct
         {
             { "Messaging__BusName", props.SharedProps.Bus.EventBusName },
             { "RedisConnectionString", "" },
-            { "Services__Recipes", $"https://api.{props.SharedProps.Environment}.plantbasedpizza.net"},
+            { "Services__Recipes", $"https://app.{props.SharedProps.Environment}.plantbasedpizza.net"},
             { "DATABASE_CONNECTION_PARAM_NAME", props.DatabaseConnectionParameter.ParameterName }
         };
         var serviceName = "KitchenWorker";
