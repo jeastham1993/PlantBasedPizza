@@ -63,7 +63,7 @@ public class OrderRepository : IOrderRepository
             orders.Add(JsonSerializer.Deserialize<Order>(ddbItem["Data"].S));
         }
         
-        return orders;
+        return orders.OrderByDescending(ord => ord.OrderDate).ToList();
     }
 
     public async Task<Order> Retrieve(string customerIdentifier, string orderIdentifier)

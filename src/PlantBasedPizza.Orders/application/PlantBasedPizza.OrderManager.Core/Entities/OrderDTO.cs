@@ -11,6 +11,8 @@ public record OrderDto
         this.AwaitingCollection = order.AwaitingCollection;
         this.OrderSubmittedOn = order.OrderSubmittedOn;
         this.OrderCompletedOn = order.OrderCompletedOn;
+        this.ItemCount = order.Items.Count;
+        this.TotalPrice = order.TotalPrice;
         this.Items = order.Items.Select(item => new OrderItemDto()
         {
             ItemName = item.ItemName,
@@ -46,6 +48,12 @@ public record OrderDto
     
     [JsonPropertyName("orderDate")]
     public DateTime OrderDate { get; set; }
+    
+    [JsonPropertyName("totalPrice")]
+    public decimal TotalPrice { get; set; }
+    
+    [JsonPropertyName("itemCount")]
+    public int ItemCount { get; set; }
     
     [JsonPropertyName("awaitingCollection")]
     public bool AwaitingCollection { get; set; }
