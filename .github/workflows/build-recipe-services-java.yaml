@@ -18,7 +18,7 @@ permissions:
 
 jobs:
   build-image:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base-java.yaml@feature/aws-serverless
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base-java.yaml@feature/aws-serverless-datadog
     with:
       service-name: "RecipeJavaApi"
       project-root: src/PlantBasedPizza.Recipes.Java
