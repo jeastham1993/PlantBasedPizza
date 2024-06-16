@@ -1,4 +1,4 @@
-name: Recipe API CICD
+name: Recipe API - Java CICD
 
 on:
     push:
@@ -8,7 +8,7 @@ on:
         - feature/aws-serverless-datadog
       paths:
         - .github/workflows/build-base-java.yaml
-        - .github/workflows/build-recipe-services.yaml
+        - .github/workflows/build-recipe-services-java.yaml
         - src/PlantBasedPizza.Recipes.Java/**
     workflow_dispatch:
 

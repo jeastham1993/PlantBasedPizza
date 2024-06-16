@@ -11,7 +11,6 @@ public class HealthController {
     private static final Logger LOG = LogManager.getLogger();
     @GetMapping("/recipe/health")
     ResponseEntity<String> listRecipes() {
-
         return ResponseEntity.ok("");
     }
 }
