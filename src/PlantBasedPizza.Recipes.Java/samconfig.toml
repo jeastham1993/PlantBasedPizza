@@ -1,0 +1,10 @@
+version = 0.1
+[default.deploy.parameters]
+stack_name = "recipes-java"
+resolve_s3 = true
+s3_prefix = "recipes-java"
+region = "eu-west-1"
+profile = "pizza-dev"
+capabilities = "CAPABILITY_IAM"
+parameter_overrides = "SecurityGroupId=\"sg-0da502b221c692310\" Subnet1Id=\"subnet-0e895bfff332988ab\" Subnet2Id=\"subnet-01f3c0b14ca2c9545\" DatabaseSecretName=\"secret\" DatabaseEndpoint=\"\""
+image_repositories = []

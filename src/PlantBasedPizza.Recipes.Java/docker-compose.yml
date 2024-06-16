@@ -1,0 +1,36 @@
+version: "3.7"
+services:
+  datadog-agent:
+    image: datadog/agent
+    pid: host
+    ports:
+      - "8126:8126"
+      - "4317:4317"
+      - "4318:4318"
+    environment:
+      - DD_ENV=test
+      - DD_SITE=datadoghq.eu
+      - DD_SERVICE=OrdersService
+      - DD_API_KEY=${DD_API_KEY}
+      - DD_APM_ENABLED="true"
+      - DD_APM_NON_LOCAL_TRAFFIC="true"
+      - DD_DOGSTATSD_NON_LOCAL_TRAFFIC="true"
+    volumes:
+     - /var/run/docker.sock:/var/run/docker.sock
+     - /proc/:/host/proc/:ro
+     - /sys/fs/cgroup:/host/sys/fs/cgroup:ro
+
+  recipe-java:
+    image: recipe-api-java
+    ports:
+      - "8080:8080"
+    environment:
+      - DB_CONNECTION_STRING=jdbc:postgresql://ep-morning-pond-a2jpspg6.eu-central-1.aws.neon.tech/recipes?user=neondb_owner&password=rdftjM0VLW6Q&sslmode=require
+      - DD_ENV=dev
+      - DD_SERVICE=RecipeServiceJava
+      - DD_VERSION=0.0.1
+      - DD_AGENT_HOST=host.docker.internal
+    labels:
+    - com.datadoghq.tags.service="RecipeServiceJava"
+    - com.datadoghq.tags.env="dev"
+    - com.datadoghq.tags.version="0.0.1"
