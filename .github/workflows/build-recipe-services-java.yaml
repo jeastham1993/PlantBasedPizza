@@ -40,15 +40,15 @@ jobs:
   #     deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
   #     ecr-registry: ${{secrets.ECR_REGISTRY}}
   #     dd_api_key: ${{secrets.DD_API_KEY}}
-  # deploy-to-dev:
-  #   uses: jeastham1993/PlantBasedPizza/.github/workflows/cdk-deploy-base.yaml@feature/aws-serverless
-  #   needs: integration-test
-  #   concurrency:
-  #     group: recipes-dev-deploy
-  #     cancel-in-progress: false
-  #   with:
-  #     cdk-folder: "src/PlantBasedPizza.Recipes/infra"
-  #     environment: "dev"
-  #   secrets:
-  #     deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
-  #     dd-api-key: ${{secrets.DD_API_KEY}}
+  deploy-to-dev:
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/cdk-deploy-base.yaml@feature/aws-serverless-datadog
+    needs: build-image
+    concurrency:
+      group: recipes-java-dev-deploy
+      cancel-in-progress: false
+    with:
+      cdk-folder: "src/PlantBasedPizza.Recipes.Java/infra"
+      environment: "dev"
+    secrets:
+      deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
+      dd-api-key: ${{secrets.DD_API_KEY}}

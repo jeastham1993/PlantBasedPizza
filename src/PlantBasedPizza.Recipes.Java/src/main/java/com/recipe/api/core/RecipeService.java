@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 
 import datadog.trace.api.Trace;
-import datadog.trace.api.DDTags;
 
 
 @Service
