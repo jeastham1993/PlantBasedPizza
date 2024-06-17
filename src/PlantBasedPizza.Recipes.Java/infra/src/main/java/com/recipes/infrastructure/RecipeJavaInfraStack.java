@@ -56,7 +56,7 @@ public class RecipeJavaInfraStack extends Stack {
                 "arn:aws:elasticloadbalancing:eu-west-1:730335273443:listener/app/plant-based-pizza-ingress/d99d1b57574af81c/d94d758d77bfc259",
                 "/recipe/health",
                 "/recipe/*",
-                121,
+                120,
                 "arn:aws:elasticloadbalancing:eu-west-1:730335273443:loadbalancer/app/shared-internal-ingress/9de88d725cd4f625",
                 "arn:aws:elasticloadbalancing:eu-west-1:730335273443:listener/app/shared-internal-ingress/9de88d725cd4f625/d9d8c7611b6f1d32",
                 true
