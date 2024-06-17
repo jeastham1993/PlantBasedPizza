@@ -68,7 +68,7 @@ public class WebService extends Construct {
         baseSecrets.put("Auth__Key", Secret.fromSsmParameter(jwtKeyParam));
 
         FargateTaskDefinitionProps taskDefinitionProps = FargateTaskDefinitionProps.builder()
-                .memoryLimitMiB(2024)
+                .memoryLimitMiB(2048)
                 .cpu(512)
                 .runtimePlatform(RuntimePlatform.builder().cpuArchitecture(CpuArchitecture.X86_64).operatingSystemFamily(OperatingSystemFamily.LINUX).build())
                 .executionRole(executionRole)
