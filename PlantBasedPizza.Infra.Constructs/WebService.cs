@@ -80,6 +80,7 @@ public class WebService : Construct
             ExecutionRole = ExecutionRole,
             TaskRole = TaskRole,
         });
+        
         var container = taskDefinition.AddContainer("application", new ContainerDefinitionOptions()
         {
             Image = ContainerImage.FromEcrRepository(repository, props.Tag ?? "latest"),
