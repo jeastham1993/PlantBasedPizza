@@ -69,6 +69,7 @@ public class WebService extends Construct {
 
         FargateTaskDefinitionProps taskDefinitionProps = FargateTaskDefinitionProps.builder()
                 .memoryLimitMiB(2024)
+                .cpu(512)
                 .runtimePlatform(RuntimePlatform.builder().cpuArchitecture(CpuArchitecture.X86_64).operatingSystemFamily(OperatingSystemFamily.LINUX).build())
                 .executionRole(executionRole)
                 .taskRole(taskRole)
