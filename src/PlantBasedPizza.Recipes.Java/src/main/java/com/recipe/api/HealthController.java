@@ -8,10 +8,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class HealthController {
-    private static final Logger LOG = LogManager.getLogger();
     @GetMapping("/recipe/health")
-    ResponseEntity<String> listRecipes() {
-        
+    ResponseEntity<String> healthCheck() {
         return ResponseEntity.ok("");
     }
 }
