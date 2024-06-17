@@ -2,6 +2,7 @@ package com.recipes.infrastructure;
 
 import org.jetbrains.annotations.NotNull;
 import software.amazon.awscdk.App;
+import software.amazon.awscdk.Duration;
 import software.amazon.awscdk.services.ec2.SubnetSelection;
 import software.amazon.awscdk.services.ecr.IRepository;
 import software.amazon.awscdk.services.ecr.Repository;
@@ -67,7 +68,8 @@ public class WebService extends Construct {
         baseSecrets.put("Auth__Key", Secret.fromSsmParameter(jwtKeyParam));
 
         FargateTaskDefinitionProps taskDefinitionProps = FargateTaskDefinitionProps.builder()
-                .memoryLimitMiB(512)
+                .memoryLimitMiB(2024)
+                .cpu(2)
                 .runtimePlatform(RuntimePlatform.builder().cpuArchitecture(CpuArchitecture.X86_64).operatingSystemFamily(OperatingSystemFamily.LINUX).build())
                 .executionRole(executionRole)
                 .taskRole(taskRole)
@@ -172,6 +174,7 @@ public class WebService extends Construct {
                             .port(String.valueOf(props.getPort()))
                             .path(props.getHealthCheckPath())
                             .healthyHttpCodes("200-404")
+                            .interval(Duration.seconds(30))
                             .build())
                     .vpc(props.getVpc())
                     .build());

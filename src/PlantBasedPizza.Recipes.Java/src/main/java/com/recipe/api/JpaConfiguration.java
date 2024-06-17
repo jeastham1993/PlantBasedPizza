@@ -1,7 +1,5 @@
 package com.recipe.api;
 import com.google.gson.Gson;
-import org.crac.Core;
-import org.springframework.boot.jdbc.DataSourceBuilder;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,31 +29,6 @@ public class JpaConfiguration {
         dataSource.setUrl(System.getenv("DB_CONNECTION_STRING"));
 
         return dataSource;
-    }
-
-    private AwsSecret getSecret() {
-        var secretsManagerClient = SecretsManagerClient.create();
-
-        String secret;
-
-        var getSecretValueRequest = GetSecretValueRequest.builder()
-                .secretId(System.getenv("SECRET_NAME"))
-                .build();
-
-        GetSecretValueResponse result = null;
-
-        try {
-            result = secretsManagerClient.getSecretValue(getSecretValueRequest);
-        }
-        catch (Exception e) {
-            throw e;
-        }
-        if (result.secretString() != null) {
-            secret = result.secretString();
-            return gson.fromJson(secret, AwsSecret.class);
-        }
-
-        return null;
     }
 
     @Bean

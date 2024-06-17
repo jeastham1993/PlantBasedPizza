@@ -12,13 +12,11 @@ import jakarta.validation.Valid;
 @RestController
 public class RecipeController {
     private final RecipeService recipeService;
-    private final ApplicationProperties applicationProperties;
 
     private static final Logger LOG = LogManager.getLogger();
 
-    public RecipeController(RecipeService recipeService, ApplicationConfiguration configuration) {
+    public RecipeController(RecipeService recipeService) {
         this.recipeService = recipeService;
-        this.applicationProperties = configuration.getApplicationProperties();
     }
 
     @PostMapping("/recipe/")
