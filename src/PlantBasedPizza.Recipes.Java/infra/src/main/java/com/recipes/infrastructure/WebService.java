@@ -98,6 +98,9 @@ public class WebService extends Construct {
                 .secretOptions(secretOptions)
                 .build();
 
+        baseSecrets.putAll(props.getSecrets());
+        baseEnvironmentVariables.putAll(props.getEnvironmentVariables());
+
         ContainerDefinitionOptions containerDefinitionOptions = ContainerDefinitionOptions.builder()
                 .image(ContainerImage.fromEcrRepository(repository, props.getTag() != null ? props.getTag() : "latest"))
                 .portMappings(portMappingList)
