@@ -74,5 +74,6 @@ public class RecipeJavaInfraStack extends Stack {
                 true
                 ));
 
+        connectionStringParam.grantRead(javaWebService.executionRole);
     }
 }
