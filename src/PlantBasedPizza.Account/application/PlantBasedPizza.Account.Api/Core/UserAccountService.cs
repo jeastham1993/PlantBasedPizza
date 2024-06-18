@@ -38,7 +38,7 @@ public class UserAccountService
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddMinutes(5),
+                Expires = DateTime.UtcNow.AddMinutes(60),
                 Issuer = issuer,
                 Audience = audience,
                 SigningCredentials = new SigningCredentials
