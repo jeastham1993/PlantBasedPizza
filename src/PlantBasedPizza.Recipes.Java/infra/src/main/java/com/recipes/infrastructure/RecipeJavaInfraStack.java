@@ -44,6 +44,9 @@ public class RecipeJavaInfraStack extends Stack {
                 .enableFargateCapacityProviders(true)
                 .build());
 
+        HashMap<String, String> envVariables = new HashMap<>(1);
+        envVariables.put("EVENT_BUS_NAME", bus.getEventBusName());
+
         HashMap<String, Secret> secretVariables = new HashMap<>(1);
 
         SecureStringParameterAttributes ddAttr = SecureStringParameterAttributes.builder()
@@ -63,7 +66,7 @@ public class RecipeJavaInfraStack extends Stack {
                 "recipe-api-java",
                 commitHash,
                 8080,
-                new HashMap<>(0),
+                envVariables,
                 secretVariables,
                 "arn:aws:elasticloadbalancing:eu-west-1:730335273443:loadbalancer/app/plant-based-pizza-ingress/d99d1b57574af81c",
                 "arn:aws:elasticloadbalancing:eu-west-1:730335273443:listener/app/plant-based-pizza-ingress/d99d1b57574af81c/d94d758d77bfc259",
@@ -76,5 +79,6 @@ public class RecipeJavaInfraStack extends Stack {
                 ));
 
         connectionStringParam.grantRead(javaWebService.executionRole);
+        bus.grantPutEventsTo(javaWebService.taskRole);
     }
 }

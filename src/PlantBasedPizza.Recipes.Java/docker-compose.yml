@@ -30,6 +30,13 @@ services:
       - DD_SERVICE=RecipeServiceJava
       - DD_VERSION=0.0.1
       - DD_AGENT_HOST=host.docker.internal
+      - EVENT_BUS_NAME=PlantBasedPizzaEvents
+      - JWT_KEY=${JWT_KEY}
+      - AWS_REGION=${AWS_REGION}
+      - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
+      - AWS_SECRET_KEY=${AWS_SECRET_KEY}
+      - AWS_SESSION_TOKEN=${AWS_SESSION_TOKEN}
+
     labels:
     - com.datadoghq.tags.service="RecipeServiceJava"
     - com.datadoghq.tags.env="dev"

@@ -31,7 +31,7 @@ public class JwtService {
     @Trace(operationName = "isTokenValid", resourceName = "JwtService.IsTokenValid")
     public boolean isTokenValid(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
-        return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+        return !isTokenExpired(token);
     }
 
     @Trace(operationName = "isTokenExpired", resourceName = "JwtService.IsTokenExpired")

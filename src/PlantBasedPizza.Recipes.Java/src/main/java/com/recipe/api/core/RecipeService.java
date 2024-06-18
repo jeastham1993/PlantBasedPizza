@@ -1,5 +1,6 @@
 package com.recipe.api.core;
 
+import com.recipe.api.messaging.EventBridgeEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -10,9 +11,11 @@ import datadog.trace.api.Trace;
 @Service
 public class RecipeService {
     private final IRecipeRepository recipeRepository;
+    private final EventBridgeEventPublisher eventPublisher;
 
-    public RecipeService(IRecipeRepository recipeRepository){
+    public RecipeService(IRecipeRepository recipeRepository, EventBridgeEventPublisher eventPublisher){
         this.recipeRepository = recipeRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     @Trace(operationName = "CreateRecipe", resourceName = "RecipeService.GetRecipe")
@@ -22,6 +25,8 @@ public class RecipeService {
         recipe.setPrice(recipeDTO.getPrice());
 
         var savedRecipe = this.recipeRepository.save(recipe);
+
+        eventPublisher.publish(new RecipeCreatedEventV1(recipe.getId()));
 
         return savedRecipe.asDto();
     }
