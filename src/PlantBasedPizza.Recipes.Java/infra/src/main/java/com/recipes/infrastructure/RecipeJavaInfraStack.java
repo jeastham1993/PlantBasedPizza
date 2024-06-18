@@ -50,6 +50,7 @@ public class RecipeJavaInfraStack extends Stack {
                 .parameterName("/recipe/db_conn_string")
                 .build();
         IStringParameter connectionStringParam = StringParameter.fromSecureStringParameterAttributes(this, "ConnectionStringParam",  ddAttr);
+
         secretVariables.put("DB_CONNECTION_STRING", Secret.fromSsmParameter(connectionStringParam));
 
         WebService javaWebService = new WebService(this, "JavaRecipeService", new WebServiceProps(
@@ -75,5 +76,6 @@ public class RecipeJavaInfraStack extends Stack {
                 ));
 
         connectionStringParam.grantRead(javaWebService.executionRole);
+        jwtParam.grantRead(javaWebService.executionRole);
     }
 }

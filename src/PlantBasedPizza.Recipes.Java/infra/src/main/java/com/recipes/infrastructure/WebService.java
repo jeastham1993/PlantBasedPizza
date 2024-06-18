@@ -65,7 +65,7 @@ public class WebService extends Construct {
         baseEnvironmentVariables.put("DD_RUNTIME_METRICS_ENABLED", "true");
 
         Map<String, Secret> baseSecrets = new HashMap<>();
-        baseSecrets.put("Auth__Key", Secret.fromSsmParameter(jwtKeyParam));
+        baseSecrets.put("JWT_KEY", Secret.fromSsmParameter(jwtKeyParam));
 
         FargateTaskDefinitionProps taskDefinitionProps = FargateTaskDefinitionProps.builder()
                 .memoryLimitMiB(2048)
