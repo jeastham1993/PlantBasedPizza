@@ -10,6 +10,9 @@ public class RecipeDTO {
     @NotBlank(message="Name cannot be blank")
     private String name;
 
+    @NotBlank(message="Category cannot be blank")
+    private String category;
+
     @Min(value = 0, message = "Price must be greater than 0")
     @NotNull
     private Double price;
@@ -36,5 +39,13 @@ public class RecipeDTO {
 
     public void setPrice(Double price) {
         this.price = price;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 }

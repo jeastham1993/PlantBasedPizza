@@ -23,7 +23,7 @@ public class RecipeController {
     ResponseEntity<RecipeDTO> addRecipe(@Valid @RequestBody RecipeDTO recipe) {
         var createdRecipe = recipeService.CreateRecipe(recipe);
 
-        return ResponseEntity.ok(createdRecipe);
+        return createdRecipe.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.badRequest().body(null));
     }
 
     @GetMapping("/recipe/")

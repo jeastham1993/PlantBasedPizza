@@ -4,6 +4,7 @@ import com.recipe.api.messaging.EventBridgeEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 import datadog.trace.api.Trace;
 
@@ -19,16 +20,24 @@ public class RecipeService {
     }
 
     @Trace(operationName = "CreateRecipe", resourceName = "RecipeService.GetRecipe")
-    public RecipeDTO CreateRecipe(RecipeDTO recipeDTO) {
+    public Optional<RecipeDTO> CreateRecipe(RecipeDTO recipeDTO) {
+        //var existingRecipes = this.recipeRepository.findByName(recipeDTO.getName());
+
+        //TODO: Update to re-add findByName
+        if (true == false) {
+            return Optional.empty();
+        }
+
         var recipe = new Recipe();
         recipe.setName(recipeDTO.getName());
         recipe.setPrice(recipeDTO.getPrice());
+        recipe.setCategory(recipeDTO.getCategory());
 
         var savedRecipe = this.recipeRepository.save(recipe);
 
         eventPublisher.publish(new RecipeCreatedEventV1(recipe.getId()));
 
-        return savedRecipe.asDto();
+        return Optional.of(savedRecipe.asDto());
     }
 
     @Trace(operationName = "GetRecipe", resourceName = "RecipeService.GetRecipe")
