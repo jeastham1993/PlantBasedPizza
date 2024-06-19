@@ -63,6 +63,7 @@ public class WebService extends Construct {
         baseEnvironmentVariables.put("DD_AGENT_HOST", "127.0.0.1");
         baseEnvironmentVariables.put("DD_TRACE_ROUTE_TEMPLATE_RESOURCE_NAMES_ENABLED", "true");
         baseEnvironmentVariables.put("DD_RUNTIME_METRICS_ENABLED", "true");
+        baseEnvironmentVariables.put("DD_APM_IGNORE_RESOURCES", String.format("(GET) %s", props.getHealthCheckPath()));
 
         Map<String, Secret> baseSecrets = new HashMap<>();
         baseSecrets.put("JWT_KEY", Secret.fromSsmParameter(jwtKeyParam));
