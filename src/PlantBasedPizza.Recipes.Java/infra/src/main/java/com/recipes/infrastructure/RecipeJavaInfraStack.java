@@ -90,7 +90,7 @@ public class RecipeJavaInfraStack extends Stack {
                 .handler("org.springframework.cloud.function.adapter.aws.FunctionInvoker::handleRequest")
                 .environment(lambdaEnvironment)
                 .timeout(Duration.seconds(30))
-                .code(Code.fromAsset("../src/functions/target/com.recipe.functions-1.0.0.jar"))
+                .code(Code.fromAsset("../src/functions/target/com.recipe.functions-0.0.1-SNAPSHOT-aws.jar"))
                 .build();
 
         connectionStringParam.grantRead(javaWebService.executionRole);

@@ -37,9 +37,6 @@ jobs:
           aws-region: eu-west-1
           role-to-assume: ${{secrets.deploy-role-arn}}
           role-session-name: GitHubActionsSession
-      - uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8'
       - name: Set up Java 21 for x64
         uses: actions/setup-java@v4
         with:
@@ -52,10 +49,6 @@ jobs:
         run: |
           cd ${{ inputs.project-root }}
           mvn clean package
-      - name: Install .NET Lambda tooling
-        shell: bash
-        run: |
-          dotnet tool install -g Amazon.Lambda.Tools
       - name: Set Commit Hash Environment Variables
         shell: bash
         run: |
