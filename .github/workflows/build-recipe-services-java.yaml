@@ -21,9 +21,9 @@ jobs:
     uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base-java.yaml@feature/aws-serverless-datadog
     with:
       service-name: "RecipeJavaApi"
-      project-root: src/PlantBasedPizza.Recipes.Java
+      project-root: src/PlantBasedPizza.Recipes.Java/src
       image-name: recipe-api-java
-      dockerfile: src/PlantBasedPizza.Recipes.Java/Dockerfile
+      dockerfile: src/PlantBasedPizza.Recipes.Java/src/Dockerfile
     secrets:
       deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
       ecr-registry: ${{secrets.ECR_REGISTRY}}

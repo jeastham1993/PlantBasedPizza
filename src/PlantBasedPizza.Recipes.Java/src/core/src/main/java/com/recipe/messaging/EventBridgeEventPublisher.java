@@ -1,4 +1,4 @@
-package com.recipe.api.messaging;
+package com.recipe.messaging;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

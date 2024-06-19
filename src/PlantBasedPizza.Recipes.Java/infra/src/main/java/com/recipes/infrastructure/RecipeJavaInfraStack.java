@@ -1,15 +1,16 @@
 package com.recipes.infrastructure;
 
 import org.jetbrains.annotations.NotNull;
+import software.amazon.awscdk.Duration;
 import software.amazon.awscdk.services.ec2.*;
 import software.amazon.awscdk.services.ecs.Cluster;
 import software.amazon.awscdk.services.ecs.ClusterProps;
 import software.amazon.awscdk.services.ecs.Secret;
-import software.amazon.awscdk.services.elasticloadbalancingv2.ApplicationLoadBalancer;
-import software.amazon.awscdk.services.elasticloadbalancingv2.ApplicationLoadBalancerLookupOptions;
-import software.amazon.awscdk.services.elasticloadbalancingv2.IApplicationLoadBalancer;
+import software.amazon.awscdk.services.lambda.Code;
+import software.amazon.awscdk.services.lambda.Runtime;
 import software.amazon.awscdk.services.events.EventBus;
 import software.amazon.awscdk.services.events.IEventBus;
+import software.amazon.awscdk.services.lambda.Function;
 import software.amazon.awscdk.services.ssm.IStringParameter;
 import software.amazon.awscdk.services.ssm.SecureStringParameterAttributes;
 import software.amazon.awscdk.services.ssm.StringParameter;
@@ -77,6 +78,15 @@ public class RecipeJavaInfraStack extends Stack {
                 "arn:aws:elasticloadbalancing:eu-west-1:730335273443:listener/app/shared-internal-ingress/9de88d725cd4f625/d9d8c7611b6f1d32",
                 true
                 ));
+
+        // Create our basic function
+        Function lambdaFn = Function.Builder.create(this,"ScheduledFunction")
+                .runtime(Runtime.JAVA_21)
+                .memorySize(2048)
+                .handler("com.recipe.functions.SampleHandler")
+                .timeout(Duration.seconds(30))
+                .code(Code.fromAsset("../src/functions/target/com.recipe.functions-1.0.0.jar"))
+                .build();
 
         connectionStringParam.grantRead(javaWebService.executionRole);
         bus.grantPutEventsTo(javaWebService.taskRole);

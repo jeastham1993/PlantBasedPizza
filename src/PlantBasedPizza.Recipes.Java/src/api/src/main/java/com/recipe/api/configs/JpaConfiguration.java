@@ -1,4 +1,4 @@
-package com.recipe.api;
+package com.recipe.api.configs;
 import com.google.gson.Gson;
 
 import org.springframework.context.annotation.Bean;
@@ -20,7 +20,7 @@ public class JpaConfiguration {
     }
 
     public DataSource dataSource() {
-        var dataSource = new SimpleDriverDataSource();
+        SimpleDriverDataSource dataSource = new SimpleDriverDataSource();
         dataSource.setDriverClass(org.postgresql.Driver.class);
         dataSource.setUrl(System.getenv("DB_CONNECTION_STRING"));
 
@@ -46,7 +46,7 @@ public class JpaConfiguration {
         LocalContainerEntityManagerFactoryBean lemfb = new LocalContainerEntityManagerFactoryBean();
         lemfb.setDataSource(dataSource());
         lemfb.setJpaVendorAdapter(jpaVendorAdapter());
-        lemfb.setPackagesToScan("com.recipe.api");
+        lemfb.setPackagesToScan("com.recipe.api", "com.recipe.core");
         return lemfb;
     }
 }
