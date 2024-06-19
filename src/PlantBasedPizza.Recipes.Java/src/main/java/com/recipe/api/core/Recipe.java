@@ -13,10 +13,14 @@ public class Recipe {
     }
 
     @Id
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+    @Column(name = "name")
     private String name;
+    @Column(name = "category")
     private String category;
+    @Column(name = "price")
     private Double price;
 
     @OneToMany(mappedBy="recipe", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -48,6 +52,20 @@ public class Recipe {
 
     public List<Ingredient> getIngredients() { return ingredients; }
 
+    public void setIngredients(List<Ingredient> ingredients) {
+        this.ingredients = ingredients;
+        ingredients.forEach(ingredient -> ingredient.setRecipe(this));
+    }
+
+    public void addIngredient(String name, Number quantity){
+        Ingredient ingredient = new Ingredient();
+        ingredient.setName(name);
+        ingredient.setQuantity(quantity);
+        ingredient.setRecipe(this);
+
+        this.ingredients.add(ingredient);
+    }
+
     public RecipeDTO asDto()
     {
         RecipeDTO dto = new RecipeDTO();
@@ -55,6 +73,7 @@ public class Recipe {
         dto.setName(this.name);
         dto.setPrice(this.price);
         dto.setCategory(this.category);
+        dto.setIngredients(this.ingredients);
 
         return dto;
     }

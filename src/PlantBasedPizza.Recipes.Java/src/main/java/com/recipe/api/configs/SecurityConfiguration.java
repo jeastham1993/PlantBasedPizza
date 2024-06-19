@@ -23,12 +23,9 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 public class SecurityConfiguration {
     private static final Logger LOG = LogManager.getLogger();
     private static final String[] WHITE_LIST_URL = {
-            "/recipe/**",
-            "/recipe",
-            "/swagger-resources",
-            "/swagger-resources/**",
-            "/swagger-ui/**",
-            "/swagger-ui.html"};
+            "/recipes/**",
+            "/recipes/_seed",
+            "/recipes"};
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
 
@@ -43,11 +40,14 @@ public class SecurityConfiguration {
         LOG.info("security filtering");
 
         http
-                .csrf(csrf -> csrf.ignoringRequestMatchers( "/recipe/","/recipe/"))
+                .csrf()
+                .disable()
                 .authorizeHttpRequests(req ->
                         req.requestMatchers(WHITE_LIST_URL)
                                 .permitAll()
-                                .requestMatchers(HttpMethod.POST, "/recipe/").hasAnyRole("staff")
+                                .requestMatchers(HttpMethod.POST, "/recipes/").hasAnyRole("staff")
+                                .requestMatchers(HttpMethod.PUT, "/recipes/**").hasAnyRole("staff")
+                                .requestMatchers(HttpMethod.DELETE, "/recipes/**").hasAnyRole("staff")
                                 .anyRequest()
                                 .authenticated()
                 )

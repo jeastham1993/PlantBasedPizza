@@ -36,6 +36,7 @@ services:
       - AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
       - AWS_SECRET_KEY=${AWS_SECRET_KEY}
       - AWS_SESSION_TOKEN=${AWS_SESSION_TOKEN}
+      - ENV=local
 
     labels:
     - com.datadoghq.tags.service="RecipeServiceJava"

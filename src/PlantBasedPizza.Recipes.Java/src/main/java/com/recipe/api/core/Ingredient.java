@@ -11,8 +11,11 @@ public class Ingredient {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private long id;
+    @Column(name = "name")
     private String name;
+    @Column(name = "quantity")
     private Number quantity;
 
     @ManyToOne
@@ -44,4 +47,6 @@ public class Ingredient {
     }
 
     public Recipe getRecipe() { return recipe; }
+
+    public void setRecipe(Recipe recipe) { this.recipe = recipe; }
 }
