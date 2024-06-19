@@ -177,7 +177,6 @@ public class WebService extends Construct {
                             .port(String.valueOf(props.getPort()))
                             .path(props.getHealthCheckPath())
                             .healthyHttpCodes("200-404")
-                            .interval(Duration.seconds(30))
                             .build())
                     .vpc(props.getVpc())
                     .build());
