@@ -21,6 +21,7 @@ import software.amazon.awscdk.StackProps;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class RecipeJavaInfraStack extends Stack {
     public RecipeJavaInfraStack(final Construct scope, final String id) {
@@ -79,11 +80,15 @@ public class RecipeJavaInfraStack extends Stack {
                 true
                 ));
 
+        Map<String, String> lambdaEnvironment = new HashMap<>();
+        lambdaEnvironment.put("MAIN_CLASS", "com.recipe.functions.FunctionConfiguration");
+
         // Create our basic function
         Function lambdaFn = Function.Builder.create(this,"ScheduledFunction")
                 .runtime(Runtime.JAVA_21)
                 .memorySize(2048)
-                .handler("com.recipe.functions.SampleHandler")
+                .handler("org.springframework.cloud.function.adapter.aws.FunctionInvoker::handleRequest")
+                .environment(lambdaEnvironment)
                 .timeout(Duration.seconds(30))
                 .code(Code.fromAsset("../src/functions/target/com.recipe.functions-1.0.0.jar"))
                 .build();
