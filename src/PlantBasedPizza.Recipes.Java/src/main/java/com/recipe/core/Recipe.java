@@ -1,4 +1,4 @@
-package com.recipe.api.core;
+package com.recipe.core;
 
 import jakarta.persistence.*;
 
@@ -22,6 +22,9 @@ public class Recipe {
     private String category;
     @Column(name = "price")
     private Double price;
+
+    @Column(name = "order_count")
+    private int orderCount;
 
     @OneToMany(mappedBy="recipe", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Ingredient> ingredients = new ArrayList<>();
@@ -84,5 +87,17 @@ public class Recipe {
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    public int getOrderCount() {
+        return orderCount;
+    }
+
+    public void setOrderCount(int orderCount) {
+        this.orderCount = orderCount;
+    }
+
+    public void incrementOrderCount() {
+        this.orderCount++;
     }
 }

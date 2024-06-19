@@ -1,4 +1,4 @@
-package com.recipe.api.core;
+package com.recipe.core;
 
 public class RecipeUpdatedEventV1 {
     private final long recipeId;

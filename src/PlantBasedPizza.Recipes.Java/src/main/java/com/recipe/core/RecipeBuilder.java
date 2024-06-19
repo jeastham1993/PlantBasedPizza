@@ -1,4 +1,4 @@
-package com.recipe.api.core;
+package com.recipe.core;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +50,7 @@ public class RecipeBuilder {
         recipe.setCategory(category);
         recipe.setPrice(price);
         recipe.setIngredients(ingredients != null ? ingredients : new ArrayList<>());
+        recipe.setOrderCount(0);
         return recipe;
     }
 }

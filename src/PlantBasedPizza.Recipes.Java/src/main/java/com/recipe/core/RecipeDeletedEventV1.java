@@ -1,4 +1,4 @@
-package com.recipe.api.core;
+package com.recipe.core;
 
 public class RecipeDeletedEventV1 {
     private final long recipeId;

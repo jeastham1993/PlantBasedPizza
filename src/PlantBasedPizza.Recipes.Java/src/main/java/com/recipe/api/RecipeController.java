@@ -1,6 +1,9 @@
 package com.recipe.api;
 
-import com.recipe.api.core.*;
+import com.recipe.core.Recipe;
+import com.recipe.core.RecipeBuilder;
+import com.recipe.core.RecipeDTO;
+import com.recipe.core.RecipeService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.http.ResponseEntity;

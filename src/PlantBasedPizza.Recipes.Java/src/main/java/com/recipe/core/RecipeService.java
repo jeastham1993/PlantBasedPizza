@@ -1,20 +1,20 @@
-package com.recipe.api.core;
+package com.recipe.core;
 
 import com.recipe.api.messaging.EventBridgeEventPublisher;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import datadog.trace.api.Trace;
 
 
 @Service
 public class RecipeService {
-    private static final Logger LOG = LogManager.getLogger();
     private final IRecipeRepository recipeRepository;
     private final IIngredientRepository ingredientRepository;
     private final EventBridgeEventPublisher eventPublisher;
@@ -100,14 +100,13 @@ public class RecipeService {
     @Trace(operationName = "GetRecipe", resourceName = "RecipeService.GetRecipe")
     public Iterable<RecipeDTO> ListRecipes() {
         var recipes = this.recipeRepository.findAll();
+        Stream<Recipe> recipeStream = StreamSupport.stream(recipes.spliterator(), false);
+        List<Recipe> sortedRecipes = recipeStream.sorted(Comparator.comparingInt(Recipe::getOrderCount).reversed()).toList();
 
         var recipeDtoList = new ArrayList<RecipeDTO>();
 
-        var recipeIterator = recipes.iterator();
-
-        while (recipeIterator.hasNext())
-        {
-            recipeDtoList.add(recipeIterator.next().asDto());
+        for (Recipe sortedRecipe : sortedRecipes) {
+            recipeDtoList.add(sortedRecipe.asDto());
         }
 
         return recipeDtoList;

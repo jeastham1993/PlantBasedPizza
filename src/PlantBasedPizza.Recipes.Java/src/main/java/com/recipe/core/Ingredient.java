@@ -1,4 +1,4 @@
-package com.recipe.api.core;
+package com.recipe.core;
 
 import jakarta.persistence.*;
 
