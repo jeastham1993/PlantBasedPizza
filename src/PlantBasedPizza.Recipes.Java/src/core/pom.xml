@@ -13,6 +13,8 @@
     <description>Recipe Core</description>
     <properties>
         <junit.jupiter.version>5.9.0</junit.jupiter.version>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
     </properties>
     <dependencies>
         <dependency>
