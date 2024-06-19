@@ -1,0 +1,75 @@
+name: CDK Deploy Base
+
+on:
+  workflow_call:
+    inputs:
+      cdk-folder:
+          required: true
+          type: string
+      environment:
+          required: true
+          type: string
+      project-root:
+          required: true
+          type: string
+    secrets:
+      deploy-role-arn:
+        description: 'The role for the AWS IAM role to use for deployment'
+        required: true
+      dd-api-key:
+        description: 'DataDog API Key'
+        required: true
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v4
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-1
+          role-to-assume: ${{secrets.deploy-role-arn}}
+          role-session-name: GitHubActionsSession
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8'
+      - name: Set up Java 21 for x64
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'corretto'
+          architecture: x64
+      -
+        name: Maven build
+        shell: bash
+        run: |
+          cd ${{ inputs.project-root }}
+          mvn clean package
+      - name: Install .NET Lambda tooling
+        shell: bash
+        run: |
+          dotnet tool install -g Amazon.Lambda.Tools
+      - name: Set Commit Hash Environment Variables
+        shell: bash
+        run: |
+          echo "sha_short=$(git rev-parse --short "$GITHUB_SHA")" >> "$GITHUB_ENV"
+      - name: Install cdk
+        shell: bash
+        run: |
+          npm install -g aws-cdk 
+      - name: Deploy
+        shell: bash
+        env:
+          COMMIT_HASH: ${{ env.sha_short }}
+          ENV: ${{inputs.environment}}
+          DD_API_KEY: ${{secrets.dd-api-key}}
+        run: |
+          cd ${{ inputs.cdk-folder }}
+          cdk deploy --region eu-west-1 --require-approval never
