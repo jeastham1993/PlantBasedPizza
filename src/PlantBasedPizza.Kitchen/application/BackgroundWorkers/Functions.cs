@@ -43,7 +43,7 @@ public class Functions
                 using var parent_trace = Datadog.Trace.Tracer.Instance.StartActive("HandleOrderSubmittedEvent",
                     new SpanCreationSettings()
                     {
-                        Parent = new SpanContext(message.TraceId, message.SpanId, SamplingPriority.AutoKeep)
+                        Parent = new SpanContext(message.TraceId, message.SpanId, SamplingPriority.AutoKeep),
                     });
                 
                 try

@@ -25,6 +25,7 @@ public class KitchenInfraStack : Stack
         var internalAlbArnParam = parameterProvider.Get("/shared/internal-alb-arn");
         var internalAlbListener = parameterProvider.Get("/shared/internal-alb-listener");
         var environment = System.Environment.GetEnvironmentVariable("ENV") ?? "test";
+        var serviceName = "KitchenService";
 
         var bus = EventBus.FromEventBusName(this, "SharedEventBus", "PlantBasedPizzaEvents");
 
@@ -62,7 +63,7 @@ public class KitchenInfraStack : Stack
         var kitchenApiService = new WebService(this, "KitchenWebService", new ConstructProps(
             vpc,
             cluster,
-            "KitchenApi",
+            serviceName,
             environment,
             "/shared/dd-api-key",
             "/shared/jwt-key",
@@ -89,11 +90,11 @@ public class KitchenInfraStack : Stack
         var orderSubmittedQueueName = "Kitchen-OrderSubmitted";
 
         var orderSubmittedQueue = new EventQueue(this, orderSubmittedQueueName,
-            new EventQueueProps(bus, "KitchenApi", orderSubmittedQueueName, environment,
+            new EventQueueProps(bus, serviceName, orderSubmittedQueueName, environment,
                 "https://orders.plantbasedpizza/", "order.orderConfirmed.v1"));
 
         var worker = new BackgroundWorker(this, "KitchenWorker", new BackgroundWorkerProps(
-            new SharedInfrastructureProps(null, bus, publicLoadBalancer, commitHash, environment),
+            new SharedInfrastructureProps(null, bus, publicLoadBalancer, serviceName, commitHash, environment),
             "../application",
             databaseConnectionParam,
             orderSubmittedQueue.Queue));

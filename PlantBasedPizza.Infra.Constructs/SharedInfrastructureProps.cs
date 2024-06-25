@@ -4,4 +4,4 @@ using Amazon.CDK.AWS.Events;
 
 namespace PlantBasedPizza.Infra.Constructs;
 
-public record SharedInfrastructureProps(IVpc Vpc, IEventBus Bus, IApplicationLoadBalancer? InternalAlb, string CommitHash, string Environment);
+public record SharedInfrastructureProps(IVpc Vpc, IEventBus Bus, IApplicationLoadBalancer? InternalAlb, string ServiceName, string CommitHash, string Environment);
