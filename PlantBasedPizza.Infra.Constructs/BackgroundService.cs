@@ -55,7 +55,7 @@ public class BackgroundService : Construct
             { "ECS_ENABLE_CONTAINER_METADATA", "true" },
             { "ENV", props.Environment},
             { "DD_ENV", props.Environment},
-            { "DD_SERVICE", props.ServiceName},
+            { "service", props.ServiceName},
             { "DD_VERSION", props.Tag}
         };
         var baseSecrets = new Dictionary<string, Secret>()

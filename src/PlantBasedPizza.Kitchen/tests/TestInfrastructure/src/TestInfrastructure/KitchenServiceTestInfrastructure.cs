@@ -27,7 +27,7 @@ public class KitchenServiceTestInfrastructure : Stack
         
         var orderSubmittedQueueName = "Kitchen-OrderSubmitted";
         
-        var orderSubmittedQueue = new EventQueue(this, orderSubmittedQueueName, new EventQueueProps(bus, orderSubmittedQueueName, stackProps.Version, kitchenTestSource, "order.orderConfirmed.v1"));
+        var orderSubmittedQueue = new EventQueue(this, orderSubmittedQueueName, new EventQueueProps(bus, "KitchenService", orderSubmittedQueueName, stackProps.Version, kitchenTestSource, "order.orderConfirmed.v1"));
         
         var worker = new BackgroundWorker(this, "KitchenWorker", new BackgroundWorkerProps(
             new SharedInfrastructureProps(null, bus, null, "int-test", stackProps.Version),

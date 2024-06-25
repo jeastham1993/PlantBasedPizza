@@ -34,6 +34,7 @@ public class QueueWorkerFunction : Construct
             { "ENV", props.Env },
             { "DD_ENV", props.Env },
             { "DD_SERVICE", props.ServiceName },
+            { "service", props.ServiceName },
             { "DD_VERSION", props.CommitHash },
             { "DD_API_KEY", System.Environment.GetEnvironmentVariable("DD_API_KEY") ?? "" },
             { "AWS_LAMBDA_EXEC_WRAPPER", "/opt/datadog_wrapper" },
@@ -65,8 +66,11 @@ public class QueueWorkerFunction : Construct
                 {
                     Subnets = props.Vpc.PublicSubnets
                 },
-                LogRetention = RetentionDays.ONE_DAY
+                LogRetention = RetentionDays.ONE_DAY,
             });
+        
+        Tags.Of(Function).Add("service", props.ServiceName);
+        Tags.Of(Function).Add("version", props.CommitHash);
 
         this.Function.AddEventSource(new SqsEventSource(props.Queue, new SqsEventSourceProps()
         {

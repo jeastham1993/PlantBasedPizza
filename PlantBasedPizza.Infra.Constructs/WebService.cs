@@ -1,3 +1,4 @@
+using Amazon.CDK;
 using Amazon.CDK.AWS.EC2;
 using Amazon.CDK.AWS.ECR;
 using Amazon.CDK.AWS.ECS;
@@ -180,6 +181,9 @@ public class WebService : Construct
                 Subnets = props.DeployInPrivateSubnet ? props.Vpc.PrivateSubnets : props.Vpc.PublicSubnets
             }
         });
+        
+        Tags.Of(service).Add("service", props.ServiceName);
+        Tags.Of(service).Add("commitHash", props.Tag);
         
         ddApiKeyParam.GrantRead(ExecutionRole);
         jwtKeyParam.GrantRead(ExecutionRole);

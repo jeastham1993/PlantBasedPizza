@@ -1,3 +1,4 @@
+using Amazon.CDK;
 using Amazon.CDK.AWS.EC2;
 using Amazon.CDK.AWS.ECR;
 using Amazon.CDK.AWS.ECS;
@@ -12,7 +13,7 @@ using EventBus = Amazon.CDK.AWS.Events.EventBus;
 
 namespace PlantBasedPizza.Infra.Constructs;
 
-public record EventQueueProps(IEventBus Bus, string QueueName, string Environment, string EventSource, string DetailType);
+public record EventQueueProps(IEventBus Bus, string ServiceName, string QueueName, string Environment, string EventSource, string DetailType);
 
 public class EventQueue : Construct
 {
@@ -43,6 +44,8 @@ public class EventQueue : Construct
                 Queue = this.DeadLetterQueue
             }
         });
+        
+        Tags.Of(this.Queue).Add("service", props.ServiceName);
 
         var rule = new Rule(this, $"{props.QueueName}Rule", new RuleProps()
         {
