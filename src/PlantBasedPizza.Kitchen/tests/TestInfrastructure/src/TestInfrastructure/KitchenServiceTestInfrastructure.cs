@@ -24,13 +24,13 @@ public class KitchenServiceTestInfrastructure : Stack
         });
 
         var kitchenTestSource = "https://kitchen.test.plantbasedpizza/";
-        
+        var serviceName = "KitchenService";
         var orderSubmittedQueueName = "Kitchen-OrderSubmitted";
         
-        var orderSubmittedQueue = new EventQueue(this, orderSubmittedQueueName, new EventQueueProps(bus, "KitchenService", orderSubmittedQueueName, stackProps.Version, kitchenTestSource, "order.orderConfirmed.v1"));
+        var orderSubmittedQueue = new EventQueue(this, orderSubmittedQueueName, new EventQueueProps(bus, serviceName, orderSubmittedQueueName, stackProps.Version, kitchenTestSource, "order.orderConfirmed.v1"));
         
         var worker = new BackgroundWorker(this, "KitchenWorker", new BackgroundWorkerProps(
-            new SharedInfrastructureProps(null, bus, null, "int-test", stackProps.Version),
+            new SharedInfrastructureProps(null, bus, null, serviceName, "int-test", stackProps.Version),
             "../../application",
             databaseConnectionParam,
             orderSubmittedQueue.Queue));
