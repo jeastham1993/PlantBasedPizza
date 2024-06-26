@@ -297,3 +297,4 @@ Temporary Items
 shared-infrastructure/.env
 
 **/target/*
+src/.DS_Store
