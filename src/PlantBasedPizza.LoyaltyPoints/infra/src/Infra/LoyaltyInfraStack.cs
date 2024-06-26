@@ -15,7 +15,9 @@ public class LoyaltyInfraStack : Stack
     internal LoyaltyInfraStack(Construct scope, string id, IStackProps props = null) : base(scope, id, props)
     {
         var parameterProvider = AWS.Lambda.Powertools.Parameters.ParametersManager.SsmProvider
-            .ConfigureClient(System.Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID"), System.Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY"), System.Environment.GetEnvironmentVariable("AWS_SESSION_TOKEN"));
+            .ConfigureClient(System.Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID"),
+                System.Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY"),
+                System.Environment.GetEnvironmentVariable("AWS_SESSION_TOKEN"));
 
         var vpcIdParam = parameterProvider.Get("/shared/vpc-id");
         var albArnParam = parameterProvider.Get("/shared/alb-arn");
@@ -23,24 +25,24 @@ public class LoyaltyInfraStack : Stack
         var internalAlbArnParam = parameterProvider.Get("/shared/internal-alb-arn");
         var internalAlbListener = parameterProvider.Get("/shared/internal-alb-listener");
         var environment = System.Environment.GetEnvironmentVariable("ENV") ?? "test";
-        
+
         var bus = EventBus.FromEventBusName(this, "SharedEventBus", "PlantBasedPizzaEvents");
 
         var vpc = Vpc.FromLookup(this, "MainVpc", new VpcLookupOptions
         {
             VpcId = vpcIdParam
         });
-        
+
         var publicLoadBalancer = ApplicationLoadBalancer.FromLookup(this, "PublicSharedLoadBalancer",
             new ApplicationLoadBalancerLookupOptions()
             {
-                LoadBalancerArn = albArnParam,
+                LoadBalancerArn = albArnParam
             });
-        
+
         var internalLoadBalancer = ApplicationLoadBalancer.FromLookup(this, "SharedLoadBalancer",
             new ApplicationLoadBalancerLookupOptions()
             {
-                LoadBalancerArn = internalAlbArnParam,
+                LoadBalancerArn = internalAlbArnParam
             });
 
         var databaseConnectionParam = StringParameter.FromSecureStringParameterAttributes(this, "DatabaseParameter",
@@ -52,15 +54,16 @@ public class LoyaltyInfraStack : Stack
         var cluster = new Cluster(this, "LoyaltyServiceCluster", new ClusterProps
         {
             EnableFargateCapacityProviders = true,
-            Vpc = vpc,
+            Vpc = vpc
         });
-        
+
         var commitHash = System.Environment.GetEnvironmentVariable("COMMIT_HASH") ?? "latest";
+        var serviceName = "LoyaltyService";
 
         var loyaltyApiService = new WebService(this, "LoyaltyWebService", new ConstructProps(
             vpc,
             cluster,
-            "LoyaltyApi",
+            serviceName,
             environment,
             "/shared/dd-api-key",
             "/shared/jwt-key",
@@ -70,7 +73,7 @@ public class LoyaltyInfraStack : Stack
             new Dictionary<string, string>
             {
                 { "Messaging__BusName", bus.EventBusName },
-                { "SERVICE_NAME", "LoyaltyApi" },
+                { "SERVICE_NAME", "LoyaltyApi" }
             },
             new Dictionary<string, Secret>(1)
             {
@@ -83,11 +86,11 @@ public class LoyaltyInfraStack : Stack
             82,
             DeployInPrivateSubnet: true
         ));
-        
+
         var loyaltyInternalService = new WebService(this, "LoyaltyInternalWebService", new ConstructProps(
             vpc,
             cluster,
-            "LoyaltyInternalApi",
+            serviceName,
             environment,
             "/shared/dd-api-key",
             "/shared/jwt-key",
@@ -97,7 +100,7 @@ public class LoyaltyInfraStack : Stack
             new Dictionary<string, string>
             {
                 { "Messaging__BusName", bus.EventBusName },
-                { "SERVICE_NAME", "LoyaltyInternalApi" },
+                { "SERVICE_NAME", "LoyaltyInternalApi" }
             },
             new Dictionary<string, Secret>(1)
             {
@@ -113,15 +116,17 @@ public class LoyaltyInfraStack : Stack
         ));
 
         var orderCompletedQueueName = "Loyalty-OrderCompleted";
-        
-        var orderSubmittedQueue = new EventQueue(this, orderCompletedQueueName, new EventQueueProps(bus, orderCompletedQueueName, environment, "https://orders.plantbasedpizza/", "order.orderCompleted.v1"));
+
+        var orderSubmittedQueue = new EventQueue(this, orderCompletedQueueName,
+            new EventQueueProps(bus, serviceName, orderCompletedQueueName, environment,
+                "https://orders.plantbasedpizza/", "order.orderCompleted.v1"));
 
         var worker = new BackgroundWorker(this, "LoyaltyWorker", new BackgroundWorkerProps(
-            new SharedInfrastructureProps(null, bus, publicLoadBalancer, commitHash, environment),
+            new SharedInfrastructureProps(null, bus, publicLoadBalancer, serviceName, commitHash, environment),
             "../application",
             databaseConnectionParam,
             orderSubmittedQueue.Queue));
-        
+
         databaseConnectionParam.GrantRead(loyaltyApiService.ExecutionRole);
         bus.GrantPutEventsTo(loyaltyApiService.TaskRole);
     }

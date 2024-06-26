@@ -43,13 +43,15 @@ public class AccountApiInfraStack : Stack
             Vpc = vpc,
 
         });
+
+        var serviceName = "AccountApi";
         
         var commitHash = System.Environment.GetEnvironmentVariable("COMMIT_HASH") ?? "latest";
 
         var accountApiService = new WebService(this, "AccountWebService", new ConstructProps(
             vpc,
             cluster,
-            "AccountApi",
+            serviceName,
             environment,
             "/shared/dd-api-key",
             "/shared/jwt-key",

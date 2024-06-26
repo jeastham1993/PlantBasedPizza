@@ -27,10 +27,10 @@ public class LoyaltyServiceTestInfrastructure : Stack
         
         var orderCompletedQueueName = "Loyalty-OrderCompleted";
         
-        var orderSubmittedQueue = new EventQueue(this, orderCompletedQueueName, new EventQueueProps(bus, orderCompletedQueueName, stackProps.Version, loyaltyTestSource, "order.orderCompleted.v1"));
+        var orderSubmittedQueue = new EventQueue(this, orderCompletedQueueName, new EventQueueProps(bus, "LoyalyService", orderCompletedQueueName, stackProps.Version, loyaltyTestSource, "order.orderCompleted.v1"));
 
         var worker = new BackgroundWorker(this, "LoyaltyWorker", new BackgroundWorkerProps(
-            new SharedInfrastructureProps(null, bus, null, "int-test", stackProps.Version),
+            new SharedInfrastructureProps(null, bus, null,  "LoyaltyService", "int-test", stackProps.Version),
             "../../application",
             databaseConnectionParam,
             orderSubmittedQueue.Queue));

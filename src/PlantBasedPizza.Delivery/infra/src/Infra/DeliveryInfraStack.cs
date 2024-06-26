@@ -23,6 +23,7 @@ public class DeliveryInfraStack : Stack
         var internalAlbArnParam = parameterProvider.Get("/shared/internal-alb-arn");
         var internalAlbListener = parameterProvider.Get("/shared/internal-alb-listener");
         var environment = System.Environment.GetEnvironmentVariable("ENV") ?? "test";
+        var serviceName = "DeliveryService";
         
         var bus = EventBus.FromEventBusName(this, "SharedEventBus", "PlantBasedPizzaEvents");
 
@@ -60,7 +61,7 @@ public class DeliveryInfraStack : Stack
         var deliveryApiService = new WebService(this, "DeliveryWebService", new ConstructProps(
             vpc,
             cluster,
-            "DeliveryApi",
+            serviceName,
             environment,
             "/shared/dd-api-key",
             "/shared/jwt-key",
@@ -86,10 +87,10 @@ public class DeliveryInfraStack : Stack
 
         var orderReadyForDeliveryQueueName = "Delivery-OrderReadyForDelivery";
         
-        var orderSubmittedQueue = new EventQueue(this, orderReadyForDeliveryQueueName, new EventQueueProps(bus, orderReadyForDeliveryQueueName, environment, "https://orders.plantbasedpizza/", "order.readyForDelivery.v1"));
+        var orderSubmittedQueue = new EventQueue(this, orderReadyForDeliveryQueueName, new EventQueueProps(bus, serviceName, orderReadyForDeliveryQueueName, environment, "https://orders.plantbasedpizza/", "order.readyForDelivery.v1"));
 
         var worker = new BackgroundWorker(this, "DeliveryWorker", new BackgroundWorkerProps(
-            new SharedInfrastructureProps(null, bus, publicLoadBalancer, commitHash, environment),
+            new SharedInfrastructureProps(null, bus, publicLoadBalancer, serviceName, commitHash, environment),
             "../application",
             databaseConnectionParam,
             orderSubmittedQueue.Queue));

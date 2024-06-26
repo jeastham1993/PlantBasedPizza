@@ -30,18 +30,19 @@ public class OrdersApiTestInfrastructureStack : Stack
         var persistence = new Persistence(this, "Persistence", new PersistenceProps(stackProps.Version));
 
         var ordersTestSource = "https://orders.test.plantbasedpizza/";
+        var serviceName = "OrderService";
 
-        var preparingQueue = new EventQueue(this, "OrderPreparingQueue", new EventQueueProps(bus, "OrderPreparingQueue", stackProps.Version, ordersTestSource, "kitchen.orderPreparing.v1"));
-        var prepCompleteQueue = new EventQueue(this, "OrderPrepCompleteQueue", new EventQueueProps(bus, "OrderPrepCompleteQueue", stackProps.Version, ordersTestSource, "kitchen.orderPrepComplete.v1"));
-        var bakedQueue = new EventQueue(this, "OrderBakedQueue", new EventQueueProps(bus, "OrderBakedQueue", stackProps.Version, ordersTestSource, "kitchen.orderBaked.v1"));
-        var orderQualityCheckedQueue = new EventQueue(this, "OrderQualityCheckedQueue", new EventQueueProps(bus, "OrderQualityCheckedQueue", stackProps.Version, ordersTestSource, "kitchen.orderQualityChecked.v1"));
-        var driverDeliveredQueue = new EventQueue(this, "DriverDeliveredOrderQueue", new EventQueueProps(bus, "DriverDeliveredOrderQueue", stackProps.Version, ordersTestSource, "delivery.driverDeliveredOrder.v1"));
-        var driverCollectedQueue = new EventQueue(this, "DriverCollectedOrderQueue", new EventQueueProps(bus, "DriverCollectedOrderQueue", stackProps.Version, ordersTestSource, "delivery.driverCollectedOrder.v1"));
-        var loyaltyPointsQueue = new EventQueue(this, "LoyaltyUpdatedQueue", new EventQueueProps(bus, "LoyaltyUpdatedQueue", stackProps.Version, ordersTestSource, "loyalty.customerLoyaltyPointsUpdated.v1"));
-        var paymentSuccessQueue = new EventQueue(this, "PaymentSuccessQueue", new EventQueueProps(bus, "PaymentSuccessQueue", stackProps.Version, ordersTestSource, "payments.paymentSuccessful.v1"));
+        var preparingQueue = new EventQueue(this, "OrderPreparingQueue", new EventQueueProps(bus, serviceName, "OrderPreparingQueue", stackProps.Version, ordersTestSource, "kitchen.orderPreparing.v1"));
+        var prepCompleteQueue = new EventQueue(this, "OrderPrepCompleteQueue", new EventQueueProps(bus, serviceName, "OrderPrepCompleteQueue", stackProps.Version, ordersTestSource, "kitchen.orderPrepComplete.v1"));
+        var bakedQueue = new EventQueue(this, "OrderBakedQueue", new EventQueueProps(bus, serviceName, "OrderBakedQueue", stackProps.Version, ordersTestSource, "kitchen.orderBaked.v1"));
+        var orderQualityCheckedQueue = new EventQueue(this, "OrderQualityCheckedQueue", new EventQueueProps(bus, serviceName, "OrderQualityCheckedQueue", stackProps.Version, ordersTestSource, "kitchen.orderQualityChecked.v1"));
+        var driverDeliveredQueue = new EventQueue(this, "DriverDeliveredOrderQueue", new EventQueueProps(bus, serviceName, "DriverDeliveredOrderQueue", stackProps.Version, ordersTestSource, "delivery.driverDeliveredOrder.v1"));
+        var driverCollectedQueue = new EventQueue(this, "DriverCollectedOrderQueue", new EventQueueProps(bus, serviceName, "DriverCollectedOrderQueue", stackProps.Version, ordersTestSource, "delivery.driverCollectedOrder.v1"));
+        var loyaltyPointsQueue = new EventQueue(this, "LoyaltyUpdatedQueue", new EventQueueProps(bus, serviceName, "LoyaltyUpdatedQueue", stackProps.Version, ordersTestSource, "loyalty.customerLoyaltyPointsUpdated.v1"));
+        var paymentSuccessQueue = new EventQueue(this, "PaymentSuccessQueue", new EventQueueProps(bus, serviceName, "PaymentSuccessQueue", stackProps.Version, ordersTestSource, "payments.paymentSuccessful.v1"));
 
         var backgroundWorker = new BackgroundWorker(this, "OrdersWorkerTestFunction",
-            new BackgroundWorkerProps(new SharedInfrastructureProps(null, bus, null, "int-test", stackProps.Version),
+            new BackgroundWorkerProps(new SharedInfrastructureProps(null, bus, null, serviceName, "int-test", stackProps.Version),
                 "../../application", persistence.Table, loyaltyPointsQueue.Queue, driverCollectedQueue.Queue, driverDeliveredQueue.Queue, bakedQueue.Queue, prepCompleteQueue.Queue, preparingQueue.Queue, orderQualityCheckedQueue.Queue, paymentSuccessQueue.Queue));
 
         var eventBus = new CfnOutput(this, "EBOutput", new CfnOutputProps()

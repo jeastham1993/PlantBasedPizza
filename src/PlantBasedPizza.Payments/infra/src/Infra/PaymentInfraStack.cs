@@ -48,21 +48,16 @@ public class PaymentInfraStack : Stack
             {
                 ParameterName = "/shared/database-connection"
             });
-
-        var cluster = new Cluster(this, "LoyaltyServiceCluster", new ClusterProps
-        {
-            EnableFargateCapacityProviders = true,
-            Vpc = vpc,
-        });
         
         var commitHash = System.Environment.GetEnvironmentVariable("COMMIT_HASH") ?? "latest";
 
         var orderCompletedQueueName = "Payment-OrderSubmitted";
+        var serviceName = "PaymentService";
         
-        var orderSubmittedQueue = new EventQueue(this, orderCompletedQueueName, new EventQueueProps(bus, orderCompletedQueueName, environment, "https://orders.plantbasedpizza/", "order.orderSubmitted.v1"));
+        var orderSubmittedQueue = new EventQueue(this, orderCompletedQueueName, new EventQueueProps(bus, serviceName, orderCompletedQueueName, environment, "https://orders.plantbasedpizza/", "order.orderSubmitted.v1"));
 
         var worker = new BackgroundWorker(this, "PaymentWorker", new BackgroundWorkerProps(
-            new SharedInfrastructureProps(null, bus, publicLoadBalancer, commitHash, environment),
+            new SharedInfrastructureProps(null, bus, publicLoadBalancer, serviceName, commitHash, environment),
             "../application",
             orderSubmittedQueue.Queue));
     }

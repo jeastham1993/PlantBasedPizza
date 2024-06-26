@@ -26,6 +26,7 @@ public class OrderApiInfraStack : Stack
         var albListener = parameterProvider.Get("/shared/alb-listener");
         var internalAlbArnParam = parameterProvider.Get("/shared/internal-alb-arn");
         var internalAlbListener = parameterProvider.Get("/shared/internal-alb-listener");
+        var serviceName = "OrderService";
         
         var environment = System.Environment.GetEnvironmentVariable("ENV");
         
@@ -61,7 +62,7 @@ public class OrderApiInfraStack : Stack
         var orderApiService = new WebService(this, "OrdersWebService", new ConstructProps(
             vpc,
             cluster,
-            "OrdersApi",
+            serviceName,
             environment,
             "/shared/dd-api-key",
             "/shared/jwt-key",
@@ -104,17 +105,17 @@ public class OrderApiInfraStack : Stack
         var deliveryServiceSource = "https://delivery.plantbasedpizza/";
         var paymentServiceSource = "https://payments.plantbasedpizza/";
 
-        var loyaltyPointsQueue = new EventQueue(this, loyaltyPointsCheckedQueueName, new EventQueueProps(bus, loyaltyPointsCheckedQueueName, environment, "https://orders.test.plantbasedpizza/", "loyalty.customerLoyaltyPointsUpdated.v1"));
-        var orderPreparingQueue = new EventQueue(this, orderPreparingQueueName, new EventQueueProps(bus, orderPreparingQueueName, environment, kitchenServiceSource, "kitchen.orderPreparing.v1"));
-        var orderPrepCompleteQueue = new EventQueue(this, orderPrepCompleteQueueName, new EventQueueProps(bus, orderPrepCompleteQueueName, environment, kitchenServiceSource, "kitchen.orderPrepComplete.v1"));
-        var orderBakedQueue = new EventQueue(this, orderBakedQueueName, new EventQueueProps(bus, orderBakedQueueName, environment, kitchenServiceSource, "kitchen.orderBaked.v1"));
-        var orderQualityCheckedQueue = new EventQueue(this, orderQualityCheckedQueueName, new EventQueueProps(bus, orderQualityCheckedQueueName, environment, kitchenServiceSource, "kitchen.qualityChecked.v1"));
-        var driverDeliveredOrderQueue = new EventQueue(this, driverDeliveredOrderQueueName, new EventQueueProps(bus, driverDeliveredOrderQueueName, environment, deliveryServiceSource, "delivery.driverDeliveredOrder.v1"));
-        var driverCollectedOrderQueue = new EventQueue(this, driverCollectedOrderQueueName, new EventQueueProps(bus, driverCollectedOrderQueueName, environment, deliveryServiceSource, "delivery.driverCollectedOrder.v1"));
-        var paymentSuccessfulQueue = new EventQueue(this, paymentsuccessfulQueueName, new EventQueueProps(bus, paymentsuccessfulQueueName, environment, paymentServiceSource, "payments.paymentSuccessful.v1"));
+        var loyaltyPointsQueue = new EventQueue(this, loyaltyPointsCheckedQueueName, new EventQueueProps(bus, serviceName, loyaltyPointsCheckedQueueName, environment, "https://orders.test.plantbasedpizza/", "loyalty.customerLoyaltyPointsUpdated.v1"));
+        var orderPreparingQueue = new EventQueue(this, orderPreparingQueueName, new EventQueueProps(bus, serviceName, orderPreparingQueueName, environment, kitchenServiceSource, "kitchen.orderPreparing.v1"));
+        var orderPrepCompleteQueue = new EventQueue(this, orderPrepCompleteQueueName, new EventQueueProps(bus, serviceName, orderPrepCompleteQueueName, environment, kitchenServiceSource, "kitchen.orderPrepComplete.v1"));
+        var orderBakedQueue = new EventQueue(this, orderBakedQueueName, new EventQueueProps(bus, serviceName, orderBakedQueueName, environment, kitchenServiceSource, "kitchen.orderBaked.v1"));
+        var orderQualityCheckedQueue = new EventQueue(this, orderQualityCheckedQueueName, new EventQueueProps(bus, serviceName, orderQualityCheckedQueueName, environment, kitchenServiceSource, "kitchen.qualityChecked.v1"));
+        var driverDeliveredOrderQueue = new EventQueue(this, driverDeliveredOrderQueueName, new EventQueueProps(bus, serviceName, driverDeliveredOrderQueueName, environment, deliveryServiceSource, "delivery.driverDeliveredOrder.v1"));
+        var driverCollectedOrderQueue = new EventQueue(this, driverCollectedOrderQueueName, new EventQueueProps(bus, serviceName, driverCollectedOrderQueueName, environment, deliveryServiceSource, "delivery.driverCollectedOrder.v1"));
+        var paymentSuccessfulQueue = new EventQueue(this, paymentsuccessfulQueueName, new EventQueueProps(bus, serviceName, paymentsuccessfulQueueName, environment, paymentServiceSource, "payments.paymentSuccessful.v1"));
 
         var backgroundWorker = new BackgroundWorker(this, "OrdersWorkerFunctions",
-            new BackgroundWorkerProps(new SharedInfrastructureProps(null, bus, publicLoadBalancer, commitHash, environment),
+            new BackgroundWorkerProps(new SharedInfrastructureProps(null, bus, publicLoadBalancer, serviceName, commitHash, environment),
                 "../application", persistence.Table, loyaltyPointsQueue.Queue, driverCollectedOrderQueue.Queue, driverDeliveredOrderQueue.Queue, orderBakedQueue.Queue, orderPrepCompleteQueue.Queue, orderPreparingQueue.Queue, orderQualityCheckedQueue.Queue, paymentSuccessfulQueue.Queue));
     }
 }

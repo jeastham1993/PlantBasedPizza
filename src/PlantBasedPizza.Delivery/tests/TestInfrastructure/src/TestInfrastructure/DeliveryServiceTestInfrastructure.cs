@@ -24,13 +24,14 @@ public class DeliveryServiceTestInfrastructure : Stack
         });
 
         var deliveryTestSource = "https://delivery.test.plantbasedpizza/";
+        var serviceName = "DeliveryService";
         
         var orderReadyForDeliveryQueueName = "Delivery-OrderReadyForDelivery";
         
-        var orderSubmittedQueue = new EventQueue(this, orderReadyForDeliveryQueueName, new EventQueueProps(bus, orderReadyForDeliveryQueueName, stackProps.Version, deliveryTestSource, "order.readyForDelivery.v1"));
+        var orderSubmittedQueue = new EventQueue(this, orderReadyForDeliveryQueueName, new EventQueueProps(bus, serviceName, orderReadyForDeliveryQueueName, stackProps.Version, deliveryTestSource, "order.readyForDelivery.v1"));
         
         var worker = new BackgroundWorker(this, "DeliveryWorker", new BackgroundWorkerProps(
-            new SharedInfrastructureProps(null, bus, null, "int-test", stackProps.Version),
+            new SharedInfrastructureProps(null, bus, null, serviceName, "int-test", stackProps.Version),
             "../../application",
             databaseConnectionParam,
             orderSubmittedQueue.Queue));
