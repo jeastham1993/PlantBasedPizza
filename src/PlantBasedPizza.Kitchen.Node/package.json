@@ -1,0 +1,47 @@
+{
+  "name": "plantbasedpizza-kitchen",
+  "version": "0.1.0",
+  "bin": {
+    "insurance": "bin/kitchen.ts"
+  },
+  "scripts": {
+    "build": "npm install && tsc",
+    "watch": "tsc -w",
+    "test": "jest",
+    "cdk": "cdk",
+    "deploy": "cdk deploy --outputs-file react-claims/src/cdk-outputs.json --all",
+    "format": "npx prettier --write ."
+  },
+  "devDependencies": {
+    "@aws-sdk/client-dynamodb": "^3.596.0",
+    "@aws-sdk/client-eventbridge": "^3.596.0",
+    "@aws-sdk/client-ssm": "^3.606.0",
+    "@types/aws-lambda": "8.10.140",
+    "@types/jest": "^27.5.2",
+    "@types/node": "^10.17.27",
+    "@types/prettier": "2.6.0",
+    "datadog-cdk-constructs-v2": "^1.13.0",
+    "install": "^0.13.0",
+    "jest": "^29.7.0",
+    "npm": "^10.8.1",
+    "prettier": "^3.3.2",
+    "ts-jest": "^29.1.4",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5",
+    "uuid": "^9.0.1"
+  },
+  "dependencies": {
+    "@aws-cdk/aws-apigatewayv2-alpha": "^2.114.1-alpha.0",
+    "@aws-cdk/aws-apigatewayv2-integrations-alpha": "^2.114.1-alpha.0",
+    "@aws-lambda-powertools/parameters": "^2.3.0",
+    "aws-cdk-lib": "^2.145.0",
+    "axios": "^1.7.2",
+    "cloudevents": "^8.0.1",
+    "constructs": "^10.3.0",
+    "datadog-lambda-js": "^9.112.0",
+    "dd-trace": "^5.17.0",
+    "mongodb": "^6.8.0",
+    "source-map-support": "^0.5.21",
+    "uninstall": "*"
+  }
+}
