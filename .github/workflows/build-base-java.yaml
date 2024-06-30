@@ -9,6 +9,9 @@ on:
       project-root:
           required: true
           type: string
+      build-directory:
+          required: true
+          type: string
       image-name:
           required: true
           type: string
@@ -95,7 +98,7 @@ jobs:
         name: Maven build
         shell: bash
         run: |
-          cd ${{ inputs.project-root }}
+          cd ${{ inputs.build-directory }}
           mvn clean package
       -
         name: Build and push
