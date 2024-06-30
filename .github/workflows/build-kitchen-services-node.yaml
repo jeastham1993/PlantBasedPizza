@@ -17,7 +17,7 @@ permissions:
 
 jobs:
   deploy-to-dev:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/cdk-deploy-base.yaml@feature/aws-serverless-datadog
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/cdk-deploy-base-with-node.yaml@feature/aws-serverless-datadog
     concurrency:
       group: kitchen-node-dev-deploy
       cancel-in-progress: false
