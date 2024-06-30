@@ -4,6 +4,10 @@ import { KitchenOrderConfirmedEventV1 } from "../events/kitchenOrderConfirmedV1E
 import { EventBridgeClient, PutEventsCommand } from "@aws-sdk/client-eventbridge";
 import { v4 as uuidv4 } from "uuid";
 import { tracer, Tracer, TracerProvider } from "dd-trace";
+import { OrderBakedEventV1 } from "../events/orderBakedEventV1";
+import { OrderPrepCompleteEventV1 } from "../events/orderPrepCompleteEventV1";
+import { OrderPreparingEventV1 } from "../events/orderPreparingEventV1";
+import { OrderQualityCheckedEventV1 } from "../events/orderQualityCheckedEventV1";
 const { getTraceHeaders } = require("datadog-lambda-js");
 
 export class EventBridgeEventPublisher implements IKitchenEventPublisher {
@@ -12,26 +16,49 @@ export class EventBridgeEventPublisher implements IKitchenEventPublisher {
   constructor(eventBridgeClient: EventBridgeClient) {
     this.eventBridgeClient = eventBridgeClient;
   }
+  async publishOrderBakedEventV1(evt: OrderBakedEventV1): Promise<void> {
+    await this.publish("kitchen.orderBaked.v1", evt);
+  }
+  async publishOrderPrepCompleteEventV1(evt: OrderPrepCompleteEventV1): Promise<void> {
+    await this.publish("kitchen.orderPrepComplete.v1", evt);
+  }
+  async publishOrderPreparingEventV1(evt: OrderPreparingEventV1): Promise<void> {
+    await this.publish("kitchen.orderPreparing.v1", evt);
+  }
+  async publishOrderQualityCheckedEventV1(evt: OrderQualityCheckedEventV1): Promise<void> {
+    await this.publish("kitchen.orderConfirmed.v1", evt);
+  }
 
   async publishKitchenOrderConfirmedEventV1(evt: KitchenOrderConfirmedEventV1): Promise<void> {
+    await this.publish("kitchen.qualityChecked.v1", evt);
+  }
+
+  async publish<T>(evtType: string, evtData: T) {
     const currentSpan = tracer.scope().active();
 
-    const ce: CloudEventV1<KitchenOrderConfirmedEventV1> = {
+    const ce: CloudEventV1<T> = {
       specversion: "1.0",
       source: "https://kitchen.plantbasedpizza",
-      type: "kitchen.orderConfirmed.v1",
+      type: evtType,
       id: uuidv4(),
       time: new Date().toISOString(),
       datacontenttype: "application/json",
-      data: evt,
+      data: evtData,
       ddtraceid: currentSpan?.context().toTraceId(),
       ddspanid: currentSpan?.context().toSpanId(),
     };
 
+    currentSpan?.addTags({
+      "messaging.eventId": ce.id,
+      "messaging.eventType": ce.type,
+      "messaging.eventSource": ce.source,
+      "messaging.busName": process.env.BUS_NAME,
+    });
+
     const span = tracer.scope().active()!;
     const datadog = {};
 
-    tracer.inject(span, 'text_map', datadog);
+    tracer.inject(span, "text_map", datadog);
 
     console.log(datadog);
 
@@ -49,6 +76,8 @@ export class EventBridgeEventPublisher implements IKitchenEventPublisher {
       ],
     });
 
-    const ebResult = this.eventBridgeClient.send(command);
+    const ebResult = await this.eventBridgeClient.send(command);
+
+    currentSpan?.addTags({"messaging.failedEvents": ebResult.FailedEntryCount})
   }
 }

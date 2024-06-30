@@ -1,47 +1,187 @@
-import { Collection, MongoClient } from "mongodb";
+import { tracer } from "dd-trace";
 import { IKitchenRequestRepository } from "../entities/kitchenRepository";
 import { KitchenRequest, OrderState } from "../entities/kitchenRequest";
+import { DynamoDBClient, PutItemCommand, GetItemCommand, QueryCommand } from "@aws-sdk/client-dynamodb";
+export interface IKitchenRequest {
+  kitchenRequestId: string;
+  orderIdentifier: string;
+  orderReceivedOn: Date;
+  orderState: OrderState;
+  prepCompleteOn: Date;
+  bakeCompleteOn: Date;
+  qualityCheckCompleteOn: Date;
+  recipes: IRecipe[];
+}
+
+export interface IRecipe {
+  id: string;
+  name: string;
+  category: string;
+  price: number;
+  ingredients: IRecipeItem[];
+}
+
+export interface IRecipeItem {
+  name: string;
+  quantity: number;
+}
 
 export class KitchenRequestRepository implements IKitchenRequestRepository {
-  kitchenRequestCollection: Collection<KitchenRequest>;
+  client: DynamoDBClient;
+  tableName: string;
 
-  constructor(mongoConnectionString: string, database: string, collection: string) {
-    const client = new MongoClient(mongoConnectionString);
-    const db = client.db(database);
-    this.kitchenRequestCollection = db.collection<KitchenRequest>(collection);
+  constructor(client: DynamoDBClient, tableName: string) {
+    this.client = client;
+    this.tableName = tableName;
   }
 
   async addNew(kitchenRequest: KitchenRequest): Promise<void> {
-    console.log(`Storing: ${kitchenRequest.orderIdentifier}`);
-    
-    await this.kitchenRequestCollection.insertOne(kitchenRequest);
+    const activeSpan = tracer.scope().active();
+    const item = {
+      TableName: this.tableName,
+      Item: {
+        PK: { S: kitchenRequest.orderIdentifier },
+        GSI1SK: { S: `${kitchenRequest.orderReceivedOn.toISOString()}${kitchenRequest.orderIdentifier}}` },
+        GSI1PK: { S: kitchenRequest.orderState.toString() },
+        OrderIdentifier: { S: kitchenRequest.orderIdentifier },
+        OrderReceivedOn: { S: kitchenRequest.orderReceivedOn.toISOString() },
+        KitchenRequestId: { S: kitchenRequest.kitchenRequestId },
+        OrderState: { S: kitchenRequest.orderState.toString() },
+        Recipes: { S: JSON.stringify(kitchenRequest.recipes) },
+      },
+    };
+
+    const command = new PutItemCommand(item);
+    const response = await this.client.send(command);
+
+    activeSpan?.addTags({
+      "dynamo.tableName": this.tableName,
+      "dynamo.consumedRcu": response.ConsumedCapacity?.ReadCapacityUnits,
+      "dynamo.consumedWcu": response.ConsumedCapacity?.WriteCapacityUnits
+    })
   }
+
   async update(kitchenRequest: KitchenRequest): Promise<void> {
-    await this.kitchenRequestCollection.findOneAndReplace({ OrderIdentifier: kitchenRequest.orderIdentifier }, kitchenRequest);
-  }
-  async retrieve(orderIdentifier: string): Promise<KitchenRequest> {
-    const result = await this.kitchenRequestCollection.findOne({ OrderIdentifier: orderIdentifier });
+    const activeSpan = tracer.scope().active();
 
-    return result!;
+    const item = {
+      TableName: this.tableName,
+      Item: {
+        PK: { S: kitchenRequest.orderIdentifier },
+        GSI1SK: { S: `${kitchenRequest.orderReceivedOn.toISOString()}${kitchenRequest.orderIdentifier}}` },
+        GSI1PK: { S: kitchenRequest.orderState.toString() },
+        OrderReceivedOn: { S: kitchenRequest.orderReceivedOn.toISOString() },
+        OrderIdentifier: { S: kitchenRequest.orderIdentifier },
+        KitchenRequestId: { S: kitchenRequest.kitchenRequestId },
+        OrderState: { S: kitchenRequest.orderState.toString() },
+        Recipes: { S: JSON.stringify(kitchenRequest.recipes) },
+      },
+    };
+
+    const command = new PutItemCommand(item);
+    const response = await this.client.send(command);
+
+    activeSpan?.addTags({
+      "dynamo.tableName": this.tableName,
+      "dynamo.consumedRcu": response.ConsumedCapacity?.ReadCapacityUnits,
+      "dynamo.consumedWcu": response.ConsumedCapacity?.WriteCapacityUnits
+    })
   }
+
+  async retrieve(orderIdentifier: string): Promise<KitchenRequest | null> {
+    const params = {
+      TableName: this.tableName,
+      Key: {
+        PK: { S: orderIdentifier },
+      },
+    };
+
+    const command = new GetItemCommand(params);
+    const response = await this.client.send(command);
+
+    if (response.Item === undefined) {
+      return null;
+    }
+
+    try {
+      const kitchenRequest: KitchenRequest = {
+        kitchenRequestId: response.Item["KitchenRequestId"].S!,
+        orderIdentifier: response.Item["OrderIdentifier"].S!,
+        orderState: response.Item["OrderState"].S! as unknown as number,
+        orderReceivedOn: new Date(response.Item["OrderReceivedOn"].S!),
+        prepCompleteOn: null,
+        bakeCompleteOn: null,
+        qualityCheckCompleteOn: null,
+        recipes: JSON.parse(response.Item["Recipes"].S!)
+      };
+
+      return kitchenRequest;
+    }
+    catch (e) {
+      console.log(e);
+
+      return null;
+    }
+  }
+
   async getNew(): Promise<KitchenRequest[]> {
-    const result = await this.kitchenRequestCollection.find({OrderState: OrderState.NEW})!;
-
-    return result.toArray();
+    return await this.executeGsiQuery("0");
   }
+
   async getPrep(): Promise<KitchenRequest[]> {
-    const result = await this.kitchenRequestCollection.find({OrderState: OrderState.PREPARING})!;
-
-    return result.toArray();
+    return await this.executeGsiQuery("1");
   }
+
   async getBaking(): Promise<KitchenRequest[]> {
-    const result = await this.kitchenRequestCollection.find({OrderState: OrderState.BAKING})!;
-
-    return result.toArray();
+    return await this.executeGsiQuery("2");
   }
+  
   async getAwaitingQualityCheck(): Promise<KitchenRequest[]> {
-    const result = await this.kitchenRequestCollection.find({OrderState: OrderState.QUALITYCHECK})!;
+    return await this.executeGsiQuery("3");
+  }
 
-    return result.toArray();
+  async executeGsiQuery(orderState: string): Promise<KitchenRequest[]> {
+    const activeSpan = tracer.scope().active();
+    const result: KitchenRequest[] = [];
+
+    const params = {
+      TableName: this.tableName,
+      IndexName: "GSI1",
+      KeyConditionExpression: "GSI1PK = :gsi1pk",
+      ExpressionAttributeValues: {
+        ":gsi1pk": { S: orderState },
+      },
+    };
+
+    const command = new QueryCommand(params);
+    const response = await this.client.send(command);
+
+    if (response.Items === undefined) {
+      throw "Query items undefined";
+    }
+
+    for (const item of response.Items){
+      const kitchenRequest: KitchenRequest = {
+        kitchenRequestId: item["KitchenRequestId"].S!,
+        orderIdentifier: item["OrderIdentifier"].S!,
+        orderState: item["OrderState"].S! as unknown as number,
+        orderReceivedOn: new Date(item["OrderReceivedOn"].S!),
+        prepCompleteOn: null,
+        bakeCompleteOn: null,
+        qualityCheckCompleteOn: null,
+        recipes: JSON.parse(item["Recipes"].S!)
+      };
+
+      result.push(kitchenRequest);
+    }
+
+    activeSpan?.addTags({
+      "dynamo.foundItems": response.Count,
+      "dynamo.tableName": this.tableName,
+      "dynamo.consumedRcu": response.ConsumedCapacity?.ReadCapacityUnits,
+      "dynamo.consumedWcu": response.ConsumedCapacity?.WriteCapacityUnits
+    })
+    
+    return result;
   }
 }

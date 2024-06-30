@@ -1,9 +1,7 @@
 import { Construct } from "constructs";
 import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import { Runtime } from "aws-cdk-lib/aws-lambda";
-import { Datadog } from "datadog-cdk-constructs-v2";
 import { Tags } from "aws-cdk-lib";
-import { IStringParameter } from "aws-cdk-lib/aws-ssm";
 import { Alias } from "aws-cdk-lib/aws-kms";
 import { SharedFunctionProps } from "./sharedFunctionProps";
 
@@ -26,10 +24,10 @@ export class InstrumentedSqsLambdaFunction extends Construct {
       memorySize: 512,
       environment: {
         CONN_STRING_PARAM: props.sharedProps.databaseConnectionParam.parameterName,
-        RECIPE_API_ENDPOINT: 'https://api.dev.plantbasedpizza.net'
+        RECIPE_API_ENDPOINT: 'https://api.dev.plantbasedpizza.net',
+        TABLE_NAME: props.sharedProps.table.tableName
       },
       bundling: {
-        minify: true,
         externalModules: [
           "graphql/language/visitor",
           "graphql/language/printer",

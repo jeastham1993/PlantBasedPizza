@@ -1,37 +1,22 @@
+import { inherits } from "util"
 import { RecipeAdapter } from "../adapters/recipeAdapter"
-
+import {v4 as uuidv4} from 'uuid';
 export class KitchenRequest {
     kitchenRequestId: string
     orderIdentifier: string
     orderReceivedOn: Date
     orderState: OrderState
-    prepCompleteOn: Date
-    bakeCompleteOn: Date
-    qualityCheckCompleteOn: Date
+    prepCompleteOn: Date | null
+    bakeCompleteOn: Date | null
+    qualityCheckCompleteOn: Date | null
     recipes: RecipeAdapter[]
 
     constructor(orderIdentifier: string, recipes: RecipeAdapter[]) {
         this.orderIdentifier = orderIdentifier;
         this.recipes = recipes;
-    }
-
-    preparing() {
-        this.orderState = OrderState.PREPARING
-    }
-
-    prepComplete() {
-        this.orderState = OrderState.BAKING;
-        this.prepCompleteOn = new Date();
-    }
-
-    bakeComplete() {
-        this.orderState = OrderState.QUALITYCHECK;
-        this.bakeCompleteOn = new Date();
-    }
-
-    qualityCheckComplete() {
-        this.orderState = OrderState.DONE;
-        this.qualityCheckCompleteOn = new Date();
+        this.orderReceivedOn = new Date();
+        this.kitchenRequestId = uuidv4();
+        this.orderState = OrderState.NEW;
     }
 }
 

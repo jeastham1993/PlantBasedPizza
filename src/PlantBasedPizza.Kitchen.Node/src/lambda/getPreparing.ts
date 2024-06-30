@@ -2,20 +2,15 @@ import { ALBEvent, ALBResult } from "aws-lambda";
 import { KitchenRequestRepository } from "../adapters/kitchenRepository";
 import { getParameter } from "@aws-lambda-powertools/parameters/ssm";
 import { tracer } from "dd-trace";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 
 tracer.init();
 
-var kitchenRepository: KitchenRequestRepository | undefined = undefined;
+const dynamoDbClient = new DynamoDBClient();
+
+var kitchenRepository = new KitchenRequestRepository(dynamoDbClient, process.env.TABLE_NAME!);
 
 export const handler = async (event: ALBEvent): Promise<ALBResult> => {
-  if (kitchenRepository === undefined) {
-    console.log('Initializating');
-    const mongoConnectionString = await getParameter(process.env.CONN_STRING_PARAM!, {
-      decrypt: true
-    });
-    kitchenRepository = new KitchenRequestRepository(mongoConnectionString!, "PlantBasedPizza", "kitchen");
-  }
-
   const request = await kitchenRepository.getPrep();
   return {
     statusCode: 200,

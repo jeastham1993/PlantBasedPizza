@@ -1,3 +1,4 @@
+import { ITable } from "aws-cdk-lib/aws-dynamodb";
 import { IVpc } from "aws-cdk-lib/aws-ec2";
 import { IApplicationListener } from "aws-cdk-lib/aws-elasticloadbalancingv2";
 import { IEventBus } from "aws-cdk-lib/aws-events";
@@ -12,4 +13,5 @@ export interface SharedFunctionProps {
   albListener: IApplicationListener;
   vpc: IVpc;
   databaseConnectionParam: IStringParameter;
+  table: ITable
 }

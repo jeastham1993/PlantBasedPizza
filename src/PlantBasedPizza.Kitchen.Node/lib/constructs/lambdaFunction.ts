@@ -33,9 +33,9 @@ export class InstrumentedApiLambdaFunction extends Construct {
       memorySize: 512,
       environment: {
         CONN_STRING_PARAM: props.sharedProps.databaseConnectionParam.parameterName,
+        TABLE_NAME: props.sharedProps.table.tableName
       },
       bundling: {
-        minify: true,
         externalModules: [
           "graphql/language/visitor",
           "graphql/language/printer",

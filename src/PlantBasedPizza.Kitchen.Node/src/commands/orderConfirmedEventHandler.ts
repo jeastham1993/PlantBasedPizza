@@ -1,3 +1,4 @@
+import { tracer } from "dd-trace";
 import { RecipeAdapter } from "../adapters/recipeAdapter";
 import { IKitchenEventPublisher } from "../entities/kitchenEventPublisher";
 import { IKitchenRequestRepository } from "../entities/kitchenRepository";
@@ -21,14 +22,20 @@ export class OrderConfirmedEventHandler {
   }
 
   async handle(evt: OrderConfirmedEvent): Promise<void> {
+    const activeSpan = tracer.scope().active();
+    activeSpan?.addTags({"order.orderIdentifier": evt.OrderIdentifier});
+
+    const existingOrder = await this.kitchenRequestRepository.retrieve(evt.OrderIdentifier);
+
+    if (existingOrder !== null) {
+      activeSpan?.addTags({"order.exists": "true"});
+      return;
+    }
+
     const recipes: RecipeAdapter[] = [];
 
     for (const item of evt.Items) {
-      console.log('Starting loop');
-
       const recipe = await this.recipeService.getRecipe(item.RecipeIdentifier);
-
-      console.log('Recipe service complete');
 
       if (recipe === undefined) {
         throw "Recipe not found";
@@ -36,7 +43,8 @@ export class OrderConfirmedEventHandler {
 
       recipes.push(recipe);
     }
-    console.log(`Found recipe(s): ${recipes.length}`);
+
+    activeSpan?.addTags({"order.recipesFound": recipes.length});
 
     const kitchenRequest = new KitchenRequest(evt.OrderIdentifier, recipes);
 

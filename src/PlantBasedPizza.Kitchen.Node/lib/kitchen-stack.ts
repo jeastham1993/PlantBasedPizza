@@ -9,6 +9,7 @@ import { InstrumentedSqsLambdaFunction } from "./constructs/sqsLambdaFunction";
 import { EventBus } from "aws-cdk-lib/aws-events";
 import { StringParameter } from "aws-cdk-lib/aws-ssm";
 import { SharedFunctionProps } from "./constructs/sharedFunctionProps";
+import { AttributeType, BillingMode, ProjectionType, Table, TableClass } from "aws-cdk-lib/aws-dynamodb";
 
 export class KitchenStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -53,6 +54,27 @@ export class KitchenStack extends Stack {
       listenerArn: albListenerParam,
     });
 
+    const table = new Table(this, "KitchenDataTable", {
+      tableClass: TableClass.STANDARD,
+      billingMode: BillingMode.PAY_PER_REQUEST,
+      partitionKey: {
+        name: 'PK',
+        type: AttributeType.STRING
+      },
+    });
+    table.addGlobalSecondaryIndex({
+      indexName: 'GSI1',
+      projectionType: ProjectionType.ALL,
+      partitionKey: {
+        name: "GSI1PK",
+        type: AttributeType.STRING
+      },
+      sortKey: {
+        name: "GSI1SK",
+        type: AttributeType.STRING
+      }
+    });
+
     const sharedProps: SharedFunctionProps = {
       serviceName,
       environment,
@@ -61,7 +83,8 @@ export class KitchenStack extends Stack {
       albListener,
       databaseConnectionParam,
       datadogConfiguration,
-    } 
+      table
+    };
 
     const getNewFunction = new InstrumentedApiLambdaFunction(this, "GetNewFunction", {
       sharedProps,
@@ -95,13 +118,64 @@ export class KitchenStack extends Stack {
       methods: ['GET'],
       priority: 35,
     });
+    const setPreparingFunction = new InstrumentedApiLambdaFunction(this, "SetPreparingFunction", {
+      sharedProps,
+      entry: "./src/lambda/setPreparing.ts",
+      functionName: "SetPreparingFunction",
+      path: "/kitchen/preparing",
+      methods: ['POST'],
+      priority: 30,
+    });
+    const setBakingFunction = new InstrumentedApiLambdaFunction(this, "SetBakingFunction", {
+      sharedProps,
+      entry: "./src/lambda/setBaking.ts",
+      functionName: "SetBakingFunction",
+      path: "/kitchen/prep-complete",
+      methods: ['POST'],
+      priority: 31,
+    });
+    const setQualityCheckingFunction = new InstrumentedApiLambdaFunction(this, "SetQualityCheckingFunction", {
+      sharedProps,
+      entry: "./src/lambda/setQualityChecking.ts",
+      functionName: "SetQualityCheckingFunction",
+      path: "/kitchen/bake-complete",
+      methods: ['POST'],
+      priority: 32,
+    });
+    const setDoneFunction = new InstrumentedApiLambdaFunction(this, "SetCompleteFunction", {
+      sharedProps,
+      entry: "./src/lambda/setComplete.ts",
+      functionName: "SetCompleteFunction",
+      path: "/kitchen/quality-check",
+      methods: ['POST'],
+      priority: 37,
+    });
 
     const orderConfirmedHandler = new InstrumentedSqsLambdaFunction(this, "HandleOrderConfirmedEvent", {
       sharedProps,
       entry: "./src/lambda/handleOrderConfirmedEvent.ts",
       functionName: "HandleOrderConfirmedEvent",
     });
+
     orderConfirmedHandler.function.addEnvironment("BUS_NAME", eventBridge.eventBusName);
     eventBridge.grantPutEventsTo(orderConfirmedHandler.function);
+    setPreparingFunction.function.addEnvironment("BUS_NAME", eventBridge.eventBusName);
+    eventBridge.grantPutEventsTo(setPreparingFunction.function);
+    setBakingFunction.function.addEnvironment("BUS_NAME", eventBridge.eventBusName);
+    eventBridge.grantPutEventsTo(setBakingFunction.function);
+    setQualityCheckingFunction.function.addEnvironment("BUS_NAME", eventBridge.eventBusName);
+    eventBridge.grantPutEventsTo(setQualityCheckingFunction.function);
+    setDoneFunction.function.addEnvironment("BUS_NAME", eventBridge.eventBusName);
+    eventBridge.grantPutEventsTo(setDoneFunction.function);
+
+    table.grantReadWriteData(orderConfirmedHandler.function);
+    table.grantReadWriteData(setPreparingFunction.function);
+    table.grantReadWriteData(setBakingFunction.function);
+    table.grantReadWriteData(setQualityCheckingFunction.function);
+    table.grantReadWriteData(setDoneFunction.function);
+    table.grantReadData(getAwaitingQualityCheckFunction.function);
+    table.grantReadData(getBakingFunction.function);
+    table.grantReadData(getPrepCompleteFunction.function);
+    table.grantReadData(getNewFunction.function);
   }
 }

@@ -6,34 +6,23 @@ import { RecipeService } from "../adapters/recipeService";
 import { CloudEventV1, HTTP } from "cloudevents";
 import { OrderConfirmedEvent } from "../integration-events/orderConfirmedEvent";
 import { EventBridgeClient } from "@aws-sdk/client-eventbridge";
-import { SpanContext, tracer } from "dd-trace";
+import { tracer } from "dd-trace";
 import { getParameter } from '@aws-lambda-powertools/parameters/ssm';
-import { GetParameterCommand, SSMClient } from "@aws-sdk/client-ssm";
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 
 tracer.init();
 
 const eventBridgeClient = new EventBridgeClient();
-
-var kitchenRepository: KitchenRequestRepository | undefined = undefined;
+const dynamoDbClient = new DynamoDBClient();
 
 const eventPublisher = new EventBridgeEventPublisher(eventBridgeClient);
 const recipeService = new RecipeService();
 
-var eventHandler: OrderConfirmedEventHandler | undefined = undefined;
+const kitchenRepository = new KitchenRequestRepository(dynamoDbClient, process.env.TABLE_NAME!);
+const eventHandler = new OrderConfirmedEventHandler(kitchenRepository, eventPublisher, recipeService);
 
-export const handler = async (event: SQSEvent): Promise<SQSBatchResponse> => {
-  if (kitchenRepository === undefined || eventHandler === undefined) {
-    console.log('Initializating');
-    const mongoConnectionString = await getParameter(process.env.CONN_STRING_PARAM!, {
-      decrypt: true
-    });
-    kitchenRepository = new KitchenRequestRepository(mongoConnectionString!, "PlantBasedPizza", "kitchen");
-    eventHandler = new OrderConfirmedEventHandler(kitchenRepository, eventPublisher, recipeService);
-  }
-
+export const handler = async (event: any): Promise<SQSBatchResponse> => {
   const batchItemFailures: SQSBatchItemFailure[] = [];
-
-  const mainSpan = tracer.scope().active();
 
   const headers = {
     "content-type": "application/cloudevents+json",
@@ -41,12 +30,7 @@ export const handler = async (event: SQSEvent): Promise<SQSBatchResponse> => {
 
   for (const sqsMessage of event.Records) {
     try {
-      console.log(sqsMessage.messageId);
-
       const cloudEvent = HTTP.toEvent({ body: sqsMessage.body, headers }) as CloudEventV1<OrderConfirmedEvent>;
-
-      const traceId = cloudEvent.ddtraceid;
-      const spanId = cloudEvent.ddspanid;
 
       await eventHandler.handle(cloudEvent.data!);
     } catch (e) {
