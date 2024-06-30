@@ -4,10 +4,6 @@ import com.recipe.core.Recipe;
 import com.recipe.core.RecipeBuilder;
 import com.recipe.core.RecipeDTO;
 import com.recipe.core.RecipeService;
-import io.opentracing.Span;
-import io.opentracing.util.GlobalTracer;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,8 +14,6 @@ import java.util.*;
 @RestController
 public class RecipeController {
     private final RecipeService recipeService;
-
-    private static final Logger LOG = LogManager.getLogger();
 
     public RecipeController(RecipeService recipeService) {
         this.recipeService = recipeService;
@@ -39,11 +33,7 @@ public class RecipeController {
     @GetMapping("/recipes/")
     ResponseEntity<Iterable<RecipeDTO>> listRecipes() {
         try {
-            LOG.info("Received request to retrieve recipes");
-
             Iterable<RecipeDTO> recipeList = recipeService.ListRecipes();
-
-            LOG.info("Recipe listing successful");
 
             return ResponseEntity.ok(recipeList);
         } catch (Exception e) {
