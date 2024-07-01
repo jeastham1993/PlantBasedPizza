@@ -37,25 +37,16 @@ export const handler = async (event: SQSEvent): Promise<SQSBatchResponse> => {
       childOf: activeSpan?.context(),
     }, async (span) => {
       try {
-        console.log('SQS');
-        console.log(sqsMessage.body);
-
         const eventBridgeWrapper: EventBridgeWrapper = JSON.parse(sqsMessage.body);
-
-        console.log('Wrapper');
-        console.log (eventBridgeWrapper);
 
         const cloudEvent = HTTP.toEvent({ body: eventBridgeWrapper.detail, headers }) as CloudEventV1<OrderConfirmedEvent>;
 
-        console.log('CloudEvent');
-        console.log(cloudEvent);
+        const context: SpanContext = tracer.scope().active()?.context().constructor({
+          traceId: cloudEvent.ddtraceid,
+          spanId: cloudEvent.ddspanid,
+        });
 
-        // const context: SpanContext = tracer.scope().active()?.context().constructor({
-        //   traceId: cloudEvent.ddtraceid,
-        //   spanId: cloudEvent.ddspanid,
-        // });
-
-        // console.log(context);
+        console.log(context);
 
         await eventHandler.handle(cloudEvent.data!);
       } catch (e) {
