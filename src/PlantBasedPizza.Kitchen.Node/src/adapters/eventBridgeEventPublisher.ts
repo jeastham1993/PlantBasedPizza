@@ -56,14 +56,8 @@ export class EventBridgeEventPublisher implements IKitchenEventPublisher {
       "messaging.busName": process.env.BUS_NAME,
     });
 
-    const span = tracer.scope().active()!;
-    const datadog = {};
-
-    tracer.inject(span, "text_map", datadog);
-
-    console.log(datadog);
-
-    console.log(JSON.stringify(ce));
+    console.log(currentSpan?.context().toTraceId());
+    console.log(currentSpan?.context().toSpanId());
 
     const command = new PutEventsCommand({
       Entries: [

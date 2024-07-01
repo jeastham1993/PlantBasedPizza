@@ -40,6 +40,9 @@ export const handler = async (event: SQSEvent): Promise<SQSBatchResponse> => {
 
         const cloudEvent = HTTP.toEvent({ body: eventBridgeWrapper.detail, headers }) as CloudEventV1<OrderConfirmedEvent>;
 
+        console.log(cloudEvent.ddtraceid as string);
+        console.log(cloudEvent.ddspanid as string);
+
         tracer.trace("child-span", {
           childOf: new ManualSpanContext(cloudEvent.ddtraceid as string, cloudEvent.ddspanid as string)
         }, () => {
