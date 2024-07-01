@@ -47,7 +47,10 @@ export class EventBridgeEventPublisher implements IKitchenEventPublisher {
       data: evtData,
       ddtraceid: currentSpan?.context().toTraceId(),
       ddspanid: currentSpan?.context().toSpanId(),
+      ddcontext: getTraceHeaders()
     };
+
+    console.log(ce);
 
     currentSpan?.addTags({
       "messaging.eventId": ce.id,
@@ -55,9 +58,6 @@ export class EventBridgeEventPublisher implements IKitchenEventPublisher {
       "messaging.eventSource": ce.source,
       "messaging.busName": process.env.BUS_NAME,
     });
-
-    console.log(currentSpan?.context().toTraceId());
-    console.log(currentSpan?.context().toSpanId());
 
     const command = new PutEventsCommand({
       Entries: [

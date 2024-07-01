@@ -32,39 +32,57 @@ export const handler = async (event: SQSEvent): Promise<SQSBatchResponse> => {
   };
 
   for (var sqsMessage of event.Records) {
-    await tracer.trace("processing message", {
-      childOf: activeSpan?.context(),
-    }, async (span) => {
-      try {
-        const eventBridgeWrapper: EventBridgeWrapper = JSON.parse(sqsMessage.body);
+    await tracer.trace(
+      "processing message",
+      {
+        childOf: activeSpan?.context(),
+      },
+      async (span) => {
+        try {
+          const eventBridgeWrapper: EventBridgeWrapper = JSON.parse(sqsMessage.body);
 
-        const cloudEvent = HTTP.toEvent({ body: eventBridgeWrapper.detail, headers }) as CloudEventV1<OrderConfirmedEvent>;
+          const cloudEvent = HTTP.toEvent({
+            body: eventBridgeWrapper.detail,
+            headers,
+          }) as CloudEventV1<OrderConfirmedEvent>;
 
-        console.log(cloudEvent.ddtraceid as string);
-        console.log(cloudEvent.ddspanid as string);
+          console.log(cloudEvent.ddtraceid as string);
+          console.log(cloudEvent.ddspanid as string);
 
-        tracer.trace("child-span", {
-          childOf: new ManualSpanContext(cloudEvent.ddtraceid as string, cloudEvent.ddspanid as string)
-        }, () => {
-          console.log('trace some stuff');
-        });
+          tracer.trace(
+            "child-span",
+            {
+              childOf: tracer.extract('datadog', {
+                "x-datadog-trace-id": "1359231895655510549",
+                "x-datadog-parent-id": "7832957309959820944",
+                "x-datadog-sampling-priority": "1",
+                "x-datadog-tags": "_dd.p.tid=6683161200000000,_dd.p.dm=-0",
+                traceparent: "00-668316120000000012dcf63523ed7215-6cb4412c30f45690-01",
+                tracestate: "dd=t.dm:-0;t.tid:6683161200000000;s:1;p:6cb4412c30f45690",
+              })!,
+            },
+            () => {
+              console.log("trace some stuff");
+            },
+          );
 
-        await eventHandler.handle(cloudEvent.data!);
-      } catch (e) {
-        span?.addTags({
-          error: true,
-          errorMessage: e,
-        });
-        
-        console.log(e);
+          await eventHandler.handle(cloudEvent.data!);
+        } catch (e) {
+          span?.addTags({
+            error: true,
+            errorMessage: e,
+          });
 
-        batchItemFailures.push({
-          itemIdentifier: sqsMessage.messageId,
-        });
-      }
+          console.log(e);
 
-      span!.finish();
-    });
+          batchItemFailures.push({
+            itemIdentifier: sqsMessage.messageId,
+          });
+        }
+
+        span!.finish();
+      },
+    );
   }
 
   activeSpan?.addTags({
@@ -75,7 +93,7 @@ export const handler = async (event: SQSEvent): Promise<SQSBatchResponse> => {
   if (batchItemFailures.length > 0) {
     activeSpan?.addTags({
       error: true,
-      errorMessage: 'There is at least one failure in the batch.'
+      errorMessage: "There is at least one failure in the batch.",
     });
   }
 
@@ -85,7 +103,6 @@ export const handler = async (event: SQSEvent): Promise<SQSBatchResponse> => {
 };
 
 export class ManualSpanContext implements SpanContext {
-
   traceId: string;
   spanId: string;
   constructor(traceId: string, spanId: string) {
@@ -100,6 +117,6 @@ export class ManualSpanContext implements SpanContext {
     return this.spanId;
   }
   toTraceparent(): string {
-    return '';
+    return "";
   }
 }
