@@ -7,7 +7,7 @@ import { CloudEventV1, HTTP } from "cloudevents";
 import { OrderConfirmedEvent } from "../integration-events/orderConfirmedEvent";
 import { EventBridgeClient } from "@aws-sdk/client-eventbridge";
 import { SpanContext, tracer } from "dd-trace";
-import { getParameter } from '@aws-lambda-powertools/parameters/ssm';
+import { getParameter } from "@aws-lambda-powertools/parameters/ssm";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { SpanContextWrapper } from "datadog-lambda-js/dist/trace/span-context-wrapper";
 
@@ -31,42 +31,45 @@ export const handler = async (event: any): Promise<SQSBatchResponse> => {
   };
 
   for (const sqsMessage of event.Records) {
-    const span = tracer.startSpan("Processing message");
+    await tracer.trace("processing message", {
+      childOf: activeSpan?.context(),
+    }, async (span) => {
+      try {
+        const cloudEvent = HTTP.toEvent({ body: sqsMessage.body, headers }) as CloudEventV1<OrderConfirmedEvent>;
 
-    try {
-      const cloudEvent = HTTP.toEvent({ body: sqsMessage.body, headers }) as CloudEventV1<OrderConfirmedEvent>;
+        // const context: SpanContext = tracer.scope().active()?.context().constructor({
+        //   traceId: cloudEvent.ddtraceid,
+        //   spanId: cloudEvent.ddspanid,
+        // });
 
-      const context: SpanContext = tracer.scope().active()?.context().constructor({
-        traceId: cloudEvent.ddtraceid,
-        spanId: cloudEvent.ddspanid
-      });
+        // console.log(context);
 
-      span.addLink(context);
+        await eventHandler.handle(cloudEvent.data!);
+      } catch (e) {
+        span?.addTags({
+          error: true,
+          errorMessage: e,
+        });
 
-      await eventHandler.handle(cloudEvent.data!);
-    } catch (e) {
-      span?.addTags({
-        "error": true,
-        "errorMessage": e
-      });
+        batchItemFailures.push({
+          itemIdentifier: sqsMessage.messageId,
+        });
+      }
 
-      batchItemFailures.push({
-        itemIdentifier: sqsMessage.messageId,
-      });
-    }
-
-    span.finish();
+      span!.finish();
+    });
   }
 
   activeSpan?.addTags({
     "sqs.messagesInBatch": event.Records.length,
-    "sqs.failedMessages": batchItemFailures.length
+    "sqs.failedMessages": batchItemFailures.length,
   });
 
-  if (batchItemFailures.length > 0){
+  if (batchItemFailures.length > 0) {
     activeSpan?.addTags({
-      "error": true
-    })
+      error: true,
+      errorMessage: 'There is at least one failure in the batch.'
+    });
   }
 
   return {
