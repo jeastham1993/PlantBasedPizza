@@ -3,10 +3,10 @@ import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import { Runtime } from "aws-cdk-lib/aws-lambda";
 import { Tags } from "aws-cdk-lib";
 import { Alias } from "aws-cdk-lib/aws-kms";
-import { SharedFunctionProps } from "./sharedFunctionProps";
+import { SharedProps } from "./sharedFunctionProps";
 
 export class InstrumentedSqsLambdaFunctionProps{
-  sharedProps: SharedFunctionProps
+  sharedProps: SharedProps
   entry: string
   functionName: string
 };

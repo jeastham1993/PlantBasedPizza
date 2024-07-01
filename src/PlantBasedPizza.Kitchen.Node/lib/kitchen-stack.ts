@@ -4,12 +4,12 @@ import { Construct } from "constructs";
 import { Datadog } from "datadog-cdk-constructs-v2";
 import { ApplicationListener } from "aws-cdk-lib/aws-elasticloadbalancingv2";
 import { Vpc } from "aws-cdk-lib/aws-ec2";
-import { InstrumentedApiLambdaFunction } from "./constructs/lambdaFunction";
-import { InstrumentedSqsLambdaFunction } from "./constructs/sqsLambdaFunction";
 import { EventBus } from "aws-cdk-lib/aws-events";
 import { StringParameter } from "aws-cdk-lib/aws-ssm";
-import { SharedFunctionProps } from "./constructs/sharedFunctionProps";
+import { SharedProps } from "./constructs/sharedFunctionProps";
 import { AttributeType, BillingMode, ProjectionType, Table, TableClass } from "aws-cdk-lib/aws-dynamodb";
+import { Api } from "./api";
+import { BackgroundWorker } from "./backgroundWorkers";
 
 export class KitchenStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -75,7 +75,7 @@ export class KitchenStack extends Stack {
       }
     });
 
-    const sharedProps: SharedFunctionProps = {
+    const sharedProps: SharedProps = {
       serviceName,
       environment,
       version,
@@ -86,96 +86,16 @@ export class KitchenStack extends Stack {
       table
     };
 
-    const getNewFunction = new InstrumentedApiLambdaFunction(this, "GetNewFunction", {
+    const api = new Api(this, "KitchenApi", {
       sharedProps,
-      entry: "./src/lambda/getNew.ts",
-      functionName: "GetNewFunction",
-      path: "/kitchen/new",
-      methods: ['GET'],
-      priority: 36,
-    });
-    const getPrepCompleteFunction = new InstrumentedApiLambdaFunction(this, "GetPrepCompleteFunction", {
-      sharedProps,
-      entry: "./src/lambda/getPreparing.ts",
-      functionName: "GetPrepCompleteFunction",
-      path: "/kitchen/prep",
-      methods: ['GET'],
-      priority: 33,
-    });
-    const getBakingFunction = new InstrumentedApiLambdaFunction(this, "GetBakingFunction", {
-      sharedProps,
-      entry: "./src/lambda/getBaking.ts",
-      functionName: "GetBakingFunction",
-      path: "/kitchen/baking",
-      methods: ['GET'],
-      priority: 34,
-    });
-    const getAwaitingQualityCheckFunction = new InstrumentedApiLambdaFunction(this, "GetAwaitingQualityCheckFunction", {
-      sharedProps,
-      entry: "./src/lambda/getAwaitingQualityCheck.ts",
-      functionName: "GetAwaitingQualityCheckFunction",
-      path: "/kitchen/quality-check",
-      methods: ['GET'],
-      priority: 35,
-    });
-    const setPreparingFunction = new InstrumentedApiLambdaFunction(this, "SetPreparingFunction", {
-      sharedProps,
-      entry: "./src/lambda/setPreparing.ts",
-      functionName: "SetPreparingFunction",
-      path: "/kitchen/preparing",
-      methods: ['POST'],
-      priority: 30,
-    });
-    const setBakingFunction = new InstrumentedApiLambdaFunction(this, "SetBakingFunction", {
-      sharedProps,
-      entry: "./src/lambda/setBaking.ts",
-      functionName: "SetBakingFunction",
-      path: "/kitchen/prep-complete",
-      methods: ['POST'],
-      priority: 31,
-    });
-    const setQualityCheckingFunction = new InstrumentedApiLambdaFunction(this, "SetQualityCheckingFunction", {
-      sharedProps,
-      entry: "./src/lambda/setQualityChecking.ts",
-      functionName: "SetQualityCheckingFunction",
-      path: "/kitchen/bake-complete",
-      methods: ['POST'],
-      priority: 32,
-    });
-    const setDoneFunction = new InstrumentedApiLambdaFunction(this, "SetCompleteFunction", {
-      sharedProps,
-      entry: "./src/lambda/setComplete.ts",
-      functionName: "SetCompleteFunction",
-      path: "/kitchen/quality-check",
-      methods: ['POST'],
-      priority: 37,
+      bus: eventBridge,
+      table
     });
 
-    const orderConfirmedHandler = new InstrumentedSqsLambdaFunction(this, "HandleOrderConfirmedEvent", {
+    const backgroundWorkers = new BackgroundWorker(this, "BackgroundWorker", {
       sharedProps,
-      entry: "./src/lambda/handleOrderConfirmedEvent.ts",
-      functionName: "HandleOrderConfirmedEvent",
+      table,
+      bus: eventBridge
     });
-
-    orderConfirmedHandler.function.addEnvironment("BUS_NAME", eventBridge.eventBusName);
-    eventBridge.grantPutEventsTo(orderConfirmedHandler.function);
-    setPreparingFunction.function.addEnvironment("BUS_NAME", eventBridge.eventBusName);
-    eventBridge.grantPutEventsTo(setPreparingFunction.function);
-    setBakingFunction.function.addEnvironment("BUS_NAME", eventBridge.eventBusName);
-    eventBridge.grantPutEventsTo(setBakingFunction.function);
-    setQualityCheckingFunction.function.addEnvironment("BUS_NAME", eventBridge.eventBusName);
-    eventBridge.grantPutEventsTo(setQualityCheckingFunction.function);
-    setDoneFunction.function.addEnvironment("BUS_NAME", eventBridge.eventBusName);
-    eventBridge.grantPutEventsTo(setDoneFunction.function);
-
-    table.grantReadWriteData(orderConfirmedHandler.function);
-    table.grantReadWriteData(setPreparingFunction.function);
-    table.grantReadWriteData(setBakingFunction.function);
-    table.grantReadWriteData(setQualityCheckingFunction.function);
-    table.grantReadWriteData(setDoneFunction.function);
-    table.grantReadData(getAwaitingQualityCheckFunction.function);
-    table.grantReadData(getBakingFunction.function);
-    table.grantReadData(getPrepCompleteFunction.function);
-    table.grantReadData(getNewFunction.function);
   }
 }

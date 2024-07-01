@@ -9,10 +9,10 @@ import {
 } from "aws-cdk-lib/aws-elasticloadbalancingv2";
 import { Tags } from "aws-cdk-lib";
 import { Alias } from "aws-cdk-lib/aws-kms";
-import { SharedFunctionProps } from "./sharedFunctionProps";
+import { SharedProps } from "./sharedFunctionProps";
 
 export class InstrumentedApiLambdaFunctionProps {
-  sharedProps: SharedFunctionProps;
+  sharedProps: SharedProps;
   entry: string;
   path: string;
   methods: string[];
