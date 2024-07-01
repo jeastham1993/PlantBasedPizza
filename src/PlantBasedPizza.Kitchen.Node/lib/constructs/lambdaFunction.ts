@@ -1,5 +1,5 @@
 import { Construct } from "constructs";
-import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
+import { NodejsFunction, OutputFormat } from "aws-cdk-lib/aws-lambda-nodejs";
 import { Runtime } from "aws-cdk-lib/aws-lambda";
 import { LambdaTarget } from "aws-cdk-lib/aws-elasticloadbalancingv2-targets";
 import {
@@ -40,7 +40,8 @@ export class InstrumentedApiLambdaFunction extends Construct {
           "graphql/language/visitor",
           "graphql/language/printer",
           "graphql/utilities"
-        ]
+        ],
+        esbuildVersion: "0.21.5"
       }
     });
 

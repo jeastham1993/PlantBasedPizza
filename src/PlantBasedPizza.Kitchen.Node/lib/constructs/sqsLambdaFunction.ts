@@ -36,7 +36,8 @@ export class InstrumentedSqsLambdaFunction extends Construct {
           "graphql/language/visitor",
           "graphql/language/printer",
           "graphql/utilities"
-        ]
+        ],
+        esbuildVersion: "0.21.5"
       }
     });
 
