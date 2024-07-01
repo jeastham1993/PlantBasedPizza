@@ -3,7 +3,7 @@ import { IKitchenEventPublisher } from "../entities/kitchenEventPublisher";
 import { KitchenOrderConfirmedEventV1 } from "../events/kitchenOrderConfirmedV1Event";
 import { EventBridgeClient, PutEventsCommand } from "@aws-sdk/client-eventbridge";
 import { v4 as uuidv4 } from "uuid";
-import { tracer, Tracer, TracerProvider } from "dd-trace";
+import { tracer } from "dd-trace";
 import { OrderBakedEventV1 } from "../events/orderBakedEventV1";
 import { OrderPrepCompleteEventV1 } from "../events/orderPrepCompleteEventV1";
 import { OrderPreparingEventV1 } from "../events/orderPreparingEventV1";
