@@ -22,6 +22,8 @@ export class OrderConfirmedEventHandler {
   }
 
   async handle(evt: OrderConfirmedEvent): Promise<void> {
+    console.log(evt);
+
     const activeSpan = tracer.scope().active();
     activeSpan?.addTags({"order.orderIdentifier": evt.OrderIdentifier});
     activeSpan?.addTags({"order.inputItemCount": evt.Items.length});
