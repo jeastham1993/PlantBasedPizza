@@ -50,6 +50,8 @@ export const handler = async (event: any): Promise<SQSBatchResponse> => {
           error: true,
           errorMessage: e,
         });
+        
+        console.log(e);
 
         batchItemFailures.push({
           itemIdentifier: sqsMessage.messageId,
