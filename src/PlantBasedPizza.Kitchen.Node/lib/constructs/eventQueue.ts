@@ -49,10 +49,8 @@ export class EventQueue extends Construct {
 
     Tags.of(this.deadLetterQueue).add("service", props.sharedProps.serviceName);
     Tags.of(this.deadLetterQueue).add("env", props.sharedProps.environment);
-    Tags.of(this.deadLetterQueue).add("version", props.sharedProps.version);
     Tags.of(this.queue).add("service", props.sharedProps.serviceName);
     Tags.of(this.queue).add("env", props.sharedProps.environment);
-    Tags.of(this.queue).add("version", props.sharedProps.version);
 
     const rule = new Rule(this, `${props.queueName}Rule`, {
         eventBus: props.bus
