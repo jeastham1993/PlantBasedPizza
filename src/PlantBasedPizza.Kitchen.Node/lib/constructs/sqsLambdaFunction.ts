@@ -1,14 +1,17 @@
 import { Construct } from "constructs";
 import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import { Runtime } from "aws-cdk-lib/aws-lambda";
-import { Tags } from "aws-cdk-lib";
+import { Duration, Tags } from "aws-cdk-lib";
 import { Alias } from "aws-cdk-lib/aws-kms";
 import { SharedProps } from "./sharedFunctionProps";
+import { IQueue } from "aws-cdk-lib/aws-sqs";
+import { SqsEventSource } from "aws-cdk-lib/aws-lambda-event-sources";
 
 export class InstrumentedSqsLambdaFunctionProps{
   sharedProps: SharedProps
   entry: string
   functionName: string
+  queue: IQueue
 };
 
 export class InstrumentedSqsLambdaFunction extends Construct {
@@ -22,6 +25,7 @@ export class InstrumentedSqsLambdaFunction extends Construct {
       entry: props.entry,
       depsLockFilePath: './package-lock.json',
       memorySize: 512,
+      timeout: Duration.seconds(60),
       environment: {
         CONN_STRING_PARAM: props.sharedProps.databaseConnectionParam.parameterName,
         RECIPE_API_ENDPOINT: 'https://api.dev.plantbasedpizza.net',
@@ -35,6 +39,8 @@ export class InstrumentedSqsLambdaFunction extends Construct {
         ]
       }
     });
+
+    this.function.addEventSource(new SqsEventSource(props.queue));
 
     props.sharedProps.databaseConnectionParam.grantRead(this.function);
     const kmsAlias = Alias.fromAliasName(this, "SSMAlias", "aws/ssm");

@@ -29,9 +29,8 @@ export class BackgroundWorker extends Construct {
         sharedProps: props.sharedProps,
       entry: "./src/lambda/handleOrderConfirmedEvent.ts",
       functionName: "HandleOrderConfirmedEvent",
+      queue: queue.queue
     });
-
-    orderConfirmedHandler.function.addEventSource(new SqsEventSource(queue.queue));
 
     orderConfirmedHandler.function.addEnvironment("BUS_NAME", props.bus.eventBusName);
     props.bus.grantPutEventsTo(orderConfirmedHandler.function);

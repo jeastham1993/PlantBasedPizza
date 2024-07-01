@@ -24,6 +24,7 @@ export class OrderConfirmedEventHandler {
   async handle(evt: OrderConfirmedEvent): Promise<void> {
     const activeSpan = tracer.scope().active();
     activeSpan?.addTags({"order.orderIdentifier": evt.OrderIdentifier});
+    activeSpan?.addTags({"order.inputItemCount": evt.Items.length});
 
     const existingOrder = await this.kitchenRequestRepository.retrieve(evt.OrderIdentifier);
 
@@ -42,6 +43,12 @@ export class OrderConfirmedEventHandler {
       };
 
       recipes.push(recipe);
+    }
+
+    if (recipes.length != evt.Items.length) {
+      const message = `Retrieved recipe count does not equal number of items on input: Retrieved ${recipes.length}. Input ${evt.Items.length}`;
+      console.log(message);
+      throw message;
     }
 
     activeSpan?.addTags({"order.recipesFound": recipes.length});
