@@ -31,11 +31,14 @@ export const handler = async (event: any): Promise<SQSBatchResponse> => {
   };
 
   for (const sqsMessage of event.Records) {
+    console.log(sqsMessage);
     await tracer.trace("processing message", {
       childOf: activeSpan?.context(),
     }, async (span) => {
       try {
         const cloudEvent = HTTP.toEvent({ body: sqsMessage.body, headers }) as CloudEventV1<OrderConfirmedEvent>;
+
+        console.log(cloudEvent);
 
         // const context: SpanContext = tracer.scope().active()?.context().constructor({
         //   traceId: cloudEvent.ddtraceid,
