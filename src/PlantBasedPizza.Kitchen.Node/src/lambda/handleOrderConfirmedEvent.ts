@@ -46,26 +46,6 @@ export const handler = async (event: SQSEvent): Promise<SQSBatchResponse> => {
             headers,
           }) as CloudEventV1<OrderConfirmedEvent>;
 
-          console.log(cloudEvent.ddtraceid as string);
-          console.log(cloudEvent.ddspanid as string);
-
-          tracer.trace(
-            "child-span-new",
-            {
-              childOf: tracer.extract('datadog', {
-                "x-datadog-trace-id": "1359231895655510549",
-                "x-datadog-parent-id": "7832957309959820944",
-                "x-datadog-sampling-priority": "1",
-                "x-datadog-tags": "_dd.p.tid=6683161200000000,_dd.p.dm=-0",
-                traceparent: "00-668316120000000012dcf63523ed7215-6cb4412c30f45690-01",
-                tracestate: "dd=t.dm:-0;t.tid:6683161200000000;s:1;p:6cb4412c30f45690",
-              })!,
-            },
-            () => {
-              console.log("trace some stuff");
-            },
-          );
-
           await eventHandler.handle(cloudEvent.data!);
         } catch (e) {
           span?.addTags({

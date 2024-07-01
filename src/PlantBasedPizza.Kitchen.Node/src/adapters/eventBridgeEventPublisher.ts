@@ -46,11 +46,8 @@ export class EventBridgeEventPublisher implements IKitchenEventPublisher {
       datacontenttype: "application/json",
       data: evtData,
       ddtraceid: currentSpan?.context().toTraceId(),
-      ddspanid: currentSpan?.context().toSpanId(),
-      ddcontext: getTraceHeaders()
+      ddspanid: currentSpan?.context().toSpanId()
     };
-
-    console.log(ce);
 
     currentSpan?.addTags({
       "messaging.eventId": ce.id,
