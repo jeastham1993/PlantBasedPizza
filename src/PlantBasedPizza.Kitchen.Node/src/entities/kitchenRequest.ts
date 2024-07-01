@@ -1,6 +1,7 @@
 import { inherits } from "util"
 import { RecipeAdapter } from "../adapters/recipeAdapter"
-import {v4 as uuidv4, v4} from 'uuid';
+const {"v4": uuidv4} = require('uuid');
+
 export class KitchenRequest {
     kitchenRequestId: string
     orderIdentifier: string
@@ -13,10 +14,9 @@ export class KitchenRequest {
 
     constructor(orderIdentifier: string, recipes: RecipeAdapter[]) {
         this.orderIdentifier = orderIdentifier;
-        this.kitchenRequestId = v4();
+        this.kitchenRequestId = uuidv4();
         this.recipes = recipes;
         this.orderReceivedOn = new Date();
-        this.kitchenRequestId = uuidv4();
         this.orderState = OrderState.NEW;
     }
 }

@@ -7,7 +7,7 @@ import { OrderBakedEventV1 } from "../events/orderBakedEventV1";
 import { OrderPrepCompleteEventV1 } from "../events/orderPrepCompleteEventV1";
 import { OrderPreparingEventV1 } from "../events/orderPreparingEventV1";
 import { OrderQualityCheckedEventV1 } from "../events/orderQualityCheckedEventV1";
-import { v4 } from "uuid";
+const {"v4": uuidv4} = require('uuid');
 const { getTraceHeaders } = require("datadog-lambda-js");
 
 export class EventBridgeEventPublisher implements IKitchenEventPublisher {
@@ -40,7 +40,7 @@ export class EventBridgeEventPublisher implements IKitchenEventPublisher {
       specversion: "1.0",
       source: "https://kitchen.plantbasedpizza",
       type: evtType,
-      id: v4(),
+      id: uuidv4(),
       time: new Date().toISOString(),
       datacontenttype: "application/json",
       data: evtData,
