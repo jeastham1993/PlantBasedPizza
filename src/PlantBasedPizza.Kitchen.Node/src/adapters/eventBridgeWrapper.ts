@@ -1,3 +1,3 @@
 export interface EventBridgeWrapper {
-    detail: string
+    detail: any
 }
