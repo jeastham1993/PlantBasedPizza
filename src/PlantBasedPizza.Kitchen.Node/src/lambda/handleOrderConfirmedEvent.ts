@@ -32,7 +32,6 @@ export const handler = async (event: SQSEvent): Promise<SQSBatchResponse> => {
   };
 
   for (var sqsMessage of event.Records) {
-    console.log(sqsMessage);
     await tracer.trace("processing message", {
       childOf: activeSpan?.context(),
     }, async (span) => {
@@ -41,12 +40,11 @@ export const handler = async (event: SQSEvent): Promise<SQSBatchResponse> => {
 
         const cloudEvent = HTTP.toEvent({ body: eventBridgeWrapper.detail, headers }) as CloudEventV1<OrderConfirmedEvent>;
 
-        const context: SpanContext = tracer.scope().active()?.context().constructor({
-          traceId: cloudEvent.ddtraceid,
-          spanId: cloudEvent.ddspanid,
+        tracer.trace("child-span", {
+          childOf: new ManualSpanContext(cloudEvent.ddtraceid as string, cloudEvent.ddspanid as string)
+        }, () => {
+          console.log('trace some stuff');
         });
-
-        console.log(context);
 
         await eventHandler.handle(cloudEvent.data!);
       } catch (e) {
@@ -82,3 +80,23 @@ export const handler = async (event: SQSEvent): Promise<SQSBatchResponse> => {
     batchItemFailures,
   };
 };
+
+export class ManualSpanContext implements SpanContext {
+
+  traceId: string;
+  spanId: string;
+  constructor(traceId: string, spanId: string) {
+    this.traceId = traceId;
+    this.spanId = spanId;
+  }
+
+  toTraceId(): string {
+    return this.traceId;
+  }
+  toSpanId(): string {
+    return this.spanId;
+  }
+  toTraceparent(): string {
+    return '';
+  }
+}
