@@ -7,7 +7,8 @@ import { OrderBakedEventV1 } from "../events/orderBakedEventV1";
 import { OrderPrepCompleteEventV1 } from "../events/orderPrepCompleteEventV1";
 import { OrderPreparingEventV1 } from "../events/orderPreparingEventV1";
 import { OrderQualityCheckedEventV1 } from "../events/orderQualityCheckedEventV1";
-const {"v4": uuidv4} = require('uuid');
+import { v4 as uuidv4 } from 'uuid';
+
 const { getTraceHeaders } = require("datadog-lambda-js");
 
 export class EventBridgeEventPublisher implements IKitchenEventPublisher {
