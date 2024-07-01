@@ -37,6 +37,9 @@ export class EventBridgeEventPublisher implements IKitchenEventPublisher {
   async publish<T>(evtType: string, evtData: T) {
     const currentSpan = tracer.scope().active();
 
+    const traceContext = {};
+    tracer.inject(currentSpan!.context(), 'text_map', traceContext);
+
     const ce: CloudEventV1<T> = {
       specversion: "1.0",
       source: "https://kitchen.plantbasedpizza",
@@ -46,7 +49,8 @@ export class EventBridgeEventPublisher implements IKitchenEventPublisher {
       datacontenttype: "application/json",
       data: evtData,
       ddtraceid: currentSpan?.context().toTraceId(),
-      ddspanid: currentSpan?.context().toSpanId()
+      ddspanid: currentSpan?.context().toSpanId(),
+      traceContext
     };
 
     currentSpan?.addTags({
