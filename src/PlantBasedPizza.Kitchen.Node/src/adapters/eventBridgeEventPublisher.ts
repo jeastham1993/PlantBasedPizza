@@ -2,12 +2,12 @@ import { CloudEventV1 } from "cloudevents";
 import { IKitchenEventPublisher } from "../entities/kitchenEventPublisher";
 import { KitchenOrderConfirmedEventV1 } from "../events/kitchenOrderConfirmedV1Event";
 import { EventBridgeClient, PutEventsCommand } from "@aws-sdk/client-eventbridge";
-import { v4 as uuidv4 } from "uuid";
 import { tracer } from "dd-trace";
 import { OrderBakedEventV1 } from "../events/orderBakedEventV1";
 import { OrderPrepCompleteEventV1 } from "../events/orderPrepCompleteEventV1";
 import { OrderPreparingEventV1 } from "../events/orderPreparingEventV1";
 import { OrderQualityCheckedEventV1 } from "../events/orderQualityCheckedEventV1";
+import { v4 } from "uuid";
 const { getTraceHeaders } = require("datadog-lambda-js");
 
 export class EventBridgeEventPublisher implements IKitchenEventPublisher {
@@ -40,7 +40,7 @@ export class EventBridgeEventPublisher implements IKitchenEventPublisher {
       specversion: "1.0",
       source: "https://kitchen.plantbasedpizza",
       type: evtType,
-      id: uuidv4(),
+      id: v4(),
       time: new Date().toISOString(),
       datacontenttype: "application/json",
       data: evtData,
