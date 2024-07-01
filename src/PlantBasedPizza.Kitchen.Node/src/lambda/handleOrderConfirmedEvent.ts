@@ -50,7 +50,7 @@ export const handler = async (event: SQSEvent): Promise<SQSBatchResponse> => {
           console.log(cloudEvent.ddspanid as string);
 
           tracer.trace(
-            "child-span",
+            "child-span-new",
             {
               childOf: tracer.extract('datadog', {
                 "x-datadog-trace-id": "1359231895655510549",
