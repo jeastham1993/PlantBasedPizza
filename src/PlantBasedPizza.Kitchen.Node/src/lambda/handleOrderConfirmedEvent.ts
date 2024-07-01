@@ -10,6 +10,7 @@ import { SpanContext, tracer } from "dd-trace";
 import { getParameter } from "@aws-lambda-powertools/parameters/ssm";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { SpanContextWrapper } from "datadog-lambda-js/dist/trace/span-context-wrapper";
+import { EventBridgeWrapper } from "../adapters/eventBridgeWrapper";
 
 tracer.init();
 
@@ -22,7 +23,7 @@ const recipeService = new RecipeService();
 const kitchenRepository = new KitchenRequestRepository(dynamoDbClient, process.env.TABLE_NAME!);
 const eventHandler = new OrderConfirmedEventHandler(kitchenRepository, eventPublisher, recipeService);
 
-export const handler = async (event: any): Promise<SQSBatchResponse> => {
+export const handler = async (event: SQSEvent): Promise<SQSBatchResponse> => {
   const activeSpan = tracer.scope().active();
   const batchItemFailures: SQSBatchItemFailure[] = [];
 
@@ -30,15 +31,23 @@ export const handler = async (event: any): Promise<SQSBatchResponse> => {
     "content-type": "application/cloudevents+json",
   };
 
-  for (const sqsMessage of event.Records) {
+  for (var sqsMessage of event.Records) {
     console.log(sqsMessage);
     await tracer.trace("processing message", {
       childOf: activeSpan?.context(),
     }, async (span) => {
       try {
-        console.log(sqsMessage.body.detail);
-        const cloudEvent = HTTP.toEvent({ body: sqsMessage.body.detail, headers }) as CloudEventV1<OrderConfirmedEvent>;
+        console.log('SQS');
+        console.log(sqsMessage.body);
 
+        const eventBridgeWrapper: EventBridgeWrapper = JSON.parse(sqsMessage.body);
+
+        console.log('Wrapper');
+        console.log (eventBridgeWrapper);
+
+        const cloudEvent = HTTP.toEvent({ body: eventBridgeWrapper.detail, headers }) as CloudEventV1<OrderConfirmedEvent>;
+
+        console.log('CloudEvent');
         console.log(cloudEvent);
 
         // const context: SpanContext = tracer.scope().active()?.context().constructor({
