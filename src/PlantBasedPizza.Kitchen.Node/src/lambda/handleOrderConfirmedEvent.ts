@@ -36,7 +36,11 @@ export const handler = async (event: any): Promise<SQSBatchResponse> => {
       childOf: activeSpan?.context(),
     }, async (span) => {
       try {
-        const cloudEvent = HTTP.toEvent({ body: sqsMessage.body, headers }) as CloudEventV1<OrderConfirmedEvent>;
+        const eventBridgeWrapper = JSON.parse(sqsMessage.body);
+
+        console.log(eventBridgeWrapper);
+
+        const cloudEvent = HTTP.toEvent({ body: eventBridgeWrapper, headers }) as CloudEventV1<OrderConfirmedEvent>;
 
         console.log(cloudEvent);
 
