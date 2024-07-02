@@ -86,7 +86,11 @@ public class SqsEventSubscriber
 
         foreach (var message in messages)
         {
+            Console.WriteLine(message.Body);
+
             var eventBridgeEventWrapper = JsonSerializer.Deserialize<EventBridgeEvent>(message.Body);
+
+            Console.WriteLine(eventBridgeEventWrapper.Detail.ToJsonString());
             
             var formatter = new JsonEventFormatter<T>();
             var evtWrapper = await formatter.DecodeStructuredModeMessageAsync(new MemoryStream(Encoding.UTF8.GetBytes(eventBridgeEventWrapper.Detail.ToJsonString())), new ContentType("application/json"), new List<CloudEventAttribute>(1)
