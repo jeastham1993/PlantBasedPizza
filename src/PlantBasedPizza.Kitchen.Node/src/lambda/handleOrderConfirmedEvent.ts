@@ -10,6 +10,7 @@ import { SpanContext, tracer } from "dd-trace";
 import { getParameter } from "@aws-lambda-powertools/parameters/ssm";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { SpanContextWrapper } from "datadog-lambda-js/dist/trace/span-context-wrapper";
+import { EventBridgeWrapper } from "../adapters/eventBridgeWrapper";
 
 tracer.init();
 
@@ -22,7 +23,7 @@ const recipeService = new RecipeService();
 const kitchenRepository = new KitchenRequestRepository(dynamoDbClient, process.env.TABLE_NAME!);
 const eventHandler = new OrderConfirmedEventHandler(kitchenRepository, eventPublisher, recipeService);
 
-export const handler = async (event: any): Promise<SQSBatchResponse> => {
+export const handler = async (event: SQSEvent): Promise<SQSBatchResponse> => {
   const activeSpan = tracer.scope().active();
   const batchItemFailures: SQSBatchItemFailure[] = [];
 
@@ -30,39 +31,38 @@ export const handler = async (event: any): Promise<SQSBatchResponse> => {
     "content-type": "application/cloudevents+json",
   };
 
-  for (const sqsMessage of event.Records) {
-    console.log(sqsMessage);
-    await tracer.trace("processing message", {
-      childOf: activeSpan?.context(),
-    }, async (span) => {
-      try {
-        const cloudEvent = HTTP.toEvent({ body: sqsMessage.body, headers }) as CloudEventV1<OrderConfirmedEvent>;
+  for (var sqsMessage of event.Records) {
+    await tracer.trace(
+      "processing message",
+      {
+        childOf: activeSpan?.context(),
+      },
+      async (span) => {
+        try {
+          const eventBridgeWrapper: EventBridgeWrapper = JSON.parse(sqsMessage.body);
 
-        console.log(cloudEvent);
+          const cloudEvent = HTTP.toEvent({
+            body: eventBridgeWrapper.detail,
+            headers,
+          }) as CloudEventV1<OrderConfirmedEvent>;
 
-        // const context: SpanContext = tracer.scope().active()?.context().constructor({
-        //   traceId: cloudEvent.ddtraceid,
-        //   spanId: cloudEvent.ddspanid,
-        // });
+          await eventHandler.handle(cloudEvent.data!);
+        } catch (e) {
+          span?.addTags({
+            error: true,
+            errorMessage: e,
+          });
 
-        // console.log(context);
+          console.log(e);
 
-        await eventHandler.handle(cloudEvent.data!);
-      } catch (e) {
-        span?.addTags({
-          error: true,
-          errorMessage: e,
-        });
-        
-        console.log(e);
+          batchItemFailures.push({
+            itemIdentifier: sqsMessage.messageId,
+          });
+        }
 
-        batchItemFailures.push({
-          itemIdentifier: sqsMessage.messageId,
-        });
-      }
-
-      span!.finish();
-    });
+        span!.finish();
+      },
+    );
   }
 
   activeSpan?.addTags({
@@ -73,7 +73,7 @@ export const handler = async (event: any): Promise<SQSBatchResponse> => {
   if (batchItemFailures.length > 0) {
     activeSpan?.addTags({
       error: true,
-      errorMessage: 'There is at least one failure in the batch.'
+      errorMessage: "There is at least one failure in the batch.",
     });
   }
 
@@ -81,3 +81,22 @@ export const handler = async (event: any): Promise<SQSBatchResponse> => {
     batchItemFailures,
   };
 };
+
+export class ManualSpanContext implements SpanContext {
+  traceId: string;
+  spanId: string;
+  constructor(traceId: string, spanId: string) {
+    this.traceId = traceId;
+    this.spanId = spanId;
+  }
+
+  toTraceId(): string {
+    return this.traceId;
+  }
+  toSpanId(): string {
+    return this.spanId;
+  }
+  toTraceparent(): string {
+    return "";
+  }
+}
