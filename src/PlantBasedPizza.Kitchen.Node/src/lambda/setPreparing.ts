@@ -1,6 +1,5 @@
 import { ALBEvent, ALBResult } from "aws-lambda";
 import { KitchenRequestRepository } from "../adapters/kitchenRepository";
-import { getParameter } from "@aws-lambda-powertools/parameters/ssm";
 import { EventBridgeClient } from "@aws-sdk/client-eventbridge";
 import { EventBridgeEventPublisher } from "../adapters/eventBridgeEventPublisher";
 import { tracer } from "dd-trace";

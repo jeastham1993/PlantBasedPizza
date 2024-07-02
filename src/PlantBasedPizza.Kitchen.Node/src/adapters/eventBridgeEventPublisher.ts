@@ -9,6 +9,7 @@ import { OrderPreparingEventV1 } from "../events/orderPreparingEventV1";
 import { OrderQualityCheckedEventV1 } from "../events/orderQualityCheckedEventV1";
 import { v4 as uuidv4 } from 'uuid';
 
+const { FORMAT_HTTP_HEADERS } = require('opentracing')
 const { getTraceHeaders } = require("datadog-lambda-js");
 
 export class EventBridgeEventPublisher implements IKitchenEventPublisher {
@@ -37,9 +38,14 @@ export class EventBridgeEventPublisher implements IKitchenEventPublisher {
   async publish<T>(evtType: string, evtData: T) {
     const currentSpan = tracer.scope().active();
 
+    const span= tracer.scope().active()!;
+    const headers = {};
+
+    tracer.inject(span, FORMAT_HTTP_HEADERS, headers);
+
     const ce: CloudEventV1<T> = {
       specversion: "1.0",
-      source: "https://kitchen.plantbasedpizza",
+      source: "https://kitchen.plantbasedpizza/",
       type: evtType,
       id: uuidv4(),
       time: new Date().toISOString(),
@@ -47,6 +53,8 @@ export class EventBridgeEventPublisher implements IKitchenEventPublisher {
       data: evtData,
       ddtraceid: currentSpan?.context().toTraceId(),
       ddspanid: currentSpan?.context().toSpanId(),
+      traceparent: currentSpan?.context().toTraceparent(),
+      tracedata: headers
     };
 
     currentSpan?.addTags({
@@ -55,15 +63,6 @@ export class EventBridgeEventPublisher implements IKitchenEventPublisher {
       "messaging.eventSource": ce.source,
       "messaging.busName": process.env.BUS_NAME,
     });
-
-    const span = tracer.scope().active()!;
-    const datadog = {};
-
-    tracer.inject(span, "text_map", datadog);
-
-    console.log(datadog);
-
-    console.log(JSON.stringify(ce));
 
     const command = new PutEventsCommand({
       Entries: [
