@@ -20,7 +20,7 @@ permissions:
 jobs:
   build-api-image:
     
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@feature/aws-serverless
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@feature/aws-serverless-datadog
     with:
       service-name: "OrdersService"
       project-root: src/PlantBasedPizza.Orders
@@ -34,7 +34,7 @@ jobs:
       dd_app_key: ${{secrets.DD_APP_KEY}}
 
   integration-test:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/integration-test-with-test-infra.yaml@feature/aws-serverless
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/integration-test-with-test-infra.yaml@feature/aws-serverless-datadog
     needs:
       - build-api-image
     with:
@@ -47,7 +47,7 @@ jobs:
       ecr-registry: ${{secrets.ECR_REGISTRY}}
       dd_api_key: ${{secrets.DD_API_KEY}}
   deploy-to-dev:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/cdk-deploy-base.yaml@feature/aws-serverless
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/cdk-deploy-base.yaml@feature/aws-serverless-datadog
     needs: integration-test
     concurrency:
       group: orders-dev-deploy
