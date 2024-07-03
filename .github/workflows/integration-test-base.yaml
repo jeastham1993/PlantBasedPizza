@@ -63,7 +63,7 @@ jobs:
           DD_CIVISIBILITY_AGENTLESS_ENABLED: true
           DD_API_KEY: ${{secrets.dd_api_key}}
           DD_SITE: datadoghq.eu
-        run: dd-trace ci run --dd-service=${{inputs.service-name}} --dd-env=ci -- dotnet test ${{ inputs.integration-test-folder }}
+        run: dotnet test ${{ inputs.integration-test-folder }}
       - name: Teardown
         run: docker-compose -f ${{ inputs.integration-test-compose-file }} down
           
