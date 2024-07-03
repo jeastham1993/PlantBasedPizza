@@ -36,6 +36,14 @@ export class KitchenStack extends Stack {
       },
     );
 
+    const jwtKey = StringParameter.fromSecureStringParameterAttributes(
+      this,
+      "JwtKeyParam",
+      {
+        parameterName: "/shared/jwt-key",
+      },
+    );
+
     const eventBridge = EventBus.fromEventBusName(this, "SharedEventBus", "PlantBasedPizzaEvents");
 
     const datadogConfiguration = new Datadog(this, "Datadog", {
@@ -89,7 +97,8 @@ export class KitchenStack extends Stack {
     const api = new Api(this, "KitchenApi", {
       sharedProps,
       bus: eventBridge,
-      table
+      table,
+      jwtKey
     });
 
     const backgroundWorkers = new BackgroundWorker(this, "BackgroundWorker", {

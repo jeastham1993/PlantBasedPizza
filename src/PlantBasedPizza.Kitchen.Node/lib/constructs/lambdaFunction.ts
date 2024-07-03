@@ -10,6 +10,7 @@ import {
 import { Tags } from "aws-cdk-lib";
 import { Alias } from "aws-cdk-lib/aws-kms";
 import { SharedProps } from "./sharedFunctionProps";
+import { IStringParameter } from "aws-cdk-lib/aws-ssm";
 
 export class InstrumentedApiLambdaFunctionProps {
   sharedProps: SharedProps;
@@ -18,6 +19,7 @@ export class InstrumentedApiLambdaFunctionProps {
   methods: string[];
   priority: number;
   functionName: string;
+  jwtKey: IStringParameter
 }
 
 export class InstrumentedApiLambdaFunction extends Construct {
@@ -33,7 +35,8 @@ export class InstrumentedApiLambdaFunction extends Construct {
       memorySize: 512,
       environment: {
         CONN_STRING_PARAM: props.sharedProps.databaseConnectionParam.parameterName,
-        TABLE_NAME: props.sharedProps.table.tableName
+        TABLE_NAME: props.sharedProps.table.tableName,
+        JWT_SSM_PARAM: props.jwtKey.parameterName
       },
       bundling: {
         externalModules: [
@@ -54,6 +57,7 @@ export class InstrumentedApiLambdaFunction extends Construct {
     Tags.of(this.function).add("version", props.sharedProps.version);
 
     props.sharedProps.datadogConfiguration.addLambdaFunctions([this.function]);
+    props.jwtKey.grantRead(this.function);
 
     const getNewLambdaTarget = new LambdaTarget(this.function);
 

@@ -6,8 +6,14 @@ import { tracer } from "dd-trace";
 import { SetKitchenRequestPreparingCommand } from "../commands/setKitchenRequestPreparingHandler";
 import { OrderState } from "../entities/kitchenRequest";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { Authorizer } from "../authorization/authorizer";
+import { getParameter } from "@aws-lambda-powertools/parameters/ssm";
 
 tracer.init();
+
+const secretKey = getParameter(process.env.JWT_SSM_PARAM!);
+
+const authorizer: Authorizer = new Authorizer(secretKey);
 
 const eventBridgeClient = new EventBridgeClient();
 const dynamoDbClient = new DynamoDBClient();
@@ -17,6 +23,16 @@ const eventPublisher = new EventBridgeEventPublisher(eventBridgeClient);
 var kitchenRepository = new KitchenRequestRepository(dynamoDbClient, process.env.TABLE_NAME!);
 
 export const handler = async (event: ALBEvent): Promise<ALBResult> => {
+  const isAuthorized = await authorizer.authorizeRequest(event, ["staff", "admin"]);
+
+  if (!isAuthorized){
+    return {
+      statusCode: 401,
+      headers: { "content-type": "application/json" },
+      body: '{}',
+    };  
+  }
+  
   const parsedBody: SetKitchenRequestPreparingCommand = JSON.parse(event.body!);
 
   const kitchenRequest = await kitchenRepository.retrieve(parsedBody.orderIdentifier);
