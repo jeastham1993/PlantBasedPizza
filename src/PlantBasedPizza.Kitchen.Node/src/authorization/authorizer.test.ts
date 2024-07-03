@@ -2,15 +2,14 @@ import { Authorizer } from "./authorizer";
 const jwt = require('jsonwebtoken');
 
 const secretKey = "This is a very secret key, please don't use it anywhere else apart from here it is purely for test purposes'";
-
-const authorizer = new Authorizer(secretKey);
+const authorizer = new Authorizer(returnSecretKey());
 
 describe("Authorizer", () => {
-  test("ShouldAuthorizeSuccessfully", () => {
+  test("ShouldAuthorizeSuccessfully", async () => {
 
     var token = jwt.sign({ role: 'staff' }, secretKey);
 
-    const result = authorizer.authorizeRequest(
+    const result = await authorizer.authorizeRequest(
       {
         headers: {
           Authorization:
@@ -32,10 +31,10 @@ describe("Authorizer", () => {
     expect(result).toBe(true);
   });
 
-  test("ShouldFailToAuthorizeForInvalidRole", () => {
+  test("ShouldFailToAuthorizeForInvalidRole", async () => {
     var token = jwt.sign({ role: 'staff' }, secretKey);
 
-    const result = authorizer.authorizeRequest(
+    const result = await authorizer.authorizeRequest(
       {
         headers: {
           Authorization:
@@ -57,8 +56,8 @@ describe("Authorizer", () => {
     expect(result).toBe(false);
   });
 
-  test("ShouldFailToAuthorizeNoHeaderProvided", () => {
-    const result = authorizer.authorizeRequest(
+  test("ShouldFailToAuthorizeNoHeaderProvided", async () => {
+    const result = await authorizer.authorizeRequest(
       {
         headers: {},
         requestContext: {
@@ -77,3 +76,7 @@ describe("Authorizer", () => {
     expect(result).toBe(false);
   });
 });
+
+async function returnSecretKey(): Promise<string> {
+  return secretKey;
+}

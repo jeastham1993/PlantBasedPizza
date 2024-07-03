@@ -55,6 +55,7 @@ export class KitchenStack extends Stack {
       version: process.env["COMMIT_HASH"] ?? "latest",
       env: environment,
       enableColdStartTracing: true,
+      captureLambdaPayload: process.env.ENV == "prod" ? false : true
     });
 
     const albListener = ApplicationListener.fromLookup(this, "SharedHttpListener", {

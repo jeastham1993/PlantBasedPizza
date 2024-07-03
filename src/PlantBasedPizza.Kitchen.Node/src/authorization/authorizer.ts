@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 
 export class Authorizer {
   jwtSecretKeyPromise: Promise<string | undefined>;
-  jwtSecretKey: string = '';
+  jwtSecretKey: string | undefined = undefined;
 
   constructor(jwtSecretKey: Promise<string | undefined>) {
     this.jwtSecretKeyPromise = jwtSecretKey;
@@ -12,7 +12,7 @@ export class Authorizer {
 
   async authorizeRequest(event: ALBEvent, allowedRoles: string[]): Promise<boolean> {
     try {
-      if (this.jwtSecretKey === ''){
+      if (this.jwtSecretKey === undefined){
         const secretKeyValue = await this.jwtSecretKeyPromise;
 
         if (secretKeyValue === undefined){
@@ -43,6 +43,7 @@ export class Authorizer {
 
       return true;
     } catch (e) {
+      console.log('Panic');
       console.log(e);
 
       return false;
