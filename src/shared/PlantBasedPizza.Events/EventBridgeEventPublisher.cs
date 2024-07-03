@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Amazon.EventBridge;
 using Amazon.EventBridge.Model;
 using CloudNative.CloudEvents;
@@ -6,6 +5,7 @@ using CloudNative.CloudEvents.SystemTextJson;
 using Datadog.Trace;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System.Text.Json;
 
 namespace PlantBasedPizza.Events;
 
@@ -47,8 +47,31 @@ public class EventBridgeEventPublisher : IEventPublisher
         
         if (Tracer.Instance.ActiveScope?.Span != null)
         {
+            var serializedHeaders = "";
+
+            try
+            {
+                Console.WriteLine("Injecting headers");
+                var spanInjector = new SpanContextInjector();
+                var headers = new Dictionary<string, string>();
+            
+                spanInjector.Inject("datadog", (s, s1, arg3) =>
+                {
+                    headers.Add(s1, arg3);
+                }, Tracer.Instance.ActiveScope.Span.Context);
+
+                serializedHeaders = JsonSerializer.Serialize(headers);
+                Console.WriteLine(serializedHeaders);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error manually injecting headers");
+                Console.WriteLine(e);
+            }
+            
             evtWrapper.SetAttributeFromString("ddtraceid", Tracer.Instance.ActiveScope.Span.TraceId.ToString());
             evtWrapper.SetAttributeFromString("ddspanid", Tracer.Instance.ActiveScope.Span.SpanId.ToString());
+            evtWrapper.SetAttributeFromString("tracedata", serializedHeaders);
         }
 
         var evtFormatter = new JsonEventFormatter();
