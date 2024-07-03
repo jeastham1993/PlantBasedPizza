@@ -25,59 +25,6 @@ public class SqsEventSubscriber
     {
         _sqsClient = sqsClient;
     }
-
-    public async Task<string> GetQueueUrl(string queue)
-    {
-        var queueName = $"{queue}-{Environment.GetEnvironmentVariable("BUILD_VERSION")}";
-        
-        var describeQueue =
-            await this._sqsClient.GetQueueUrlAsync(queueName);
-
-        return describeQueue.QueueUrl;
-    }
-
-    public async Task<List<ParseEventResponse<T>>> GetMessages<T>(string queueUrl)
-        where T : IntegrationEvent
-    {
-        var messages = await this._sqsClient.ReceiveMessageAsync(queueUrl);
-        
-        var response = new List<ParseEventResponse<T>>();
-
-        foreach (var message in messages.Messages)
-        {
-            var eventBridgeEventWrapper = JsonSerializer.Deserialize<EventBridgeEvent>(message.Body);
-            
-            var formatter = new JsonEventFormatter<T>();
-            var evtWrapper = await formatter.DecodeStructuredModeMessageAsync(new MemoryStream(Encoding.UTF8.GetBytes(eventBridgeEventWrapper.Detail.ToJsonString())), new ContentType("application/json"), new List<CloudEventAttribute>(1)
-            {
-                CloudEventAttribute.CreateExtension(TRACEPARENT_STRING, CloudEventAttributeType.String)
-            });
-        
-            var traceParent = "";
-            
-            foreach (var (attribute, value) in evtWrapper.GetPopulatedAttributes())
-            {
-                if (attribute.Name == TRACEPARENT_STRING)
-                {
-                    traceParent = value.ToString();
-                }
-            }
-
-            var evtData = evtWrapper.Data as T;
-
-            response.Add(new ParseEventResponse<T>()
-            {
-                EventData = evtData,
-                TraceParent = traceParent,
-                QueueTime = (DateTimeOffset.Now - evtWrapper.Time!.Value).Milliseconds,
-                EventId = evtWrapper.Id!,
-                MessageId = message.MessageId,
-                ReceiptHandle = message.ReceiptHandle
-            });
-        }
-
-        return response;
-    }
     
     public async Task<List<ParseEventResponse<T>>> ParseMessages<T>(List<SQSEvent.SQSMessage> messages)
         where T : IntegrationEvent
@@ -86,12 +33,8 @@ public class SqsEventSubscriber
 
         foreach (var message in messages)
         {
-            Console.WriteLine(message.Body);
-
             var eventBridgeEventWrapper = JsonSerializer.Deserialize<EventBridgeEvent>(message.Body);
-
-            Console.WriteLine(eventBridgeEventWrapper.Detail.ToJsonString());
-            
+   
             var formatter = new JsonEventFormatter<T>();
             var evtWrapper = await formatter.DecodeStructuredModeMessageAsync(new MemoryStream(Encoding.UTF8.GetBytes(eventBridgeEventWrapper.Detail.ToJsonString())), new ContentType("application/json"), new List<CloudEventAttribute>(1)
             {
