@@ -28,11 +28,11 @@ export class EventBridgeEventPublisher implements IKitchenEventPublisher {
     await this.publish("kitchen.orderPreparing.v1", evt);
   }
   async publishOrderQualityCheckedEventV1(evt: OrderQualityCheckedEventV1): Promise<void> {
-    await this.publish("kitchen.orderConfirmed.v1", evt);
+    await this.publish("kitchen.qualityChecked.v1", evt);
   }
 
   async publishKitchenOrderConfirmedEventV1(evt: KitchenOrderConfirmedEventV1): Promise<void> {
-    await this.publish("kitchen.qualityChecked.v1", evt);
+    await this.publish("kitchen.orderConfirmed.v1", evt);
   }
 
   async publish<T>(evtType: string, evtData: T) {

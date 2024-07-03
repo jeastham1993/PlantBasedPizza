@@ -5,6 +5,7 @@ using Amazon.Lambda.SQSEvents;
 using BackgroundWorkers.Handlers;
 using BackgroundWorkers.IntegrationEvents;
 using Datadog.Trace;
+using Datadog.Trace.Configuration;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using PlantBasedPizza.Events;
