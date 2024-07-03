@@ -54,7 +54,7 @@ export class EventBridgeEventPublisher implements IKitchenEventPublisher {
       ddtraceid: currentSpan?.context().toTraceId(),
       ddspanid: currentSpan?.context().toSpanId(),
       traceparent: currentSpan?.context().toTraceparent(),
-      tracedata: headers
+      tracedata: JSON.stringify(headers)
     };
 
     currentSpan?.addTags({
