@@ -54,7 +54,7 @@ function OrderDetail(props) {
                       </thead>
                       <tbody>
                         {order.items.map((item) => (
-                          <tr>
+                          <tr key={item.itemName}>
                             <td>{item.itemName}</td>
                             <td>{item.quantity}</td>
                           </tr>
@@ -77,7 +77,9 @@ function OrderDetail(props) {
                       </thead>
                       <tbody>
                         {order.history.map((item) => (
-                          <tr>
+                          <tr key={Moment(item.historyDate).format(
+                            "DD/MM/YYYY HH:mm:ss"
+                          )}>
                             <td>
                               {Moment(item.historyDate).format(
                                 "DD/MM/YYYY HH:mm:ss"

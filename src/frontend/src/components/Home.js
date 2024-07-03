@@ -10,9 +10,7 @@ import {
   CssBaseline,
   Grid,
   Typography,
-  Link,
   Divider,
-  CardActions,
   ListItem,
   AspectRatio,
   Drawer,
@@ -49,7 +47,6 @@ function Home() {
     const fetchData = async () => {
       try {
         const response = await recipeService.listRecipes();
-        console.log(response);
         const data = response;
 
         // Group menu items by category
@@ -71,26 +68,13 @@ function Home() {
     fetchData();
   }, []);
 
-  function setCategoryName(category) {
-    switch (category) {
-      case "0":
-        return "Pizza";
-      case "1":
-        return "Sides";
-      case "2":
-        return "Drinks";
-      default:
-        return "Other";
-    }
-  }
-
   function getImage(category) {
     switch (category) {
-      case "0":
+      case "Pizza":
         return "/pizza-default.jpg";
-      case "1":
+      case "Sides":
         return "/fries.jpg";
-      case "2":
+      case "Drinks":
         return "/can-default.jpg";
       default:
         return "Other";
@@ -109,9 +93,11 @@ function Home() {
 
     let addItemBody = {
       OrderIdentifier: orderNumber,
-      RecipeIdentifier: item.recipeIdentifier,
+      RecipeIdentifier: item.id.toString(),
       Quantity: 1,
     };
+
+    console.log(addItemBody);
 
     // Make request to add item to order
     let addItemResponse = await ordersApi.post(
@@ -236,7 +222,7 @@ function Home() {
                     {menuItems[category].map((item) => (
                       <Grid
                         item
-                        key={item.recipeIdentifier}
+                        key={item.id}
                         xs={12}
                         sm={6}
                         md={4}

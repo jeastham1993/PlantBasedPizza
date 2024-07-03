@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const recipeApi = axios.create({
-  baseURL: "https://app.dev.plantbasedpizza.net/recipes",
+  baseURL: "http://localhost:8080/recipes",
 });
 
 const recipeService = {

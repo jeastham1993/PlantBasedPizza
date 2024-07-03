@@ -36,7 +36,12 @@ public class SqsEventSubscriber
             var eventBridgeEventWrapper = JsonSerializer.Deserialize<EventBridgeEvent>(message.Body);
    
             var formatter = new JsonEventFormatter<T>();
-            var evtWrapper = await formatter.DecodeStructuredModeMessageAsync(new MemoryStream(Encoding.UTF8.GetBytes(eventBridgeEventWrapper.Detail.ToJsonString())), new ContentType("application/json"), new List<CloudEventAttribute>(1)
+            
+            // CloudEvent is strict on property types, and the Datadog SDK auto-inject the additional Datadog information. Manually remove that from JSON string for decoding
+            var jsonObject = System.Text.Json.Nodes.JsonNode.Parse(eventBridgeEventWrapper.Detail.ToJsonString())?.AsObject();
+            jsonObject.Remove("_datadog");
+            
+            var evtWrapper = await formatter.DecodeStructuredModeMessageAsync(new MemoryStream(Encoding.UTF8.GetBytes(jsonObject.ToJsonString())), new ContentType("application/json"), new List<CloudEventAttribute>(1)
             {
                 CloudEventAttribute.CreateExtension(TRACEPARENT_STRING, CloudEventAttributeType.String),
                 CloudEventAttribute.CreateExtension(DD_TRACE_ID, CloudEventAttributeType.String),
