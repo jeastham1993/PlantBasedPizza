@@ -3,15 +3,15 @@ import { IKitchenEventPublisher } from "../entities/kitchenEventPublisher";
 import { IKitchenRequestRepository } from "../entities/kitchenRepository";
 import { KitchenRequest, OrderState } from "../entities/kitchenRequest";
 
-export interface SetKitchenRequestPreparingCommand {
+export interface SetKitchenRequestQualityCheckCommand {
   orderIdentifier: string;
 }
 
-export interface SetKitchenRequestPreparingReponse {
-    kitchenRequest: KitchenRequest
-  }
+export interface SetKitchenRequestQualityCheckReponse {
+  kitchenRequest: KitchenRequest;
+}
 
-export class SetKitchenRequestPreparingCommandHandler {
+export class SetKitchenRequestQualityCheckCommandHandler {
   kitchenRepository: IKitchenRequestRepository;
   eventPublisher: IKitchenEventPublisher;
 
@@ -20,23 +20,24 @@ export class SetKitchenRequestPreparingCommandHandler {
     this.eventPublisher = eventPublisher;
   }
 
-  async handle(command: SetKitchenRequestPreparingCommand): Promise<SetKitchenRequestPreparingReponse | null> {
+  async handle(command: SetKitchenRequestQualityCheckCommand): Promise<SetKitchenRequestQualityCheckReponse | null> {
     const kitchenRequest = await this.kitchenRepository.retrieve(command.orderIdentifier);
 
     if (kitchenRequest === null) {
       return null;
     }
 
-    kitchenRequest.orderState = OrderState.PREPARING;
+    kitchenRequest.orderState = OrderState.QUALITYCHECK;
+    kitchenRequest.bakeCompleteOn = new Date();
 
     await this.kitchenRepository.update(kitchenRequest);
-    await this.eventPublisher.publishOrderPreparingEventV1({
+    await this.eventPublisher.publishOrderBakedEventV1({
       orderIdentifier: kitchenRequest.orderIdentifier,
       kitchenIdentifier: kitchenRequest.kitchenRequestId,
     });
 
     return {
-        kitchenRequest
+      kitchenRequest,
     };
   }
 }

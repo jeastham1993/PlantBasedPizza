@@ -3,11 +3,13 @@ import { SharedProps } from "./constructs/sharedFunctionProps";
 import { InstrumentedApiLambdaFunction } from "./constructs/lambdaFunction";
 import { IEventBus } from "aws-cdk-lib/aws-events";
 import { ITable } from "aws-cdk-lib/aws-dynamodb";
+import { IStringParameter, StringParameter } from "aws-cdk-lib/aws-ssm";
 
 export interface ApiProps {
   sharedProps: SharedProps;
   bus: IEventBus;
   table: ITable;
+  jwtKey: IStringParameter
 }
 
 export class Api extends Construct {
@@ -21,6 +23,7 @@ export class Api extends Construct {
       path: "/kitchen/new",
       methods: ["GET"],
       priority: 36,
+      jwtKey: props.jwtKey
     });
     const getPrepCompleteFunction = new InstrumentedApiLambdaFunction(this, "GetPrepCompleteFunction", {
       sharedProps: props.sharedProps,
@@ -29,6 +32,7 @@ export class Api extends Construct {
       path: "/kitchen/prep",
       methods: ["GET"],
       priority: 33,
+      jwtKey: props.jwtKey
     });
     const getBakingFunction = new InstrumentedApiLambdaFunction(this, "GetBakingFunction", {
       sharedProps: props.sharedProps,
@@ -37,6 +41,7 @@ export class Api extends Construct {
       path: "/kitchen/baking",
       methods: ["GET"],
       priority: 34,
+      jwtKey: props.jwtKey
     });
     const getAwaitingQualityCheckFunction = new InstrumentedApiLambdaFunction(this, "GetAwaitingQualityCheckFunction", {
       sharedProps: props.sharedProps,
@@ -45,6 +50,7 @@ export class Api extends Construct {
       path: "/kitchen/quality-check",
       methods: ["GET"],
       priority: 35,
+      jwtKey: props.jwtKey
     });
     const setPreparingFunction = new InstrumentedApiLambdaFunction(this, "SetPreparingFunction", {
       sharedProps: props.sharedProps,
@@ -53,6 +59,7 @@ export class Api extends Construct {
       path: "/kitchen/preparing",
       methods: ["POST"],
       priority: 30,
+      jwtKey: props.jwtKey
     });
     const setBakingFunction = new InstrumentedApiLambdaFunction(this, "SetBakingFunction", {
       sharedProps: props.sharedProps,
@@ -61,6 +68,7 @@ export class Api extends Construct {
       path: "/kitchen/prep-complete",
       methods: ["POST"],
       priority: 31,
+      jwtKey: props.jwtKey
     });
     const setQualityCheckingFunction = new InstrumentedApiLambdaFunction(this, "SetQualityCheckingFunction", {
       sharedProps: props.sharedProps,
@@ -69,6 +77,7 @@ export class Api extends Construct {
       path: "/kitchen/bake-complete",
       methods: ["POST"],
       priority: 32,
+      jwtKey: props.jwtKey
     });
     const setDoneFunction = new InstrumentedApiLambdaFunction(this, "SetCompleteFunction", {
       sharedProps: props.sharedProps,
@@ -77,6 +86,7 @@ export class Api extends Construct {
       path: "/kitchen/quality-check",
       methods: ["POST"],
       priority: 37,
+      jwtKey: props.jwtKey
     });
 
     setPreparingFunction.function.addEnvironment("BUS_NAME", props.bus.eventBusName);

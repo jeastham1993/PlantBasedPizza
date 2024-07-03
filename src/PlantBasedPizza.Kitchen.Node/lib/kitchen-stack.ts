@@ -36,6 +36,14 @@ export class KitchenStack extends Stack {
       },
     );
 
+    const jwtKey = StringParameter.fromSecureStringParameterAttributes(
+      this,
+      "JwtKeyParam",
+      {
+        parameterName: "/shared/jwt-key",
+      },
+    );
+
     const eventBridge = EventBus.fromEventBusName(this, "SharedEventBus", "PlantBasedPizzaEvents");
 
     const datadogConfiguration = new Datadog(this, "Datadog", {
@@ -47,6 +55,7 @@ export class KitchenStack extends Stack {
       version: process.env["COMMIT_HASH"] ?? "latest",
       env: environment,
       enableColdStartTracing: true,
+      captureLambdaPayload: process.env.ENV == "prod" ? false : true
     });
 
     const albListener = ApplicationListener.fromLookup(this, "SharedHttpListener", {
@@ -89,7 +98,8 @@ export class KitchenStack extends Stack {
     const api = new Api(this, "KitchenApi", {
       sharedProps,
       bus: eventBridge,
-      table
+      table,
+      jwtKey
     });
 
     const backgroundWorkers = new BackgroundWorker(this, "BackgroundWorker", {

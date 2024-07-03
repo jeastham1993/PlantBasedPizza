@@ -9,6 +9,7 @@ import { OrderPreparingEventV1 } from "../events/orderPreparingEventV1";
 import { OrderQualityCheckedEventV1 } from "../events/orderQualityCheckedEventV1";
 import { v4 as uuidv4 } from 'uuid';
 
+const { FORMAT_HTTP_HEADERS } = require('opentracing')
 const { getTraceHeaders } = require("datadog-lambda-js");
 
 export class EventBridgeEventPublisher implements IKitchenEventPublisher {
@@ -27,19 +28,24 @@ export class EventBridgeEventPublisher implements IKitchenEventPublisher {
     await this.publish("kitchen.orderPreparing.v1", evt);
   }
   async publishOrderQualityCheckedEventV1(evt: OrderQualityCheckedEventV1): Promise<void> {
-    await this.publish("kitchen.orderConfirmed.v1", evt);
+    await this.publish("kitchen.qualityChecked.v1", evt);
   }
 
   async publishKitchenOrderConfirmedEventV1(evt: KitchenOrderConfirmedEventV1): Promise<void> {
-    await this.publish("kitchen.qualityChecked.v1", evt);
+    await this.publish("kitchen.orderConfirmed.v1", evt);
   }
 
   async publish<T>(evtType: string, evtData: T) {
     const currentSpan = tracer.scope().active();
 
+    const span= tracer.scope().active()!;
+    const headers = {};
+
+    tracer.inject(span, FORMAT_HTTP_HEADERS, headers);
+
     const ce: CloudEventV1<T> = {
       specversion: "1.0",
-      source: "https://kitchen.plantbasedpizza",
+      source: "https://kitchen.plantbasedpizza/",
       type: evtType,
       id: uuidv4(),
       time: new Date().toISOString(),
@@ -47,6 +53,8 @@ export class EventBridgeEventPublisher implements IKitchenEventPublisher {
       data: evtData,
       ddtraceid: currentSpan?.context().toTraceId(),
       ddspanid: currentSpan?.context().toSpanId(),
+      traceparent: currentSpan?.context().toTraceparent(),
+      tracedata: JSON.stringify(headers)
     };
 
     currentSpan?.addTags({

@@ -25,7 +25,7 @@ export class InstrumentedSqsLambdaFunction extends Construct {
       entry: props.entry,
       depsLockFilePath: './package-lock.json',
       memorySize: 512,
-      timeout: Duration.seconds(60),
+      timeout: Duration.seconds(20),
       environment: {
         CONN_STRING_PARAM: props.sharedProps.databaseConnectionParam.parameterName,
         RECIPE_API_ENDPOINT: 'https://api.dev.plantbasedpizza.net',

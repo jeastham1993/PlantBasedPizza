@@ -5,6 +5,7 @@ using Amazon.Lambda.SQSEvents;
 using BackgroundWorkers.Handlers;
 using BackgroundWorkers.IntegrationEvents;
 using Datadog.Trace;
+using Datadog.Trace.Configuration;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using PlantBasedPizza.Events;
@@ -79,6 +80,7 @@ public class Functions
         }
         catch (Exception ex)
         {
+            batchItemFailures.AddRange(sqsEvent.Records.Select(record => new SQSBatchResponse.BatchItemFailure(){ItemIdentifier = record.MessageId}).ToList());
             this._logger.LogError(ex, "Failure handling SQS messages");
         }
 
@@ -122,6 +124,7 @@ public class Functions
         }
         catch (Exception ex)
         {
+            batchItemFailures.AddRange(sqsEvent.Records.Select(record => new SQSBatchResponse.BatchItemFailure(){ItemIdentifier = record.MessageId}).ToList());
             this._logger.LogError(ex, "Failure handling SQS messages");
         }
 
@@ -164,6 +167,7 @@ public class Functions
         }
         catch (Exception ex)
         {
+            batchItemFailures.AddRange(sqsEvent.Records.Select(record => new SQSBatchResponse.BatchItemFailure(){ItemIdentifier = record.MessageId}).ToList());
             this._logger.LogError(ex, "Failure handling SQS messages");
         }
 
@@ -206,6 +210,7 @@ public class Functions
         }
         catch (Exception ex)
         {
+            batchItemFailures.AddRange(sqsEvent.Records.Select(record => new SQSBatchResponse.BatchItemFailure(){ItemIdentifier = record.MessageId}).ToList());
             this._logger.LogError(ex, "Failure handling SQS messages");
         }
 
@@ -249,6 +254,7 @@ public class Functions
         }
         catch (Exception ex)
         {
+            batchItemFailures.AddRange(sqsEvent.Records.Select(record => new SQSBatchResponse.BatchItemFailure(){ItemIdentifier = record.MessageId}).ToList());
             this._logger.LogError(ex, "Failure handling SQS messages");
         }
 
@@ -291,6 +297,7 @@ public class Functions
         }
         catch (Exception ex)
         {
+            batchItemFailures.AddRange(sqsEvent.Records.Select(record => new SQSBatchResponse.BatchItemFailure(){ItemIdentifier = record.MessageId}).ToList());
             this._logger.LogError(ex, "Failure handling SQS messages");
         }
 
@@ -333,6 +340,7 @@ public class Functions
         }
         catch (Exception ex)
         {
+            batchItemFailures.AddRange(sqsEvent.Records.Select(record => new SQSBatchResponse.BatchItemFailure(){ItemIdentifier = record.MessageId}).ToList());
             this._logger.LogError(ex, "Failure handling SQS messages");
         }
 
@@ -373,6 +381,7 @@ public class Functions
         }
         catch (Exception ex)
         {
+            batchItemFailures.AddRange(sqsEvent.Records.Select(record => new SQSBatchResponse.BatchItemFailure(){ItemIdentifier = record.MessageId}).ToList());
             this._logger.LogError(ex, "Failure handling SQS messages");
         }
 

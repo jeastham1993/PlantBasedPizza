@@ -1,3 +1,9 @@
+using System.Net.Mime;
+using System.Text;
+using System.Text.Json;
+using BackgroundWorkers.IntegrationEvents;
+using CloudNative.CloudEvents;
+using CloudNative.CloudEvents.SystemTextJson;
 using FluentAssertions;
 using PlantBasedPizza.Events;
 using PlantBasedPizza.OrderManager.Core.Entities;
@@ -6,6 +12,9 @@ namespace PlantBasedPizza.Orders.UnitTest;
 
 public class OrderManagerTests
 {
+    private const string TRACEPARENT_STRING = "traceparent";
+    private const string DD_TRACE_ID = "ddtraceid";
+    private const string DD_SPAN_ID = "ddspanid";
     internal const string DefaultCustomerIdentifier = "James";
     
     [Fact]
