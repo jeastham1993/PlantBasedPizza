@@ -12,6 +12,7 @@ import jakarta.validation.Valid;
 import java.util.*;
 
 @RestController
+@CrossOrigin(origins = "*", methods = {RequestMethod.HEAD, RequestMethod.GET, RequestMethod.POST, RequestMethod.OPTIONS}, allowedHeaders = "*")
 public class RecipeController {
     private final RecipeService recipeService;
 
