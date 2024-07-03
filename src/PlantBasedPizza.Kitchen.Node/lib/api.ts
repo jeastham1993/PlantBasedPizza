@@ -18,7 +18,9 @@ export class Api extends Construct {
 
     const getNewFunction = new InstrumentedApiLambdaFunction(this, "GetNewFunction", {
       sharedProps: props.sharedProps,
-      entry: "./src/lambda/getNew.ts",
+      handler: "index.handler",
+      buildDef: './src/lambda/buildGetNew.js',
+      outDir: './out/getNew',
       functionName: "GetNewFunction",
       path: "/kitchen/new",
       methods: ["GET"],
@@ -27,7 +29,9 @@ export class Api extends Construct {
     });
     const getPrepCompleteFunction = new InstrumentedApiLambdaFunction(this, "GetPrepCompleteFunction", {
       sharedProps: props.sharedProps,
-      entry: "./src/lambda/getPreparing.ts",
+      handler: "index.handler",
+      buildDef: './src/lambda/buildGetPreparing.js',
+      outDir: './out/getPreparing',
       functionName: "GetPrepCompleteFunction",
       path: "/kitchen/prep",
       methods: ["GET"],
@@ -36,7 +40,9 @@ export class Api extends Construct {
     });
     const getBakingFunction = new InstrumentedApiLambdaFunction(this, "GetBakingFunction", {
       sharedProps: props.sharedProps,
-      entry: "./src/lambda/getBaking.ts",
+      handler: "index.handler",
+      buildDef: './src/lambda/buildGetBaking.js',
+      outDir: './out/getBaking',
       functionName: "GetBakingFunction",
       path: "/kitchen/baking",
       methods: ["GET"],
@@ -45,7 +51,9 @@ export class Api extends Construct {
     });
     const getAwaitingQualityCheckFunction = new InstrumentedApiLambdaFunction(this, "GetAwaitingQualityCheckFunction", {
       sharedProps: props.sharedProps,
-      entry: "./src/lambda/getAwaitingQualityCheck.ts",
+      handler: "index.handler",
+      buildDef: './src/lambda/buildGetAwaitingQualityCheck.js',
+      outDir: './out/getAwaitingQualityCheck',
       functionName: "GetAwaitingQualityCheckFunction",
       path: "/kitchen/quality-check",
       methods: ["GET"],
@@ -54,7 +62,9 @@ export class Api extends Construct {
     });
     const setPreparingFunction = new InstrumentedApiLambdaFunction(this, "SetPreparingFunction", {
       sharedProps: props.sharedProps,
-      entry: "./src/lambda/setPreparing.ts",
+      handler: "index.handler",
+      buildDef: './src/lambda/buildSetPreparing.js',
+      outDir: './out/setPreparing',
       functionName: "SetPreparingFunction",
       path: "/kitchen/preparing",
       methods: ["POST"],
@@ -63,7 +73,9 @@ export class Api extends Construct {
     });
     const setBakingFunction = new InstrumentedApiLambdaFunction(this, "SetBakingFunction", {
       sharedProps: props.sharedProps,
-      entry: "./src/lambda/setBaking.ts",
+      handler: "index.handler",
+      buildDef: './src/lambda/buildSetBaking.js',
+      outDir: './out/setBaking',
       functionName: "SetBakingFunction",
       path: "/kitchen/prep-complete",
       methods: ["POST"],
@@ -72,7 +84,9 @@ export class Api extends Construct {
     });
     const setQualityCheckingFunction = new InstrumentedApiLambdaFunction(this, "SetQualityCheckingFunction", {
       sharedProps: props.sharedProps,
-      entry: "./src/lambda/setQualityChecking.ts",
+      handler: "index.handler",
+      buildDef: './src/lambda/buildSetQualityCheck.js',
+      outDir: './out/setQualityChecking',
       functionName: "SetQualityCheckingFunction",
       path: "/kitchen/bake-complete",
       methods: ["POST"],
@@ -81,7 +95,9 @@ export class Api extends Construct {
     });
     const setDoneFunction = new InstrumentedApiLambdaFunction(this, "SetCompleteFunction", {
       sharedProps: props.sharedProps,
-      entry: "./src/lambda/setComplete.ts",
+      handler: "index.handler",
+      buildDef: './src/lambda/buildSetComplete.js',
+      outDir: './out/setComplete',
       functionName: "SetCompleteFunction",
       path: "/kitchen/quality-check",
       methods: ["POST"],

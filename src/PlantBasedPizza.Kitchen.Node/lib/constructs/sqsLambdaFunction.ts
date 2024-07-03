@@ -1,6 +1,6 @@
 import { Construct } from "constructs";
 import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
-import { Runtime } from "aws-cdk-lib/aws-lambda";
+import { Code, Runtime } from "aws-cdk-lib/aws-lambda";
 import { Duration, Tags } from "aws-cdk-lib";
 import { Alias } from "aws-cdk-lib/aws-kms";
 import { SharedProps } from "./sharedFunctionProps";
@@ -9,7 +9,9 @@ import { SqsEventSource } from "aws-cdk-lib/aws-lambda-event-sources";
 
 export class InstrumentedSqsLambdaFunctionProps{
   sharedProps: SharedProps
-  entry: string
+  handler: string;
+  buildDef: string;
+  outDir: string;
   functionName: string
   queue: IQueue
 };
@@ -19,11 +21,19 @@ export class InstrumentedSqsLambdaFunction extends Construct {
 
   constructor(scope: Construct, id: string, props: InstrumentedSqsLambdaFunctionProps) {
     super(scope, id);
+
+    const pathToBuildFile = props.buildDef;
+    const pathToOutputFile = props.outDir;
+    
+    const code = Code.fromCustomCommand(
+      pathToOutputFile,
+      ['node', pathToBuildFile],
+    );
+
     this.function = new NodejsFunction(this, props.functionName, {
       runtime: Runtime.NODEJS_20_X,
-      projectRoot: './',
-      entry: props.entry,
-      depsLockFilePath: './package-lock.json',
+      code: code,
+      handler: props.handler,
       memorySize: 512,
       timeout: Duration.seconds(20),
       environment: {

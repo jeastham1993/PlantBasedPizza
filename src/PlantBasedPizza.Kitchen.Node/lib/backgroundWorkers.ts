@@ -22,19 +22,21 @@ export class BackgroundWorker extends Construct {
       bus: props.bus,
       queueName: orderSubmittedQueueName,
       eventSource: "https://orders.plantbasedpizza/",
-      detailType: "order.orderConfirmed.v1"
+      detailType: "order.orderConfirmed.v1",
     });
 
     const orderConfirmedHandler = new InstrumentedSqsLambdaFunction(this, "HandleOrderConfirmedEvent", {
-        sharedProps: props.sharedProps,
-      entry: "./src/lambda/handleOrderConfirmedEvent.ts",
+      sharedProps: props.sharedProps,
+      handler: "index.handler",
+      buildDef: "./src/lambda/buildHandleOrderConfirmedEvent.js",
+      outDir: "./out/handleOrderConfirmedEvent",
       functionName: "HandleOrderConfirmedEvent",
-      queue: queue.queue
+      queue: queue.queue,
     });
 
     orderConfirmedHandler.function.addEnvironment("BUS_NAME", props.bus.eventBusName);
     props.bus.grantPutEventsTo(orderConfirmedHandler.function);
-    
+
     props.table.grantReadWriteData(orderConfirmedHandler.function);
   }
 }

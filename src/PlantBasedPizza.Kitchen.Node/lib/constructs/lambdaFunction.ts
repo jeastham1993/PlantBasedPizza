@@ -1,6 +1,6 @@
 import { Construct } from "constructs";
 import { NodejsFunction, OutputFormat } from "aws-cdk-lib/aws-lambda-nodejs";
-import { Runtime } from "aws-cdk-lib/aws-lambda";
+import { Code, Runtime } from "aws-cdk-lib/aws-lambda";
 import { LambdaTarget } from "aws-cdk-lib/aws-elasticloadbalancingv2-targets";
 import {
   ApplicationTargetGroup,
@@ -14,7 +14,9 @@ import { IStringParameter } from "aws-cdk-lib/aws-ssm";
 
 export class InstrumentedApiLambdaFunctionProps {
   sharedProps: SharedProps;
-  entry: string;
+  handler: string;
+  buildDef: string;
+  outDir: string;
   path: string;
   methods: string[];
   priority: number;
@@ -27,11 +29,19 @@ export class InstrumentedApiLambdaFunction extends Construct {
 
   constructor(scope: Construct, id: string, props: InstrumentedApiLambdaFunctionProps) {
     super(scope, id);
+
+    const pathToBuildFile = props.buildDef;
+    const pathToOutputFile = props.outDir;
+
+    const code = Code.fromCustomCommand(
+      pathToOutputFile,
+      ['node', pathToBuildFile],
+    );
+
     this.function = new NodejsFunction(this, props.functionName, {
       runtime: Runtime.NODEJS_20_X,
-      projectRoot: "./",
-      entry: props.entry,
-      depsLockFilePath: "./package-lock.json",
+      code: code,
+      handler: props.handler,
       memorySize: 512,
       environment: {
         CONN_STRING_PARAM: props.sharedProps.databaseConnectionParam.parameterName,
