@@ -7,7 +7,9 @@ import { Authorizer } from "../authorization/authorizer";
 
 tracer.init();
 
-const secretKey = getParameter(process.env.JWT_SSM_PARAM!);
+const secretKey = getParameter(process.env.JWT_SSM_PARAM!, {
+  decrypt: true
+});
 
 const authorizer: Authorizer = new Authorizer(secretKey);
 

@@ -20,13 +20,17 @@ export class Authorizer {
         }
 
         this.jwtSecretKey = secretKeyValue;
+
+        console.log(this.jwtSecretKey);
       }
 
-      if (event.headers!["Authorization"] === undefined) {
+      if (event.headers!["Authorization"] === undefined && event.headers!["authorization"] === undefined) {
         return false;
       }
 
-      const token = event.headers!["Authorization"].replace("Bearer ", "");
+      const token = (event.headers!["Authorization"] ?? event.headers!["authorization"])!.replace("Bearer ", "");
+
+      console.log(token);
 
       const verified = jwt.verify(token, this.jwtSecretKey);
 
@@ -43,7 +47,6 @@ export class Authorizer {
 
       return true;
     } catch (e) {
-      console.log('Panic');
       console.log(e);
 
       return false;

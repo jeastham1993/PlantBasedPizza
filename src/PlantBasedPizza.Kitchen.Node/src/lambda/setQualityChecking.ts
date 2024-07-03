@@ -8,10 +8,13 @@ import { SetKitchenRequestPreparingCommand } from "../commands/setKitchenRequest
 import { OrderState } from "../entities/kitchenRequest";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { Authorizer } from "../authorization/authorizer";
+import { SetKitchenRequestQualityCheckCommand, SetKitchenRequestQualityCheckCommandHandler } from "../commands/setKitchenRequestQualityCheckingHandler";
 
 tracer.init();
 
-const secretKey = getParameter(process.env.JWT_SSM_PARAM!);
+const secretKey = getParameter(process.env.JWT_SSM_PARAM!, {
+  decrypt: true
+});
 
 const authorizer: Authorizer = new Authorizer(secretKey);
 
@@ -19,8 +22,9 @@ const eventBridgeClient = new EventBridgeClient();
 const dynamoDbClient = new DynamoDBClient();
 
 const eventPublisher = new EventBridgeEventPublisher(eventBridgeClient);
+const kitchenRepository = new KitchenRequestRepository(dynamoDbClient, process.env.TABLE_NAME!);
 
-var kitchenRepository = new KitchenRequestRepository(dynamoDbClient, process.env.TABLE_NAME!);
+const commandHandler = new SetKitchenRequestQualityCheckCommandHandler(kitchenRepository, eventPublisher);
 
 export const handler = async (event: ALBEvent): Promise<ALBResult> => {
   const isAuthorized = await authorizer.authorizeRequest(event, ["staff", "admin"]);
@@ -33,11 +37,11 @@ export const handler = async (event: ALBEvent): Promise<ALBResult> => {
     };  
   }
   
-  const parsedBody: SetKitchenRequestPreparingCommand = JSON.parse(event.body!);
+  const parsedBody: SetKitchenRequestQualityCheckCommand = JSON.parse(event.body!);
 
-  const kitchenRequest = await kitchenRepository.retrieve(parsedBody.orderIdentifier);
+  const result = await commandHandler.handle(parsedBody);
 
-  if (kitchenRequest === null) {
+  if (result === null) {
     return {
       statusCode: 404,
       headers: { "content-type": "application/json" },
@@ -45,18 +49,9 @@ export const handler = async (event: ALBEvent): Promise<ALBResult> => {
     };
   }
 
-  kitchenRequest.orderState = OrderState.QUALITYCHECK;
-  kitchenRequest.bakeCompleteOn = new Date();
-  
-  await kitchenRepository.update(kitchenRequest);
-  await eventPublisher.publishOrderBakedEventV1({
-    orderIdentifier: kitchenRequest.orderIdentifier,
-    kitchenIdentifier: kitchenRequest.kitchenRequestId,
-  });
-
   return {
     statusCode: 200,
     headers: { "content-type": "application/json" },
-    body: JSON.stringify(kitchenRequest),
+    body: JSON.stringify(result.kitchenRequest),
   };
 };
