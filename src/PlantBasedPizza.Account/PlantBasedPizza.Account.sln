@@ -24,7 +24,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "infra", "infra", "{80A1961A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infra", "infra\src\Infra\Infra.csproj", "{5B6E552B-8946-464A-A578-A248FB82A0BA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Infra.Constructs", "..\..\PlantBasedPizza.Infra.Constructs\PlantBasedPizza.Infra.Constructs.csproj", "{FEBCF106-5FAC-41BC-ACC8-3CFD2941173D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Infra.Constructs", "..\..\src\shared\PlantBasedPizza.Infra.Constructs\PlantBasedPizza.Infra.Constructs.csproj", "{FEBCF106-5FAC-41BC-ACC8-3CFD2941173D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

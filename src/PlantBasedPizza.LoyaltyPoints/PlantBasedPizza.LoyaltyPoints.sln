@@ -33,7 +33,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestInfrastructure", "tests
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "shared", "shared", "{27CDF56D-A28F-4199-9A06-CC19C2280258}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Infra.Constructs", "..\..\PlantBasedPizza.Infra.Constructs\PlantBasedPizza.Infra.Constructs.csproj", "{54422D81-2AB7-4C65-B8B4-98CB2C51901E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Infra.Constructs", "..\..\src\shared\PlantBasedPizza.Infra.Constructs\PlantBasedPizza.Infra.Constructs.csproj", "{54422D81-2AB7-4C65-B8B4-98CB2C51901E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

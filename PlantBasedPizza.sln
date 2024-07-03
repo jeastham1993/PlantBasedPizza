@@ -114,7 +114,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "infra", "infra", "{130BF8DB
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infra", "src\PlantBasedPizza.Account\infra\src\Infra\Infra.csproj", "{CEA262E7-2E9E-4158-B6EA-CBA35909740F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Infra.Constructs", "PlantBasedPizza.Infra.Constructs\PlantBasedPizza.Infra.Constructs.csproj", "{6493172D-D043-4882-9FF7-909E07F08134}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Infra.Constructs", "src\shared\PlantBasedPizza.Infra.Constructs\PlantBasedPizza.Infra.Constructs.csproj", "{6493172D-D043-4882-9FF7-909E07F08134}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "infra", "infra", "{336C4556-9E00-45FA-B8B4-EBC890C70C39}"
 EndProject

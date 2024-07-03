@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\PlantBasedPizza.Infra.Constructs\PlantBasedPizza.Infra.Constructs.csproj" />
+    <ProjectReference Include="..\..\..\..\..\src\shared\PlantBasedPizza.Infra.Constructs\PlantBasedPizza.Infra.Constructs.csproj" />
   </ItemGroup>
 
 </Project>

@@ -35,7 +35,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Events", ".
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestInfrastructure", "tests\TestInfrastructure\src\TestInfrastructure\TestInfrastructure.csproj", "{18081256-2B44-4832-BEE9-427402ACDF0F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Infra.Constructs", "..\..\PlantBasedPizza.Infra.Constructs\PlantBasedPizza.Infra.Constructs.csproj", "{BAD39CD8-54BB-4E10-817E-D3CEE5D7DF3F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Infra.Constructs", "..\..\src\shared\PlantBasedPizza.Infra.Constructs\PlantBasedPizza.Infra.Constructs.csproj", "{BAD39CD8-54BB-4E10-817E-D3CEE5D7DF3F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackgroundWorkers", "application\BackgroundWorkers\BackgroundWorkers.csproj", "{BA2E3752-9CE8-4E94-9DFE-19E51576647A}"
 EndProject
