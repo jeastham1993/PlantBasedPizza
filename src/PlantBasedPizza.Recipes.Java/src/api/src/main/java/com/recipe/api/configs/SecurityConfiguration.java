@@ -20,7 +20,8 @@ public class SecurityConfiguration {
     private static final String[] WHITE_LIST_URL = {
             "/recipes/**",
             "/recipes/_seed",
-            "/recipes"};
+            "/recipes",
+            "/recipes/health"};
     private final JwtAuthenticationFilter jwtAuthFilter;
     private final AuthenticationProvider authenticationProvider;
 

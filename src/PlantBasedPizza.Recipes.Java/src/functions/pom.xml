@@ -58,6 +58,11 @@
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
         </dependency>
+        <dependency>
+            <groupId>io.cloudevents</groupId>
+            <artifactId>cloudevents-json-jackson</artifactId>
+            <version>4.0.1</version>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>
