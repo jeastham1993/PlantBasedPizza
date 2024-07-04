@@ -1,15 +1,11 @@
 package com.recipes.infrastructure;
 
-import org.jetbrains.annotations.NotNull;
-import software.amazon.awscdk.Duration;
 import software.amazon.awscdk.services.ec2.*;
 import software.amazon.awscdk.services.ecs.Cluster;
 import software.amazon.awscdk.services.ecs.ClusterProps;
 import software.amazon.awscdk.services.ecs.Secret;
-import software.amazon.awscdk.services.lambda.*;
 import software.amazon.awscdk.services.events.EventBus;
 import software.amazon.awscdk.services.events.IEventBus;
-import software.amazon.awscdk.services.lambda.Runtime;
 import software.amazon.awscdk.services.secretsmanager.ISecret;
 import software.amazon.awscdk.services.ssm.IStringParameter;
 import software.amazon.awscdk.services.ssm.SecureStringParameterAttributes;
@@ -18,10 +14,7 @@ import software.constructs.Construct;
 import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.StackProps;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class RecipeJavaInfraStack extends Stack {
     public RecipeJavaInfraStack(final Construct scope, final String id) {
@@ -39,7 +32,8 @@ public class RecipeJavaInfraStack extends Stack {
         String serviceName = "RecipeService";
         String environment = System.getenv("ENV") != null ? System.getenv("ENV") : "dev";
         String commitHash = System.getenv("COMMIT_HASH") != null ? System.getenv("COMMIT_HASH") : "latest";
-
+        SharedProps sharedProps = new SharedProps(environment, serviceName, commitHash);
+        
         SecureStringParameterAttributes ddApiKeyParameters = SecureStringParameterAttributes.builder()
                 .parameterName("/shared/dd-api-key")
                 .build();
@@ -92,30 +86,12 @@ public class RecipeJavaInfraStack extends Stack {
                 internalAlbListenerArn,
                 true
                 ));
-
-        Map<String, String> lambdaEnvironment = new HashMap<>();
-        lambdaEnvironment.put("MAIN_CLASS", "com.recipe.functions.FunctionConfiguration");
-        lambdaEnvironment.put("AWS_LAMBDA_EXEC_WRAPPER", "/opt/datadog_wrapper");
-        lambdaEnvironment.put("DD_SITE", "datadoghq.eu");
-        lambdaEnvironment.put("DD_API_KEY_SECRET_ARN", ddApiKeySecret.getSecretArn());
-        lambdaEnvironment.put("spring_cloud_function_routingExpression", "handleOrderConfirmedEvent");
         
-        List<ILayerVersion> layers = new ArrayList<>(2);
-        layers.add(LayerVersion.fromLayerVersionArn(this, "DatadogJavaLayer", "arn:aws:lambda:eu-west-1:464622532012:layer:dd-trace-java:15"));
-        layers.add(LayerVersion.fromLayerVersionArn(this, "DatadogLambdaExtension", "arn:aws:lambda:eu-west-1:464622532012:layer:Datadog-Extension:59"));
-
-        // Create our basic function
-        Function lambdaFn = Function.Builder.create(this,"ScheduledFunction")
-                .runtime(Runtime.JAVA_21)
-                .memorySize(2048)
-                .handler("org.springframework.cloud.function.adapter.aws.FunctionInvoker::handleRequest")
-                .environment(lambdaEnvironment)
-                .timeout(Duration.seconds(30))
-                .code(Code.fromAsset("../src/functions/target/com.recipe.functions-0.0.1-SNAPSHOT-aws.jar"))
-                .layers(layers)
-                .build();
+        BackgroundServices services = new BackgroundServices(
+                this, 
+                "BackgroundServices", 
+                new BackgroundServiceProps(sharedProps, ddApiKeySecret));
         
-        ddApiKeySecret.grantRead(lambdaFn);
         connectionStringParam.grantRead(javaWebService.executionRole);
         bus.grantPutEventsTo(javaWebService.taskRole);
     }

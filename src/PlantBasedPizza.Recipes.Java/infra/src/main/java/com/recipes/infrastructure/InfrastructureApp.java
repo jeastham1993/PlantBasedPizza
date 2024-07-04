@@ -8,7 +8,14 @@ public class InfrastructureApp {
     public static void main(final String[] args) {
         App app = new App();
 
-        new RecipeJavaInfraStack(app, "RecipeJavaInfraStack", StackProps.builder()
+        RecipeJavaInfraStack applicationStack = new RecipeJavaInfraStack(app, "RecipeJavaInfraStack", StackProps.builder()
+                .env(Environment.builder()
+                        .account(System.getenv("CDK_DEFAULT_ACCOUNT"))
+                        .region(System.getenv("CDK_DEFAULT_REGION"))
+                        .build())
+                .build());
+        
+        TestInfrastructureStack testInfrastructureStack =new TestInfrastructureStack(app, "TestInfrastructureStack", StackProps.builder()
                 .env(Environment.builder()
                         .account(System.getenv("CDK_DEFAULT_ACCOUNT"))
                         .region(System.getenv("CDK_DEFAULT_REGION"))
