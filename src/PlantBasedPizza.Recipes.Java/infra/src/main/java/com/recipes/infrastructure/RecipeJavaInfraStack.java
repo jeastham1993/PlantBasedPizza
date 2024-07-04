@@ -31,11 +31,11 @@ public class RecipeJavaInfraStack extends Stack {
     public RecipeJavaInfraStack(final Construct scope, final String id, final StackProps props) {
         super(scope, id, props);
 
-        String vpcId = StringParameter.valueFromLookup(this, "shared/vpc-id");
-        String albArn = StringParameter.valueFromLookup(this, "shared/alb-arn");
-        String albListenerArn = StringParameter.valueFromLookup(this, "shared/alb-listener");
-        String internalAlbArn = StringParameter.valueFromLookup(this, "shared/internal-alb-arn");
-        String internalAlbListenerArn = StringParameter.valueFromLookup(this, "shared/internal-alb-listener");
+        String vpcId = StringParameter.valueFromLookup(this, "/shared/vpc-id");
+        String albArn = StringParameter.valueFromLookup(this, "/shared/alb-arn");
+        String albListenerArn = StringParameter.valueFromLookup(this, "/shared/alb-listener");
+        String internalAlbArn = StringParameter.valueFromLookup(this, "/shared/internal-alb-arn");
+        String internalAlbListenerArn = StringParameter.valueFromLookup(this, "/shared/internal-alb-listener");
         String serviceName = "RecipeService";
         String environment = System.getenv("ENV") != null ? System.getenv("ENV") : "dev";
         String commitHash = System.getenv("COMMIT_HASH") != null ? System.getenv("COMMIT_HASH") : "latest";
@@ -74,7 +74,7 @@ public class RecipeJavaInfraStack extends Stack {
         WebService javaWebService = new WebService(this, "JavaRecipeService", new WebServiceProps(
                 vpc,
                 cluster,
-                "JavaRecipeApi",
+                serviceName,
                 environment,
                 "/shared/dd-api-key",
                 "/shared/jwt-key",
