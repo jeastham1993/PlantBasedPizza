@@ -6,11 +6,11 @@ import software.amazon.awscdk.services.ec2.*;
 import software.amazon.awscdk.services.ecs.Cluster;
 import software.amazon.awscdk.services.ecs.ClusterProps;
 import software.amazon.awscdk.services.ecs.Secret;
-import software.amazon.awscdk.services.lambda.Code;
-import software.amazon.awscdk.services.lambda.Runtime;
+import software.amazon.awscdk.services.lambda.*;
 import software.amazon.awscdk.services.events.EventBus;
 import software.amazon.awscdk.services.events.IEventBus;
-import software.amazon.awscdk.services.lambda.Function;
+import software.amazon.awscdk.services.lambda.Runtime;
+import software.amazon.awscdk.services.secretsmanager.ISecret;
 import software.amazon.awscdk.services.ssm.IStringParameter;
 import software.amazon.awscdk.services.ssm.SecureStringParameterAttributes;
 import software.amazon.awscdk.services.ssm.StringParameter;
@@ -31,14 +31,27 @@ public class RecipeJavaInfraStack extends Stack {
     public RecipeJavaInfraStack(final Construct scope, final String id, final StackProps props) {
         super(scope, id, props);
 
+        String vpcId = StringParameter.valueFromLookup(this, "shared/vpc-id");
+        String albArn = StringParameter.valueFromLookup(this, "shared/alb-arn");
+        String albListenerArn = StringParameter.valueFromLookup(this, "shared/alb-listener");
+        String internalAlbArn = StringParameter.valueFromLookup(this, "shared/internal-alb-arn");
+        String internalAlbListenerArn = StringParameter.valueFromLookup(this, "shared/internal-alb-listener");
+        String serviceName = "RecipeService";
         String environment = System.getenv("ENV") != null ? System.getenv("ENV") : "dev";
         String commitHash = System.getenv("COMMIT_HASH") != null ? System.getenv("COMMIT_HASH") : "latest";
 
+        SecureStringParameterAttributes ddApiKeyParameters = SecureStringParameterAttributes.builder()
+                .parameterName("/shared/dd-api-key")
+                .build();
+        
+        IStringParameter ddApiKeyParam = StringParameter.fromSecureStringParameterAttributes(this, "DDApiKey", ddApiKeyParameters);
+        ISecret ddApiKeySecret = software.amazon.awscdk.services.secretsmanager.Secret.fromSecretNameV2(this, "DDApiKeySecret", "DdApiKeySecret-EAtKjZYFq40D");
+        
         IEventBus bus = EventBus.fromEventBusName(this, "SharedEventBus", "PlantBasedPizzaEvents");
 
         // Lookup an existing VPC
         IVpc vpc = Vpc.fromLookup(this, "MainVpc", VpcLookupOptions.builder()
-                .vpcId("vpc-06c60c0d760921bc6")
+                .vpcId(vpcId)
                 .build());
 
         Cluster cluster = new Cluster(this, "RecipeJavaCluster", ClusterProps.builder()
@@ -70,18 +83,26 @@ public class RecipeJavaInfraStack extends Stack {
                 8080,
                 envVariables,
                 secretVariables,
-                "arn:aws:elasticloadbalancing:eu-west-1:730335273443:loadbalancer/app/plant-based-pizza-ingress/d99d1b57574af81c",
-                "arn:aws:elasticloadbalancing:eu-west-1:730335273443:listener/app/plant-based-pizza-ingress/d99d1b57574af81c/d94d758d77bfc259",
+                albArn,
+                albListenerArn,
                 "/recipes/health",
                 "/recipes/*",
                 122,
-                "arn:aws:elasticloadbalancing:eu-west-1:730335273443:loadbalancer/app/shared-internal-ingress/9de88d725cd4f625",
-                "arn:aws:elasticloadbalancing:eu-west-1:730335273443:listener/app/shared-internal-ingress/9de88d725cd4f625/d9d8c7611b6f1d32",
+                internalAlbArn,
+                internalAlbListenerArn,
                 true
                 ));
 
         Map<String, String> lambdaEnvironment = new HashMap<>();
         lambdaEnvironment.put("MAIN_CLASS", "com.recipe.functions.FunctionConfiguration");
+        lambdaEnvironment.put("AWS_LAMBDA_EXEC_WRAPPER", "/opt/datadog_wrapper");
+        lambdaEnvironment.put("DD_SITE", "datadoghq.eu");
+        lambdaEnvironment.put("DD_API_KEY_SECRET_ARN", ddApiKeySecret.getSecretArn());
+        lambdaEnvironment.put("spring_cloud_function_routingExpression", "handleOrderConfirmedEvent");
+        
+        List<ILayerVersion> layers = new ArrayList<>(2);
+        layers.add(LayerVersion.fromLayerVersionArn(this, "DatadogJavaLayer", "arn:aws:lambda:eu-west-1:464622532012:layer:dd-trace-java:15"));
+        layers.add(LayerVersion.fromLayerVersionArn(this, "DatadogLambdaExtension", "arn:aws:lambda:eu-west-1:464622532012:layer:Datadog-Extension:59"));
 
         // Create our basic function
         Function lambdaFn = Function.Builder.create(this,"ScheduledFunction")
@@ -91,8 +112,10 @@ public class RecipeJavaInfraStack extends Stack {
                 .environment(lambdaEnvironment)
                 .timeout(Duration.seconds(30))
                 .code(Code.fromAsset("../src/functions/target/com.recipe.functions-0.0.1-SNAPSHOT-aws.jar"))
+                .layers(layers)
                 .build();
-
+        
+        ddApiKeySecret.grantRead(lambdaFn);
         connectionStringParam.grantRead(javaWebService.executionRole);
         bus.grantPutEventsTo(javaWebService.taskRole);
     }
