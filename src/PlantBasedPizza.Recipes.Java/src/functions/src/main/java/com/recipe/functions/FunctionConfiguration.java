@@ -24,11 +24,11 @@ public class FunctionConfiguration{
     } 
     
     @Bean
-    public Function<SQSEvent, SQSBatchResponse> handleOrderConfirmedEvent(SQSEvent evt) {
+    public Function<SQSEvent, SQSBatchResponse> handleOrderConfirmedEvent() {
         return value -> {
             List<SQSBatchResponse.BatchItemFailure> failures = new ArrayList<>();
 
-            List<SQSEvent.SQSMessage> records = evt.getRecords();
+            List<SQSEvent.SQSMessage> records = value.getRecords();
 
             for (int i = 0, recordsSize = records.size(); i < recordsSize; i++) {
                 SQSEvent.SQSMessage message = records.get(i);
