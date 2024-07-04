@@ -21,7 +21,7 @@ public class FunctionConfiguration{
 
     public static void main(String[] args) {
         SpringApplication.run(FunctionConfiguration.class, args);
-    }
+    } 
     
     @Bean
     public Function<SQSEvent, SQSBatchResponse> handleOrderConfirmedEvent(SQSEvent evt) {
