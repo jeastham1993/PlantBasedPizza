@@ -39,7 +39,7 @@ public class EventQueue extends Construct {
         
         this.queue = new Queue(this, queueName,
                 QueueProps.builder()
-                        .queueName(deadLetterQueueName)
+                        .queueName(queueName)
                         .deadLetterQueue(DeadLetterQueue.builder()
                                 .queue(this.deadLetterQueue)
                                 .maxReceiveCount(3).build())
