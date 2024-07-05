@@ -3,6 +3,6 @@ VOLUME /tmp
 RUN apk --no-cache add curl
 #Uncomment to add the datadog tracing library
 RUN curl -Lo dd-java-agent.jar https://dtdg.co/latest-java-tracer
-COPY --from=public.ecr.aws/datadog/lambda-extension:59 /opt/extensions/ /opt/extensions
+
 COPY functions/target/*-aws.jar app.jar
 CMD ["org.springframework.cloud.function.adapter.aws.FunctionInvoker::handleRequest"]
