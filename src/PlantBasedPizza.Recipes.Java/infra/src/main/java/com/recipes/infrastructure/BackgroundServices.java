@@ -34,11 +34,9 @@ public class BackgroundServices extends Construct {
         lambdaEnvironment.put("DD_API_KEY_SECRET_ARN", props.getDatadogKeyParameter().getSecretArn());
         lambdaEnvironment.put("DB_PARAMETER_NAME", props.getDbConnectionParameter().getParameterName());
         lambdaEnvironment.put("spring_cloud_function_routingExpression", "handleOrderConfirmedEvent");
-
-        List<ILayerVersion> layers = new ArrayList<>(2);
         
         // Create our basic function
-        Function orderConfirmedHandlerFunction = Function.Builder.create(this,"OrderConfirmedHandler")
+        Function orderConfirmedHandlerFunction = Function.Builder.create(this,"OrderConfirmedEventHandler")
                 .runtime(Runtime.FROM_IMAGE)
                 .memorySize(2048)
                 .handler(Handler.FROM_IMAGE)
@@ -47,7 +45,6 @@ public class BackgroundServices extends Construct {
                 .code(Code.fromEcrImage(repository, EcrImageCodeProps.builder()
                                 .tagOrDigest(props.getTag() != null ? props.getTag() : "latest")
                         .build()))
-                //.layers(layers)
                 .build();
 
         Tags.of(orderConfirmedHandlerFunction).add("env", props.getSharedProps().getEnvironment());
