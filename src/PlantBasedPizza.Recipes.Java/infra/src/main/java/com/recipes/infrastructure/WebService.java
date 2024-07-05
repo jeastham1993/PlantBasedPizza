@@ -177,7 +177,11 @@ public class WebService extends Construct {
                     .healthCheck(software.amazon.awscdk.services.elasticloadbalancingv2.HealthCheck.builder()
                             .port(String.valueOf(props.getPort()))
                             .path(props.getHealthCheckPath())
-                            .healthyHttpCodes("200-404")
+                            .healthyHttpCodes("200-499")
+                            .interval(Duration.seconds(120))
+                            .timeout(Duration.seconds(10))
+                            .unhealthyThresholdCount(5)
+                            .healthyThresholdCount(2)
                             .build())
                     .vpc(props.getVpc())
                     .build());

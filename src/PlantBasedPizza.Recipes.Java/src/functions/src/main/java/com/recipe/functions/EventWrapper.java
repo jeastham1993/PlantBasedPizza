@@ -1,0 +1,50 @@
+package com.recipe.functions;
+
+import com.amazonaws.services.lambda.runtime.events.SQSEvent;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.recipe.functions.events.OrderConfirmedEvent;
+import io.cloudevents.CloudEvent;
+import io.cloudevents.core.data.PojoCloudEventData;
+import io.cloudevents.core.format.EventFormat;
+import io.cloudevents.core.provider.EventFormatProvider;
+import io.cloudevents.jackson.JsonFormat;
+import io.cloudevents.jackson.PojoCloudEventDataMapper;
+
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
+
+import static io.cloudevents.core.CloudEventUtils.mapData;
+
+public class EventWrapper {
+    private final ObjectMapper mapper;
+    private CloudEvent event;
+    
+    public EventWrapper(ObjectMapper mapper, SQSEvent.SQSMessage message) throws JsonProcessingException {
+        this.mapper = mapper;
+        Map<String, Object> wrapper = mapper.readValue(message.getBody(), HashMap.class);
+
+        EventFormat format = EventFormatProvider
+                .getInstance()
+                .resolveFormat(JsonFormat.CONTENT_TYPE);
+
+        Object value = wrapper.get("detail");
+
+        String valueString = mapper.writeValueAsString(value);
+
+        this.event = format.deserialize(valueString.getBytes(StandardCharsets.UTF_8));
+    }
+
+    public CloudEvent getEvent() {
+        return event;
+    }
+    
+    public OrderConfirmedEvent AsOrderConfirmedEvent() {
+        PojoCloudEventData<OrderConfirmedEvent> cloudEventData = mapData(
+                this.event,
+                PojoCloudEventDataMapper.from(this.mapper, OrderConfirmedEvent.class));
+        
+        return cloudEventData.getValue();
+    }
+}
