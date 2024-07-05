@@ -28,6 +28,7 @@ public class BackgroundServices extends Construct {
         lambdaEnvironment.put("DD_ENV", props.getSharedProps().getEnvironment());
         lambdaEnvironment.put("DD_VERSION", props.getSharedProps().getVersion());
         lambdaEnvironment.put("DD_API_KEY_SECRET_ARN", props.getDatadogKeyParameter().getSecretArn());
+        lambdaEnvironment.put("DB_PARAMETER_NAME", props.getDbConnectionParameter().getParameterName());
         lambdaEnvironment.put("spring_cloud_function_routingExpression", "handleOrderConfirmedEvent");
 
         List<ILayerVersion> layers = new ArrayList<>(2);
@@ -50,6 +51,7 @@ public class BackgroundServices extends Construct {
         Tags.of(orderConfirmedHandlerFunction).add("version", props.getSharedProps().getVersion());
 
         props.getDatadogKeyParameter().grantRead(orderConfirmedHandlerFunction);
+        props.getDbConnectionParameter().grantRead(orderConfirmedHandlerFunction);
 
         orderConfirmedHandlerFunction.addEventSource(new SqsEventSource(orderConfirmedQueue.getQueue()));
     }

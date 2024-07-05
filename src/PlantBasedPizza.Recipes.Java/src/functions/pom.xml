@@ -68,6 +68,11 @@
             <artifactId>powertools-logging</artifactId>
             <version>1.18.0</version>
         </dependency>
+        <dependency>
+            <groupId>software.amazon.lambda</groupId>
+            <artifactId>powertools-parameters</artifactId>
+            <version>1.18.0</version>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>
@@ -78,6 +83,11 @@
                 <version>${spring-cloud-function.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>software.amazon.lambda</groupId>
+                <artifactId>powertools-parameters</artifactId>
+                <version>1.18.0</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -96,6 +106,10 @@
                         <aspectLibrary>
                             <groupId>software.amazon.lambda</groupId>
                             <artifactId>powertools-logging</artifactId>
+                        </aspectLibrary>
+                        <aspectLibrary>
+                            <groupId>software.amazon.lambda</groupId>
+                            <artifactId>powertools-parameters</artifactId>
                         </aspectLibrary>
                     </aspectLibraries>
                 </configuration>

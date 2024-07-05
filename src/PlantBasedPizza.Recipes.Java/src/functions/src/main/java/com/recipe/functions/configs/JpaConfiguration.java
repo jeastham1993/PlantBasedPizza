@@ -1,4 +1,4 @@
-package com.recipe.api.configs;
+package com.recipe.functions.configs;
 import com.google.gson.Gson;
 
 import org.springframework.context.annotation.Bean;
@@ -25,11 +25,11 @@ public class JpaConfiguration {
     public DataSource dataSource() {
         SSMProvider ssmProvider = ParamManager.getSsmProvider()
                 .withDecryption();
-        
+
         String dbConnectionString = System.getenv("DB_CONNECTION_STRING");
-        
+
         if (dbConnectionString == null){
-            dbConnectionString = ssmProvider.get(System.getenv("DB_PARAMETER_NAME")); 
+            dbConnectionString = ssmProvider.get(System.getenv("DB_PARAMETER_NAME"));
         }
 
         var dataSource = new SimpleDriverDataSource();

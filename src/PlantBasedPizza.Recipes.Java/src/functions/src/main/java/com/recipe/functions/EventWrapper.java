@@ -5,7 +5,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.recipe.functions.events.OrderConfirmedEvent;
 import io.cloudevents.CloudEvent;
-import io.cloudevents.CloudEventData;
 import io.cloudevents.core.data.PojoCloudEventData;
 import io.cloudevents.core.format.EventFormat;
 import io.cloudevents.core.provider.EventFormatProvider;
@@ -22,11 +21,11 @@ import static io.cloudevents.core.CloudEventUtils.mapData;
 
 public class EventWrapper {
     private final ObjectMapper mapper;
-    private CloudEvent event;
+    private final CloudEvent event;
     
     public EventWrapper(ObjectMapper mapper, SQSEvent.SQSMessage message) throws JsonProcessingException {
         this.mapper = mapper;
-        Map<String, Object> wrapper = mapper.readValue(message.getBody(), HashMap.class);
+        HashMap wrapper = mapper.readValue(message.getBody(), HashMap.class);
 
         EventFormat format = EventFormatProvider
                 .getInstance()

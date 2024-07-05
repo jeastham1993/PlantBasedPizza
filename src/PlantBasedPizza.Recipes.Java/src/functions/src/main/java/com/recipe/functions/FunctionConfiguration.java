@@ -7,7 +7,6 @@ import com.recipe.functions.events.OrderConfirmedEvent;
 import com.recipe.functions.services.IEventHandlerService;
 import datadog.trace.api.Trace;
 import io.opentracing.Span;
-import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -35,7 +34,7 @@ public class FunctionConfiguration{
 
     public static void main(String[] args) {
         SpringApplication.run(FunctionConfiguration.class, args);
-    } 
+    }
     
     @Bean
     public Function<SQSEvent, SQSBatchResponse> handleOrderConfirmedEvent() {
@@ -44,9 +43,7 @@ public class FunctionConfiguration{
 
             List<SQSEvent.SQSMessage> records = value.getRecords();
 
-            for (int i = 0, recordsSize = records.size(); i < recordsSize; i++) {
-                SQSEvent.SQSMessage message = records.get(i);
-
+            for (SQSEvent.SQSMessage message : records) {
                 var processSuccess = processOrderConfirmedMessage(message);
 
                 if (!processSuccess) {
