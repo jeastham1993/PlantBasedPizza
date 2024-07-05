@@ -17,14 +17,42 @@ permissions:
   contents: read
 
 jobs:
-  build-image:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base-java.yaml@feature/aws-serverless-datadog
+  static-analysis:
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/static-analysis.yaml@feature/aws-serverless-datadog
     with:
       service-name: "RecipeJavaApi"
       project-root: src/PlantBasedPizza.Recipes.Java/src/api
       build-directory: src/PlantBasedPizza.Recipes.Java/src
       image-name: recipe-api-java
       dockerfile: src/PlantBasedPizza.Recipes.Java/src/Dockerfile
+    secrets:
+      deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
+      ecr-registry: ${{secrets.ECR_REGISTRY}}
+      dd_api_key: ${{secrets.DD_API_KEY}}
+      dd_app_key: ${{secrets.DD_APP_KEY}}
+  build-image:
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base-java.yaml@feature/aws-serverless-datadog
+    needs: static-analysis
+    with:
+      service-name: "RecipeJavaApi"
+      project-root: src/PlantBasedPizza.Recipes.Java/src/api
+      build-directory: src/PlantBasedPizza.Recipes.Java/src
+      image-name: recipe-api-java
+      dockerfile: src/PlantBasedPizza.Recipes.Java/src/Dockerfile
+    secrets:
+      deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
+      ecr-registry: ${{secrets.ECR_REGISTRY}}
+      dd_api_key: ${{secrets.DD_API_KEY}}
+      dd_app_key: ${{secrets.DD_APP_KEY}}
+  build-function-image:
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base-java.yaml@feature/aws-serverless-datadog
+    needs: static-analysis
+    with:
+      service-name: "RecipeJavaApi"
+      project-root: src/PlantBasedPizza.Recipes.Java/src/functions
+      build-directory: src/PlantBasedPizza.Recipes.Java/src
+      image-name: recipe-functions-java
+      dockerfile: src/PlantBasedPizza.Recipes.Java/src/Dockerfile-function
     secrets:
       deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
       ecr-registry: ${{secrets.ECR_REGISTRY}}
@@ -43,7 +71,9 @@ jobs:
   #     dd_api_key: ${{secrets.DD_API_KEY}}
   deploy-to-dev:
     uses: jeastham1993/PlantBasedPizza/.github/workflows/cdk-deploy-base-with-java.yaml@feature/aws-serverless-datadog
-    needs: build-image
+    needs:
+      - build-image
+      - build-function-image
     concurrency:
       group: recipes-java-dev-deploy
       cancel-in-progress: false

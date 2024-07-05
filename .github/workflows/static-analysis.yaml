@@ -1,0 +1,68 @@
+name: Image Build & Push Java Workflow
+
+on:
+  workflow_call:
+    inputs:
+      service-name:
+          required: true
+          type: string
+      project-root:
+          required: true
+          type: string
+      build-directory:
+          required: true
+          type: string
+      image-name:
+          required: true
+          type: string
+      dockerfile:
+          required: true
+          type: string
+    secrets:
+      deploy-role-arn:
+        description: 'The role for the AWS IAM role to use for deployment'
+        required: true
+      ecr-registry:
+          required: true
+      dd_api_key:
+          required: true
+      dd_app_key:
+          required: true
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  static-analysis:
+    runs-on: ubuntu-latest
+    name: Datadog Static Analyzer
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Check code meets quality and security standards
+      id: datadog-static-analysis
+      uses: DataDog/datadog-static-analyzer-github-action@v1
+      with:
+        dd_api_key: ${{ secrets.DD_API_KEY }}
+        dd_app_key: ${{ secrets.DD_APP_KEY }}
+        dd_service: ${{ inputs.service-name }}
+        dd_env: ci
+        dd_site: datadoghq.eu
+        cpu_count: 2
+        subdirectory: ${{ inputs.project-root }}
+  software-composition-analysis:
+    runs-on: ubuntu-latest
+    name: Datadog SBOM Generation and Upload
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+    - name: Check imported libraries are secure and compliant
+      id: datadog-software-composition-analysis
+      uses: DataDog/datadog-sca-github-action@main
+      with:
+        dd_api_key: ${{ secrets.DD_API_KEY }}
+        dd_app_key: ${{ secrets.DD_APP_KEY }}
+        dd_service: ${{ inputs.service-name }}
+        dd_env: ci
+        dd_site: datadoghq.eu

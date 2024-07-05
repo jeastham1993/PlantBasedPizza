@@ -90,7 +90,7 @@ public class RecipeJavaInfraStack extends Stack {
         BackgroundServices services = new BackgroundServices(
                 this, 
                 "BackgroundServices", 
-                new BackgroundServiceProps(sharedProps, ddApiKeySecret, connectionStringParam, bus));
+                new BackgroundServiceProps(sharedProps, ddApiKeySecret, connectionStringParam, bus, commitHash));
         
         connectionStringParam.grantRead(javaWebService.executionRole);
         bus.grantPutEventsTo(javaWebService.taskRole);

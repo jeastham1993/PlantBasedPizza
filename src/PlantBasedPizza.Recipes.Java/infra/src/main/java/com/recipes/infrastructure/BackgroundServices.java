@@ -1,16 +1,13 @@
 package com.recipes.infrastructure;
 
 import org.jetbrains.annotations.NotNull;
-import software.amazon.awscdk.BundlingOptions;
-import software.amazon.awscdk.BundlingOutput;
 import software.amazon.awscdk.Duration;
 import software.amazon.awscdk.Tags;
+import software.amazon.awscdk.services.ecr.IRepository;
+import software.amazon.awscdk.services.ecr.Repository;
 import software.amazon.awscdk.services.lambda.*;
 import software.amazon.awscdk.services.lambda.Runtime;
 import software.amazon.awscdk.services.lambda.eventsources.SqsEventSource;
-import software.amazon.awscdk.services.s3.assets.Asset;
-import software.amazon.awscdk.services.s3.assets.AssetOptions;
-import software.amazon.awscdk.services.s3.assets.AssetProps;
 import software.constructs.Construct;
 
 import java.util.ArrayList;
@@ -21,6 +18,8 @@ import java.util.Map;
 public class BackgroundServices extends Construct {
     public BackgroundServices(@NotNull Construct scope, @NotNull String id, @NotNull BackgroundServiceProps props) {
         super(scope, id);
+
+        IRepository repository = Repository.fromRepositoryName(this, props.getSharedProps().getServiceName() + "Repo", "recipe-functions-java");
         
         EventQueueProps orderConfirmedQueueProps = new EventQueueProps(props.getSharedProps(), props.getBus(), "https://orders.plantbasedpizza/", "order.orderConfirmed.v1", "OrderConfirmed");
         EventQueue orderConfirmedQueue = new EventQueue(this, "OrderConfirmedQueue", orderConfirmedQueueProps);
@@ -47,12 +46,10 @@ public class BackgroundServices extends Construct {
                 .handler("org.springframework.cloud.function.adapter.aws.FunctionInvoker::handleRequest")
                 .environment(lambdaEnvironment)
                 .timeout(Duration.seconds(30))
-                .code(Code.fromAsset(
-                        "../src/functions/target/com.recipe.functions-0.0.1-SNAPSHOT-aws.jar",
-                        AssetOptions.
-                                builder()
-                                .build()))
-                //.layers(layers)
+                .code(Code.fromEcrImage(repository, EcrImageCodeProps.builder()
+                                .tagOrDigest(props.getTag() != null ? props.getTag() : "latest")
+                        .build()))
+                .layers(layers)
                 .build();
 
         Tags.of(orderConfirmedHandlerFunction).add("env", props.getSharedProps().getEnvironment());
