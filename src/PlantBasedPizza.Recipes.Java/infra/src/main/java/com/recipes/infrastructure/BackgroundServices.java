@@ -41,6 +41,7 @@ public class BackgroundServices extends Construct {
         
         // Create our basic function
         Function orderConfirmedHandlerFunction = Function.Builder.create(this,"OrderConfirmedHandler")
+                .runtime(Runtime.FROM_IMAGE)
                 .memorySize(2048)
                 .handler(Handler.FROM_IMAGE)
                 .environment(lambdaEnvironment)
