@@ -36,8 +36,6 @@ public class BackgroundServices extends Construct {
         lambdaEnvironment.put("spring_cloud_function_routingExpression", "handleOrderConfirmedEvent");
 
         List<ILayerVersion> layers = new ArrayList<>(2);
-        layers.add(LayerVersion.fromLayerVersionArn(this, "DatadogJavaLayer", "arn:aws:lambda:eu-west-1:464622532012:layer:dd-trace-java:15"));
-        layers.add(LayerVersion.fromLayerVersionArn(this, "DatadogLambdaExtension", "arn:aws:lambda:eu-west-1:464622532012:layer:Datadog-Extension:59"));
         
         // Create our basic function
         Function orderConfirmedHandlerFunction = Function.Builder.create(this,"OrderConfirmedHandler")
@@ -49,7 +47,7 @@ public class BackgroundServices extends Construct {
                 .code(Code.fromEcrImage(repository, EcrImageCodeProps.builder()
                                 .tagOrDigest(props.getTag() != null ? props.getTag() : "latest")
                         .build()))
-                .layers(layers)
+                //.layers(layers)
                 .build();
 
         Tags.of(orderConfirmedHandlerFunction).add("env", props.getSharedProps().getEnvironment());
