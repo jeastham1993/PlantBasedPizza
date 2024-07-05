@@ -41,9 +41,8 @@ public class BackgroundServices extends Construct {
         
         // Create our basic function
         Function orderConfirmedHandlerFunction = Function.Builder.create(this,"OrderConfirmedHandler")
-                .runtime(Runtime.JAVA_21)
                 .memorySize(2048)
-                .handler("org.springframework.cloud.function.adapter.aws.FunctionInvoker::handleRequest")
+                .handler(Handler.FROM_IMAGE)
                 .environment(lambdaEnvironment)
                 .timeout(Duration.seconds(30))
                 .code(Code.fromEcrImage(repository, EcrImageCodeProps.builder()
