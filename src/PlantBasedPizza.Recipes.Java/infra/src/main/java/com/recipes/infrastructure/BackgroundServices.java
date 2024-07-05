@@ -48,11 +48,11 @@ public class BackgroundServices extends Construct {
                 .environment(lambdaEnvironment)
                 .timeout(Duration.seconds(30))
                 .code(Code.fromAsset(
-                        "../src/functions/target/com.recipe.functions-0.0.1-SNAPSHOT.zip",
+                        "../src/functions/target/com.recipe.functions-0.0.1-SNAPSHOT-aws.jar",
                         AssetOptions.
                                 builder()
                                 .build()))
-                .layers(layers)
+                //.layers(layers)
                 .build();
 
         Tags.of(orderConfirmedHandlerFunction).add("env", props.getSharedProps().getEnvironment());
