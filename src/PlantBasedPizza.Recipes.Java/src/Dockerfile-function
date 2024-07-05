@@ -1,5 +1,6 @@
 FROM amazoncorretto:21-alpine
 VOLUME /tmp
 COPY --from=public.ecr.aws/datadog/lambda-extension:59 /opt/extensions/ /opt/extensions
+COPY --from=public.ecr.aws/datadog/agent:7 /opt/extensions/ /opt/extensions
 COPY functions/target/*-aws.jar app.jar
 CMD ["org.springframework.cloud.function.adapter.aws.FunctionInvoker::handleRequest"]
