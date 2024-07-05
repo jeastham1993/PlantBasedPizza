@@ -1,23 +1,22 @@
 package com.recipe.functions;
 
+import com.amazonaws.services.lambda.runtime.events.CloudWatchLogsEvent;
 import com.amazonaws.services.lambda.runtime.events.SQSEvent;
 import com.amazonaws.services.lambda.runtime.events.SQSBatchResponse;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.recipe.core.IRecipeRepository;
 import com.recipe.functions.events.OrderConfirmedEvent;
 import datadog.trace.api.Trace;
 import io.cloudevents.CloudEvent;
-import io.cloudevents.CloudEventData;
 import io.cloudevents.core.data.PojoCloudEventData;
 import io.cloudevents.core.format.EventFormat;
-import io.cloudevents.core.message.MessageReader;
 import io.cloudevents.core.provider.EventFormatProvider;
-import io.cloudevents.http.HttpMessageFactory;
-import io.cloudevents.jackson.JsonCloudEventData;
 import io.cloudevents.jackson.JsonFormat;
 import io.cloudevents.jackson.PojoCloudEventDataMapper;
-import org.springframework.beans.factory.annotation.AnnotationBeanWiringInfoResolver;
+import io.opentracing.Span;
+import io.opentracing.util.GlobalTracer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import static io.cloudevents.core.CloudEventUtils.mapData;
 import org.springframework.boot.SpringApplication;
@@ -26,7 +25,9 @@ import org.springframework.context.annotation.Bean;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 @SpringBootApplication(scanBasePackages = "com.recipe")
@@ -35,6 +36,8 @@ public class FunctionConfiguration{
     IRecipeRepository recipeRepository;
     
     ObjectMapper objectMapper = new ObjectMapper();
+
+    Logger log = LogManager.getLogger(FunctionConfiguration.class);
 
     public static void main(String[] args) {
         SpringApplication.run(FunctionConfiguration.class, args);
@@ -65,22 +68,39 @@ public class FunctionConfiguration{
 
     @Trace(operationName = "ProcessingOrderConfirmedMessage", resourceName = "FunctionConfiguration.processOrderConfirmedMessage")
     public boolean processOrderConfirmedMessage(SQSEvent.SQSMessage message) {
+        final Span span = GlobalTracer.get().activeSpan();
+        
         try {
-            EventBridgeWrapper wrapper = this.objectMapper.readValue(message.getBody(), EventBridgeWrapper.class);
+            if (span != null){
+             span.setTag("sqs.messageId", message.getMessageId());   
+            }
+            
+            log.info(String.format("Processing message %s", message.getMessageId()));
+            
+            Map<String, Object> wrapper = this.objectMapper.readValue(message.getBody(), HashMap.class);
 
             EventFormat format = EventFormatProvider
                     .getInstance()
                     .resolveFormat(JsonFormat.CONTENT_TYPE);
             
-            CloudEvent event = format.deserialize(wrapper.getDetail().getBytes(StandardCharsets.UTF_8));
+            Object value = wrapper.get("detail");
+            
+            String valueString = this.objectMapper.writeValueAsString(value);
+            
+            CloudEvent event = format.deserialize(valueString.getBytes(StandardCharsets.UTF_8));
 
             PojoCloudEventData<OrderConfirmedEvent> cloudEventData = mapData(
                     event,
                     PojoCloudEventDataMapper.from(this.objectMapper, OrderConfirmedEvent.class));
-            
+
             String orderIdentifier = cloudEventData.getValue().getOrderIdentifier();
+
+            if (span != null){
+                span.setTag("order.orderIdentifier", orderIdentifier);
+            }
         }
         catch (Exception exception){
+            log.error(exception);
             return false;
         }
         

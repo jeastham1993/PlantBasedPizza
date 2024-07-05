@@ -14,13 +14,6 @@ public class InfrastructureApp {
                         .region(System.getenv("CDK_DEFAULT_REGION"))
                         .build())
                 .build());
-        
-        TestInfrastructureStack testInfrastructureStack =new TestInfrastructureStack(app, "TestInfrastructureStack", StackProps.builder()
-                .env(Environment.builder()
-                        .account(System.getenv("CDK_DEFAULT_ACCOUNT"))
-                        .region(System.getenv("CDK_DEFAULT_REGION"))
-                        .build())
-                .build());
 
         app.synth();
     }

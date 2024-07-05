@@ -63,6 +63,11 @@
             <artifactId>cloudevents-json-jackson</artifactId>
             <version>4.0.1</version>
         </dependency>
+        <dependency>
+            <groupId>software.amazon.lambda</groupId>
+            <artifactId>powertools-logging</artifactId>
+            <version>1.18.0</version>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>
@@ -79,6 +84,29 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>dev.aspectj</groupId>
+                <artifactId>aspectj-maven-plugin</artifactId>
+                <version>1.13.1</version>
+                <configuration>
+                    <source>11</source> <!-- or higher -->
+                    <target>11</target> <!-- or higher -->
+                    <complianceLevel>11</complianceLevel> <!-- or higher -->
+                    <aspectLibraries>
+                        <aspectLibrary>
+                            <groupId>software.amazon.lambda</groupId>
+                            <artifactId>powertools-logging</artifactId>
+                        </aspectLibrary>
+                    </aspectLibraries>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
@@ -145,147 +173,4 @@
             </snapshots>
         </pluginRepository>
     </pluginRepositories>
-
 </project>
-
-        <!--<?xml version="1.0" encoding="UTF-8"?>-->
-<!--<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"-->
-<!--         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">-->
-<!--    <modelVersion>4.0.0</modelVersion>-->
-<!--    <parent>-->
-<!--        <groupId>com.recipe</groupId>-->
-<!--        <artifactId>com.recipe</artifactId>-->
-<!--        <version>1.0.0</version>-->
-<!--    </parent>-->
-<!--    <artifactId>com.recipe.functions</artifactId>-->
-<!--    <version>1.0.0</version>-->
-<!--    <name>com.recipe.function</name>-->
-<!--    <description>Recipe Functions</description>-->
-<!--    <packaging>jar</packaging>-->
-<!--    <properties>-->
-<!--        <junit.jupiter.version>5.9.0</junit.jupiter.version>-->
-<!--        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>-->
-<!--        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>-->
-<!--        <aws-lambda-events.version>3.9.0</aws-lambda-events.version>-->
-<!--        <spring-cloud-function.version>4.1.2</spring-cloud-function.version>-->
-<!--        <maven.compiler.source>21</maven.compiler.source>-->
-<!--        <maven.compiler.target>21</maven.compiler.target>-->
-<!--    </properties>-->
-<!--    <dependencyManagement>-->
-<!--        <dependencies>-->
-<!--            <dependency>-->
-<!--                <groupId>org.springframework.cloud</groupId>-->
-<!--                <artifactId>spring-cloud-function-dependencies</artifactId>-->
-<!--                <version>${spring-cloud-function.version}</version>-->
-<!--                <type>pom</type>-->
-<!--                <scope>import</scope>-->
-<!--            </dependency>-->
-<!--        </dependencies>-->
-<!--    </dependencyManagement>-->
-<!--    <dependencies>-->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.cloud</groupId>-->
-<!--            <artifactId>spring-cloud-function-adapter-aws</artifactId>-->
-<!--            <version>4.1.2</version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>com.amazonaws</groupId>-->
-<!--            <artifactId>aws-lambda-java-events</artifactId>-->
-<!--            <version>${aws-lambda-events.version}</version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>com.amazonaws</groupId>-->
-<!--            <artifactId>aws-lambda-java-core</artifactId>-->
-<!--            <version>1.2.3</version>-->
-<!--            <scope>provided</scope>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>com.recipe</groupId>-->
-<!--            <artifactId>com.recipe.core</artifactId>-->
-<!--            <version>1.0.0</version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>io.opentracing</groupId>-->
-<!--            <artifactId>opentracing-api</artifactId>-->
-<!--            <version>0.33.0</version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>io.opentracing</groupId>-->
-<!--            <artifactId>opentracing-util</artifactId>-->
-<!--            <version>0.33.0</version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>com.datadoghq</groupId>-->
-<!--            <artifactId>dd-trace-api</artifactId>-->
-<!--            <version>LATEST</version>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>com.google.code.gson</groupId>-->
-<!--            <artifactId>gson</artifactId>-->
-<!--            <version>2.11.0</version>-->
-<!--        </dependency>-->
-<!--    </dependencies>-->
-<!--    <build>-->
-<!--        <plugins>-->
-<!--            <plugin>-->
-<!--                <groupId>org.apache.maven.plugins</groupId>-->
-<!--                <artifactId>maven-deploy-plugin</artifactId>-->
-<!--                <version>3.1.2</version>-->
-<!--                <configuration>-->
-<!--                    <skip>true</skip>-->
-<!--                </configuration>-->
-<!--            </plugin>-->
-<!--            <plugin>-->
-<!--                <groupId>org.springframework.boot</groupId>-->
-<!--                <artifactId>spring-boot-maven-plugin</artifactId>-->
-<!--                <version>3.3.0</version>-->
-<!--            </plugin>-->
-<!--            <plugin>-->
-<!--                <groupId>org.apache.maven.plugins</groupId>-->
-<!--                <artifactId>maven-shade-plugin</artifactId>-->
-<!--                <version>3.6.0</version>-->
-<!--                <configuration>-->
-<!--                    <createDependencyReducedPom>false</createDependencyReducedPom>-->
-<!--                    <shadedArtifactAttached>true</shadedArtifactAttached>-->
-<!--                    <shadedClassifierName>aws</shadedClassifierName>-->
-<!--                </configuration>-->
-<!--            </plugin>-->
-<!--        </plugins>-->
-<!--    </build>-->
-<!--    <repositories>-->
-<!--        <repository>-->
-<!--            <id>spring-snapshots</id>-->
-<!--            <name>Spring Snapshots</name>-->
-<!--            <url>https://repo.spring.io/snapshot</url>-->
-<!--            <snapshots>-->
-<!--                <enabled>true</enabled>-->
-<!--            </snapshots>-->
-<!--        </repository>-->
-<!--        <repository>-->
-<!--            <id>spring-milestones</id>-->
-<!--            <name>Spring Milestones</name>-->
-<!--            <url>https://repo.spring.io/milestone</url>-->
-<!--            <snapshots>-->
-<!--                <enabled>false</enabled>-->
-<!--            </snapshots>-->
-<!--        </repository>-->
-<!--    </repositories>-->
-<!--    <pluginRepositories>-->
-<!--        <pluginRepository>-->
-<!--            <id>spring-snapshots</id>-->
-<!--            <name>Spring Snapshots</name>-->
-<!--            <url>https://repo.spring.io/snapshot</url>-->
-<!--            <snapshots>-->
-<!--                <enabled>true</enabled>-->
-<!--            </snapshots>-->
-<!--        </pluginRepository>-->
-<!--        <pluginRepository>-->
-<!--            <id>spring-milestones</id>-->
-<!--            <name>Spring Milestones</name>-->
-<!--            <url>https://repo.spring.io/milestone</url>-->
-<!--            <snapshots>-->
-<!--                <enabled>false</enabled>-->
-<!--            </snapshots>-->
-<!--        </pluginRepository>-->
-<!--    </pluginRepositories>-->
-<!--</project>-->
