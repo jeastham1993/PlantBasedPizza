@@ -35,9 +35,6 @@ permissions:
 
 jobs:
   test-and-build:
-    needs: 
-      - static-analysis
-      - software-composition-analysis
     runs-on: ubuntu-latest
     steps:
       -
