@@ -1,11 +1,16 @@
 package com.recipes.infrastructure;
 
 import org.jetbrains.annotations.NotNull;
+import software.amazon.awscdk.BundlingOptions;
+import software.amazon.awscdk.BundlingOutput;
 import software.amazon.awscdk.Duration;
 import software.amazon.awscdk.Tags;
 import software.amazon.awscdk.services.lambda.*;
 import software.amazon.awscdk.services.lambda.Runtime;
 import software.amazon.awscdk.services.lambda.eventsources.SqsEventSource;
+import software.amazon.awscdk.services.s3.assets.Asset;
+import software.amazon.awscdk.services.s3.assets.AssetOptions;
+import software.amazon.awscdk.services.s3.assets.AssetProps;
 import software.constructs.Construct;
 
 import java.util.ArrayList;
@@ -34,7 +39,7 @@ public class BackgroundServices extends Construct {
         List<ILayerVersion> layers = new ArrayList<>(2);
         layers.add(LayerVersion.fromLayerVersionArn(this, "DatadogJavaLayer", "arn:aws:lambda:eu-west-1:464622532012:layer:dd-trace-java:15"));
         layers.add(LayerVersion.fromLayerVersionArn(this, "DatadogLambdaExtension", "arn:aws:lambda:eu-west-1:464622532012:layer:Datadog-Extension:59"));
-
+        
         // Create our basic function
         Function orderConfirmedHandlerFunction = Function.Builder.create(this,"OrderConfirmedHandler")
                 .runtime(Runtime.JAVA_21)
@@ -42,7 +47,11 @@ public class BackgroundServices extends Construct {
                 .handler("org.springframework.cloud.function.adapter.aws.FunctionInvoker::handleRequest")
                 .environment(lambdaEnvironment)
                 .timeout(Duration.seconds(30))
-                .code(Code.fromAsset("../src/functions/target/com.recipe.functions-0.0.1-SNAPSHOT-aws.jar"))
+                .code(Code.fromAsset(
+                        "../src/functions/target/com.recipe.functions-0.0.1-SNAPSHOT.zip",
+                        AssetOptions.
+                                builder()
+                                .build()))
                 .layers(layers)
                 .build();
 
