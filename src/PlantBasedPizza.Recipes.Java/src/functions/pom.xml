@@ -65,11 +65,6 @@
         </dependency>
         <dependency>
             <groupId>software.amazon.lambda</groupId>
-            <artifactId>powertools-logging</artifactId>
-            <version>1.18.0</version>
-        </dependency>
-        <dependency>
-            <groupId>software.amazon.lambda</groupId>
             <artifactId>powertools-parameters</artifactId>
             <version>1.18.0</version>
         </dependency>
@@ -84,11 +79,6 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-            <dependency>
-                <groupId>software.amazon.lambda</groupId>
-                <artifactId>powertools-parameters</artifactId>
-                <version>1.18.0</version>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -97,16 +87,12 @@
             <plugin>
                 <groupId>dev.aspectj</groupId>
                 <artifactId>aspectj-maven-plugin</artifactId>
-                <version>1.13.1</version>
+                <version>1.14</version>
                 <configuration>
-                    <source>11</source> <!-- or higher -->
-                    <target>11</target> <!-- or higher -->
-                    <complianceLevel>11</complianceLevel> <!-- or higher -->
+                    <source>21</source> <!-- or higher -->
+                    <target>21</target> <!-- or higher -->
+                    <complianceLevel>21</complianceLevel> <!-- or higher -->
                     <aspectLibraries>
-                        <aspectLibrary>
-                            <groupId>software.amazon.lambda</groupId>
-                            <artifactId>powertools-logging</artifactId>
-                        </aspectLibrary>
                         <aspectLibrary>
                             <groupId>software.amazon.lambda</groupId>
                             <artifactId>powertools-parameters</artifactId>
