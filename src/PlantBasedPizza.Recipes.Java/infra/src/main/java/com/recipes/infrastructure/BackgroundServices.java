@@ -5,6 +5,7 @@ import software.amazon.awscdk.Duration;
 import software.amazon.awscdk.Tags;
 import software.amazon.awscdk.services.lambda.*;
 import software.amazon.awscdk.services.lambda.Runtime;
+import software.amazon.awscdk.services.lambda.eventsources.SqsEventSource;
 import software.constructs.Construct;
 
 import java.util.ArrayList;
@@ -15,6 +16,9 @@ import java.util.Map;
 public class BackgroundServices extends Construct {
     public BackgroundServices(@NotNull Construct scope, @NotNull String id, @NotNull BackgroundServiceProps props) {
         super(scope, id);
+        
+        EventQueueProps orderConfirmedQueueProps = new EventQueueProps(props.getSharedProps(), props.getBus(), "https://orders.plantbasedpizza/", "order.orderConfirmed.v1", "OrderConfirmed");
+        EventQueue orderConfirmedQueue = new EventQueue(this, "OrderConfirmedQueue", orderConfirmedQueueProps);
 
         Map<String, String> lambdaEnvironment = new HashMap<>();
         lambdaEnvironment.put("MAIN_CLASS", "com.recipe.functions.FunctionConfiguration");
@@ -31,7 +35,7 @@ public class BackgroundServices extends Construct {
         layers.add(LayerVersion.fromLayerVersionArn(this, "DatadogLambdaExtension", "arn:aws:lambda:eu-west-1:464622532012:layer:Datadog-Extension:59"));
 
         // Create our basic function
-        Function lambdaFn = Function.Builder.create(this,"ScheduledFunction")
+        Function orderConfirmedHandlerFunction = Function.Builder.create(this,"OrderConfirmedHandler")
                 .runtime(Runtime.JAVA_21)
                 .memorySize(2048)
                 .handler("org.springframework.cloud.function.adapter.aws.FunctionInvoker::handleRequest")
@@ -41,10 +45,12 @@ public class BackgroundServices extends Construct {
                 .layers(layers)
                 .build();
 
-        Tags.of(lambdaFn).add("env", props.getSharedProps().getEnvironment());
-        Tags.of(lambdaFn).add("service", props.getSharedProps().getServiceName());
-        Tags.of(lambdaFn).add("version", props.getSharedProps().getVersion());
+        Tags.of(orderConfirmedHandlerFunction).add("env", props.getSharedProps().getEnvironment());
+        Tags.of(orderConfirmedHandlerFunction).add("service", props.getSharedProps().getServiceName());
+        Tags.of(orderConfirmedHandlerFunction).add("version", props.getSharedProps().getVersion());
 
-        props.getDatadogKeyParameter().grantRead(lambdaFn);
+        props.getDatadogKeyParameter().grantRead(orderConfirmedHandlerFunction);
+
+        orderConfirmedHandlerFunction.addEventSource(new SqsEventSource(orderConfirmedQueue.getQueue()));
     }
 }
