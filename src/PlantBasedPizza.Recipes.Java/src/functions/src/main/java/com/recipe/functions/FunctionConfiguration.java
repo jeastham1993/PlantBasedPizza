@@ -1,11 +1,13 @@
 package com.recipe.functions;
 import com.amazonaws.services.lambda.runtime.events.SQSEvent;
 import com.amazonaws.services.lambda.runtime.events.SQSBatchResponse;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.recipe.functions.events.OrderConfirmedEvent;
 import com.recipe.functions.services.IEventHandlerService;
 import datadog.trace.api.Trace;
 import io.opentracing.Span;
+import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,6 +26,7 @@ public class FunctionConfiguration{
     @Autowired
     public FunctionConfiguration(IEventHandlerService eventHandlerService){
         this.eventHandlerService = eventHandlerService;
+        this.objectMapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
     }
     
     ObjectMapper objectMapper = new ObjectMapper();

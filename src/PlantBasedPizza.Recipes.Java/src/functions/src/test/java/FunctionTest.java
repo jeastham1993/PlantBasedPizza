@@ -15,7 +15,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class FunctionTest {
-    private String data = "{\"version\":\"0\",\"id\":\"440f76ac-7d40-6e9f-288f-f28de28c6c12\",\"detail-type\":\"test\",\"source\":\"test\",\"account\":\"730335273443\",\"time\":\"2024-07-05T15:06:22Z\",\"region\":\"eu-west-1\",\"resources\":[],\"detail\":{\"specversion\":\"1.0\",\"type\":\"com.example.someevent\",\"source\":\"/mycontext\",\"id\":\"A234-1234-1234\",\"time\":\"2018-04-05T17:31:00Z\",\"comexampleextension1\":\"value\",\"comexampleothervalue\":5,\"datacontenttype\":\"application/json\",\"data\":{\"orderIdentifier\":\"ORDER\", \"items\":[{\"recipeIdentifier\":\"1\"}]}}}";
+    private String data = "{\"version\":\"0\",\"id\":\"440f76ac-7d40-6e9f-288f-f28de28c6c12\",\"detail-type\":\"test\",\"source\":\"test\",\"account\":\"730335273443\",\"time\":\"2024-07-05T15:06:22Z\",\"region\":\"eu-west-1\",\"resources\":[],\"detail\":{\"specversion\":\"1.0\",\"type\":\"com.example.someevent\",\"source\":\"/mycontext\",\"id\":\"A234-1234-1234\",\"time\":\"2018-04-05T17:31:00Z\",\"comexampleextension1\":\"value\",\"comexampleothervalue\":5,\"datacontenttype\":\"application/json\",\"ddtraceid\":\"123456\",\"ddspanid\":\"789019\",\"data\":{\"OrderIdentifier\":\"ORDER\", \"Items\":[{\"RecipeIdentifier\":\"1\"}]}}}";
 
     private IEventHandlerService eventHandlerService;
     

@@ -5,11 +5,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.recipe.functions.events.OrderConfirmedEvent;
 import io.cloudevents.CloudEvent;
+import io.cloudevents.CloudEventData;
 import io.cloudevents.core.data.PojoCloudEventData;
 import io.cloudevents.core.format.EventFormat;
 import io.cloudevents.core.provider.EventFormatProvider;
 import io.cloudevents.jackson.JsonFormat;
 import io.cloudevents.jackson.PojoCloudEventDataMapper;
+import io.opentracing.Span;
+import io.opentracing.util.GlobalTracer;
 
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -34,10 +37,13 @@ public class EventWrapper {
         String valueString = mapper.writeValueAsString(value);
 
         this.event = format.deserialize(valueString.getBytes(StandardCharsets.UTF_8));
-    }
 
-    public CloudEvent getEvent() {
-        return event;
+        final Span span = GlobalTracer.get().activeSpan();
+        
+        if (span != null){
+            span.setTag("linked.traceId", this.getParentTraceId());
+            span.setTag("linked.spanId", this.getParentSpanId());
+        }
     }
     
     public OrderConfirmedEvent AsOrderConfirmedEvent() {
@@ -46,5 +52,13 @@ public class EventWrapper {
                 PojoCloudEventDataMapper.from(this.mapper, OrderConfirmedEvent.class));
         
         return cloudEventData.getValue();
+    }
+
+    private String getParentTraceId() {
+        return event.getExtension("ddtraceid").toString();
+    }
+
+    private String getParentSpanId() {
+        return event.getExtension("ddspanid").toString();
     }
 }
