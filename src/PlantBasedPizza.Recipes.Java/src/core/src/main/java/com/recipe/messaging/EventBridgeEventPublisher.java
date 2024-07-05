@@ -14,6 +14,7 @@ import io.cloudevents.jackson.JsonCloudEventData;
 import io.opentracing.SpanContext;
 import io.opentracing.util.GlobalTracer;
 import org.springframework.stereotype.Service;
+import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient;
 import software.amazon.awssdk.services.eventbridge.EventBridgeClient;
 import software.amazon.awssdk.services.eventbridge.model.PutEventsRequest;
 import software.amazon.awssdk.services.eventbridge.model.PutEventsRequestEntry;
@@ -33,6 +34,7 @@ public class EventBridgeEventPublisher {
 
     public EventBridgeEventPublisher(){
         _eventBridge = EventBridgeClient.builder()
+                .httpClient(UrlConnectionHttpClient.builder().build())
                 .build();
         _mapper = new ObjectMapper();
         _mapper.setPropertyNamingStrategy(PropertyNamingStrategy.LOWER_CAMEL_CASE);
