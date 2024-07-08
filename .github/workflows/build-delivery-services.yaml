@@ -5,7 +5,6 @@ on:
       branches:
         - main
       paths:
-        - .github/workflows/build-and-push-base.yaml
         - .github/workflows/build-delivery-services.yaml
         - src/PlantBasedPizza.Delivery/**
         - src/shared/**
@@ -17,7 +16,7 @@ permissions:
 
 jobs:
   build-api-image:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@main
     with:
       service-name: "DeliveryService"
       project-root: src/PlantBasedPizza.Delivery
@@ -31,7 +30,7 @@ jobs:
       dd_app_key: ${{secrets.DD_APP_KEY}}
       
   integration-test:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/integration-test-with-test-infra.yaml
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/integration-test-with-test-infra.yaml@main
     needs: build-api-image
     with:
       service-name: "OrdersService"
@@ -43,7 +42,7 @@ jobs:
       ecr-registry: ${{secrets.ECR_REGISTRY}}
       dd_api_key: ${{secrets.DD_API_KEY}}
   deploy-to-dev:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/cdk-deploy-base.yaml
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/cdk-deploy-base.yaml@main
     needs: integration-test
     concurrency:
       group: delivery-dev-deploy

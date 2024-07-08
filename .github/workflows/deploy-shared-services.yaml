@@ -4,7 +4,6 @@ on:
     push:
       branches:
         - main
-        - feature/aws-serverless
       paths:
         - shared-infrastructure/*
     workflow_dispatch:
@@ -15,7 +14,7 @@ permissions:
 
 jobs:
   deploy-to-dev:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/cdk-deploy-base.yaml
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/cdk-deploy-base.yaml@main
     with:
       cdk-folder: "shared-infrastructure"
       environment: "dev"

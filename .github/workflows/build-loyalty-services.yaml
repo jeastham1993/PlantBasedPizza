@@ -5,7 +5,6 @@ on:
       branches:
         - main
       paths:
-        - .github/workflows/build-base.yaml
         - .github/workflows/build-loyalty-services.yaml
         - src/PlantBasedPizza.LoyaltyPoints/**
         - src/shared/**
@@ -17,7 +16,7 @@ permissions:
 
 jobs:
   build-api-image:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@main
     with:
       service-name: "LoyaltyService"
       project-root: src/PlantBasedPizza.LoyaltyPoints
@@ -31,7 +30,7 @@ jobs:
       dd_app_key: ${{secrets.DD_APP_KEY}}
 
   build-internal-api-image:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@main
     with:
       service-name: "LoyaltyService"
       project-root: src/PlantBasedPizza.LoyaltyPoints
@@ -45,7 +44,7 @@ jobs:
       dd_app_key: ${{secrets.DD_APP_KEY}}
 
   integration-test:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/integration-test-with-test-infra.yaml
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/integration-test-with-test-infra.yaml@main
     needs:
       - build-api-image
       - build-internal-api-image
@@ -60,7 +59,7 @@ jobs:
       dd_api_key: ${{secrets.DD_API_KEY}}
 
   deploy-to-dev:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/cdk-deploy-base.yaml
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/cdk-deploy-base.yaml@main
     needs: integration-test
     concurrency:
       group: loyalty-dev-deploy

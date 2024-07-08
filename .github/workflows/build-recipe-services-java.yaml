@@ -5,7 +5,6 @@ on:
       branches:
         - main
       paths:
-        - .github/workflows/build-base-java.yaml
         - .github/workflows/build-recipe-services-java.yaml
         - src/PlantBasedPizza.Recipes.Java/**
     workflow_dispatch:
@@ -16,7 +15,7 @@ permissions:
 
 jobs:
   static-analysis:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/static-analysis.yaml-datadog
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/static-analysis.yaml@main-datadog
     with:
       service-name: "RecipeJavaApi"
       project-root: src/PlantBasedPizza.Recipes.Java/src/api
@@ -29,7 +28,7 @@ jobs:
       dd_api_key: ${{secrets.DD_API_KEY}}
       dd_app_key: ${{secrets.DD_APP_KEY}}
   build-image:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base-java.yaml-datadog
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base-java.yaml@main-datadog
     needs: static-analysis
     with:
       service-name: "RecipeJavaApi"
@@ -43,7 +42,7 @@ jobs:
       dd_api_key: ${{secrets.DD_API_KEY}}
       dd_app_key: ${{secrets.DD_APP_KEY}}
   # integration-test:
-  #   uses: jeastham1993/PlantBasedPizza/.github/workflows/integration-test-base.yaml
+  #   uses: jeastham1993/PlantBasedPizza/.github/workflows/integration-test-base.yaml@main
   #   needs: build-image
   #   with:
   #     service-name: "RecipeApi"
@@ -54,7 +53,7 @@ jobs:
   #     ecr-registry: ${{secrets.ECR_REGISTRY}}
   #     dd_api_key: ${{secrets.DD_API_KEY}}
   deploy-to-dev:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/cdk-deploy-base-with-java.yaml-datadog
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/cdk-deploy-base-with-java.yaml@main-datadog
     needs:
       - build-image
     concurrency:
