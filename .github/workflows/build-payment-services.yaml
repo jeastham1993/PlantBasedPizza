@@ -3,7 +3,9 @@ name: Payment API CICD
 on:
     push:
       branches:
-        - microservices-module-6
+        - main
+        - feature/aws-serverless
+        - feature/aws-serverless-datadog
       paths:
         - .github/workflows/build-and-push-base.yaml
         - .github/workflows/build-payment-services.yaml
@@ -13,24 +15,29 @@ on:
 
 permissions:
   id-token: write
-  contents: read
+  contents: read 
 
 jobs:
-  build-image:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@microservices-module-6
-    with:
-      unit-test-folder: src/PlantBasedPizza.Payments/tests/PlantBasedPizza.Payments.UnitTests
-      image-name: payment-api
-      dockerfile: src/PlantBasedPizza.Payments/application/PlantBasedPizza.Payments/Dockerfile-x86
-    secrets:
-      deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
-      ecr-registry: ${{secrets.ECR_REGISTRY}}
   integration-test:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/integration-test-base.yaml@microservices-module-6
-    needs: build-image
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/integration-test-base.yaml@feature/aws-serverless
     with:
+      service-name: "PaymentService"
       integration-test-compose-file: src/PlantBasedPizza.Payments/docker-compose-integration.yml
       integration-test-folder: src/PlantBasedPizza.Payments/tests/PlantBasedPizza.Payments.IntegrationTests
     secrets:
       deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
       ecr-registry: ${{secrets.ECR_REGISTRY}}
+      dd_api_key: ${{secrets.DD_API_KEY}}
+
+  deploy-to-dev:
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/cdk-deploy-base.yaml@feature/aws-serverless
+    needs: integration-test
+    concurrency:
+      group: payments-dev-deploy
+      cancel-in-progress: false
+    with:
+      cdk-folder: "src/PlantBasedPizza.Payments/infra"
+      environment: "dev"
+    secrets:
+      deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
+      dd-api-key: ${{secrets.DD_API_KEY}}

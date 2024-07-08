@@ -1,0 +1,71 @@
+name: Recipe API - Java CICD
+
+on:
+    push:
+      branches:
+        - main
+        - feature/aws-serverless
+        - feature/aws-serverless-datadog
+      paths:
+        - .github/workflows/build-base-java.yaml
+        - .github/workflows/build-recipe-services-java.yaml
+        - src/PlantBasedPizza.Recipes.Java/**
+    workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  static-analysis:
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/static-analysis.yaml@feature/aws-serverless-datadog
+    with:
+      service-name: "RecipeJavaApi"
+      project-root: src/PlantBasedPizza.Recipes.Java/src/api
+      build-directory: src/PlantBasedPizza.Recipes.Java/src
+      image-name: recipe-api-java
+      dockerfile: src/PlantBasedPizza.Recipes.Java/src/Dockerfile
+    secrets:
+      deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
+      ecr-registry: ${{secrets.ECR_REGISTRY}}
+      dd_api_key: ${{secrets.DD_API_KEY}}
+      dd_app_key: ${{secrets.DD_APP_KEY}}
+  build-image:
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base-java.yaml@feature/aws-serverless-datadog
+    needs: static-analysis
+    with:
+      service-name: "RecipeJavaApi"
+      project-root: src/PlantBasedPizza.Recipes.Java/src/api
+      build-directory: src/PlantBasedPizza.Recipes.Java/src
+      image-name: recipe-api-java
+      dockerfile: src/PlantBasedPizza.Recipes.Java/src/Dockerfile
+    secrets:
+      deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
+      ecr-registry: ${{secrets.ECR_REGISTRY}}
+      dd_api_key: ${{secrets.DD_API_KEY}}
+      dd_app_key: ${{secrets.DD_APP_KEY}}
+  # integration-test:
+  #   uses: jeastham1993/PlantBasedPizza/.github/workflows/integration-test-base.yaml@feature/aws-serverless
+  #   needs: build-image
+  #   with:
+  #     service-name: "RecipeApi"
+  #     integration-test-compose-file: src/PlantBasedPizza.Recipes/docker-compose-integration.yml
+  #     integration-test-folder: src/PlantBasedPizza.Recipes/tests/PlantBasedPizza.Recipes.IntegrationTests
+  #   secrets:
+  #     deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
+  #     ecr-registry: ${{secrets.ECR_REGISTRY}}
+  #     dd_api_key: ${{secrets.DD_API_KEY}}
+  deploy-to-dev:
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/cdk-deploy-base-with-java.yaml@feature/aws-serverless-datadog
+    needs:
+      - build-image
+    concurrency:
+      group: recipes-java-dev-deploy
+      cancel-in-progress: false
+    with:
+      cdk-folder: "src/PlantBasedPizza.Recipes.Java/infra"
+      project-root: src/PlantBasedPizza.Recipes.Java/src
+      environment: "dev"
+    secrets:
+      deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
+      dd-api-key: ${{secrets.DD_API_KEY}}

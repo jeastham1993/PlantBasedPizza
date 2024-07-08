@@ -3,7 +3,9 @@ name: Order Services CICD
 on:
     push:
       branches:
-        - microservices-module-6
+        - main
+        - feature/aws-serverless
+        - feature/aws-serverless-datadog
       paths:
         - .github/workflows/build-and-push-base.yaml
         - .github/workflows/build-order-services.yaml
@@ -17,33 +19,43 @@ permissions:
 
 jobs:
   build-api-image:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@microservices-module-6
+    
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@feature/aws-serverless-datadog
     with:
+      service-name: "OrdersService"
+      project-root: src/PlantBasedPizza.Orders
       unit-test-folder: src/PlantBasedPizza.Orders/tests/PlantBasedPizza.Orders.UnitTest
       image-name: orders-api
       dockerfile: src/PlantBasedPizza.Orders/application/PlantBasedPizza.Orders.Api/Dockerfile-x86
     secrets:
       deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
       ecr-registry: ${{secrets.ECR_REGISTRY}}
+      dd_api_key: ${{secrets.DD_API_KEY}}
+      dd_app_key: ${{secrets.DD_APP_KEY}}
 
-  build-worker-image:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@microservices-module-6
-    with:
-      unit-test-folder: src/PlantBasedPizza.Orders/tests/PlantBasedPizza.Orders.UnitTest
-      image-name: orders-worker
-      dockerfile: src/PlantBasedPizza.Orders/application/PlantBasedPizza.Orders.Worker/Dockerfile-x86
-    secrets:
-      deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
-      ecr-registry: ${{secrets.ECR_REGISTRY}}
 
   integration-test:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/integration-test-base.yaml@microservices-module-6
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/integration-test-with-test-infra.yaml@feature/aws-serverless-datadog
     needs:
       - build-api-image
-      - build-worker-image
     with:
+      service-name: "OrdersService"
       integration-test-compose-file: src/PlantBasedPizza.Orders/docker-compose-integration.yml
       integration-test-folder: src/PlantBasedPizza.Orders/tests/PlantBasedPizza.Orders.IntegrationTest
+      test-infrastructure-folder: src/PlantBasedPizza.Orders/tests/TestInfrastructure
     secrets:
       deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
       ecr-registry: ${{secrets.ECR_REGISTRY}}
+      dd_api_key: ${{secrets.DD_API_KEY}}
+  deploy-to-dev:
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/cdk-deploy-base.yaml@feature/aws-serverless-datadog
+    needs: integration-test
+    concurrency:
+      group: orders-dev-deploy
+      cancel-in-progress: false
+    with:
+      cdk-folder: "src/PlantBasedPizza.Orders/infra"
+      environment: "dev"
+    secrets:
+      deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
+      dd-api-key: ${{secrets.DD_API_KEY}}

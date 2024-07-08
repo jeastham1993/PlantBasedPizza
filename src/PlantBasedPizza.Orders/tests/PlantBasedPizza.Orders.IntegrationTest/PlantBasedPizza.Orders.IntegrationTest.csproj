@@ -21,6 +21,7 @@
     <PackageReference Include="SpecFlow.Plus.LivingDocPlugin" Version="3.9.57" />
     <PackageReference Include="SpecFlow.xUnit" Version="3.9.74" />
     <PackageReference Include="StackExchange.Redis" Version="2.7.33" />
+    <PackageReference Include="System.Net.Http.Json" Version="8.0.0" />
     <PackageReference Include="WireMock.Net" Version="1.5.48" />
     <PackageReference Include="xunit" Version="2.7.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.5.7">
@@ -42,7 +43,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\shared\PlantBasedPizza.Events\PlantBasedPizza.Events.csproj" />
     <ProjectReference Include="..\..\..\shared\PlantBasedPizza.IntegrationTest.Helpers\PlantBasedPizza.IntegrationTest.Helpers.csproj" />
-    <ProjectReference Include="..\..\application\PlantBasedPizza.Orders.Worker\PlantBasedPizza.Orders.Worker.csproj" />
+    <ProjectReference Include="..\..\application\BackgroundWorkers\BackgroundWorkers.csproj" />
   </ItemGroup>
 
 </Project>

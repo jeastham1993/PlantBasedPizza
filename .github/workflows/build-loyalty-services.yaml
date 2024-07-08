@@ -3,9 +3,11 @@ name: Loyalty Services CICD
 on:
     push:
       branches:
-        - microservices-module-6
+        - main
+        - feature/aws-serverless
+        - feature/aws-serverless-datadog
       paths:
-        - .github/workflows/build-and-push-base.yaml
+        - .github/workflows/build-base.yaml
         - .github/workflows/build-loyalty-services.yaml
         - src/PlantBasedPizza.LoyaltyPoints/**
         - src/shared/**
@@ -17,44 +19,57 @@ permissions:
 
 jobs:
   build-api-image:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@microservices-module-6
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@feature/aws-serverless
     with:
+      service-name: "LoyaltyService"
+      project-root: src/PlantBasedPizza.LoyaltyPoints
       unit-test-folder: src/PlantBasedPizza.LoyaltyPoints/tests/PlantBasedPizza.LoyaltyPoints.UnitTest
       image-name: loyalty-api
       dockerfile: src/PlantBasedPizza.LoyaltyPoints/application/PlantBasedPizza.LoyaltyPoints.Api/Dockerfile-x86
     secrets:
       deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
       ecr-registry: ${{secrets.ECR_REGISTRY}}
+      dd_api_key: ${{secrets.DD_API_KEY}}
+      dd_app_key: ${{secrets.DD_APP_KEY}}
 
   build-internal-api-image:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@microservices-module-6
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@feature/aws-serverless
     with:
+      service-name: "LoyaltyService"
+      project-root: src/PlantBasedPizza.LoyaltyPoints
       unit-test-folder: src/PlantBasedPizza.LoyaltyPoints/tests/PlantBasedPizza.LoyaltyPoints.UnitTest
       image-name: loyalty-internal-api
       dockerfile: src/PlantBasedPizza.LoyaltyPoints/application/PlantBasedPizza.LoyaltyPoints.Internal/Dockerfile-x86
     secrets:
       deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
       ecr-registry: ${{secrets.ECR_REGISTRY}}
-
-  build-worker-image:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@microservices-module-6
-    with:
-      unit-test-folder: src/PlantBasedPizza.LoyaltyPoints/tests/PlantBasedPizza.LoyaltyPoints.UnitTest
-      image-name: loyalty-worker
-      dockerfile: src/PlantBasedPizza.LoyaltyPoints/application/PlantBasedPizza.LoyaltyPoints.Worker/Dockerfile-x86
-    secrets:
-      deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
-      ecr-registry: ${{secrets.ECR_REGISTRY}}
+      dd_api_key: ${{secrets.DD_API_KEY}}
+      dd_app_key: ${{secrets.DD_APP_KEY}}
 
   integration-test:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/integration-test-base.yaml@microservices-module-6
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/integration-test-with-test-infra.yaml@feature/aws-serverless
     needs:
       - build-api-image
       - build-internal-api-image
-      - build-worker-image
     with:
+      service-name: "LoyaltyService"
       integration-test-compose-file: src/PlantBasedPizza.LoyaltyPoints/docker-compose-integration.yml
       integration-test-folder: src/PlantBasedPizza.LoyaltyPoints/tests/PlantBasedPizza.LoyaltyPoints.IntegrationTest
+      test-infrastructure-folder: src/PlantBasedPizza.LoyaltyPoints/tests/TestInfrastructure
     secrets:
       deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
       ecr-registry: ${{secrets.ECR_REGISTRY}}
+      dd_api_key: ${{secrets.DD_API_KEY}}
+
+  deploy-to-dev:
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/cdk-deploy-base.yaml@feature/aws-serverless
+    needs: integration-test
+    concurrency:
+      group: loyalty-dev-deploy
+      cancel-in-progress: false
+    with:
+      cdk-folder: "src/PlantBasedPizza.LoyaltyPoints/infra"
+      environment: "dev"
+    secrets:
+      deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
+      dd-api-key: ${{secrets.DD_API_KEY}}

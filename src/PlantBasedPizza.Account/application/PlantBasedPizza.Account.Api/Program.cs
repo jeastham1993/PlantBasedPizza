@@ -1,7 +1,3 @@
-using System.Diagnostics;
-using System.IdentityModel.Tokens.Jwt;
-using System.Runtime.CompilerServices;
-using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -13,6 +9,9 @@ using PlantBasedPizza.Account.Api.Adapters;
 using PlantBasedPizza.Account.Api.Core;
 using PlantBasedPizza.Events;
 using PlantBasedPizza.Shared;
+using PlantBasedPizza.Shared.Logging;
+using Serilog;
+using Serilog.Formatting.Compact;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddEnvironmentVariables();
@@ -37,6 +36,17 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CorsPolicy",
+        builder => builder
+            .AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader());
+});
+
+builder.Services.AddSerilog();
+
 builder.Services.AddAuthorization();
 
 var client = new MongoClient(builder.Configuration["DatabaseConnection"]);
@@ -53,20 +63,23 @@ BsonClassMap.RegisterClassMap<UserAccount>(map =>
     map.SetIgnoreExtraElementsIsInherited(true);
 });
 
-var serviceName = "PlantBasedPizza.Account";
-
-builder.Services.AddSharedInfrastructure(builder.Configuration, serviceName)
+builder.Services.AddSharedInfrastructure(builder.Configuration, builder.Configuration["SERVICE_NAME"])
     .AddMessaging(builder.Configuration);
 
 var app = builder.Build();
 
+app.UseCors("CorsPolicy");
+
 app.UseAuthentication();
 app.UseAuthorization();
+
 
 var accountRepository = app.Services.GetRequiredService<IUserAccountRepository>();
 var userAccountService = app.Services.GetRequiredService<UserAccountService>();
 
 await accountRepository.SeedInitialUser();
+
+app.MapGet("/account/health", () => Task.FromResult("OK")).RequireCors("CorsPolicy");
 
 app.MapPost("/account/login", [AllowAnonymous] async (LoginCommand login) =>
 {
@@ -80,7 +93,7 @@ app.MapPost("/account/login", [AllowAnonymous] async (LoginCommand login) =>
     {
         return Results.Unauthorized();
     }
-});
+}).RequireCors("CorsPolicy");
 
 app.MapPost("/account/register", [AllowAnonymous] async (RegisterUserCommand register) =>
 {
@@ -97,7 +110,7 @@ app.MapPost("/account/register", [AllowAnonymous] async (RegisterUserCommand reg
     {
         return Results.BadRequest("User exists");
     }
-});
+}).RequireCors("CorsPolicy");
 
 app.MapPost("/account/driver/register", [AllowAnonymous] async (RegisterUserCommand register) =>
 {
@@ -114,7 +127,7 @@ app.MapPost("/account/driver/register", [AllowAnonymous] async (RegisterUserComm
     {
         return Results.BadRequest("User exists");
     }
-}).RequireAuthorization(policyBuilder => policyBuilder.RequireRole(["staff","admin"]));
+}).RequireAuthorization(policyBuilder => policyBuilder.RequireRole(["staff","admin"])).RequireCors("CorsPolicy");
 
 app.MapPost("/account/staff/register", [AllowAnonymous] async (RegisterUserCommand register) =>
 {
@@ -131,6 +144,6 @@ app.MapPost("/account/staff/register", [AllowAnonymous] async (RegisterUserComma
     {
         return Results.BadRequest("User exists");
     }
-}).RequireAuthorization(policyBuilder => policyBuilder.RequireRole("admin"));
+}).RequireAuthorization(policyBuilder => policyBuilder.RequireRole("admin")).RequireCors("CorsPolicy");
 
 app.Run();

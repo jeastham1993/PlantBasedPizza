@@ -40,9 +40,8 @@ namespace PlantBasedPizza.Delivery.UnitTests
             var mockRepo = new Mock<IDeliveryRequestRepository>();
             mockRepo.Setup(p => p.AddNewDeliveryRequest(It.IsAny<DeliveryRequest>()))
                 .Verifiable();
-            var mockLogger = new Mock<IObservabilityService>();
 
-            var handler = new OrderReadyForDeliveryEventHandler(mockRepo.Object, mockLogger.Object);
+            var handler = new OrderReadyForDeliveryEventHandler(mockRepo.Object);
 
             await handler.Handle(new OrderReadyForDeliveryEventV1()
             {
@@ -66,10 +65,8 @@ namespace PlantBasedPizza.Delivery.UnitTests
                 .Verifiable();
             mockRepo.Setup(p => p.GetDeliveryStatusForOrder(It.IsAny<string>()))
                 .ReturnsAsync(new DeliveryRequest(OrderIdentifier, new Address("Address line 1", "TY6 7UI")));
-            
-            var mockLogger = new Mock<IObservabilityService>();
 
-            var handler = new OrderReadyForDeliveryEventHandler(mockRepo.Object, mockLogger.Object);
+            var handler = new OrderReadyForDeliveryEventHandler(mockRepo.Object);
 
             await handler.Handle(new OrderReadyForDeliveryEventV1()
             {

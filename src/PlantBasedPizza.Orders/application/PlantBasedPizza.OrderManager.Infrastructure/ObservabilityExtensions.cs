@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Datadog.Trace;
 using PlantBasedPizza.OrderManager.Core.AddItemToOrder;
 
 namespace PlantBasedPizza.OrderManager.Infrastructure;
@@ -11,9 +12,8 @@ public static class ObservabilityExtensions
         {
             return;
         }
-
-        Activity.Current.AddTag("orderIdentifier", command.OrderIdentifier);
-        Activity.Current.AddTag("recipeIdentifier", command.RecipeIdentifier);
-        Activity.Current.AddTag("quantity", command.Quantity);
+        
+        Tracer.Instance.ActiveScope?.Span.SetTag("recipeIdentifier", command.RecipeIdentifier);
+        Tracer.Instance.ActiveScope?.Span.SetTag("quantity", command.Quantity);
     }
 }

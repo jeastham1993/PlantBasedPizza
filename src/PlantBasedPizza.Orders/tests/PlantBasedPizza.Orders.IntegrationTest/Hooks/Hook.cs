@@ -1,63 +1,42 @@
 using System.Diagnostics;
+using Datadog.Trace;
+using Datadog.Trace.Configuration;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using OpenTelemetry;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using TechTalk.SpecFlow;
+using Tracer = Datadog.Trace.Tracer;
 
 namespace PlantBasedPizza.Orders.IntegrationTest.Hooks;
 
 [Binding]
 public static class Hook
 {
-    private const string SERVICE_NAME = "OrderWorkerIntegrationTest";
+    private const string SERVICE_NAME = "OrdersIntegrationTests";
     
     public static ActivitySource Source { get; private set; }
     public static TracerProvider TracerProvider { get; private set; }
     
-    public static Activity CurrentActivity { get; private set; }
-    
-    public static Activity RootActivity { get; private set; }
-    
+    public static IScope Scope { get; private set; }
+
     [BeforeTestRun]
     public static void BeforeTestRun()
     {
-        var resourceBuilder = ResourceBuilder.CreateDefault().AddService(SERVICE_NAME);
-
-        var traceConfig = Sdk.CreateTracerProviderBuilder()
-            .SetResourceBuilder(resourceBuilder)
-            .AddSource(SERVICE_NAME)
-            .AddAspNetCoreInstrumentation()
-            .AddGrpcClientInstrumentation()
-            .AddHttpClientInstrumentation()
-            .AddSource(SERVICE_NAME)
-            .AddOtlpExporter(otlpOptions =>
-            {
-                otlpOptions.Endpoint = new Uri(Environment.GetEnvironmentVariable("OTLP_ENDPOINT") ?? "http://localhost:4317");
-            });
-
-        TracerProvider = traceConfig.Build();
-        Source = new ActivitySource(SERVICE_NAME);
-        RootActivity = Source.StartActivity("integration-test-run");
+        Tracer.Configure(new TracerSettings());
     }
 
     [BeforeScenario]
     public static void BeforeScenario(ScenarioContext scenarioContext)
     {
-        CurrentActivity = Source.StartActivity(scenarioContext.ScenarioInfo.Title, ActivityKind.Client, RootActivity.Context);
+        Scope = Tracer.Instance.StartActive(scenarioContext.ScenarioInfo.Title);
         
-        scenarioContext.Add("Activity", CurrentActivity);
+        scenarioContext.Add("TraceScope", Scope);
     }
 
     [AfterScenario]
     public static void AfterScenario()
     {
-        CurrentActivity.Stop();
-    }
-
-    [AfterTestRun]
-    public static void AfterTestRun()
-    {
-        RootActivity.Stop();
-        TracerProvider.ForceFlush();
+        Scope.Dispose();
     }
 }

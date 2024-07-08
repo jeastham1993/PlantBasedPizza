@@ -1,0 +1,20 @@
+{
+  "Records": [
+    {
+      "messageId": "aa26f66a-89e9-483f-9131-20e2a6649ef2",
+      "receiptHandle": "AQEBSYCxb5vTI4bOASBxRsr1359G5sdr6nLNs45KHHAFwUOif4MPTToKqA01vkUOjeaeK3OXm7tP2byU1wN8kWNeGXVOYnkk97GEhmwxZB3b6tOsdQNTA97K9QqBu1fwPief2KOiMURiB6Qra+JZB4gYe5J5oGWEevPZr80NJG3oRPbqSO+CjTnnnK3nFCwnPzGstNvTYVPRlNJ0gs9bqVfbWrmeOR5l5zf8eithYR6KoTPZcEeOJksvhiJGWmvGrCSadyVA7eKdO/ECS8+IQLHS0+iw7dJCWATvRlW2fYl4ijobVq5S7zI2+dINoXAcjhdwaSYWnwRIrsmF+6Vikve4tSVwn8FWhscsdRpLpWL3tYulnM5Cx0v5QsdlSM1uiMuN",
+      "body": "{\"version\":\"0\",\"id\":\"440f76ac-7d40-6e9f-288f-f28de28c6c12\",\"detail-type\":\"test\",\"source\":\"test\",\"account\":\"730335273443\",\"time\":\"2024-07-05T15:06:22Z\",\"region\":\"eu-west-1\",\"resources\":[],\"detail\":{\"specversion\":\"1.0\",\"type\":\"com.example.someevent\",\"source\":\"/mycontext\",\"id\":\"A234-1234-1234\",\"time\":\"2018-04-05T17:31:00Z\",\"comexampleextension1\":\"value\",\"comexampleothervalue\":5,\"datacontenttype\":\"application/json\",\"data\":{\"orderIdentifier\":\"ORDER\"}}}",
+      "attributes": {
+        "ApproximateReceiveCount": "1",
+        "SentTimestamp": "1720191982494",
+        "SenderId": "AIDAJ2E4ZHTZPIG4AM4I6",
+        "ApproximateFirstReceiveTimestamp": "1720191982501"
+      },
+      "messageAttributes": {},
+      "md5OfBody": "170e4df2342a133da37f777916ce712e",
+      "eventSource": "aws:sqs",
+      "eventSourceARN": "arn:aws:sqs:eu-west-1:730335273443:test-queue",
+      "awsRegion": "eu-west-1"
+    }
+  ]
+}

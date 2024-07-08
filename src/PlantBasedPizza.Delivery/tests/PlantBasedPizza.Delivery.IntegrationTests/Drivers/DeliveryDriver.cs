@@ -1,6 +1,7 @@
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using Amazon.EventBridge;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using PlantBasedPizza.Delivery.IntegrationTests.ViewModels;
@@ -33,11 +34,10 @@ namespace PlantBasedPizza.Delivery.IntegrationTests.Drivers
             this._driverHttpClient.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", TestTokenGenerator.GenerateTestTokenForRole("driver"));
 
-            _eventPublisher = new RabbitMQEventPublisher(new OptionsWrapper<RabbitMqSettings>(new RabbitMqSettings()
+            _eventPublisher = new EventBridgeEventPublisher(new AmazonEventBridgeClient(), Options.Create(new EventBridgeSettings()
             {
-                ExchangeName = "dev.delivery",
-                HostName = "localhost"
-            }), new Logger<RabbitMQEventPublisher>(new SerilogLoggerFactory()), new RabbitMQConnection("localhost"));
+                BusName = $"test.delivery.{Environment.GetEnvironmentVariable("BUILD_VERSION")}"
+            }));
         }
 
         public async Task ANewOrderIsReadyForDelivery(string orderIdentifier)

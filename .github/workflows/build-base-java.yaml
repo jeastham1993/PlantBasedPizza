@@ -1,0 +1,88 @@
+name: Image Build & Push Java Workflow
+
+on:
+  workflow_call:
+    inputs:
+      service-name:
+          required: true
+          type: string
+      project-root:
+          required: true
+          type: string
+      build-directory:
+          required: true
+          type: string
+      image-name:
+          required: true
+          type: string
+      dockerfile:
+          required: true
+          type: string
+    secrets:
+      deploy-role-arn:
+        description: 'The role for the AWS IAM role to use for deployment'
+        required: true
+      ecr-registry:
+          required: true
+      dd_api_key:
+          required: true
+      dd_app_key:
+          required: true
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v4
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Set up JDK for x64
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'corretto'
+          architecture: x64
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-1
+          role-to-assume: ${{secrets.deploy-role-arn}}
+          role-session-name: GitHubActionsSession
+      - name: Declare some variables
+        shell: bash
+        run: |
+          echo "sha_short=$(git rev-parse --short "$GITHUB_SHA")" >> "$GITHUB_ENV"
+      -
+        name: Maven build
+        shell: bash
+        run: |
+          cd ${{ inputs.build-directory }}
+          mvn clean package
+      -
+        name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          push: false
+          load: true
+          tags: ${{ inputs.image-name }}:latest
+          context: ${{ inputs.build-directory }}
+          file: ${{ inputs.dockerfile }}
+      - uses: aws-actions/amazon-ecr-login@v2
+        name: Login to Amazon ECR
+        id: login-ecr
+      - name: Tag With Commit Hash
+        run: docker tag ${{inputs.image-name}}:latest ${{secrets.ecr-registry}}/${{inputs.image-name}}:${{ env.sha_short }}
+      - name: Tag With LatestCommit Hash
+        run: docker tag ${{inputs.image-name}}:latest ${{secrets.ecr-registry}}/${{inputs.image-name}}:latest
+      - name: Push Commit Hash to Registry
+        run: docker push ${{secrets.ecr-registry}}/${{inputs.image-name}}:${{ env.sha_short }}
+      - name: Push Latest image to Registry
+        run: docker push ${{secrets.ecr-registry}}/${{inputs.image-name}}:latest
+          

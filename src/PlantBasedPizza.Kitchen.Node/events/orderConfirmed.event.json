@@ -1,0 +1,17 @@
+{
+    "specversion": "1.0",
+    "type": "order.orderConfirmed.v1",
+    "source": "https://orders.plantbasedpizza/",
+    "id": "7612394874",
+    "time": "2024-07-01T14:00:00Z",
+    "datacontenttype": "application/json",
+    "data": {
+      "OrderIdentifier": "PUBLISHED897856",
+      "Items": [{
+        "ItemName": "Fanta",
+        "RecipeIdentifier": "6"
+      }]
+    },
+    "ddtraceid": "6682b35a000000004c8ff7567a6a74cf",
+    "ddspanid": "6682b35a000000004c8ff7567a6a74cf"
+  }

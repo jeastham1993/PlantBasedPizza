@@ -1,6 +1,8 @@
 using System.Net.Http.Headers;
+using System.Net.Http.Json;
 using System.Text;
-using Microsoft.Extensions.Logging;
+using Amazon.EventBridge;
+using BackgroundWorkers.IntegrationEvents;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using PlantBasedPizza.Events;
@@ -10,8 +12,6 @@ using PlantBasedPizza.OrderManager.Core.CollectOrder;
 using PlantBasedPizza.OrderManager.Core.CreateDeliveryOrder;
 using PlantBasedPizza.OrderManager.Core.CreatePickupOrder;
 using PlantBasedPizza.Orders.IntegrationTest.ViewModels;
-using PlantBasedPizza.Orders.Worker.IntegrationEvents;
-using Serilog.Extensions.Logging;
 
 namespace PlantBasedPizza.Orders.IntegrationTest.Drivers;
 
@@ -32,11 +32,10 @@ public class OrdersTestDriver
             _staffHttpClient = new HttpClient();
             _staffHttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", staffToken);
             
-            _eventPublisher = new RabbitMQEventPublisher(new OptionsWrapper<RabbitMqSettings>(new RabbitMqSettings()
+            _eventPublisher = new EventBridgeEventPublisher(new AmazonEventBridgeClient(), Options.Create(new EventBridgeSettings()
             {
-                ExchangeName = "dev.plantbasedpizza",
-                HostName = "localhost"
-            }), new Logger<RabbitMQEventPublisher>(new SerilogLoggerFactory()),  new RabbitMQConnection("localhost"));
+                BusName = $"test.orders.{Environment.GetEnvironmentVariable("BUILD_VERSION")}"
+            }));
         }
 
         public async Task SimulateLoyaltyPointsUpdatedEvent(string customerIdentifier, decimal totalPoints)
@@ -48,7 +47,90 @@ public class OrdersTestDriver
             });
 
             // Delay to allow for message processing
-            await Task.Delay(TimeSpan.FromSeconds(2));
+            await Task.Delay(TimeSpan.FromSeconds(5));
+        }
+
+        public async Task SimulateOrderPreparingEvent(string kitchenIdentifier, string orderIdentifier)
+        {
+            await this._eventPublisher.Publish(new OrderPreparingEventV1()
+            {
+                KitchenIdentifier = kitchenIdentifier,
+                OrderIdentifier = orderIdentifier
+            });
+
+            // Delay to allow for message processing
+            await Task.Delay(TimeSpan.FromSeconds(5));
+        }
+
+        public async Task SimulateOrderPrepCompleteEvent(string kitchenIdentifier, string orderIdentifier)
+        {
+            await this._eventPublisher.Publish(new OrderPrepCompleteEventV1()
+            {
+                KitchenIdentifier = kitchenIdentifier,
+                OrderIdentifier = orderIdentifier
+            });
+
+            // Delay to allow for message processing
+            await Task.Delay(TimeSpan.FromSeconds(5));
+        }
+
+        public async Task SimulatePaymentSuccessEvent(string customerIdentifier, string orderIdentifier)
+        {
+            await this._eventPublisher.Publish(new PaymentSuccessfulEventV1()
+            {
+                OrderIdentifier = orderIdentifier,
+                CustomerIdentifier = customerIdentifier
+            });
+
+            // Delay to allow for message processing
+            await Task.Delay(TimeSpan.FromSeconds(5));
+        }
+
+        public async Task SimulateOrderBakedEvent(string kitchenIdentifier, string orderIdentifier)
+        {
+            await this._eventPublisher.Publish(new OrderBakedEventV1()
+            {
+                KitchenIdentifier = kitchenIdentifier,
+                OrderIdentifier = orderIdentifier
+            });
+
+            // Delay to allow for message processing
+            await Task.Delay(TimeSpan.FromSeconds(5));
+        }
+
+        public async Task SimulateOrderQualityCheckedEvent(string kitchenIdentifier, string orderIdentifier)
+        {
+            await this._eventPublisher.Publish(new OrderQualityCheckedEventV1()
+            {
+                KitchenIdentifier = kitchenIdentifier,
+                OrderIdentifier = orderIdentifier
+            });
+
+            // Delay to allow for message processing
+            await Task.Delay(TimeSpan.FromSeconds(5));
+        }
+
+        public async Task SimulateDriverCollectedEvent(string kitchenIdentifier, string orderIdentifier)
+        {
+            await this._eventPublisher.Publish(new DriverCollectedOrderEventV1()
+            {
+                DriverName = "james",
+                OrderIdentifier = orderIdentifier
+            });
+
+            // Delay to allow for message processing
+            await Task.Delay(TimeSpan.FromSeconds(5));
+        }
+
+        public async Task SimulateDriverDeliveredEvent(string kitchenIdentifier, string orderIdentifier)
+        {
+            await this._eventPublisher.Publish(new DriverDeliveredOrderEventV1()
+            {
+                OrderIdentifier = orderIdentifier,
+            });
+
+            // Delay to allow for message processing
+            await Task.Delay(TimeSpan.FromSeconds(5));
         }
         
         public async Task AddNewDeliveryOrder(string orderIdentifier, string customerIdentifier)
@@ -56,7 +138,6 @@ public class OrdersTestDriver
             await this._userHttpClient.PostAsync(new Uri($"{TestConstants.DefaultTestUrl}/order/deliver"), new StringContent(
                 JsonConvert.SerializeObject(new CreateDeliveryOrder()
                 {
-                    OrderIdentifier = orderIdentifier,
                     CustomerIdentifier = customerIdentifier,
                     AddressLine1 = "My test address",
                     AddressLine2 = string.Empty,
@@ -67,16 +148,17 @@ public class OrdersTestDriver
                 }), Encoding.UTF8, "application/json")).ConfigureAwait(false);
         }
 
-        public async Task AddNewOrder(string orderIdentifier, string customerIdentifier)
+        public async Task<string> AddNewOrder(string customerIdentifier)
         {
-            await Task.Delay(TimeSpan.FromSeconds(5));
-            
-            await this._userHttpClient.PostAsync(new Uri($"{TestConstants.DefaultTestUrl}/order/pickup"), new StringContent(
+            var createdOrder = await this._userHttpClient.PostAsync(new Uri($"{TestConstants.DefaultTestUrl}/order/pickup"), new StringContent(
                 JsonConvert.SerializeObject(new CreatePickupOrderCommand()
                 {
-                    OrderIdentifier = orderIdentifier,
                     CustomerIdentifier = customerIdentifier
                 }), Encoding.UTF8, "application/json")).ConfigureAwait(false);
+
+            var order = await createdOrder.Content.ReadFromJsonAsync<Order>();
+
+            return order.OrderNumber;
         }
 
         public async Task AddItemToOrder(string orderIdentifier, string recipeIdentifier, int quantity)
@@ -104,7 +186,7 @@ public class OrdersTestDriver
         public async Task CollectOrder(string orderIdentifier)
         {
             // Delay to allow async processing to catch up
-            await Task.Delay(TimeSpan.FromSeconds(2));
+            await Task.Delay(TimeSpan.FromSeconds(5));
             
             var res = await this._staffHttpClient.PostAsync(new Uri($"{TestConstants.DefaultTestUrl}/order/collected"), new StringContent(
                 JsonConvert.SerializeObject(new CollectOrderRequest()
@@ -130,6 +212,12 @@ public class OrdersTestDriver
 
         private async Task checkRecipeExists(string recipeIdentifier)
         {
+            // Skip this if running locally, WireMock used instead
+            if (TestConstants.DefaultTestUrl.Contains("localhost"))
+            {
+                return;
+            }
+            
             await this._userHttpClient.PostAsync($"{TestConstants.DefaultTestUrl}/recipes", new StringContent(
                 JsonConvert.SerializeObject(new CreateRecipeCommand()
                 {

@@ -2,7 +2,6 @@ using System.Diagnostics;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using PlantBasedPizza.LoyaltyPoints;
 using PlantBasedPizza.LoyaltyPoints.Shared;
@@ -31,11 +30,22 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CorsPolicy",
+        builder => builder
+            .AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader());
+});
+
 builder.Services.AddAuthorization();
 
 builder.Services.AddLoyaltyServices(builder.Configuration, "LoyaltyPointsAPI");
 
 var app = builder.Build();
+
+app.UseCors("CorsPolicy");
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -58,6 +68,6 @@ app.MapGet("/loyalty", async (ClaimsPrincipal user) =>
     }
 
     return Results.Ok(new LoyaltyPointsDto(loyalty));
-}).RequireAuthorization(policyBuilder => policyBuilder.RequireRole("user"));
+}).RequireAuthorization(policyBuilder => policyBuilder.RequireRole("user")).RequireCors("CorsPolicy");
 
 app.Run();

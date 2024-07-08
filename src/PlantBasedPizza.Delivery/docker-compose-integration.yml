@@ -9,14 +9,6 @@ services:
     ports:
       - 27017:27017
 
-  jaeger:
-    image: jaegertracing/opentelemetry-all-in-one:latest
-    ports:
-      - 16686:16686
-      - 13133:13133
-      - 4317:4317
-      - 4318:4318
-
   wiremock:
     image: wiremock/wiremock:latest
     ports:
@@ -24,42 +16,42 @@ services:
     volumes:
       - ./mocks/recipe-api:/home/wiremock
 
-  rabbitmq:
-    image: rabbitmq:3-management-alpine
-    container_name: 'delivery-rabbitmq'
-    ports:
-        - 5672:5672
-        - 15672:15672
+  datadog-agent:
+    image: datadog/agent
+    pid: host
+    expose:
+      - 4317
+      - 4318
+    environment:
+      - DD_OTLP_CONFIG_RECEIVER_PROTOCOLS_GRPC_ENDPOINT=0.0.0.0:4317
+      - DD_OTLP_CONFIG_RECEIVER_PROTOCOLS_HTTP_ENDPOINT-0.0.0.0:4318
+      - DD_ENV=${IMAGE_TAG}
+      - DD_SITE=datadoghq.eu
+      - DD_SERVICE=OrdersService
+      - DD_API_KEY=${DD_API_KEY}
+    volumes:
+     - /var/run/docker.sock:/var/run/docker.sock
+     - /proc/:/host/proc/:ro
+     - /sys/fs/cgroup:/host/sys/fs/cgroup:ro
 
   local.delivery-api:
     image: ${REGISTRY}/delivery-api:${IMAGE_TAG}
     ports:
       - "5259:8080"
-    depends_on:
-      - rabbitmq
     environment:
       - DatabaseConnection=mongodb://mongodb:27017
-      - OtlpEndpoint=http://jaeger:4317
+      - OtlpEndpoint=http://datadog-agent:4317
       - Environment=local
       - ServiceDiscovery__MyUrl=
       - ServiceDiscovery__ServiceName=
       - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
-      - Messaging__HostName=rabbitmq
-      - Messaging__ExchangeName=dev.delivery
+      - Messaging__BusName=dev.orders
       - Auth__Issuer=https://plantbasedpizza.com
       - Auth__Audience=https://plantbasedpizza.com
       - Auth__Key=This is a sample secret key - please don't use in production environment.'
-
-  local.delivery-worker:
-    image: ${REGISTRY}/delivery-worker:${IMAGE_TAG}
-    depends_on:
-      - rabbitmq
-    environment:
-      - DatabaseConnection=mongodb://mongodb:27017
-      - OtlpEndpoint=http://jaeger:4317
-      - Environment=local
-      - ServiceDiscovery__MyUrl=
-      - ServiceDiscovery__ServiceName=
-      - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
-      - Messaging__HostName=rabbitmq
-      - Messaging__ExchangeName=dev.delivery
+      - AWS_REGION=eu-west-1
+      - SERVICE_NAME=OrdersService
+      - BUILD_VERSION=${IMAGE_TAG}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_SESSION_TOKEN=${AWS_SESSION_TOKEN}

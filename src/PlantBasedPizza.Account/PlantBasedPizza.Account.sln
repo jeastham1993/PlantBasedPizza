@@ -14,6 +14,18 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{FE220876
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Account.IntegrationTests", "tests\PlantBasedPizza.Account.IntegrationTests\PlantBasedPizza.Account.IntegrationTests.csproj", "{4DDC795B-2EA4-4123-B631-F0D8CAA99BA6}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "shared", "shared", "{426A6750-F49C-406A-B520-33FADDA7D1DA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Shared", "..\shared\PlantBasedPizza.Shared\PlantBasedPizza.Shared.csproj", "{C6375321-F907-49D8-AD10-949EFB365743}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Events", "..\shared\PlantBasedPizza.Events\PlantBasedPizza.Events.csproj", "{BAFBD94E-C6B6-4AC7-8B94-DA2D33BC2E8A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "infra", "infra", "{80A1961A-B806-4E0E-979E-D49BD2E64B72}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infra", "infra\src\Infra\Infra.csproj", "{5B6E552B-8946-464A-A578-A248FB82A0BA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Infra.Constructs", "..\..\src\shared\PlantBasedPizza.Infra.Constructs\PlantBasedPizza.Infra.Constructs.csproj", "{FEBCF106-5FAC-41BC-ACC8-3CFD2941173D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,9 +43,29 @@ Global
 		{4DDC795B-2EA4-4123-B631-F0D8CAA99BA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4DDC795B-2EA4-4123-B631-F0D8CAA99BA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4DDC795B-2EA4-4123-B631-F0D8CAA99BA6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6375321-F907-49D8-AD10-949EFB365743}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6375321-F907-49D8-AD10-949EFB365743}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6375321-F907-49D8-AD10-949EFB365743}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6375321-F907-49D8-AD10-949EFB365743}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BAFBD94E-C6B6-4AC7-8B94-DA2D33BC2E8A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BAFBD94E-C6B6-4AC7-8B94-DA2D33BC2E8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BAFBD94E-C6B6-4AC7-8B94-DA2D33BC2E8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BAFBD94E-C6B6-4AC7-8B94-DA2D33BC2E8A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5B6E552B-8946-464A-A578-A248FB82A0BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B6E552B-8946-464A-A578-A248FB82A0BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B6E552B-8946-464A-A578-A248FB82A0BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B6E552B-8946-464A-A578-A248FB82A0BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FEBCF106-5FAC-41BC-ACC8-3CFD2941173D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FEBCF106-5FAC-41BC-ACC8-3CFD2941173D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FEBCF106-5FAC-41BC-ACC8-3CFD2941173D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FEBCF106-5FAC-41BC-ACC8-3CFD2941173D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{53CF4664-854F-4161-BEB2-EABFD6F9419C} = {3582F79E-2187-4CCD-836D-48EE30BC64A8}
 		{4DDC795B-2EA4-4123-B631-F0D8CAA99BA6} = {FE220876-2B87-4095-8BD2-039049503C72}
+		{C6375321-F907-49D8-AD10-949EFB365743} = {426A6750-F49C-406A-B520-33FADDA7D1DA}
+		{BAFBD94E-C6B6-4AC7-8B94-DA2D33BC2E8A} = {426A6750-F49C-406A-B520-33FADDA7D1DA}
+		{5B6E552B-8946-464A-A578-A248FB82A0BA} = {80A1961A-B806-4E0E-979E-D49BD2E64B72}
+		{FEBCF106-5FAC-41BC-ACC8-3CFD2941173D} = {426A6750-F49C-406A-B520-33FADDA7D1DA}
 	EndGlobalSection
 EndGlobal

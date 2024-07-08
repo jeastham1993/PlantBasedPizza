@@ -1,0 +1,35 @@
+{
+  "Records": [
+    {
+      "messageId": "19dd0b57-b21e-4ac1-bd88-01bbb068cb78",
+      "receiptHandle": "MessageReceiptHandle",
+      "body": {
+        "specversion": "1.0",
+        "type": "com.example.someevent",
+        "source": "/mycontext",
+        "id": "A234-1234-1234",
+        "time": "2018-04-05T17:31:00Z",
+        "datacontenttype": "application/json",
+        "data": {
+          "OrderIdentifier": "MANUL865",
+          "Items": [
+            {
+              "ItemName": "Fanta",
+              "RecipeIdentifier": "6"
+            }
+          ]
+        }
+      },
+      "attributes": {
+        "ApproximateReceiveCount": "1",
+        "SentTimestamp": "1523232000000",
+        "SenderId": "123456789012",
+        "ApproximateFirstReceiveTimestamp": "1523232000001"
+      },
+      "messageAttributes": {},
+      "eventSource": "aws:sqs",
+      "eventSourceARN": "arn:aws:sqs:us-east-1:123456789012:MyQueue",
+      "awsRegion": "us-east-1"
+    }
+  ]
+}

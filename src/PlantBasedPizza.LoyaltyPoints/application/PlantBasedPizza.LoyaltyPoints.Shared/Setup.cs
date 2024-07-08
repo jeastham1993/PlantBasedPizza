@@ -11,9 +11,9 @@ namespace PlantBasedPizza.LoyaltyPoints.Shared;
 
 public static class Setup
 {
-    public static IServiceCollection AddLoyaltyServices(this IServiceCollection services, IConfiguration configuration, string serviceName)
+    public static IServiceCollection AddLoyaltyServices(this IServiceCollection services, IConfiguration configuration, string serviceName, string? overrideDatabaseConnection = null)
     {
-        var client = new MongoClient(configuration["DatabaseConnection"]);
+        var client = new MongoClient(overrideDatabaseConnection ?? configuration["DatabaseConnection"]);
 
         services.AddSingleton(client);
 

@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Security.Claims;
+using Datadog.Trace;
 
 namespace PlantBasedPizza.OrderManager.Infrastructure.Extensions;
 
@@ -9,7 +10,7 @@ public static class UserAccountExtensions
     {
         var accountId = claims.FirstOrDefault(c => c.Type == "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier").Value;
         
-        Activity.Current?.SetTag("accountId", accountId);
+        Tracer.Instance.ActiveScope?.Span.SetTag("accountId", accountId);
         
         return accountId;
     }

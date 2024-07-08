@@ -1,7 +1,9 @@
 using System.Diagnostics;
+using Datadog.Trace;
+using Datadog.Trace.Annotations;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
-using PlantBasedPizza.Events;
 using PlantBasedPizza.OrderManager.Core.AddItemToOrder;
 using PlantBasedPizza.OrderManager.Core.CollectOrder;
 using PlantBasedPizza.OrderManager.Core.CreateDeliveryOrder;
@@ -9,31 +11,27 @@ using PlantBasedPizza.OrderManager.Core.CreatePickupOrder;
 using PlantBasedPizza.OrderManager.Core.Entities;
 using PlantBasedPizza.OrderManager.Core.Services;
 using PlantBasedPizza.OrderManager.Infrastructure.Extensions;
-using PlantBasedPizza.OrderManager.Infrastructure.IntegrationEvents;
 
 namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
 {
     [Route("order")]
+    [EnableCors("CorsPolicy")]
     public class OrderController : ControllerBase 
     {
         private readonly IOrderRepository _orderRepository;
-        private readonly IPaymentService _paymentService;
         private readonly IOrderEventPublisher _eventPublisher;
-        private readonly ILoyaltyPointService _loyaltyPointService;
         private readonly CollectOrderCommandHandler _collectOrderCommandHandler;
         private readonly AddItemToOrderHandler _addItemToOrderHandler;
         private readonly CreateDeliveryOrderCommandHandler _createDeliveryOrderCommandHandler;
         private readonly CreatePickupOrderCommandHandler _createPickupOrderCommandHandler;
 
-        public OrderController(IOrderRepository orderRepository, CollectOrderCommandHandler collectOrderCommandHandler, AddItemToOrderHandler addItemToOrderHandler, CreateDeliveryOrderCommandHandler createDeliveryOrderCommandHandler, CreatePickupOrderCommandHandler createPickupOrderCommandHandler, IPaymentService paymentService, ILoyaltyPointService loyaltyPointService, IOrderEventPublisher eventPublisher)
+        public OrderController(IOrderRepository orderRepository, CollectOrderCommandHandler collectOrderCommandHandler, AddItemToOrderHandler addItemToOrderHandler, CreateDeliveryOrderCommandHandler createDeliveryOrderCommandHandler, CreatePickupOrderCommandHandler createPickupOrderCommandHandler, IOrderEventPublisher eventPublisher)
         {
             _orderRepository = orderRepository;
             _collectOrderCommandHandler = collectOrderCommandHandler;
             _addItemToOrderHandler = addItemToOrderHandler;
             _createDeliveryOrderCommandHandler = createDeliveryOrderCommandHandler;
             _createPickupOrderCommandHandler = createPickupOrderCommandHandler;
-            _paymentService = paymentService;
-            _loyaltyPointService = loyaltyPointService;
             _eventPublisher = eventPublisher;
         }
 
@@ -49,24 +47,46 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
             try
             {
                 var accountId = User.Claims.ExtractAccountId();
-                
-                Activity.Current?.SetTag("orderIdentifier", orderIdentifier);
-                
-                var order = await this._orderRepository.Retrieve(orderIdentifier).ConfigureAwait(false);
-
-                if (order.CustomerIdentifier != accountId)
-                {
-                    throw new OrderNotFoundException(orderIdentifier);
-                }
-                
+                    
+                Tracer.Instance.ActiveScope?.Span.SetTag("orderIdentifier", orderIdentifier);
+                    
+                var order = await this._orderRepository.Retrieve(accountId, orderIdentifier).ConfigureAwait(false);
+                    
                 return new OrderDto(order);
             }
             catch (OrderNotFoundException)
             {
                 this.Response.StatusCode = 404;
-                Activity.Current?.AddTag("order.notFound", true);
+                Tracer.Instance.ActiveScope?.Span.SetTag("order.notFound", "true");
 
                 return null;
+            }
+        }
+        
+        
+
+        /// <summary>
+        /// Get the details of a given order.
+        /// </summary>
+        /// <param name="orderIdentifier">The order identifier.</param>
+        /// <returns></returns>
+        [HttpGet("")]
+        [Authorize(Roles = "user")]
+        public async Task<IEnumerable<OrderDto>> Get()
+        {
+            try
+            {
+                var accountId = User.Claims.ExtractAccountId();
+                    
+                var orders = await this._orderRepository.RetrieveCustomerOrders(accountId).ConfigureAwait(false);
+                    
+                return orders.Select(ord => new OrderDto(ord));
+            }
+            catch (Exception)
+            {
+                this.Response.StatusCode = 400;
+
+                return new List<OrderDto>();
             }
         }
 
@@ -105,10 +125,12 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
         /// <returns></returns>
         [HttpPost("{orderIdentifier}/items")]
         [Authorize(Roles = "user")]
-        public async Task<OrderDto?> AddItemToOrder([FromBody] AddItemToOrderCommand request)
+        public async Task<OrderDto?> AddItemToOrder(string orderIdentifier, [FromBody] AddItemToOrderCommand request)
         {
             request.AddToTelemetry();
+            
             request.CustomerIdentifier = User.Claims.ExtractAccountId();
+            request.OrderIdentifier = orderIdentifier;
 
             var order = await this._addItemToOrderHandler.Handle(request);
 
@@ -131,17 +153,8 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
         {
             var accountId = User.Claims.ExtractAccountId();
             
-            var order = await this._orderRepository.Retrieve(orderIdentifier);
-            
-            if (order.CustomerIdentifier != accountId)
-            {
-                throw new OrderNotFoundException(orderIdentifier);
-            }
+            var order = await this._orderRepository.Retrieve(accountId, orderIdentifier);
 
-            await this._paymentService.TakePaymentFor(order);
-            var loyaltyPoints = await this._loyaltyPointService.GetCustomerLoyaltyPoints(order.CustomerIdentifier);
-            
-            order.AddCustomerLoyaltyPoints(loyaltyPoints);
             order.SubmitOrder();
 
             await this._orderRepository.Update(order);
@@ -170,7 +183,12 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
         /// <returns></returns>
         [HttpPost("collected")]
         [Authorize(Roles = "staff")]
-        public async Task<OrderDto?> OrderCollected([FromBody] CollectOrderRequest request) =>
-            await this._collectOrderCommandHandler.Handle(request);
+        public async Task<OrderDto?> OrderCollected([FromBody] CollectOrderRequest request)
+        {
+            var accountId = User.Claims.ExtractAccountId();
+            request.CustomerIdentifier = accountId;
+            
+            return await this._collectOrderCommandHandler.Handle(request);
+        }
     }
 }

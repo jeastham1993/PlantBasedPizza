@@ -9,13 +9,25 @@ services:
     ports:
       - 27017:27017
 
-  jaeger:
-    image: jaegertracing/opentelemetry-all-in-one:latest
+  datadog-agent:
+    image: datadog/agent
+    pid: host
     ports:
-      - 16686:16686
-      - 13133:13133
-      - 4317:4317
-      - 4318:4318
+      - "8126:8126"
+      - "4317:4317"
+      - "4318:4318"
+    environment:
+      - DD_ENV=test
+      - DD_SITE=datadoghq.eu
+      - DD_SERVICE=OrdersService
+      - DD_API_KEY=${DD_API_KEY}
+      - DD_APM_ENABLED="true"
+      - DD_APM_NON_LOCAL_TRAFFIC="true"
+      - DD_DOGSTATSD_NON_LOCAL_TRAFFIC="true"
+    volumes:
+     - /var/run/docker.sock:/var/run/docker.sock
+     - /proc/:/host/proc/:ro
+     - /sys/fs/cgroup:/host/sys/fs/cgroup:ro
   
   cache:
     image: redis:7.2
@@ -37,10 +49,3 @@ services:
     volumes:
       - ./mocks/grpc-mocks:/proto
     command: --stub=/proto/stubs /proto/loyalty.proto /proto/payment.proto
-
-  rabbitmq:
-    image: rabbitmq:3-management-alpine
-    container_name: 'rabbitmq'
-    ports:
-        - 5672:5672
-        - 15672:15672

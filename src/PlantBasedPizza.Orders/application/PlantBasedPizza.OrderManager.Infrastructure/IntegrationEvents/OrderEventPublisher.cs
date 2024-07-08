@@ -20,7 +20,7 @@ public class OrderEventPublisher : IOrderEventPublisher
     {
         await this._eventPublisher.Publish(new OrderCompletedIntegrationEventV1()
         {
-            OrderIdentifier = order.OrderIdentifier,
+            OrderIdentifier = order.OrderNumber,
             CustomerIdentifier = order.CustomerIdentifier,
             OrderValue = order.TotalPrice
         });
@@ -32,7 +32,7 @@ public class OrderEventPublisher : IOrderEventPublisher
     {
         await this._eventPublisher.Publish(new OrderReadyForDeliveryEventV1()
         {
-            OrderIdentifier = order.OrderIdentifier,
+            OrderIdentifier = order.OrderNumber,
             DeliveryAddressLine1 = order.DeliveryDetails.AddressLine1,
             DeliveryAddressLine2 = order.DeliveryDetails.AddressLine2,
             DeliveryAddressLine3 = order.DeliveryDetails.AddressLine3,
@@ -43,16 +43,39 @@ public class OrderEventPublisher : IOrderEventPublisher
     }
 
     [Channel("order.orderSubmitted.v1")]
-    [PublishOperation(typeof(OrderSubmittedEventV1), Summary = "Published when an order is submitted and paid for.")]
+    [PublishOperation(typeof(OrderSubmittedEventV1), Summary = "Published when an order is submitted.")]
     public async Task PublishOrderSubmittedEventV1(Order order)
     {
         await this._eventPublisher.Publish(new OrderSubmittedEventV1()
         {
-            OrderIdentifier = order.OrderIdentifier,
+            OrderIdentifier = order.OrderNumber,
+            CustomerIdentifier = order.CustomerIdentifier,
+            TotalPrice = order.TotalPrice,
             Items = order.Items.Select(item => new OrderSubmittedEventItem()
             {
                 ItemName = item.ItemName,
-                RecipeIdentifier = item.RecipeIdentifier
+                RecipeIdentifier = item.RecipeIdentifier,
+                UnitPrice = item.Price,
+                Quantity = item.Quantity
+            }).ToList()
+        });
+    }
+
+    [Channel("order.orderConfirmed.v1")]
+    [PublishOperation(typeof(OrderConfirmedEventV1), Summary = "Published when an order is submitted and paid for.")]
+    public async Task PublishOrderConfirmedEventV1(Order order)
+    {
+        await this._eventPublisher.Publish(new OrderConfirmedEventV1()
+        {
+            OrderIdentifier = order.OrderNumber,
+            CustomerIdentifier = order.CustomerIdentifier,
+            TotalPrice = order.TotalPrice,
+            Items = order.Items.Select(item => new OrderConfirmedEventItem()
+            {
+                ItemName = item.ItemName,
+                RecipeIdentifier = item.RecipeIdentifier,
+                UnitPrice = item.Price,
+                Quantity = item.Quantity
             }).ToList()
         });
     }

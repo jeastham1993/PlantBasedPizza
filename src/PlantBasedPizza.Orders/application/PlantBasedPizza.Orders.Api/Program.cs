@@ -5,6 +5,7 @@ using PlantBasedPizza.Events;
 using PlantBasedPizza.OrderManager.Infrastructure;
 using PlantBasedPizza.OrderManager.Infrastructure.IntegrationEvents;
 using PlantBasedPizza.Shared;
+using PlantBasedPizza.Shared.Logging;
 using Saunter;
 using Saunter.AsyncApiSchema.v2;
 
@@ -51,10 +52,19 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CorsPolicy",
+        builder => builder
+            .AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader());
+});
+
 builder.Services.AddAuthorization();
 
 builder.Services.AddOrderManagerInfrastructure(builder.Configuration);
-builder.Services.AddSharedInfrastructure(builder.Configuration, "PlantBasedPizza")
+builder.Services.AddSharedInfrastructure(builder.Configuration, builder.Configuration["SERVICE_NAME"])
     .AddMessaging(builder.Configuration);
 
 builder.Services.AddHttpClient();
@@ -63,13 +73,15 @@ builder.Services.AddControllers();
 
 var app = builder.Build();
 
-app.UseAuthentication();
+app.UseCors("CorsPolicy");
 
-app.UseRouting();
+app.UseAuthentication();
 
 app.UseAuthorization();
 
 var orderManagerHealthChecks = app.Services.GetRequiredService<OrderManagerHealthChecks>();
+
+app.MapControllers();
 
 app.Map("/order/health", async () =>
 {
@@ -77,8 +89,6 @@ app.Map("/order/health", async () =>
     
     return Results.Ok(healthCheckResult);
 });
-
-app.MapControllers();
 
 if (generateAsyncApi)
 {

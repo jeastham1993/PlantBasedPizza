@@ -3,7 +3,9 @@ name: Delivery Services CICD
 on:
     push:
       branches:
-        - microservices-module-6
+        - main
+        - feature/aws-serverless
+        - feature/aws-serverless-datadog
       paths:
         - .github/workflows/build-and-push-base.yaml
         - .github/workflows/build-delivery-services.yaml
@@ -17,31 +19,40 @@ permissions:
 
 jobs:
   build-api-image:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@microservices-module-6
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@feature/aws-serverless
     with:
+      service-name: "DeliveryService"
+      project-root: src/PlantBasedPizza.Delivery
       unit-test-folder: src/PlantBasedPizza.Delivery/tests/PlantBasedPizza.Delivery.UnitTests
       image-name: delivery-api
       dockerfile: src/PlantBasedPizza.Delivery/application/PlantBasedPizza.Delivery.Api/Dockerfile-x86
     secrets:
       deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
       ecr-registry: ${{secrets.ECR_REGISTRY}}
-  build-worker-image:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@microservices-module-6
-    with:
-      unit-test-folder: src/PlantBasedPizza.Delivery/tests/PlantBasedPizza.Delivery.UnitTests
-      image-name: delivery-worker
-      dockerfile: src/PlantBasedPizza.Delivery/application/PlantBasedPizza.Delivery.Worker/Dockerfile-x86
-    secrets:
-      deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
-      ecr-registry: ${{secrets.ECR_REGISTRY}}
+      dd_api_key: ${{secrets.DD_API_KEY}}
+      dd_app_key: ${{secrets.DD_APP_KEY}}
+      
   integration-test:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/integration-test-base.yaml@microservices-module-6
-    needs:
-      - build-api-image
-      - build-worker-image
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/integration-test-with-test-infra.yaml@feature/aws-serverless
+    needs: build-api-image
     with:
+      service-name: "OrdersService"
       integration-test-compose-file: src/PlantBasedPizza.Delivery/docker-compose-integration.yml
       integration-test-folder: src/PlantBasedPizza.Delivery/tests/PlantBasedPizza.Delivery.IntegrationTests
+      test-infrastructure-folder: src/PlantBasedPizza.Delivery/tests/TestInfrastructure
     secrets:
       deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
       ecr-registry: ${{secrets.ECR_REGISTRY}}
+      dd_api_key: ${{secrets.DD_API_KEY}}
+  deploy-to-dev:
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/cdk-deploy-base.yaml@feature/aws-serverless
+    needs: integration-test
+    concurrency:
+      group: delivery-dev-deploy
+      cancel-in-progress: false
+    with:
+      cdk-folder: "src/PlantBasedPizza.Delivery/infra"
+      environment: "dev"
+    secrets:
+      deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
+      dd-api-key: ${{secrets.DD_API_KEY}}

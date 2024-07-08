@@ -2,8 +2,6 @@ namespace PlantBasedPizza.Orders.IntegrationTest.ViewModels
 {
     public class Order
     {
-        public string OrderIdentifier { get; set; }
-        
         public string OrderNumber { get; set; }
 
         public DateTime OrderDate { get; set; }
