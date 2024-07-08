@@ -16,6 +16,7 @@ import {
   Drawer,
   List,
   CardOverflow,
+  Skeleton,
 } from "@mui/joy";
 import recipeService from "../services/recipeService";
 import { ordersApi } from "../axiosConfig";
@@ -27,6 +28,7 @@ function Home() {
   const [order, setOrder] = useState({ items: [] });
   const [open, setOpen] = React.useState(false);
   const [snackbarOpen, setSnackbarOpen] = React.useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const handleSnackbarClose = () => {
     setSnackbarOpen(false);
@@ -60,6 +62,7 @@ function Home() {
         }, {});
 
         setMenuItems(groupedData);
+        setIsLoading(false);
       } catch (error) {
         console.error("Error fetching the menu data:", error);
       }
@@ -118,7 +121,7 @@ function Home() {
     }
 
     // Make request to add item to order
-    let submitResponse = await ordersApi.post(`/${orderNumber}/submit`, {
+    await ordersApi.post(`/${orderNumber}/submit`, {
       OrderIdentifier: orderNumber,
       CustomerIdentifier: "",
     });
@@ -215,72 +218,147 @@ function Home() {
         <Container sx={{ pt: 8 }} maxWidth="xl">
           <Grid container spacing={1}>
             <Grid item xs={1}></Grid>
-            <Grid item xs={10}>
-              {Object.keys(menuItems).map((category) => (
-                <div key={category}>
+            {isLoading === false ? (
+              <Grid item xs={10}>
+                {Object.keys(menuItems).map((category) => (
+                  <div key={category}>
+                    <Grid container spacing={4}>
+                      {menuItems[category].map((item) => (
+                        <Grid item key={item.id} xs={12} sm={6} md={4}>
+                          <Card
+                            sx={{
+                              maxWidth: "100%",
+                              boxShadow: "md",
+                              height: "100%",
+                            }}
+                          >
+                            <CardOverflow>
+                              <AspectRatio ratio="2">
+                                <img
+                                  src={getImage(category)}
+                                  loading="lazy"
+                                  alt=""
+                                />
+                              </AspectRatio>
+                            </CardOverflow>
+                            <CardContent>
+                              <Typography level="title-md">
+                                {item.name}
+                              </Typography>
+                              <Typography level="body-sm">
+                                {item.price.toFixed(2)}
+                              </Typography>
+                            </CardContent>
+                            <CardOverflow>
+                              <IconButton
+                                variant="solid"
+                                color="success"
+                                onClick={() => {
+                                  addToOrder(item);
+                                }}
+                                sx={{
+                                  width: "70px",
+                                  height: "70px",
+                                  position: "absolute",
+                                  right: 0,
+                                  bottom: 0,
+                                  borderRadius: "80px 0 0 0",
+                                  zIndex: "100",
+                                  paddingLeft: "15px",
+                                  paddingTop: "10px",
+                                }}
+                              >
+                                <Add />
+                              </IconButton>
+                            </CardOverflow>
+                          </Card>
+                        </Grid>
+                      ))}
+                    </Grid>
+                    <Divider sx={{ my: 4 }} />
+                  </div>
+                ))}
+              </Grid>
+            ) : (
+              <Grid item xs={10}>
+                <div>
                   <Grid container spacing={4}>
-                    {menuItems[category].map((item) => (
-                      <Grid
-                        item
-                        key={item.id}
-                        xs={12}
-                        sm={6}
-                        md={4}
+                    <Grid item xs={12} sm={6} md={4}>
+                      <Card
+                        sx={{
+                          maxWidth: "100%",
+                          boxShadow: "md",
+                          height: "100%",
+                        }}
                       >
-                        <Card
-                          sx={{
-                            maxWidth: "100%",
-                            boxShadow: "md",
-                            height: "100%",
-                          }}
-                        >
-                          <CardOverflow>
-                            <AspectRatio ratio="2">
-                              <img
-                                src={getImage(category)}
-                                loading="lazy"
-                                alt=""
-                              />
-                            </AspectRatio>
-                          </CardOverflow>
-                          <CardContent>
-                            <Typography level="title-md">
-                              {item.name}
-                            </Typography>
-                            <Typography level="body-sm">
-                              {item.price.toFixed(2)}
-                            </Typography>
-                          </CardContent>
-                          <CardOverflow>
-                            <IconButton
-                              variant="solid"
-                              color="success"
-                              onClick={() => {
-                                addToOrder(item);
-                              }}
-                              sx={{
-                                width: "70px",
-                                height: "70px",
-                                position: "absolute",
-                                right: 0,
-                                bottom: 0,
-                                borderRadius: "80px 0 0 0",
-                                zIndex: "100",
-                                paddingLeft: "15px",
-                                paddingTop: "10px",
-                              }}
-                            >
-                              <Add />
-                            </IconButton>
-                          </CardOverflow>
-                        </Card>
-                      </Grid>
-                    ))}
+                        <AspectRatio ratio="21/9">
+                          <Skeleton variant="overlay">
+                            <img
+                              alt=""
+                              src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+                            />
+                          </Skeleton>
+                        </AspectRatio>
+                        <Typography>
+                          <Skeleton>
+                            Lorem ipsum is placeholder text commonly used in the
+                            graphic, print, and publishing industries.
+                          </Skeleton>
+                        </Typography>
+                      </Card>
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={4}>
+                      <Card
+                        sx={{
+                          maxWidth: "100%",
+                          boxShadow: "md",
+                          height: "100%",
+                        }}
+                      >
+                        <AspectRatio ratio="21/9">
+                          <Skeleton variant="overlay">
+                            <img
+                              alt=""
+                              src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+                            />
+                          </Skeleton>
+                        </AspectRatio>
+                        <Typography>
+                          <Skeleton>
+                            Lorem ipsum is placeholder text commonly used in the
+                            graphic, print, and publishing industries.
+                          </Skeleton>
+                        </Typography>
+                      </Card>
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={4}>
+                      <Card
+                        sx={{
+                          maxWidth: "100%",
+                          boxShadow: "md",
+                          height: "100%",
+                        }}
+                      >
+                        <AspectRatio ratio="21/9">
+                          <Skeleton variant="overlay">
+                            <img
+                              alt=""
+                              src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="
+                            />
+                          </Skeleton>
+                        </AspectRatio>
+                        <Typography>
+                          <Skeleton>
+                            Lorem ipsum is placeholder text commonly used in the
+                            graphic, print, and publishing industries.
+                          </Skeleton>
+                        </Typography>
+                      </Card>
+                    </Grid>
                   </Grid>
-                  <Divider sx={{ my: 4 }} />
                 </div>
-              ))}
-            </Grid>
+              </Grid>
+            )}
           </Grid>
         </Container>
       </Box>
