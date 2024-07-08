@@ -44,7 +44,7 @@ public class FunctionConfiguration{
             List<SQSEvent.SQSMessage> records = value.getRecords();
 
             for (SQSEvent.SQSMessage message : records) {
-                var processSuccess = processOrderConfirmedMessage(message);
+                boolean processSuccess = processOrderConfirmedMessage(message);
 
                 if (!processSuccess) {
                     failures.add(SQSBatchResponse.BatchItemFailure.builder().withItemIdentifier(message.getMessageId()).build());

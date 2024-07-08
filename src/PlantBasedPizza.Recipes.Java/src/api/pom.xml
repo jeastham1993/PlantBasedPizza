@@ -73,11 +73,11 @@
             <artifactId>opentracing-util</artifactId>
             <version>0.33.0</version>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-validation</artifactId>
-            <version>3.3.0</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.springframework.boot</groupId>-->
+<!--            <artifactId>spring-boot-starter-validation</artifactId>-->
+<!--            <version>3.3.0</version>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>jakarta.validation</groupId>
             <artifactId>jakarta.validation-api</artifactId>
@@ -100,19 +100,14 @@
             <version>2.26.3</version>
         </dependency>
         <dependency>
-            <groupId>software.amazon.lambda</groupId>
-            <artifactId>powertools-parameters</artifactId>
-            <version>1.18.0</version>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>ssm</artifactId>
+            <version>2.26.16</version>
         </dependency>
         <dependency>
             <groupId>com.datadoghq</groupId>
             <artifactId>dd-trace-api</artifactId>
             <version>LATEST</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.11.0</version>
         </dependency>
         <dependency>
             <groupId>io.github.crac.com.amazonaws</groupId>
@@ -192,29 +187,6 @@
     </dependencies>
     <build>
         <plugins>
-            <plugin>
-                <groupId>dev.aspectj</groupId>
-                <artifactId>aspectj-maven-plugin</artifactId>
-                <version>1.13.1</version>
-                <configuration>
-                    <source>11</source> <!-- or higher -->
-                    <target>11</target> <!-- or higher -->
-                    <complianceLevel>11</complianceLevel> <!-- or higher -->
-                    <aspectLibraries>
-                        <aspectLibrary>
-                            <groupId>software.amazon.lambda</groupId>
-                            <artifactId>powertools-parameters</artifactId>
-                        </aspectLibrary>
-                    </aspectLibraries>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>

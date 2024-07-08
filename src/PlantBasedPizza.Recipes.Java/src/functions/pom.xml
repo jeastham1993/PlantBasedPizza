@@ -3,20 +3,15 @@
          xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
-    <groupId>com.recipe</groupId>
     <artifactId>com.recipe.functions</artifactId>
     <version>0.0.1-SNAPSHOT</version><!-- @releaser:version-check-off -->
     <packaging>jar</packaging>
-
     <name>com.recipe.functions</name>
     <description>Spring Cloud Function Sample for AWS Lambda</description>
-
     <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.6</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <groupId>com.recipe</groupId>
+        <artifactId>com.recipe</artifactId>
+        <version>1.0.0</version>
     </parent>
 
     <properties>
@@ -52,6 +47,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+            <version>3.3.0</version>
         </dependency>
         <dependency>
             <groupId>io.cloudevents</groupId>
@@ -59,9 +55,14 @@
             <version>4.0.1</version>
         </dependency>
         <dependency>
-            <groupId>software.amazon.lambda</groupId>
-            <artifactId>powertools-parameters</artifactId>
-            <version>1.18.0</version>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.17.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>2.17.2</version>
         </dependency>
     </dependencies>
 
@@ -79,28 +80,6 @@
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>dev.aspectj</groupId>
-                <artifactId>aspectj-maven-plugin</artifactId>
-                <version>1.14</version>
-                <configuration>
-                    <source>11</source> <!-- or higher -->
-                    <target>11</target> <!-- or higher -->
-                    <aspectLibraries>
-                        <aspectLibrary>
-                            <groupId>software.amazon.lambda</groupId>
-                            <artifactId>powertools-parameters</artifactId>
-                        </aspectLibrary>
-                    </aspectLibraries>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-deploy-plugin</artifactId>
@@ -127,6 +106,14 @@
                     <shadedArtifactAttached>true</shadedArtifactAttached>
                     <shadedClassifierName>aws</shadedClassifierName>
                 </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

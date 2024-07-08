@@ -1,6 +1,7 @@
 package com.recipe.api.configs;
-import com.google.gson.Gson;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
@@ -10,26 +11,33 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.Database;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import jakarta.persistence.EntityManagerFactory;
-import software.amazon.lambda.powertools.parameters.ParamManager;
-import software.amazon.lambda.powertools.parameters.SSMProvider;
+import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient;
+import software.amazon.awssdk.services.ssm.SsmClient;
+import software.amazon.awssdk.services.ssm.model.GetParameterRequest;
+import software.amazon.awssdk.services.ssm.model.GetParameterResponse;
 
 import javax.sql.DataSource;
 
 @Configuration
 public class JpaConfiguration {
-    private final Gson gson = new Gson();
+    private final SsmClient ssmClient;
+    
     public JpaConfiguration()
     {
+        ssmClient = SsmClient.builder()
+                .httpClient(UrlConnectionHttpClient.builder().build())
+                .build();
     }
 
     public DataSource dataSource() {
-        SSMProvider ssmProvider = ParamManager.getSsmProvider()
-                .withDecryption();
-        
         String dbConnectionString = System.getenv("DB_CONNECTION_STRING");
         
         if (dbConnectionString == null){
-            dbConnectionString = ssmProvider.get(System.getenv("DB_PARAMETER_NAME")); 
+            GetParameterResponse response = ssmClient.getParameter(GetParameterRequest.builder()
+                            .name(System.getenv("DB_PARAMETER_NAME"))
+                            .withDecryption(true)
+                    .build());
+            dbConnectionString = response.parameter().value(); 
         }
 
         var dataSource = new SimpleDriverDataSource();
