@@ -17,7 +17,7 @@ permissions:
 
 jobs:
   build-image:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@feature/aws-serverless
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml
     with:
       service-name: "AccountApi"
       project-root: src/PlantBasedPizza.Account
@@ -30,7 +30,7 @@ jobs:
       dd_api_key: ${{secrets.DD_API_KEY}}
       dd_app_key: ${{secrets.DD_APP_KEY}}
   integration-test:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/integration-test-base.yaml@feature/aws-serverless
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/integration-test-base.yaml
     needs: build-image
     with:
       service-name: "AccountApi"
@@ -41,7 +41,7 @@ jobs:
       ecr-registry: ${{secrets.ECR_REGISTRY}}
       dd_api_key: ${{secrets.DD_API_KEY}}
   deploy-to-dev:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/cdk-deploy-base.yaml@feature/aws-serverless
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/cdk-deploy-base.yaml
     needs: integration-test
     concurrency:
       group: account-dev-deploy

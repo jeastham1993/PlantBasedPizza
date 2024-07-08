@@ -15,7 +15,7 @@ permissions:
 
 jobs:
   deploy-to-dev:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/cdk-deploy-base.yaml@feature/aws-serverless
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/cdk-deploy-base.yaml
     with:
       cdk-folder: "shared-infrastructure"
       environment: "dev"

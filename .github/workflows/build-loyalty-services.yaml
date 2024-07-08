@@ -17,7 +17,7 @@ permissions:
 
 jobs:
   build-api-image:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@feature/aws-serverless
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml
     with:
       service-name: "LoyaltyService"
       project-root: src/PlantBasedPizza.LoyaltyPoints
@@ -31,7 +31,7 @@ jobs:
       dd_app_key: ${{secrets.DD_APP_KEY}}
 
   build-internal-api-image:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@feature/aws-serverless
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml
     with:
       service-name: "LoyaltyService"
       project-root: src/PlantBasedPizza.LoyaltyPoints
@@ -45,7 +45,7 @@ jobs:
       dd_app_key: ${{secrets.DD_APP_KEY}}
 
   integration-test:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/integration-test-with-test-infra.yaml@feature/aws-serverless
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/integration-test-with-test-infra.yaml
     needs:
       - build-api-image
       - build-internal-api-image
@@ -60,7 +60,7 @@ jobs:
       dd_api_key: ${{secrets.DD_API_KEY}}
 
   deploy-to-dev:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/cdk-deploy-base.yaml@feature/aws-serverless
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/cdk-deploy-base.yaml
     needs: integration-test
     concurrency:
       group: loyalty-dev-deploy

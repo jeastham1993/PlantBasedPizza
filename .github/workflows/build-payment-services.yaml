@@ -17,7 +17,7 @@ permissions:
 
 jobs:
   integration-test:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/integration-test-base.yaml@feature/aws-serverless
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/integration-test-base.yaml
     with:
       service-name: "PaymentService"
       integration-test-compose-file: src/PlantBasedPizza.Payments/docker-compose-integration.yml
@@ -28,7 +28,7 @@ jobs:
       dd_api_key: ${{secrets.DD_API_KEY}}
 
   deploy-to-dev:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/cdk-deploy-base.yaml@feature/aws-serverless
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/cdk-deploy-base.yaml
     needs: integration-test
     concurrency:
       group: payments-dev-deploy
