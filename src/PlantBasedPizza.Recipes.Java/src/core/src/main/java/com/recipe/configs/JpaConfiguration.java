@@ -1,7 +1,5 @@
-package com.recipe.api.configs;
+package com.recipe.configs;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
@@ -66,7 +64,7 @@ public class JpaConfiguration {
         LocalContainerEntityManagerFactoryBean lemfb = new LocalContainerEntityManagerFactoryBean();
         lemfb.setDataSource(dataSource());
         lemfb.setJpaVendorAdapter(jpaVendorAdapter());
-        lemfb.setPackagesToScan("com.recipe.api", "com.recipe.core");
+        lemfb.setPackagesToScan("com.recipe.core");
         return lemfb;
     }
 }
