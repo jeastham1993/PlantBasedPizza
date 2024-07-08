@@ -4,8 +4,6 @@ on:
     push:
       branches:
         - main
-        - feature/aws-serverless
-        - feature/aws-serverless-datadog
       paths:
         - .github/workflows/build-and-push-base.yaml
         - .github/workflows/build-payment-services.yaml
