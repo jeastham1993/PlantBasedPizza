@@ -64,6 +64,7 @@ public class WebService : Construct
             { "DD_AGENT_HOST", "127.0.0.1"},
             { "DD_TRACE_ROUTE_TEMPLATE_RESOURCE_NAMES_ENABLED", "true"},
             { "DD_RUNTIME_METRICS_ENABLED", "true"},
+            { "DD_PROFILING_ENABLED", "true"}
         };
         var baseSecrets = new Dictionary<string, Secret>()
         {
