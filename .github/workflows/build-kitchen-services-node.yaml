@@ -14,8 +14,21 @@ permissions:
   contents: read
 
 jobs:
+  integration-test:
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/integration-test-node.yaml@main
+    with:
+      service-name: "KitchenService"
+      integration-test-folder: src/PlantBasedPizza.PlantBasedPizza.Kitchen.Node
+      test-infrastructure-folder: src/PlantBasedPizza.PlantBasedPizza.Kitchen.Node
+      stack-name: KitchenIntegrationStack
+    secrets:
+      deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
+      ecr-registry: ${{secrets.ECR_REGISTRY}}
+      dd_api_key: ${{secrets.DD_API_KEY}}
   deploy-to-dev:
     uses: jeastham1993/PlantBasedPizza/.github/workflows/cdk-deploy-base-with-node.yaml@main
+    needs:
+      - integration-test
     concurrency:
       group: kitchen-node-dev-deploy
       cancel-in-progress: false
@@ -23,6 +36,7 @@ jobs:
       cdk-folder: "src/PlantBasedPizza.Kitchen.Node"
       project-root: "src/PlantBasedPizza.Kitchen.Node"
       environment: "dev"
+      stackName: "KitchenStack"
     secrets:
       deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
       dd-api-key: ${{secrets.DD_API_KEY}}

@@ -10,14 +10,13 @@ import { SharedProps } from "./constructs/sharedFunctionProps";
 import { AttributeType, BillingMode, ProjectionType, Table, TableClass } from "aws-cdk-lib/aws-dynamodb";
 import { Api } from "./api";
 import { BackgroundWorker } from "./backgroundWorkers";
+import { HttpApi } from "aws-cdk-lib/aws-apigatewayv2";
 
-export class KitchenStack extends Stack {
+export class IntegrationTestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
     const vpcIdParam = StringParameter.valueFromLookup(this, "/shared/vpc-id");
-    const albArnParam = StringParameter.valueFromLookup(this, "/shared/alb-arn");
-    const albListenerParam = StringParameter.valueFromLookup(this, "/shared/alb-listener");
     const environment = process.env.ENV ?? "test";
     const serviceName = "KitchenService";
     const version = process.env.COMMIT_HASH ?? "latest";
@@ -44,7 +43,9 @@ export class KitchenStack extends Stack {
       },
     );
 
-    const eventBridge = EventBus.fromEventBusName(this, "SharedEventBus", "PlantBasedPizzaEvents");
+    const eventBridge = new EventBus(this, "KitchenServiceTestBus", {
+        eventBusName: `kitchen-service.${version}`
+    });
 
     const datadogConfiguration = new Datadog(this, "Datadog", {
       nodeLayerVersion: 112,
@@ -58,12 +59,8 @@ export class KitchenStack extends Stack {
       captureLambdaPayload: process.env.ENV == "prod" ? false : true
     });
 
-    const albListener = ApplicationListener.fromLookup(this, "SharedHttpListener", {
-      loadBalancerArn: albArnParam,
-      listenerArn: albListenerParam,
-    });
-
-    const table = new Table(this, "KitchenDataTable", {
+    const table = new Table(this, `KitchenDataTable${version}`, {
+      tableName: `kitchen-integration-test.${version}`,
       tableClass: TableClass.STANDARD,
       billingMode: BillingMode.PAY_PER_REQUEST,
       partitionKey: {
@@ -84,14 +81,19 @@ export class KitchenStack extends Stack {
       }
     });
 
+    const httpApi = new HttpApi(this, "KitchenIntegrationTestApi", {
+
+});
+
     const sharedProps: SharedProps = {
       serviceName,
       environment,
       version,
       vpc,
       apiProps: {
-        albListener,
-        apiGateway: undefined
+        // Add API Gateway resource
+        apiGateway: httpApi,
+        albListener: undefined
       },
       databaseConnectionParam,
       datadogConfiguration,

@@ -1,3 +1,4 @@
+import { HttpApi } from "aws-cdk-lib/aws-apigatewayv2";
 import { ITable } from "aws-cdk-lib/aws-dynamodb";
 import { IVpc } from "aws-cdk-lib/aws-ec2";
 import { IApplicationListener } from "aws-cdk-lib/aws-elasticloadbalancingv2";
@@ -10,8 +11,13 @@ export interface SharedProps {
   environment: string;
   version: string;
   datadogConfiguration: Datadog;
-  albListener: IApplicationListener;
-  vpc: IVpc;
+  apiProps: ApiProps;
+  vpc: IVpc | undefined;
   databaseConnectionParam: IStringParameter;
   table: ITable
+}
+
+export interface ApiProps {
+  albListener: IApplicationListener | undefined;
+  apiGateway: HttpApi | undefined
 }
