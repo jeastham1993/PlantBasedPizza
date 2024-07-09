@@ -41,6 +41,11 @@ jobs:
           aws-region: eu-west-1
           role-to-assume: ${{secrets.deploy-role-arn}}
           role-session-name: GitHubActionsSession
+      - name: Install dependencies
+        shell: bash
+        run: |
+          cd ${{ inputs.test-infrastructure-folder }}
+          npm install
       - name: Install cdk
         shell: bash
         run: |
@@ -76,7 +81,6 @@ jobs:
           AWS_SESSION_TOKEN: ${{env.AWS_SESSION_TOKEN}}
         run: |
           cd ${{inputs.integration-test-folder}}
-          npm i
           npm run build
           npm run test -t integration-test
       - name: Tear down test infrastructure
