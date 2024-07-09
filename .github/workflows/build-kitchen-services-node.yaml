@@ -17,8 +17,18 @@ permissions:
   contents: read
 
 jobs:
+  static-analysis:
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/static-analysis.yaml@main
+    with:
+      service-name: "KitchenService"
+      project-root: src/PlantBasedPizza.Kitchen.Node
+    secrets:
+      dd_api_key: ${{secrets.DD_API_KEY}}
+      dd_app_key: ${{secrets.DD_APP_KEY}}
   integration-test:
     uses: jeastham1993/PlantBasedPizza/.github/workflows/integration-test-node.yaml@main
+    needs:
+      - static-analysis
     with:
       service-name: "KitchenService"
       integration-test-folder: src/PlantBasedPizza.Kitchen.Node
