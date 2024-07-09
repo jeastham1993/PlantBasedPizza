@@ -5,6 +5,8 @@ import { IntegrationTestStack } from "../lib/integration-stack";
 
 const app = new cdk.App();
 
+const version = process.env.COMMIT_HASH ?? "latest";
+
 const mStack = new KitchenStack(app, "KitchenStack", {
   env: {
     account: process.env["CDK_DEFAULT_ACCOUNT"],
@@ -12,7 +14,7 @@ const mStack = new KitchenStack(app, "KitchenStack", {
   },
 });
 
-const integrationTestStack = new IntegrationTestStack(app, "KitchenIntegrationStack", {
+const integrationTestStack = new IntegrationTestStack(app, `KitchenIntegrationStack-${version}`, {
   env: {
     account: process.env["CDK_DEFAULT_ACCOUNT"],
     region: process.env["CDK_DEFAULT_REGION"],

@@ -69,7 +69,7 @@ jobs:
           BUILD_VERSION: "${{ env.sha_short }}"
         run: |
           cd ${{ inputs.test-infrastructure-folder }}
-          cdk deploy ${{inputs.stack-name}} --region eu-west-1 --require-approval never
+          cdk deploy ${{inputs.stack-name}}-${{ env.sha_short }} --region eu-west-1 --require-approval never
       - name: Run Integration Tests
         env:
           DD_CIVISIBILITY_AGENTLESS_ENABLED: true
@@ -92,5 +92,5 @@ jobs:
           BUILD_VERSION: ${{ env.sha_short }}
         run: |
           cd ${{ inputs.test-infrastructure-folder }}
-          cdk destroy ${{inputs.stack-name}} --region eu-west-1 --force
+          cdk destroy ${{inputs.stack-name}}-${{ env.sha_short }} --region eu-west-1 --force
           

@@ -48,7 +48,7 @@ describe("EventHandling", () => {
 
     // TODO: This could be a flaky test, if takes longer than 3 seconds.
     // TODO: Implement a while loop to retry a few times to allow for slow throughput
-    await sleep(3000);
+    await sleep(6000);
 
     const orders = await kitchenRepository.getNew();
 
@@ -56,7 +56,7 @@ describe("EventHandling", () => {
 
     //Assert
     expect(orderInDatabase).toBe(true);
-  }, 10000);
+  }, 15000);
 });
 
 async function sleep(ms: number): Promise<void> {
