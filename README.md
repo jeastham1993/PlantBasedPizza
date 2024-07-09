@@ -1,5 +1,7 @@
 # Plant Based Pizza
 
+> **IMPORTANT! Deploying resources in this repo may incur costs in your own AWS accounts.**
+
 A reference serverless application implementing an online pizza restaurant using an event-driven architecture. If you want to build along with me, I'll be live streaming weekly on [Twitch](https://www.twitch.tv/plant_powered_james) and [YouTube](https://youtube.com/@serverlessjames) as I add more functionality to the application.
 
 ![High Level Architecture Diagram](img/high-level-arch.png)

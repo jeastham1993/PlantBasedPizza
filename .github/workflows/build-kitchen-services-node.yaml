@@ -6,7 +6,10 @@ on:
         - main
       paths:
         - .github/workflows/build-kitchen-services-node.yaml
-        - src/PlantBasedPizza.Kitchen.Node/**
+        - src/PlantBasedPizza.Kitchen.Node/bin/**
+        - src/PlantBasedPizza.Kitchen.Node/lib/**
+        - src/PlantBasedPizza.Kitchen.Node/src/**
+        - src/PlantBasedPizza.Kitchen.Node/tests/**
     workflow_dispatch:
 
 permissions:
