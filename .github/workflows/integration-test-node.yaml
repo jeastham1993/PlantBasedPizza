@@ -85,7 +85,8 @@ jobs:
           ENV: ${{ env.sha_short }}
           AWS_ACCESS_KEY_ID: ${{env.AWS_ACCESS_KEY_ID}}
           AWS_SECRET_ACCESS_KEY: ${{env.AWS_SECRET_ACCESS_KEY}}
-          AWS_SESSION_TOKEN: ${{env.AWS_SESSION_TOKEN}}
+          AWS_SESSION_TOKEN: ${{env.AWS_SESSION_TOKEN}}env:
+          NODE_OPTIONS: -r $DD_TRACE_PACKAGE
         run: |
           cd ${{inputs.integration-test-folder}}
           npm run build
