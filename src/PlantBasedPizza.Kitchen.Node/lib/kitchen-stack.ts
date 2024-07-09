@@ -3,7 +3,6 @@ import { Secret } from "aws-cdk-lib/aws-secretsmanager";
 import { Construct } from "constructs";
 import { Datadog } from "datadog-cdk-constructs-v2";
 import { ApplicationListener } from "aws-cdk-lib/aws-elasticloadbalancingv2";
-import { Vpc } from "aws-cdk-lib/aws-ec2";
 import { EventBus } from "aws-cdk-lib/aws-events";
 import { StringParameter } from "aws-cdk-lib/aws-ssm";
 import { SharedProps } from "./constructs/sharedFunctionProps";
@@ -15,26 +14,13 @@ export class KitchenStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const vpcIdParam = StringParameter.valueFromLookup(this, "/shared/vpc-id");
     const albArnParam = StringParameter.valueFromLookup(this, "/shared/alb-arn");
     const albListenerParam = StringParameter.valueFromLookup(this, "/shared/alb-listener");
     const environment = process.env.ENV ?? "test";
     const serviceName = "KitchenService";
-    const version = process.env.COMMIT_HASH ?? "latest";
-
-    const vpc = Vpc.fromLookup(this, "Vpc", {
-      vpcId: vpcIdParam,
-    });
+    const version = process.env.VERSION ?? "latest";
 
     const ddApiKey = Secret.fromSecretNameV2(this, "DDApiKeySecret", "DdApiKeySecret-EAtKjZYFq40D");
-
-    const databaseConnectionParam = StringParameter.fromSecureStringParameterAttributes(
-      this,
-      "DatabaseConnectionParam",
-      {
-        parameterName: "/shared/database-connection",
-      },
-    );
 
     const jwtKey = StringParameter.fromSecureStringParameterAttributes(
       this,
@@ -88,12 +74,10 @@ export class KitchenStack extends Stack {
       serviceName,
       environment,
       version,
-      vpc,
       apiProps: {
         albListener,
         apiGateway: undefined
       },
-      databaseConnectionParam,
       datadogConfiguration,
       table
     };

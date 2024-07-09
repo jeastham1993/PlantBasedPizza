@@ -39,9 +39,9 @@ export class InstrumentedApiLambdaFunction extends Construct {
       handler: props.handler,
       memorySize: 512,
       environment: {
-        CONN_STRING_PARAM: props.sharedProps.databaseConnectionParam.parameterName,
         TABLE_NAME: props.sharedProps.table.tableName,
         JWT_SSM_PARAM: props.jwtKey.parameterName,
+        INTEGRATION_TEST_RUN: process.env.INTEGRATION_TEST ?? ""
       },
       bundling: {
         externalModules: ["graphql/language/visitor", "graphql/language/printer", "graphql/utilities"],
@@ -49,7 +49,6 @@ export class InstrumentedApiLambdaFunction extends Construct {
       },
     });
 
-    props.sharedProps.databaseConnectionParam.grantRead(this.function);
     const kmsAlias = Alias.fromAliasName(this, "SSMAlias", "aws/ssm");
     kmsAlias.grantDecrypt(this.function);
 
@@ -57,7 +56,6 @@ export class InstrumentedApiLambdaFunction extends Construct {
     Tags.of(this.function).add("env", props.sharedProps.environment);
     Tags.of(this.function).add("version", props.sharedProps.version);
 
-    props.sharedProps.datadogConfiguration.addLambdaFunctions([this.function]);
     props.jwtKey.grantRead(this.function);
 
     // TODO: Check to make sure this value is set IF NOT an integration test run
@@ -84,6 +82,10 @@ export class InstrumentedApiLambdaFunction extends Construct {
         methods: this.getHttpMethodFromString(props.methods),
         integration: lambdaIntegration,
       });
+    }
+
+    if (props.sharedProps.datadogConfiguration !== undefined){
+      props.sharedProps.datadogConfiguration.addLambdaFunctions([this.function]);
     }
   }
 

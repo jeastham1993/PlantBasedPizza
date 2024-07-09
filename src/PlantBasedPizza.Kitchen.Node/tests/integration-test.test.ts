@@ -1,62 +1,41 @@
-import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
-import { EventBridgeClient, PutEventsCommand } from "@aws-sdk/client-eventbridge";
+import { EventBridgeClient } from "@aws-sdk/client-eventbridge";
+import { CloudFormationClient } from "@aws-sdk/client-cloudformation";
 import { v4 as uuidv4 } from "uuid";
-import { KitchenRequestRepository } from "../src/adapters/kitchenRepository";
+import axios from "axios";
+import { TestDriver } from "./test-driver";
 
-const version = process.env.COMMIT_HASH ?? "latest";
+const version = process.env.VERSION ?? "latest";
 const eventBridgeClient = new EventBridgeClient();
-const dynamoDbClient = new DynamoDBClient();
-const kitchenRepository = new KitchenRequestRepository(dynamoDbClient, `kitchen-integration-test.${version}`)
-const busName = `kitchen-service.${version}`;
+const cloudFormationClient = new CloudFormationClient();
+const testDriver = new TestDriver(version, eventBridgeClient, cloudFormationClient);
 
 describe("EventHandling", () => {
   test("WhenOrderConfirmedEventPublishes_ShouldCreateNewKitchenRequest", async () => {
     //Arrange
     const orderIdentifier = uuidv4();
-    const eventToPublish = {
-      specversion: "1.0",
-      type: "order.orderConfirmed.v1",
-      source: "https://orders.plantbasedpizza/",
-      id: "7612394874",
-      time: "2024-07-01T14:00:00Z",
-      datacontenttype: "application/json",
-      data: {
-        OrderIdentifier: orderIdentifier,
-        Items: [
-          {
-            ItemName: "Fanta",
-            RecipeIdentifier: "6",
-          },
-        ],
-      },
-    };
 
-    //Act
-    const command = new PutEventsCommand({
-      Entries: [
-        {
-          Detail: JSON.stringify(eventToPublish),
-          DetailType: "order.orderConfirmed.v1",
-          EventBusName: busName,
-          Source: "https://orders.plantbasedpizza/",
-          Time: new Date(),
-        },
-      ],
-    });
+    await testDriver.publishOrderConfirmedEvent(orderIdentifier);
 
-    const ebResult = await eventBridgeClient.send(command);
+    let retries = 3;
+    let orderInDatabase = false;
 
-    // TODO: This could be a flaky test, if takes longer than 3 seconds.
-    // TODO: Implement a while loop to retry a few times to allow for slow throughput
-    await sleep(6000);
+    while (retries > 0){
+      await sleep(2000);
 
-    const orders = await kitchenRepository.getNew();
+      const newOrders = await testDriver.getNewOrders();
 
-    const orderInDatabase = orders.some(order => order.orderIdentifier === orderIdentifier);
+      orderInDatabase = newOrders.some(order => order.orderIdentifier === orderIdentifier);
+
+      if (orderInDatabase === true){
+        break;
+      }
+
+      retries--;
+    }
 
     //Assert
     expect(orderInDatabase).toBe(true);
-  }, 15000);
+  }, 10000);
 });
 
 async function sleep(ms: number): Promise<void> {

@@ -1,9 +1,7 @@
-import { RemovalPolicy, Stack, StackProps } from "aws-cdk-lib";
+import { CfnOutput, RemovalPolicy, Stack, StackProps } from "aws-cdk-lib";
 import { Secret } from "aws-cdk-lib/aws-secretsmanager";
 import { Construct } from "constructs";
 import { Datadog } from "datadog-cdk-constructs-v2";
-import { ApplicationListener } from "aws-cdk-lib/aws-elasticloadbalancingv2";
-import { Vpc } from "aws-cdk-lib/aws-ec2";
 import { EventBus } from "aws-cdk-lib/aws-events";
 import { StringParameter } from "aws-cdk-lib/aws-ssm";
 import { SharedProps } from "./constructs/sharedFunctionProps";
@@ -16,24 +14,30 @@ export class IntegrationTestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const vpcIdParam = StringParameter.valueFromLookup(this, "/shared/vpc-id");
     const environment = process.env.ENV ?? "test";
     const serviceName = "KitchenService";
-    const version = process.env.COMMIT_HASH ?? "latest";
+    const version = process.env.VERSION ?? "latest";
+    const ddSecretName = process.env.DD_API_KEY_SECRET_NAME ?? "";
 
-    const vpc = Vpc.fromLookup(this, "Vpc", {
-      vpcId: vpcIdParam,
-    });
+    var datadogConfiguration: Datadog | undefined = undefined;
 
-    const ddApiKey = Secret.fromSecretNameV2(this, "DDApiKeySecret", "DdApiKeySecret-EAtKjZYFq40D");
+    if (ddSecretName.length > 0){
+      const ddApiKey = Secret.fromSecretNameV2(this, "DDApiKeySecret", ddSecretName);
 
-    const databaseConnectionParam = StringParameter.fromSecureStringParameterAttributes(
-      this,
-      "DatabaseConnectionParam",
-      {
-        parameterName: "/shared/database-connection",
-      },
-    );
+      datadogConfiguration = new Datadog(this, "Datadog", {
+        nodeLayerVersion: 112,
+        extensionLayerVersion: 59,
+        site: "datadoghq.eu",
+        apiKeySecret: ddApiKey,
+        service: "KitchenService",
+        version: version,
+        env: environment,
+        enableColdStartTracing: true,
+        captureLambdaPayload: environment == "prod" ? false : true,
+        enableProfiling: true,
+        enableDatadogASM: true
+      });
+    }
 
     const jwtKey = StringParameter.fromSecureStringParameterAttributes(
       this,
@@ -45,18 +49,6 @@ export class IntegrationTestStack extends Stack {
 
     const eventBridge = new EventBus(this, "KitchenServiceTestBus", {
         eventBusName: `kitchen-service.${version}`
-    });
-
-    const datadogConfiguration = new Datadog(this, "Datadog", {
-      nodeLayerVersion: 112,
-      extensionLayerVersion: 58,
-      site: "datadoghq.eu",
-      apiKeySecret: ddApiKey,
-      service: "KitchenService",
-      version: process.env["COMMIT_HASH"] ?? "latest",
-      env: environment,
-      enableColdStartTracing: true,
-      captureLambdaPayload: process.env.ENV == "prod" ? false : true
     });
 
     const table = new Table(this, `KitchenDataTable${version}`, {
@@ -82,21 +74,17 @@ export class IntegrationTestStack extends Stack {
       }
     });
 
-    const httpApi = new HttpApi(this, "KitchenIntegrationTestApi", {
-
-});
+    const httpApi = new HttpApi(this, "KitchenIntegrationTestApi");
 
     const sharedProps: SharedProps = {
       serviceName,
       environment,
       version,
-      vpc,
       apiProps: {
         // Add API Gateway resource
         apiGateway: httpApi,
         albListener: undefined
       },
-      databaseConnectionParam,
       datadogConfiguration,
       table
     };
@@ -113,5 +101,10 @@ export class IntegrationTestStack extends Stack {
       table,
       bus: eventBridge
     });
+
+    const apiUrlOutput = new CfnOutput(this, "ApiUrlOutput", {
+      exportName: 'ApiUrl',
+      value: `${httpApi.url!}kitchen`
+    })
   }
 }

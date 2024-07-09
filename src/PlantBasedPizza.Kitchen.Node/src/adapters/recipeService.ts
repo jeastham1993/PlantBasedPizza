@@ -5,6 +5,19 @@ import { RecipeAdapter } from "./recipeAdapter";
 export class RecipeService implements IRecipeService {
     async getRecipe(recipeIdentifier: string): Promise<RecipeAdapter | undefined> {
         try{
+            if (process.env.INTEGRATION_TEST_RUN === "true"){
+                return {
+                    id: recipeIdentifier,
+                    name: 'Test recipe',
+                    category: 'Pizza',
+                    price: 5,
+                    ingredients:[{
+                        name: 'test',
+                        quantity: 1
+                    }]
+                }
+            }
+            
             const endpoint = `${process.env['RECIPE_API_ENDPOINT']}/recipes/${recipeIdentifier}`;
 
             console.log(`Querying '${endpoint}'`);

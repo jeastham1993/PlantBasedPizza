@@ -37,9 +37,9 @@ export class InstrumentedSqsLambdaFunction extends Construct {
       memorySize: 512,
       timeout: Duration.seconds(20),
       environment: {
-        CONN_STRING_PARAM: props.sharedProps.databaseConnectionParam.parameterName,
         RECIPE_API_ENDPOINT: 'https://api.dev.plantbasedpizza.net',
-        TABLE_NAME: props.sharedProps.table.tableName
+        TABLE_NAME: props.sharedProps.table.tableName,
+        INTEGRATION_TEST_RUN: process.env.INTEGRATION_TEST ?? ""
       },
       bundling: {
         externalModules: [
@@ -53,7 +53,6 @@ export class InstrumentedSqsLambdaFunction extends Construct {
 
     this.function.addEventSource(new SqsEventSource(props.queue));
 
-    props.sharedProps.databaseConnectionParam.grantRead(this.function);
     const kmsAlias = Alias.fromAliasName(this, "SSMAlias", "aws/ssm");
     kmsAlias.grantDecrypt(this.function);
 
@@ -61,6 +60,8 @@ export class InstrumentedSqsLambdaFunction extends Construct {
     Tags.of(this.function).add('env', props.sharedProps.environment);
     Tags.of(this.function).add('version', props.sharedProps.version);
 
-    props.sharedProps.datadogConfiguration.addLambdaFunctions([this.function]);
+    if (props.sharedProps.datadogConfiguration !== undefined){
+      props.sharedProps.datadogConfiguration.addLambdaFunctions([this.function]);
+    }
   }
 }

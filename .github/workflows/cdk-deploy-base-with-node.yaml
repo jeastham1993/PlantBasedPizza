@@ -57,7 +57,7 @@ jobs:
       - name: Deploy
         shell: bash
         env:
-          COMMIT_HASH: ${{ env.sha_short }}
+          VERSION: ${{ env.sha_short }}
           ENV: ${{inputs.environment}}
           DD_API_KEY: ${{secrets.dd-api-key}}
         run: |

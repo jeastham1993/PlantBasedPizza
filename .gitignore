@@ -301,3 +301,5 @@ src/.DS_Store
 
 **/*.d.ts
 src/PlantBasedPizza.Kitchen.Node/**/*.js
+
+**/.env

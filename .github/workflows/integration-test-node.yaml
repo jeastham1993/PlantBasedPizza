@@ -54,19 +54,14 @@ jobs:
         shell: bash
         run: |
           echo "sha_short=$(git rev-parse --short "$GITHUB_SHA")" >> "$GITHUB_ENV"
-          echo "BUILD_VERSION=${{ env.sha_short }}" >> $GITHUB_ENV
       - name:
         run: |
-          echo "REGISTRY=${{secrets.ecr-registry}}" >> $GITHUB_ENV
-          echo "IMAGE_TAG=$(git rev-parse --short "$GITHUB_SHA")" >> $GITHUB_ENV
           echo "DD_API_KEY=${{secrets.dd_api_key}}" >> $GITHUB_ENV
-          echo "BUILD_VERSION=${{ env.sha_short }}" >> $GITHUB_ENV
       - name: Deploy Test Infrastructure
         shell: bash
         env:
-          COMMIT_HASH: ${{ env.sha_short }}
-          ENV: ${{inputs.environment}}
-          BUILD_VERSION: "${{ env.sha_short }}"
+          VERSION: ${{ env.sha_short }}
+          ENV: ${{ env.sha_short }}
         run: |
           cd ${{ inputs.test-infrastructure-folder }}
           cdk deploy ${{inputs.stack-name}}-${{ env.sha_short }} --region eu-west-1 --require-approval never
@@ -75,9 +70,8 @@ jobs:
           DD_CIVISIBILITY_AGENTLESS_ENABLED: true
           DD_API_KEY: ${{secrets.dd_api_key}}
           DD_SITE: datadoghq.eu
-          BUILD_VERSION: ${{ env.sha_short }}
-          COMMIT_HASH: ${{ env.sha_short }}
-          ENV: ${{inputs.environment}}
+          VERSION: ${{ env.sha_short }}
+          ENV: ${{ env.sha_short }}
           AWS_ACCESS_KEY_ID: ${{env.AWS_ACCESS_KEY_ID}}
           AWS_SECRET_ACCESS_KEY: ${{env.AWS_SECRET_ACCESS_KEY}}
           AWS_SESSION_TOKEN: ${{env.AWS_SESSION_TOKEN}}
@@ -89,9 +83,8 @@ jobs:
         if: always()
         shell: bash
         env:
-          COMMIT_HASH: ${{ env.sha_short }}
-          ENV: ${{inputs.environment}}
-          BUILD_VERSION: ${{ env.sha_short }}
+          VERSION: ${{ env.sha_short }}
+          ENV: ${{ env.sha_short }}
         run: |
           cd ${{ inputs.test-infrastructure-folder }}
           cdk destroy ${{inputs.stack-name}}-${{ env.sha_short }} --region eu-west-1 --force
