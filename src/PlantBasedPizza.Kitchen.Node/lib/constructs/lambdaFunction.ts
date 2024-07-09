@@ -46,7 +46,8 @@ export class InstrumentedApiLambdaFunction extends Construct {
       environment: {
         CONN_STRING_PARAM: props.sharedProps.databaseConnectionParam.parameterName,
         TABLE_NAME: props.sharedProps.table.tableName,
-        JWT_SSM_PARAM: props.jwtKey.parameterName
+        JWT_SSM_PARAM: props.jwtKey.parameterName,
+        DD_IAST_ENABLED: "true"
       },
       bundling: {
         externalModules: [

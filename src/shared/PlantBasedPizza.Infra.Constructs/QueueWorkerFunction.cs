@@ -41,6 +41,7 @@ public class QueueWorkerFunction : Construct
             { "DD_SITE", "datadoghq.eu" },
             { "DD_GIT_COMMIT_SHA", props.CommitHash},
             { "DD_GIT_REPOSITORY_URL", "https://github.com/jeastham1993/PlantBasedPizza"},
+            {"DD_IAST_ENABLED": "true"}
         };
         
         Function = new DotNetFunction(this, id,

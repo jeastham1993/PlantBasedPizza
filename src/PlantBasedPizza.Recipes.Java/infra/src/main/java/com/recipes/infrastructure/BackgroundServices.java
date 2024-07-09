@@ -34,6 +34,7 @@ public class BackgroundServices extends Construct {
         lambdaEnvironment.put("DD_API_KEY_SECRET_ARN", props.getDatadogKeyParameter().getSecretArn());
         lambdaEnvironment.put("DB_PARAMETER_NAME", props.getDbConnectionParameter().getParameterName());
         lambdaEnvironment.put("spring_cloud_function_routingExpression", "handleOrderConfirmedEvent");
+        lambdaEnvironment.put("DD_IAST_ENABLED", "true");
 
         // Uploaded to Amazon S3 as-is
         Asset fileAsset = Asset.Builder.create(this, "LambdaFunctionJarS3Asset")

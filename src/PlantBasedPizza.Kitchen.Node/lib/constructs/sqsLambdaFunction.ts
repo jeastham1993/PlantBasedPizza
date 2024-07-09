@@ -39,7 +39,8 @@ export class InstrumentedSqsLambdaFunction extends Construct {
       environment: {
         CONN_STRING_PARAM: props.sharedProps.databaseConnectionParam.parameterName,
         RECIPE_API_ENDPOINT: 'https://api.dev.plantbasedpizza.net',
-        TABLE_NAME: props.sharedProps.table.tableName
+        TABLE_NAME: props.sharedProps.table.tableName,
+        DD_IAST_ENABLED: "true"
       },
       bundling: {
         externalModules: [

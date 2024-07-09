@@ -56,7 +56,8 @@ public class BackgroundService : Construct
             { "ENV", props.Environment},
             { "DD_ENV", props.Environment},
             { "service", props.ServiceName},
-            { "DD_VERSION", props.Tag}
+            { "DD_VERSION", props.Tag},
+            {"DD_IAST_ENABLED": "true"}
         };
         var baseSecrets = new Dictionary<string, Secret>()
         {
