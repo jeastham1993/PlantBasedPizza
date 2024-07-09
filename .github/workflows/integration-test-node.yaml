@@ -69,6 +69,13 @@ jobs:
         run: |
           cd ${{ inputs.test-infrastructure-folder }}
           cdk deploy ${{inputs.stack-name}}-${{ env.sha_short }} --region eu-west-1 --require-approval never
+      - name: Configure Datadog Test Visibility
+        uses: datadog/test-visibility-github-action@v1.0.2
+        with:
+          languages: js
+          service-name: ${{inputs.service-name}}
+          api-key: ${{ secrets.dd_api_key }}
+          site: EU1
       - name: Run Integration Tests
         env:
           DD_CIVISIBILITY_AGENTLESS_ENABLED: true
