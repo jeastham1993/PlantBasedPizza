@@ -23,6 +23,8 @@ on:
           required: true
       dd_api_key:
           required: true
+      dd_api_key_secret_name:
+          required: true
 
 permissions:
   id-token: write
@@ -62,6 +64,8 @@ jobs:
         env:
           VERSION: ${{ env.sha_short }}
           ENV: ${{ env.sha_short }}
+          INTEGRATION_TEST_RUN: "true"
+          DD_API_KEY_SECRET_NAME: ${{secrets.dd_api_key_secret_name}}
         run: |
           cd ${{ inputs.test-infrastructure-folder }}
           cdk deploy ${{inputs.stack-name}}-${{ env.sha_short }} --region eu-west-1 --require-approval never

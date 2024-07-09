@@ -28,6 +28,7 @@ jobs:
       deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
       ecr-registry: ${{secrets.ECR_REGISTRY}}
       dd_api_key: ${{secrets.DD_API_KEY}}
+      dd_api_key_secret_name: ${{secrets.DD_API_KEY_SECRET_NAME}}
   deploy-to-dev:
     uses: jeastham1993/PlantBasedPizza/.github/workflows/cdk-deploy-base-with-node.yaml@main
     needs:
