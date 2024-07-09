@@ -76,6 +76,8 @@ jobs:
           DD_API_KEY: ${{secrets.dd_api_key}}
           DD_SITE: datadoghq.eu
           BUILD_VERSION: ${{ env.sha_short }}
+          COMMIT_HASH: ${{ env.sha_short }}
+          ENV: ${{inputs.environment}}
           AWS_ACCESS_KEY_ID: ${{env.AWS_ACCESS_KEY_ID}}
           AWS_SECRET_ACCESS_KEY: ${{env.AWS_SECRET_ACCESS_KEY}}
           AWS_SESSION_TOKEN: ${{env.AWS_SESSION_TOKEN}}

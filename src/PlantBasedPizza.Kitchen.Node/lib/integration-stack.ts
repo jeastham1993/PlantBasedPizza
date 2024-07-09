@@ -1,4 +1,4 @@
-import { Stack, StackProps } from "aws-cdk-lib";
+import { RemovalPolicy, Stack, StackProps } from "aws-cdk-lib";
 import { Secret } from "aws-cdk-lib/aws-secretsmanager";
 import { Construct } from "constructs";
 import { Datadog } from "datadog-cdk-constructs-v2";
@@ -67,6 +67,7 @@ export class IntegrationTestStack extends Stack {
         name: 'PK',
         type: AttributeType.STRING
       },
+      removalPolicy: RemovalPolicy.DESTROY
     });
     table.addGlobalSecondaryIndex({
       indexName: 'GSI1',
