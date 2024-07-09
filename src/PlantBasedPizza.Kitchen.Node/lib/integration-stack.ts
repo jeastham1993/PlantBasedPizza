@@ -103,7 +103,7 @@ export class IntegrationTestStack extends Stack {
     });
 
     const apiUrlOutput = new CfnOutput(this, "ApiUrlOutput", {
-      exportName: 'ApiUrl',
+      exportName: `ApiUrl-${version}`,
       value: `${httpApi.url!}kitchen`
     })
   }

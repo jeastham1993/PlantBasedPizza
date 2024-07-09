@@ -76,7 +76,7 @@ export class TestDriver {
     const command = new DescribeStacksCommand(input);
     const stackObj = await this.cloudFormationClient.send(command);
 
-    this.apiUrl = stackObj?.Stacks?.[0]?.Outputs?.find((item) => item.ExportName === "ApiUrl")?.OutputValue;
+    this.apiUrl = stackObj?.Stacks?.[0]?.Outputs?.find((item) => item.ExportName === `ApiUrl-${this.version}`)?.OutputValue;
 
     if (!this.apiUrl) {
       throw new Error("Missing required resources");
