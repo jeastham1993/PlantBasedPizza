@@ -1,26 +1,43 @@
-import { Stack, StackProps } from "aws-cdk-lib";
+import { CfnOutput, RemovalPolicy, Stack, StackProps } from "aws-cdk-lib";
 import { Secret } from "aws-cdk-lib/aws-secretsmanager";
 import { Construct } from "constructs";
 import { Datadog } from "datadog-cdk-constructs-v2";
-import { ApplicationListener } from "aws-cdk-lib/aws-elasticloadbalancingv2";
 import { EventBus } from "aws-cdk-lib/aws-events";
 import { StringParameter } from "aws-cdk-lib/aws-ssm";
 import { SharedProps } from "./constructs/sharedFunctionProps";
 import { AttributeType, BillingMode, ProjectionType, Table, TableClass } from "aws-cdk-lib/aws-dynamodb";
 import { Api } from "./api";
 import { BackgroundWorker } from "./backgroundWorkers";
+import { HttpApi } from "aws-cdk-lib/aws-apigatewayv2";
 
-export class KitchenStack extends Stack {
+export class IntegrationTestStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const albArnParam = StringParameter.valueFromLookup(this, "/shared/alb-arn");
-    const albListenerParam = StringParameter.valueFromLookup(this, "/shared/alb-listener");
     const environment = process.env.ENV ?? "test";
     const serviceName = "KitchenService";
     const version = process.env.VERSION ?? "latest";
+    const ddSecretName = process.env.DD_API_KEY_SECRET_NAME ?? "";
 
-    const ddApiKey = Secret.fromSecretNameV2(this, "DDApiKeySecret", "DdApiKeySecret-EAtKjZYFq40D");
+    var datadogConfiguration: Datadog | undefined = undefined;
+
+    if (ddSecretName.length > 0){
+      const ddApiKey = Secret.fromSecretNameV2(this, "DDApiKeySecret", ddSecretName);
+
+      datadogConfiguration = new Datadog(this, "Datadog", {
+        nodeLayerVersion: 112,
+        extensionLayerVersion: 59,
+        site: "datadoghq.eu",
+        apiKeySecret: ddApiKey,
+        service: "KitchenService",
+        version: version,
+        env: environment,
+        enableColdStartTracing: true,
+        captureLambdaPayload: environment == "prod" ? false : true,
+        enableProfiling: true,
+        enableDatadogASM: true
+      });
+    }
 
     const jwtKey = StringParameter.fromSecureStringParameterAttributes(
       this,
@@ -30,32 +47,19 @@ export class KitchenStack extends Stack {
       },
     );
 
-    const eventBridge = EventBus.fromEventBusName(this, "SharedEventBus", "PlantBasedPizzaEvents");
-
-    const datadogConfiguration = new Datadog(this, "Datadog", {
-      nodeLayerVersion: 112,
-      extensionLayerVersion: 58,
-      site: "datadoghq.eu",
-      apiKeySecret: ddApiKey,
-      service: "KitchenService",
-      version: process.env["COMMIT_HASH"] ?? "latest",
-      env: environment,
-      enableColdStartTracing: true,
-      captureLambdaPayload: process.env.ENV == "prod" ? false : true
+    const eventBridge = new EventBus(this, "KitchenServiceTestBus", {
+        eventBusName: `kitchen-service.${version}`
     });
 
-    const albListener = ApplicationListener.fromLookup(this, "SharedHttpListener", {
-      loadBalancerArn: albArnParam,
-      listenerArn: albListenerParam,
-    });
-
-    const table = new Table(this, "KitchenDataTable", {
+    const table = new Table(this, `KitchenDataTable${version}`, {
+      tableName: `kitchen-integration-test.${version}`,
       tableClass: TableClass.STANDARD,
       billingMode: BillingMode.PAY_PER_REQUEST,
       partitionKey: {
         name: 'PK',
         type: AttributeType.STRING
       },
+      removalPolicy: RemovalPolicy.DESTROY
     });
     table.addGlobalSecondaryIndex({
       indexName: 'GSI1',
@@ -70,13 +74,16 @@ export class KitchenStack extends Stack {
       }
     });
 
+    const httpApi = new HttpApi(this, "KitchenIntegrationTestApi");
+
     const sharedProps: SharedProps = {
       serviceName,
       environment,
       version,
       apiProps: {
-        albListener,
-        apiGateway: undefined
+        // Add API Gateway resource
+        apiGateway: httpApi,
+        albListener: undefined
       },
       datadogConfiguration,
       table
@@ -94,5 +101,10 @@ export class KitchenStack extends Stack {
       table,
       bus: eventBridge
     });
+
+    const apiUrlOutput = new CfnOutput(this, "ApiUrlOutput", {
+      exportName: `ApiUrl-${version}`,
+      value: `${httpApi.url!}kitchen`
+    })
   }
 }

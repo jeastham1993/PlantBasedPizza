@@ -17,7 +17,8 @@
     "inlineSources": true,
     "experimentalDecorators": true,
     "strictPropertyInitialization": false,
-    "typeRoots": ["./node_modules/@types"]
+    "types": ["jest", "node"],
+    "skipLibCheck": true,
   },
   "exclude": ["node_modules", "infra/node_modules", "cdk.out"]
 }

@@ -1,0 +1,103 @@
+name: Integration Test Base Workflow
+
+on:
+  workflow_call:
+    inputs:
+      service-name:
+          required: true
+          type: string
+      integration-test-folder:
+          required: true
+          type: string
+      test-infrastructure-folder:
+          required: true
+          type: string
+      stack-name:
+          required: true
+          type: string
+    secrets:
+      deploy-role-arn:
+        description: 'The role for the AWS IAM role to use for deployment'
+        required: true
+      ecr-registry:
+          required: true
+      dd_api_key:
+          required: true
+      dd_api_key_secret_name:
+          required: true
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v4
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-1
+          role-to-assume: ${{secrets.deploy-role-arn}}
+          role-session-name: GitHubActionsSession
+      - name: Install dependencies
+        shell: bash
+        run: |
+          cd ${{ inputs.test-infrastructure-folder }}
+          npm install
+      - name: Install cdk
+        shell: bash
+        run: |
+          npm install -g aws-cdk 
+      - name: Set Commit Hash Environment Variables
+        shell: bash
+        run: |
+          echo "sha_short=$(git rev-parse --short "$GITHUB_SHA")" >> "$GITHUB_ENV"
+      - name:
+        run: |
+          echo "DD_API_KEY=${{secrets.dd_api_key}}" >> $GITHUB_ENV
+      - name: Deploy Test Infrastructure
+        shell: bash
+        env:
+          VERSION: ${{ env.sha_short }}
+          ENV: ${{ env.sha_short }}
+          INTEGRATION_TEST: "true"
+          DD_API_KEY_SECRET_NAME: ${{secrets.dd_api_key_secret_name}}
+        run: |
+          cd ${{ inputs.test-infrastructure-folder }}
+          cdk deploy ${{inputs.stack-name}}-${{ env.sha_short }} --region eu-west-1 --require-approval never
+      - name: Configure Datadog Test Visibility
+        uses: datadog/test-visibility-github-action@v1.0.2
+        with:
+          languages: js
+          service-name: ${{inputs.service-name}}
+          api-key: ${{ secrets.dd_api_key }}
+          site: EU1
+      - name: Run Integration Tests
+        env:
+          DD_CIVISIBILITY_AGENTLESS_ENABLED: true
+          DD_API_KEY: ${{secrets.dd_api_key}}
+          DD_SITE: datadoghq.eu
+          VERSION: ${{ env.sha_short }}
+          ENV: ${{ env.sha_short }}
+          AWS_ACCESS_KEY_ID: ${{env.AWS_ACCESS_KEY_ID}}
+          AWS_SECRET_ACCESS_KEY: ${{env.AWS_SECRET_ACCESS_KEY}}
+          AWS_SESSION_TOKEN: ${{env.AWS_SESSION_TOKEN}}
+          NODE_OPTIONS: -r $DD_TRACE_PACKAGE
+        run: |
+          cd ${{inputs.integration-test-folder}}
+          npm run build
+          npm run test -t integration-test
+      - name: Tear down test infrastructure
+        if: always()
+        shell: bash
+        env:
+          VERSION: ${{ env.sha_short }}
+          ENV: ${{ env.sha_short }}
+        run: |
+          cd ${{ inputs.test-infrastructure-folder }}
+          cdk destroy ${{inputs.stack-name}}-${{ env.sha_short }} --region eu-west-1 --force
+          

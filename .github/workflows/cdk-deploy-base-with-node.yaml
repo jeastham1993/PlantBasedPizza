@@ -12,6 +12,9 @@ on:
       project-root:
           required: true
           type: string
+      stack-name:
+          required: true
+          type: string
     secrets:
       deploy-role-arn:
         description: 'The role for the AWS IAM role to use for deployment'
@@ -54,9 +57,9 @@ jobs:
       - name: Deploy
         shell: bash
         env:
-          COMMIT_HASH: ${{ env.sha_short }}
+          VERSION: ${{ env.sha_short }}
           ENV: ${{inputs.environment}}
           DD_API_KEY: ${{secrets.dd-api-key}}
         run: |
           cd ${{ inputs.cdk-folder }}
-          cdk deploy --region eu-west-1 --require-approval never
+          cdk deploy ${{inputs.stack-name}} --region eu-west-1 --require-approval never 

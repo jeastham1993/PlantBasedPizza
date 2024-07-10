@@ -9,21 +9,7 @@ on:
       project-root:
           required: true
           type: string
-      build-directory:
-          required: true
-          type: string
-      image-name:
-          required: true
-          type: string
-      dockerfile:
-          required: true
-          type: string
     secrets:
-      deploy-role-arn:
-        description: 'The role for the AWS IAM role to use for deployment'
-        required: true
-      ecr-registry:
-          required: true
       dd_api_key:
           required: true
       dd_app_key:

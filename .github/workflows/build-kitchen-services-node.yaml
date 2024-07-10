@@ -6,7 +6,10 @@ on:
         - main
       paths:
         - .github/workflows/build-kitchen-services-node.yaml
-        - src/PlantBasedPizza.Kitchen.Node/**
+        - src/PlantBasedPizza.Kitchen.Node/bin/**
+        - src/PlantBasedPizza.Kitchen.Node/lib/**
+        - src/PlantBasedPizza.Kitchen.Node/src/**
+        - src/PlantBasedPizza.Kitchen.Node/tests/**
     workflow_dispatch:
 
 permissions:
@@ -14,8 +17,32 @@ permissions:
   contents: read
 
 jobs:
+  static-analysis:
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/static-analysis.yaml@main
+    with:
+      service-name: "KitchenService"
+      project-root: src/PlantBasedPizza.Kitchen.Node
+    secrets:
+      dd_api_key: ${{secrets.DD_API_KEY}}
+      dd_app_key: ${{secrets.DD_APP_KEY}}
+  integration-test:
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/integration-test-node.yaml@main
+    needs:
+      - static-analysis
+    with:
+      service-name: "KitchenService"
+      integration-test-folder: src/PlantBasedPizza.Kitchen.Node
+      test-infrastructure-folder: src/PlantBasedPizza.Kitchen.Node
+      stack-name: KitchenTestStack
+    secrets:
+      deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
+      ecr-registry: ${{secrets.ECR_REGISTRY}}
+      dd_api_key: ${{secrets.DD_API_KEY}}
+      dd_api_key_secret_name: ${{secrets.DD_API_KEY_SECRET_NAME}}
   deploy-to-dev:
     uses: jeastham1993/PlantBasedPizza/.github/workflows/cdk-deploy-base-with-node.yaml@main
+    needs:
+      - integration-test
     concurrency:
       group: kitchen-node-dev-deploy
       cancel-in-progress: false
@@ -23,6 +50,7 @@ jobs:
       cdk-folder: "src/PlantBasedPizza.Kitchen.Node"
       project-root: "src/PlantBasedPizza.Kitchen.Node"
       environment: "dev"
+      stack-name: "KitchenStack"
     secrets:
       deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
       dd-api-key: ${{secrets.DD_API_KEY}}
