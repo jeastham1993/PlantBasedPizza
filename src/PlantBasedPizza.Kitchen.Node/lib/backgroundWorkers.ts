@@ -5,6 +5,7 @@ import { ITable } from "aws-cdk-lib/aws-dynamodb";
 import { EventQueue } from "./constructs/eventQueue";
 import { InstrumentedSqsLambdaFunction } from "./constructs/sqsLambdaFunction";
 import { SqsEventSource } from "aws-cdk-lib/aws-lambda-event-sources";
+import { Tags } from "aws-cdk-lib";
 
 export interface BackgroundWorkerProps {
   sharedProps: SharedProps;
@@ -38,5 +39,7 @@ export class BackgroundWorker extends Construct {
     props.bus.grantPutEventsTo(orderConfirmedHandler.function);
 
     props.table.grantReadWriteData(orderConfirmedHandler.function);
+
+    Tags.of(this).add("plantbasedpizza:application", "KitchenBackgroundWorker");
   }
 }

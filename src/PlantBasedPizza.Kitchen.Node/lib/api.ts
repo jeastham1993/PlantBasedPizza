@@ -4,6 +4,7 @@ import { InstrumentedApiLambdaFunction } from "./constructs/lambdaFunction";
 import { IEventBus } from "aws-cdk-lib/aws-events";
 import { ITable } from "aws-cdk-lib/aws-dynamodb";
 import { IStringParameter, StringParameter } from "aws-cdk-lib/aws-ssm";
+import { Tags } from "aws-cdk-lib";
 
 export interface ApiProps {
   sharedProps: SharedProps;
@@ -122,5 +123,7 @@ export class Api extends Construct {
     props.table.grantReadData(getBakingFunction.function);
     props.table.grantReadData(getPrepCompleteFunction.function);
     props.table.grantReadData(getNewFunction.function);
+
+    Tags.of(this).add("plantbasedpizza:application", "KitchenApi");
   }
 }

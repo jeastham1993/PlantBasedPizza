@@ -13,6 +13,7 @@ import { SharedProps } from "./sharedFunctionProps";
 import { Queue } from "aws-cdk-lib/aws-sqs";
 import { IEventBus, Rule } from "aws-cdk-lib/aws-events";
 import { SqsQueue } from "aws-cdk-lib/aws-events-targets";
+import { AccountPrincipal, AnyPrincipal, Effect, PolicyStatement } from "aws-cdk-lib/aws-iam";
 
 export interface EventQueueProps {
   sharedProps: SharedProps
@@ -44,13 +45,8 @@ export class EventQueue extends Construct {
         deadLetterQueue: {
             maxReceiveCount: 3,
             queue: this.deadLetterQueue
-        }
+        },
     });
-
-    Tags.of(this.deadLetterQueue).add("service", props.sharedProps.serviceName);
-    Tags.of(this.deadLetterQueue).add("env", props.sharedProps.environment);
-    Tags.of(this.queue).add("service", props.sharedProps.serviceName);
-    Tags.of(this.queue).add("env", props.sharedProps.environment);
 
     const rule = new Rule(this, `${props.queueName}Rule`, {
         eventBus: props.bus
