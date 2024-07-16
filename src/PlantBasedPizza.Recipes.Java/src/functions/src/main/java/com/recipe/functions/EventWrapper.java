@@ -3,6 +3,7 @@ package com.recipe.functions;
 import com.amazonaws.services.lambda.runtime.events.SQSEvent;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.recipe.core.RecipeCreatedEventV1;
 import com.recipe.functions.events.OrderConfirmedEvent;
 import io.cloudevents.CloudEvent;
 import io.cloudevents.core.data.PojoCloudEventData;
@@ -50,6 +51,14 @@ public class EventWrapper {
                 this.event,
                 PojoCloudEventDataMapper.from(this.mapper, OrderConfirmedEvent.class));
         
+        return cloudEventData.getValue();
+    }
+
+    public RecipeCreatedEventV1 AsRecipeCreatedEvent() {
+        PojoCloudEventData<RecipeCreatedEventV1> cloudEventData = mapData(
+                this.event,
+                PojoCloudEventDataMapper.from(this.mapper, RecipeCreatedEventV1.class));
+
         return cloudEventData.getValue();
     }
 
