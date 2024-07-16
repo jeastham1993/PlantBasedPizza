@@ -1,6 +1,7 @@
 package com.recipe.functions;
 import com.amazonaws.services.lambda.runtime.events.SQSEvent;
 import com.amazonaws.services.lambda.runtime.events.SQSBatchResponse;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.recipe.core.RecipeCreatedEventV1;
@@ -27,6 +28,13 @@ public class FunctionConfiguration{
     public FunctionConfiguration(IEventHandlerService eventHandlerService){
         this.eventHandlerService = eventHandlerService;
         this.objectMapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true);
+    }
+
+    @Bean
+    public ObjectMapper getObjectMapper() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        return objectMapper;
     }
     
     ObjectMapper objectMapper = new ObjectMapper();
