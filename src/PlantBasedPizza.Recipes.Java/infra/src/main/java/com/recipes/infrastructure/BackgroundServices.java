@@ -33,7 +33,6 @@ public class BackgroundServices extends Construct {
         lambdaEnvironment.put("DD_VERSION", props.getSharedProps().getVersion());
         lambdaEnvironment.put("DD_API_KEY_SECRET_ARN", props.getDatadogKeyParameter().getSecretArn());
         lambdaEnvironment.put("DB_PARAMETER_NAME", props.getDbConnectionParameter().getParameterName());
-        lambdaEnvironment.put("spring_cloud_function_routingExpression", "handleOrderConfirmedEvent");
         lambdaEnvironment.put("DD_IAST_ENABLED", "true");
 
         // Uploaded to Amazon S3 as-is
@@ -45,13 +44,17 @@ public class BackgroundServices extends Construct {
 //        layers.add(LayerVersion.fromLayerVersionArn(this, "DatadogLambdaExtension", "arn:aws:lambda:eu-west-1:464622532012:layer:Datadog-Extension:59"));
 
         IBucket bucket = Bucket.fromBucketName(this, "CDKBucket", fileAsset.getS3BucketName());
+
+        Map<String, String> orderConfirmedEnvironmentVariables = new HashMap<>();
+        orderConfirmedEnvironmentVariables.put("spring_cloud_function_routingExpression", "handleOrderConfirmedEvent");
+        orderConfirmedEnvironmentVariables.putAll(lambdaEnvironment);
         
         // Create our basic function
         Function orderConfirmedHandlerFunction = Function.Builder.create(this,"OrderConfirmedHandler")
                 .runtime(Runtime.JAVA_21)
                 .memorySize(2048)
                 .handler("org.springframework.cloud.function.adapter.aws.FunctionInvoker::handleRequest")
-                .environment(lambdaEnvironment)
+                .environment(orderConfirmedEnvironmentVariables)
                 .timeout(Duration.seconds(30))
                 .code(Code.fromBucket(bucket, fileAsset.getS3ObjectKey()))
                 .layers(layers)
@@ -65,5 +68,35 @@ public class BackgroundServices extends Construct {
         props.getDbConnectionParameter().grantRead(orderConfirmedHandlerFunction);
 
         orderConfirmedHandlerFunction.addEventSource(new SqsEventSource(orderConfirmedQueue.getQueue()));
+
+        Map<String, String> recipeCreatedEnvironmentVariables = new HashMap<>();
+        recipeCreatedEnvironmentVariables.put("spring_cloud_function_routingExpression", "handleRecipeCreatedEvent");
+        recipeCreatedEnvironmentVariables.put("MOMENTO_API_KEY", props.getMomentoApiKey().getStringValue());
+        recipeCreatedEnvironmentVariables.put("CACHE_NAME", "plant-based-pizza-recipes");
+        recipeCreatedEnvironmentVariables.putAll(lambdaEnvironment);
+
+        // Create our basic function
+        Function recipeCreatedHandlerFunction = Function.Builder.create(this,"RecipeCreatedHandler")
+                .runtime(Runtime.JAVA_21)
+                .memorySize(2048)
+                .handler("org.springframework.cloud.function.adapter.aws.FunctionInvoker::handleRequest")
+                .environment(recipeCreatedEnvironmentVariables)
+                .timeout(Duration.seconds(30))
+                .code(Code.fromBucket(bucket, fileAsset.getS3ObjectKey()))
+                .layers(layers)
+                .build();
+
+        Tags.of(recipeCreatedHandlerFunction).add("env", props.getSharedProps().getEnvironment());
+        Tags.of(recipeCreatedHandlerFunction).add("service", props.getSharedProps().getServiceName());
+        Tags.of(recipeCreatedHandlerFunction).add("version", props.getSharedProps().getVersion());
+
+        props.getDatadogKeyParameter().grantRead(recipeCreatedHandlerFunction);
+        props.getDbConnectionParameter().grantRead(recipeCreatedHandlerFunction);
+        props.getMomentoApiKey().grantRead(recipeCreatedHandlerFunction);
+
+        EventQueueProps recipeCreatedQueueProps = new EventQueueProps(props.getSharedProps(), props.getBus(), "https://recipes.plantbasedpizza/", "recipe.recipeCreated.v1", "Recipes-RecipeCreatedEvent");
+        EventQueue recipeCreatedQueue = new EventQueue(this, "RecipeCreatedQueueProps", recipeCreatedQueueProps);
+
+        recipeCreatedHandlerFunction.addEventSource(new SqsEventSource(recipeCreatedQueue.getQueue()));
     }
 }
