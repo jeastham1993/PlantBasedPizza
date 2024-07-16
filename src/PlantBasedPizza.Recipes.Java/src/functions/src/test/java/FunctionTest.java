@@ -17,6 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class FunctionTest {
     private final String data = "{\"version\":\"0\",\"id\":\"440f76ac-7d40-6e9f-288f-f28de28c6c12\",\"detail-type\":\"test\",\"source\":\"test\",\"account\":\"730335273443\",\"time\":\"2024-07-05T15:06:22Z\",\"region\":\"eu-west-1\",\"resources\":[],\"detail\":{\"specversion\":\"1.0\",\"type\":\"com.example.someevent\",\"source\":\"/mycontext\",\"id\":\"A234-1234-1234\",\"time\":\"2018-04-05T17:31:00Z\",\"comexampleextension1\":\"value\",\"comexampleothervalue\":5,\"datacontenttype\":\"application/json\",\"ddtraceid\":\"123456\",\"ddspanid\":\"789019\",\"data\":{\"OrderIdentifier\":\"ORDER\", \"Items\":[{\"RecipeIdentifier\":\"1\"}]}}}";
+    private final String recipeCreatedEventData = "{\"version\":\"0\",\"id\":\"440f76ac-7d40-6e9f-288f-f28de28c6c12\",\"detail-type\":\"test\",\"source\":\"test\",\"account\":\"730335273443\",\"time\":\"2024-07-05T15:06:22Z\",\"region\":\"eu-west-1\",\"resources\":[],\"detail\":{\"specversion\":\"1.0\",\"type\":\"com.example.someevent\",\"source\":\"/mycontext\",\"id\":\"A234-1234-1234\",\"time\":\"2018-04-05T17:31:00Z\",\"comexampleextension1\":\"value\",\"comexampleothervalue\":5,\"datacontenttype\":\"application/json\",\"ddtraceid\":\"123456\",\"ddspanid\":\"789019\",\"data\":{\"recipeId\":17}}}";
 
     @Mock
     private IRecipeRepository recipeRepository;
@@ -73,6 +74,26 @@ public class FunctionTest {
 
         boolean response = this.configuration.processOrderConfirmedMessage(message);
         
+        assertThat(response).isEqualTo(true);
+    }
+
+    @Test
+    public void GivenRecipeCreatedFunctionExecutes_ShouldReturnSuccess()
+    {
+        Mockito.when(recipeRepository.findById(17L)).thenReturn(Optional.of(new Recipe()));
+
+        SQSEvent.SQSMessage message = new SQSEvent.SQSMessage();
+        message.setBody(recipeCreatedEventData);
+        message.setMessageId("Hello2");
+
+        ArrayList<SQSEvent.SQSMessage> messages = new ArrayList<>(1);
+        messages.add(message);
+
+        SQSEvent evt = new SQSEvent();
+        evt.setRecords(messages);
+
+        boolean response = this.configuration.processRecipeCreatedEvent(message);
+
         assertThat(response).isEqualTo(true);
     }
 }

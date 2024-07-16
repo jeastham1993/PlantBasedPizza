@@ -1,0 +1,21 @@
+{
+  "Records": [
+    {
+      "messageId": "cef26cd0-ef7f-405e-868a-e707c5ba5d2b",
+      "receiptHandle": "AQEBXVtflujUw2Z7wALl62TwDxBmXw5zCuCJejbeArDcKPAj2jwObdjMQoRcUS3196N8ywNCGDUdbC7ln4iHpWc+1AluRsTukJ6nF7yQKi3nHpfXkGhYhmfUimnpeCcAGi0WOsICjTS2NZn+S2955Kfwul0XRq++hH678aE8LniUlXg4AFdOcjYcrubG/GV6y72gjzfKUj9p0B8Bm2IaSt/qgadlxtFUMNlsheRiHflLL83QziWqQurAiRJleQmmXUPKMGai0q/NO+oArVF9y6EWVcTlykbKAlvobth7tt5oKnlCwQdprxus3YQNSabTrbuZOAOgSn5k5UgXaRcaZiR/xLfE77/vd1jAZaZgeiOwg9xkPjRtdYkPKAHsvd55NWp8qcNrPbxTh3UT1hDApoDhhBJC0aMyxx77XD7YutWRmvE=",
+      "body": "{\"version\":\"0\",\"id\":\"8afac91c-4cad-0e22-d871-5736bfc6a8b8\",\"detail-type\":\"recipe.recipeCreated.v1\",\"source\":\"https://recipes.plantbasedpizza\",\"account\":\"730335273443\",\"time\":\"2024-07-16T14:42:05Z\",\"region\":\"eu-west-1\",\"resources\":[],\"detail\":{\"specversion\":\"0.3\",\"id\":\"16ab8597-0f83-4352-bcae-87baee6ca0ed\",\"source\":\"https://recipes.plantbasedpizza\",\"type\":\"recipe.recipeCreated.v1\",\"datacontenttype\":\"application/json\",\"time\":\"2024-07-16T14:42:05.170422203Z\",\"ddtraceid\":\"7977329962601430020\",\"ddspanid\":\"7287450925639128228\",\"data\":{\"recipeId\":17}}}",
+      "attributes": {
+        "ApproximateReceiveCount": "1",
+        "AWSTraceHeader": "Root=1-669686bd-000000006eb52b55d4f03c04;Parent=7500f5b2a56a1910;Sampled=1",
+        "SentTimestamp": "1721140925449",
+        "SenderId": "AIDAJ2E4ZHTZPIG4AM4I6",
+        "ApproximateFirstReceiveTimestamp": "1721140925456"
+      },
+      "messageAttributes": {},
+      "md5OfBody": "bb8fedbf7d687fabc8a7feebc0e7aa9a",
+      "eventSource": "aws:sqs",
+      "eventSourceARN": "arn:aws:sqs:eu-west-1:730335273443:Recipes-RecipeCreatedEvent-dev",
+      "awsRegion": "eu-west-1"
+    }
+  ]
+}

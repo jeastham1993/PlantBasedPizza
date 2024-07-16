@@ -1,21 +1,31 @@
 package com.recipe.core;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import momento.sdk.CacheClient;
 import momento.sdk.auth.CredentialProvider;
 import momento.sdk.config.Configuration;
 import momento.sdk.config.Configurations;
 import momento.sdk.responses.cache.GetResponse;
 import momento.sdk.responses.cache.SetResponse;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.Optional;
 
 @Service
 public class MomentoRecipeCacheImpl implements RecipeCache {
     private final CacheClient cacheClient;
     private final String cacheName = System.getenv("CACHE_NAME");
-    public MomentoRecipeCacheImpl(){
+    private final ObjectMapper objectMapper;
+
+    Logger log = LogManager.getLogger(MomentoRecipeCacheImpl.class);
+    public MomentoRecipeCacheImpl(ObjectMapper objectMapper){
+        this.objectMapper = objectMapper;
         cacheClient = new CacheClient(
                 CredentialProvider.fromEnvVar("MOMENTO_API_KEY"),
                 Configurations.Laptop.v1(),
@@ -23,7 +33,69 @@ public class MomentoRecipeCacheImpl implements RecipeCache {
     }
 
     @Override
-    public void Set(String key, String value) {
+    public void SetRecipes(List<RecipeDTO> recipes) {
+        try {
+            log.info("Updating cache...");
+            this.Set("all-recipes", this.objectMapper.writeValueAsString(recipes));
+        }
+        catch (JsonProcessingException ex){
+            log.error(ex);
+        }
+    }
+
+    @Override
+    public Optional<List<RecipeDTO>> GetRecipes() {
+        var cacheResult = this.Get("all-recipes");
+
+        try {
+            if (cacheResult.isPresent()){
+                log.info("Cache hit...");
+                List<RecipeDTO> recipeList = this.objectMapper.readValue(cacheResult.get(), new TypeReference<>() {});
+
+                return Optional.of(recipeList);
+            }
+            else {
+                return Optional.empty();
+            }
+        }
+        catch (JsonProcessingException e) {
+            log.error(e);
+        }
+
+        return Optional.empty();
+    }
+
+    @Override
+    public void SetRecipe(RecipeDTO recipe) {
+        try {
+            log.info("Updating cache...");
+            this.Set(String.valueOf(recipe.getId()), this.objectMapper.writeValueAsString(recipe));
+        }
+        catch (JsonProcessingException ex){
+            log.error(ex);
+        }
+    }
+
+    @Override
+    public Optional<RecipeDTO> GetRecipe(String recipeId) {
+        var cacheResult = this.Get(String.valueOf(recipeId));
+
+        try {
+            if (cacheResult.isPresent()){
+                log.info("Cache hit...");
+                RecipeDTO recipe = this.objectMapper.readValue(cacheResult.get(), RecipeDTO.class);
+
+                return Optional.of(recipe);
+            }
+        }
+        catch (JsonProcessingException e) {
+            log.error(e);
+        }
+
+        return Optional.empty();
+    }
+
+    private void Set(String key, String value) {
         var setResponse = cacheClient.set(cacheName, key, value).join();
 
         if (setResponse instanceof SetResponse.Success) {
@@ -36,8 +108,7 @@ public class MomentoRecipeCacheImpl implements RecipeCache {
         }
     }
 
-    @Override
-    public Optional<String> Get(String key) {
+    private Optional<String> Get(String key) {
         var getResponse = cacheClient.get(cacheName, key).join();
 
         if (getResponse instanceof GetResponse.Hit hit) {
