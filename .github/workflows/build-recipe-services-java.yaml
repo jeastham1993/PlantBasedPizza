@@ -19,12 +19,7 @@ jobs:
     with:
       service-name: "RecipeJavaApi"
       project-root: src/PlantBasedPizza.Recipes.Java/src/api
-      build-directory: src/PlantBasedPizza.Recipes.Java/src
-      image-name: recipe-api-java
-      dockerfile: src/PlantBasedPizza.Recipes.Java/src/Dockerfile
     secrets:
-      deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
-      ecr-registry: ${{secrets.ECR_REGISTRY}}
       dd_api_key: ${{secrets.DD_API_KEY}}
       dd_app_key: ${{secrets.DD_APP_KEY}}
   build-image:
