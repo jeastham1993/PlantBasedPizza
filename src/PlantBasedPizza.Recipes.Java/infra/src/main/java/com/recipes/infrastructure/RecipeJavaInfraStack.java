@@ -68,10 +68,10 @@ public class RecipeJavaInfraStack extends Stack {
         StringParameterAttributes momentoApiKeyAttributes = StringParameterAttributes.builder()
                 .parameterName("/recipes/cache-api-key")
                 .build();
-        IStringParameter cacheStringParameter = StringParameter.fromStringParameterAttributes(this, "MomentoApiKEyStringParam",  momentoApiKeyAttributes);
+        IStringParameter momentoApiKeyStringParameter = StringParameter.fromStringParameterAttributes(this, "MomentoApiKEyStringParam",  momentoApiKeyAttributes);
 
         secretVariables.put("DB_CONNECTION_STRING", Secret.fromSsmParameter(connectionStringParam));
-        secretVariables.put("MOMENTO_API_KEY", Secret.fromSsmParameter(cacheStringParameter));
+        secretVariables.put("MOMENTO_API_KEY", Secret.fromSsmParameter(momentoApiKeyStringParameter));
 
         WebService javaWebService = new WebService(this, "JavaRecipeService", new WebServiceProps(
                 vpc,
@@ -98,7 +98,7 @@ public class RecipeJavaInfraStack extends Stack {
         BackgroundServices services = new BackgroundServices(
                 this, 
                 "BackgroundServices", 
-                new BackgroundServiceProps(sharedProps, ddApiKeySecret, connectionStringParam, bus, commitHash));
+                new BackgroundServiceProps(sharedProps, ddApiKeySecret, connectionStringParam, momentoApiKeyStringParameter, bus, commitHash));
         
         connectionStringParam.grantRead(javaWebService.executionRole);
         bus.grantPutEventsTo(javaWebService.taskRole);

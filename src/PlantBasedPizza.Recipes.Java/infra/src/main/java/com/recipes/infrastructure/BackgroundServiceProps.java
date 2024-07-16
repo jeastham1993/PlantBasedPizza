@@ -8,13 +8,15 @@ public class BackgroundServiceProps {
     private final ISecret datadogKeyParameter;
     private final SharedProps sharedProps;
     private final IStringParameter dbConnectionParameter;
+    private final IStringParameter momentoApiKey;
     private final IEventBus bus;
     private final String tag;
     
-    public BackgroundServiceProps(SharedProps props, ISecret datadogKeyParameter, IStringParameter dbConnectionParameter, IEventBus bus, String tag) {
+    public BackgroundServiceProps(SharedProps props, ISecret datadogKeyParameter, IStringParameter dbConnectionParameter, IStringParameter momentoApiKey, IEventBus bus, String tag) {
         this.datadogKeyParameter = datadogKeyParameter;
         this.sharedProps = props;
         this.dbConnectionParameter = dbConnectionParameter;
+        this.momentoApiKey = momentoApiKey;
         this.bus = bus;
         this.tag = tag;
     }
@@ -37,5 +39,9 @@ public class BackgroundServiceProps {
 
     public String getTag() {
         return tag;
+    }
+
+    public IStringParameter getMomentoApiKey() {
+        return momentoApiKey;
     }
 }
