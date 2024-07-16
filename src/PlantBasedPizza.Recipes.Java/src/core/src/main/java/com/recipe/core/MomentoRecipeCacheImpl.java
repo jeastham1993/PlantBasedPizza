@@ -26,7 +26,7 @@ public class MomentoRecipeCacheImpl implements RecipeCache {
         this.objectMapper = new ObjectMapper();
         cacheClient = new CacheClient(
                 CredentialProvider.fromEnvVar("MOMENTO_API_KEY"),
-                Configurations.Laptop.v1(),
+                Configurations.InRegion.v1(),
                 Duration.ofSeconds(300));
     }
 
