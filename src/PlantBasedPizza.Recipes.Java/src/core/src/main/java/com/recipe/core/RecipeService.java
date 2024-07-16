@@ -19,16 +19,16 @@ public class RecipeService {
     private final IRecipeRepository recipeRepository;
     private final IIngredientRepository ingredientRepository;
     private final EventBridgeEventPublisher eventPublisher;
-    private final MomentoRecipeCacheImpl recipeCache;
+    private final RecipeCache recipeCache;
     private final ObjectMapper objectMapper;
     Logger log = LogManager.getLogger(RecipeService.class);
 
-    public RecipeService(IRecipeRepository recipeRepository, IIngredientRepository ingredientRepository, EventBridgeEventPublisher eventPublisher, MomentoRecipeCacheImpl recipeCache, ObjectMapper objectMapper){
+    public RecipeService(IRecipeRepository recipeRepository, IIngredientRepository ingredientRepository, EventBridgeEventPublisher eventPublisher, RecipeCache recipeCache){
         this.recipeRepository = recipeRepository;
         this.ingredientRepository = ingredientRepository;
         this.eventPublisher = eventPublisher;
         this.recipeCache = recipeCache;
-        this.objectMapper = objectMapper;
+        this.objectMapper = new ObjectMapper();
     }
 
     @Trace(operationName = "CreateRecipe", resourceName = "RecipeService.GetRecipe")

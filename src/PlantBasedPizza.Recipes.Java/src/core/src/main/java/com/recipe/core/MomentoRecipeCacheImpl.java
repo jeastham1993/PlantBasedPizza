@@ -5,7 +5,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import momento.sdk.CacheClient;
 import momento.sdk.auth.CredentialProvider;
-import momento.sdk.config.Configuration;
 import momento.sdk.config.Configurations;
 import momento.sdk.responses.cache.GetResponse;
 import momento.sdk.responses.cache.SetResponse;
@@ -22,10 +21,9 @@ public class MomentoRecipeCacheImpl implements RecipeCache {
     private final CacheClient cacheClient;
     private final String cacheName = System.getenv("CACHE_NAME");
     private final ObjectMapper objectMapper;
-
     Logger log = LogManager.getLogger(MomentoRecipeCacheImpl.class);
-    public MomentoRecipeCacheImpl(ObjectMapper objectMapper){
-        this.objectMapper = objectMapper;
+    public MomentoRecipeCacheImpl(){
+        this.objectMapper = new ObjectMapper();
         cacheClient = new CacheClient(
                 CredentialProvider.fromEnvVar("MOMENTO_API_KEY"),
                 Configurations.Laptop.v1(),
