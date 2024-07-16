@@ -56,34 +56,19 @@ public class RecipeService {
 
     @Trace(operationName = "GetRecipe", resourceName = "RecipeService.GetRecipe")
     public RecipeDTO GetRecipe(long recipeId) {
-        var cacheResult = this.recipeCache.Get(String.valueOf(recipeId));
+        var cachedRecipe = this.recipeCache.GetRecipe(String.valueOf(recipeId));
 
-        try {
-            if (cacheResult.isPresent()){
-                log.info("Cache hit...");
-                RecipeDTO recipe = this.objectMapper.readValue(cacheResult.get(), RecipeDTO.class);
-
-                return recipe;
-            }
-        }
-        catch (JsonProcessingException e) {
-            log.error(e);
+        if (cachedRecipe.isPresent()){
+            return cachedRecipe.get();
         }
 
         Optional<Recipe> retrievedRecipe = this.recipeRepository.findById(recipeId);
 
         var recipeDto = retrievedRecipe.map(Recipe::asDto).orElse(null);
 
-        try {
-            log.info("Updating cache...");
-            this.recipeCache.Set(String.valueOf(recipeId), this.objectMapper.writeValueAsString(recipeDto));
-        }
-        catch (JsonProcessingException ex){
-            log.error(ex);
-        }
+        this.recipeCache.SetRecipe(recipeDto);
 
         return recipeDto;
-
     }
 
     @Trace(operationName = "UpdateRecipe", resourceName = "RecipeService.UpdateRecipe")
@@ -129,18 +114,10 @@ public class RecipeService {
 
     @Trace(operationName = "ListRecipes", resourceName = "RecipeService.ListRecipes")
     public Iterable<RecipeDTO> ListRecipes() {
-        var cacheResult = this.recipeCache.Get("all-recipes");
+        var cachedRecipes = this.recipeCache.GetRecipes();
 
-        try {
-            if (cacheResult.isPresent()){
-                log.info("Cache hit...");
-                List<RecipeDTO> recipeList = this.objectMapper.readValue(cacheResult.get(), new TypeReference<>() {});
-
-                return recipeList;
-            }
-        }
-        catch (JsonProcessingException e) {
-            log.error(e);
+        if (cachedRecipes.isPresent()){
+            return cachedRecipes.get();
         }
 
         log.info("Cache miss...");
@@ -155,13 +132,7 @@ public class RecipeService {
             recipeDtoList.add(sortedRecipe.asDto());
         }
 
-        try {
-            log.info("Updating cache...");
-            this.recipeCache.Set("all-recipes", this.objectMapper.writeValueAsString(recipeDtoList));
-        }
-        catch (JsonProcessingException ex){
-            log.error(ex);
-        }
+        this.recipeCache.SetRecipes(recipeDtoList);
 
         return recipeDtoList;
     }

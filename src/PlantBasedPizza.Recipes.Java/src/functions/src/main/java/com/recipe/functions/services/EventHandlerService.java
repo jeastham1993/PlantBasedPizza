@@ -3,10 +3,7 @@ package com.recipe.functions.services;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.recipe.core.IRecipeRepository;
-import com.recipe.core.Recipe;
-import com.recipe.core.RecipeCache;
-import com.recipe.core.RecipeCreatedEventV1;
+import com.recipe.core.*;
 import com.recipe.functions.FunctionConfiguration;
 import com.recipe.functions.events.OrderConfirmedEvent;
 import com.recipe.functions.events.OrderConfirmedEventItem;
@@ -17,8 +14,12 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 @Service
 public class EventHandlerService implements IEventHandlerService {
@@ -84,24 +85,21 @@ public class EventHandlerService implements IEventHandlerService {
     public boolean handle(RecipeCreatedEventV1 event) {
         // Cache individual recipe
         var recipe = this.recipeRepository.findById(event.getRecipeId());
-        try {
-            log.info("Updating cache of individual recipe...");
-            this.recipeCache.Set(String.valueOf(event.getRecipeId()), this.objectMapper.writeValueAsString(recipe));
-        }
-        catch (JsonProcessingException ex){
-            log.error(ex);
-        }
+
+        this.recipeCache.SetRecipe(recipe.map(Recipe::asDto).get());
 
         // Update cache of ALL recipes
         var allRecipes = this.recipeRepository.findAll();
+        Stream<Recipe> recipeStream = StreamSupport.stream(allRecipes.spliterator(), false);
+        List<Recipe> sortedRecipes = recipeStream.sorted(Comparator.comparingInt(Recipe::getOrderCount).reversed()).toList();
 
-        try {
-            log.info("Updating cache of all recipes...");
-            this.recipeCache.Set("all-recipes", this.objectMapper.writeValueAsString(allRecipes));
+        List<RecipeDTO> recipeDtoList = new ArrayList<RecipeDTO>();
+
+        for (Recipe sortedRecipe : sortedRecipes) {
+            recipeDtoList.add(sortedRecipe.asDto());
         }
-        catch (JsonProcessingException ex){
-            log.error(ex);
-        }
+
+        this.recipeCache.SetRecipes(recipeDtoList);
 
         return true;
     }
