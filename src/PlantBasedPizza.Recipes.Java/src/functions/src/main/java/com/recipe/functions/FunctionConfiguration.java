@@ -129,6 +129,7 @@ public class FunctionConfiguration{
         }
         catch (Exception exception){
             log.error(exception);
+            exception.printStackTrace();
             return false;
         }
     }

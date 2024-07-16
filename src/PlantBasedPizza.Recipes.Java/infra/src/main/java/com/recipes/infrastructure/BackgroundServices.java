@@ -46,7 +46,7 @@ public class BackgroundServices extends Construct {
         IBucket bucket = Bucket.fromBucketName(this, "CDKBucket", fileAsset.getS3BucketName());
 
         Map<String, String> orderConfirmedEnvironmentVariables = new HashMap<>();
-        orderConfirmedEnvironmentVariables.put("spring_cloud_function_routingExpression", "handleOrderConfirmedEvent");
+        orderConfirmedEnvironmentVariables.put("spring_cloud_function_definition", "handleOrderConfirmedEvent");
         orderConfirmedEnvironmentVariables.putAll(lambdaEnvironment);
         
         // Create our basic function
@@ -70,7 +70,7 @@ public class BackgroundServices extends Construct {
         orderConfirmedHandlerFunction.addEventSource(new SqsEventSource(orderConfirmedQueue.getQueue()));
 
         Map<String, String> recipeCreatedEnvironmentVariables = new HashMap<>();
-        recipeCreatedEnvironmentVariables.put("spring_cloud_function_routingExpression", "handleRecipeCreatedEvent");
+        recipeCreatedEnvironmentVariables.put("spring_cloud_function_definition", "handleRecipeCreatedEvent");
         recipeCreatedEnvironmentVariables.put("MOMENTO_API_KEY", props.getMomentoApiKey().getStringValue());
         recipeCreatedEnvironmentVariables.put("CACHE_NAME", "plant-based-pizza-recipes");
         recipeCreatedEnvironmentVariables.putAll(lambdaEnvironment);
@@ -94,7 +94,7 @@ public class BackgroundServices extends Construct {
         props.getDbConnectionParameter().grantRead(recipeCreatedHandlerFunction);
         props.getMomentoApiKey().grantRead(recipeCreatedHandlerFunction);
 
-        EventQueueProps recipeCreatedQueueProps = new EventQueueProps(props.getSharedProps(), props.getBus(), "https://recipes.plantbasedpizza/", "recipe.recipeCreated.v1", "Recipes-RecipeCreatedEvent");
+        EventQueueProps recipeCreatedQueueProps = new EventQueueProps(props.getSharedProps(), props.getBus(), "https://recipes.plantbasedpizza", "recipe.recipeCreated.v1", "Recipes-RecipeCreatedEvent");
         EventQueue recipeCreatedQueue = new EventQueue(this, "RecipeCreatedQueueProps", recipeCreatedQueueProps);
 
         recipeCreatedHandlerFunction.addEventSource(new SqsEventSource(recipeCreatedQueue.getQueue()));
