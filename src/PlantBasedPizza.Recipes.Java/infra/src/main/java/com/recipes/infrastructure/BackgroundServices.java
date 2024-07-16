@@ -26,7 +26,7 @@ public class BackgroundServices extends Construct {
 
         Map<String, String> lambdaEnvironment = new HashMap<>();
         lambdaEnvironment.put("MAIN_CLASS", "com.recipe.functions.FunctionConfiguration");
-        lambdaEnvironment.put("AWS_LAMBDA_EXEC_WRAPPER", "/opt/datadog_wrapper");
+        //lambdaEnvironment.put("AWS_LAMBDA_EXEC_WRAPPER", "/opt/datadog_wrapper");
         lambdaEnvironment.put("DD_SITE", "datadoghq.eu");
         lambdaEnvironment.put("DD_SERVICE", props.getSharedProps().getServiceName());
         lambdaEnvironment.put("DD_ENV", props.getSharedProps().getEnvironment());
