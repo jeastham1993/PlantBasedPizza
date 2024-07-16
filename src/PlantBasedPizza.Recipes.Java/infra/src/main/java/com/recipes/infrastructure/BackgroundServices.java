@@ -6,6 +6,7 @@ import software.amazon.awscdk.Tags;
 import software.amazon.awscdk.services.lambda.*;
 import software.amazon.awscdk.services.lambda.Runtime;
 import software.amazon.awscdk.services.lambda.eventsources.SqsEventSource;
+import software.amazon.awscdk.services.lambda.eventsources.SqsEventSourceProps;
 import software.amazon.awscdk.services.s3.Bucket;
 import software.amazon.awscdk.services.s3.IBucket;
 import software.amazon.awscdk.services.s3.assets.Asset;
@@ -21,6 +22,9 @@ import java.util.Map;
 public class BackgroundServices extends Construct {
     public BackgroundServices(@NotNull Construct scope, @NotNull String id, @NotNull BackgroundServiceProps props) {
         super(scope, id);
+
+        SqsEventSourceProps sqsEventSourceProps = SqsEventSourceProps.builder().reportBatchItemFailures(true).build();
+
         EventQueueProps orderConfirmedQueueProps = new EventQueueProps(props.getSharedProps(), props.getBus(), "https://orders.plantbasedpizza/", "order.orderConfirmed.v1", "OrderConfirmed");
         EventQueue orderConfirmedQueue = new EventQueue(this, "OrderConfirmedQueue", orderConfirmedQueueProps);
 
@@ -67,7 +71,7 @@ public class BackgroundServices extends Construct {
         props.getDatadogKeyParameter().grantRead(orderConfirmedHandlerFunction);
         props.getDbConnectionParameter().grantRead(orderConfirmedHandlerFunction);
 
-        orderConfirmedHandlerFunction.addEventSource(new SqsEventSource(orderConfirmedQueue.getQueue()));
+        orderConfirmedHandlerFunction.addEventSource(new SqsEventSource(orderConfirmedQueue.getQueue(), sqsEventSourceProps));
 
         Map<String, String> recipeCreatedEnvironmentVariables = new HashMap<>();
         recipeCreatedEnvironmentVariables.put("spring_cloud_function_definition", "handleRecipeCreatedEvent");
@@ -97,6 +101,6 @@ public class BackgroundServices extends Construct {
         EventQueueProps recipeCreatedQueueProps = new EventQueueProps(props.getSharedProps(), props.getBus(), "https://recipes.plantbasedpizza", "recipe.recipeCreated.v1", "Recipes-RecipeCreatedEvent");
         EventQueue recipeCreatedQueue = new EventQueue(this, "RecipeCreatedQueueProps", recipeCreatedQueueProps);
 
-        recipeCreatedHandlerFunction.addEventSource(new SqsEventSource(recipeCreatedQueue.getQueue()));
+        recipeCreatedHandlerFunction.addEventSource(new SqsEventSource(recipeCreatedQueue.getQueue(), sqsEventSourceProps));
     }
 }
