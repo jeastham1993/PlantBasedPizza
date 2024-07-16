@@ -1,7 +1,12 @@
 package com.recipe.functions.services;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.recipe.core.IRecipeRepository;
 import com.recipe.core.Recipe;
+import com.recipe.core.RecipeCache;
+import com.recipe.core.RecipeCreatedEventV1;
 import com.recipe.functions.FunctionConfiguration;
 import com.recipe.functions.events.OrderConfirmedEvent;
 import com.recipe.functions.events.OrderConfirmedEventItem;
@@ -19,11 +24,16 @@ import java.util.Optional;
 public class EventHandlerService implements IEventHandlerService {
 
     private final IRecipeRepository recipeRepository;
+    private final ObjectMapper objectMapper;
+    private final RecipeCache recipeCache;
     
     @Autowired
-    public EventHandlerService(IRecipeRepository recipeRepository){
+    public EventHandlerService(IRecipeRepository recipeRepository, RecipeCache recipeCache){
 
         this.recipeRepository = recipeRepository;
+        this.objectMapper = new ObjectMapper();
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        this.recipeCache = recipeCache;
     }
 
     Logger log = LogManager.getLogger(EventHandlerService.class);
@@ -67,6 +77,32 @@ public class EventHandlerService implements IEventHandlerService {
             recipeProcessingSpan.finish();
         }
         
+        return true;
+    }
+
+    @Override
+    public boolean handle(RecipeCreatedEventV1 event) {
+        // Cache individual recipe
+        var recipe = this.recipeRepository.findById(event.getRecipeId());
+        try {
+            log.info("Updating cache of individual recipe...");
+            this.recipeCache.Set(String.valueOf(event.getRecipeId()), this.objectMapper.writeValueAsString(recipe));
+        }
+        catch (JsonProcessingException ex){
+            log.error(ex);
+        }
+
+        // Update cache of ALL recipes
+        var allRecipes = this.recipeRepository.findAll();
+
+        try {
+            log.info("Updating cache of all recipes...");
+            this.recipeCache.Set("all-recipes", this.objectMapper.writeValueAsString(allRecipes));
+        }
+        catch (JsonProcessingException ex){
+            log.error(ex);
+        }
+
         return true;
     }
 }

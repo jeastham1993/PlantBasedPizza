@@ -1,6 +1,7 @@
 import com.amazonaws.services.lambda.runtime.events.SQSEvent;
 import com.recipe.core.IRecipeRepository;
 import com.recipe.core.Recipe;
+import com.recipe.core.RecipeCache;
 import com.recipe.functions.FunctionConfiguration;
 import com.recipe.functions.services.EventHandlerService;
 import com.recipe.functions.services.IEventHandlerService;
@@ -19,6 +20,9 @@ public class FunctionTest {
 
     @Mock
     private IRecipeRepository recipeRepository;
+
+    @Mock
+    private RecipeCache recipeCache;
     
     @Resource
     private FunctionConfiguration configuration;
@@ -26,7 +30,9 @@ public class FunctionTest {
     @BeforeEach
     public void setUp() {
         this.recipeRepository = Mockito.mock(IRecipeRepository.class);
-        IEventHandlerService eventHandlerService = new EventHandlerService(this.recipeRepository);
+        this.recipeCache = Mockito.mock(RecipeCache.class);
+
+        IEventHandlerService eventHandlerService = new EventHandlerService(this.recipeRepository, this.recipeCache);
         this.configuration = new FunctionConfiguration(eventHandlerService);
     }
     
