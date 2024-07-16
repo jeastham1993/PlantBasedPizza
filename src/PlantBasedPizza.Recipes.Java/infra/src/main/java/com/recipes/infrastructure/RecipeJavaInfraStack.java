@@ -10,6 +10,7 @@ import software.amazon.awscdk.services.secretsmanager.ISecret;
 import software.amazon.awscdk.services.ssm.IStringParameter;
 import software.amazon.awscdk.services.ssm.SecureStringParameterAttributes;
 import software.amazon.awscdk.services.ssm.StringParameter;
+import software.amazon.awscdk.services.ssm.StringParameterAttributes;
 import software.constructs.Construct;
 import software.amazon.awscdk.Stack;
 import software.amazon.awscdk.StackProps;
@@ -55,6 +56,7 @@ public class RecipeJavaInfraStack extends Stack {
 
         HashMap<String, String> envVariables = new HashMap<>(1);
         envVariables.put("EVENT_BUS_NAME", bus.getEventBusName());
+        envVariables.put("CACHE_NAME", "plant-based-pizza-recipes");
 
         HashMap<String, Secret> secretVariables = new HashMap<>(1);
 
@@ -63,7 +65,13 @@ public class RecipeJavaInfraStack extends Stack {
                 .build();
         IStringParameter connectionStringParam = StringParameter.fromSecureStringParameterAttributes(this, "ConnectionStringParam",  ddAttr);
 
+        StringParameterAttributes momentoApiKeyAttributes = StringParameterAttributes.builder()
+                .parameterName("/recipes/cache-api-key")
+                .build();
+        IStringParameter cacheStringParameter = StringParameter.fromStringParameterAttributes(this, "MomentoApiKEyStringParam",  momentoApiKeyAttributes);
+
         secretVariables.put("DB_CONNECTION_STRING", Secret.fromSsmParameter(connectionStringParam));
+        secretVariables.put("MOMENTO_API_KEY", Secret.fromSsmParameter(cacheStringParameter));
 
         WebService javaWebService = new WebService(this, "JavaRecipeService", new WebServiceProps(
                 vpc,
