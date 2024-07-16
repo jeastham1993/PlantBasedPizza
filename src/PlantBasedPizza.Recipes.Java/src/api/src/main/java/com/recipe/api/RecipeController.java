@@ -4,6 +4,8 @@ import com.recipe.core.Recipe;
 import com.recipe.core.RecipeBuilder;
 import com.recipe.core.RecipeDTO;
 import com.recipe.core.RecipeService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +17,7 @@ import java.util.*;
 @CrossOrigin(origins = "*", methods = {RequestMethod.HEAD, RequestMethod.GET, RequestMethod.POST, RequestMethod.OPTIONS}, allowedHeaders = "*")
 public class RecipeController {
     private final RecipeService recipeService;
+    Logger log = LogManager.getLogger(RecipeController.class);
 
     public RecipeController(RecipeService recipeService) {
         this.recipeService = recipeService;
@@ -27,6 +30,7 @@ public class RecipeController {
 
             return createdRecipe.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.badRequest().body(null));
         } catch (Exception e) {
+            log.error(e);
             return ResponseEntity.internalServerError().body(null);
         }
     }
@@ -38,6 +42,7 @@ public class RecipeController {
 
             return ResponseEntity.ok(recipeList);
         } catch (Exception e) {
+            log.error(e);
             return ResponseEntity.internalServerError().body(null);
         }
     }
