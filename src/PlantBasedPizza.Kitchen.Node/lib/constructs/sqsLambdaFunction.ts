@@ -56,10 +56,6 @@ export class InstrumentedSqsLambdaFunction extends Construct {
     const kmsAlias = Alias.fromAliasName(this, "SSMAlias", "aws/ssm");
     kmsAlias.grantDecrypt(this.function);
 
-    Tags.of(this.function).add('service', props.sharedProps.serviceName);
-    Tags.of(this.function).add('env', props.sharedProps.environment);
-    Tags.of(this.function).add('version', props.sharedProps.version);
-
     if (props.sharedProps.datadogConfiguration !== undefined){
       props.sharedProps.datadogConfiguration.addLambdaFunctions([this.function]);
     }

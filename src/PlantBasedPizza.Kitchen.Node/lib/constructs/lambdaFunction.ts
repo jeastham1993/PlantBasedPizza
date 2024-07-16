@@ -52,10 +52,6 @@ export class InstrumentedApiLambdaFunction extends Construct {
     const kmsAlias = Alias.fromAliasName(this, "SSMAlias", "aws/ssm");
     kmsAlias.grantDecrypt(this.function);
 
-    Tags.of(this.function).add("service", props.sharedProps.serviceName);
-    Tags.of(this.function).add("env", props.sharedProps.environment);
-    Tags.of(this.function).add("version", props.sharedProps.version);
-
     props.jwtKey.grantRead(this.function);
 
     // TODO: Check to make sure this value is set IF NOT an integration test run
