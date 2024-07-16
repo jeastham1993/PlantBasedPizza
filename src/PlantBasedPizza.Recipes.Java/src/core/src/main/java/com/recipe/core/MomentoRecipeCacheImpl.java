@@ -3,6 +3,9 @@ package com.recipe.core;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.opentracing.Span;
+import io.opentracing.util.GlobalTracer;
 import momento.sdk.CacheClient;
 import momento.sdk.auth.CredentialProvider;
 import momento.sdk.config.Configurations;
@@ -94,28 +97,32 @@ public class MomentoRecipeCacheImpl implements RecipeCache {
     }
 
     private void Set(String key, String value) {
+        final Span span = GlobalTracer.get().activeSpan();
+
         var setResponse = cacheClient.set(cacheName, key, value).join();
 
         if (setResponse instanceof SetResponse.Success) {
-            System.out.println("Cached successfully");
+            span.setTag("cache.store", true);
         } else if (setResponse instanceof SetResponse.Error error) {
+            span.setTag("cache.error", true);
             throw new RuntimeException(
-                    "An error occurred while attempting to store key 'test-key' in cache 'test-cache': "
-                            + error.getErrorCode(),
+                    String.format("An error occurred while attempting to store key '%s' in cache '%s': %s - %s", key, cacheName, error.getErrorCode(), error.getMessage()),
                     error);
         }
     }
 
     private Optional<String> Get(String key) {
+        final Span span = GlobalTracer.get().activeSpan();
         var getResponse = cacheClient.get(cacheName, key).join();
 
         if (getResponse instanceof GetResponse.Hit hit) {
-            System.out.println("Retrieved value for key 'test-key': " + hit.valueString());
+            span.setTag("cache.hit", true);
             return Optional.of(hit.valueString());
         } else if (getResponse instanceof GetResponse.Miss) {
-            System.out.println("Key 'test-key' was not found in cache 'test-cache'");
+            span.setTag("cache.miss", true);
             return Optional.empty();
         } else if (getResponse instanceof GetResponse.Error error) {
+            span.setTag("cache.error", true);
             throw new RuntimeException(
                     "An error occurred while attempting to get from cache: "
                             + error.getErrorCode(),
