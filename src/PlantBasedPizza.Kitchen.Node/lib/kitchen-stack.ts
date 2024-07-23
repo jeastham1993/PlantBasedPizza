@@ -33,8 +33,8 @@ export class KitchenStack extends Stack {
     const eventBridge = EventBus.fromEventBusName(this, "SharedEventBus", "PlantBasedPizzaEvents");
 
     const datadogConfiguration = new Datadog(this, "Datadog", {
-      nodeLayerVersion: 112,
-      extensionLayerVersion: 58,
+      nodeLayerVersion: 113,
+      extensionLayerVersion: 61,
       site: "datadoghq.eu",
       apiKeySecret: ddApiKey,
       service: "KitchenService",
