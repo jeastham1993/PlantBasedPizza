@@ -9,3 +9,7 @@ updates:
     directory: "/src/PlantBasedPizza.Kitchen.Node" # Location of package manifests
     schedule:
       interval: "weekly"
+  - package-ecosystem: "nuget" # See documentation for possible values
+      directory: "/src/PlantBasedPizza.Orders" # Location of package manifests
+      schedule:
+        interval: "weekly"
