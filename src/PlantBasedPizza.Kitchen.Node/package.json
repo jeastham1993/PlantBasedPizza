@@ -35,7 +35,7 @@
     "@aws-cdk/aws-apigatewayv2-alpha": "^2.114.1-alpha.0",
     "@aws-cdk/aws-apigatewayv2-integrations-alpha": "^2.114.1-alpha.0",
     "@aws-lambda-powertools/parameters": "^2.3.0",
-    "aws-cdk": "^2.147.2",
+    "aws-cdk": "^2.152.0",
     "aws-cdk-lib": "^2.145.0",
     "axios": "^1.7.2",
     "cloudevents": "^8.0.1",
