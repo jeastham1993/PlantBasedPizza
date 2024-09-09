@@ -68,11 +68,6 @@ export class PlantBasedPizzaSharedInfrastructureStack extends cdk.Stack {
       target: RecordTarget.fromAlias(new CloudFrontTarget(cloudfrontDistro)),
      });
 
-    const httpListener = new ApplicationListener(this, "HttpListener", {
-      loadBalancer: sharedAlbWithListener,
-      port: 80,
-      defaultAction: ListenerAction.fixedResponse(200)
-    });
     const httpsListener = new ApplicationListener(this, "HttpsListener", {
       loadBalancer: sharedAlbWithListener,
       port: 443,
@@ -80,34 +75,6 @@ export class PlantBasedPizzaSharedInfrastructureStack extends cdk.Stack {
     });
 
     httpsListener.addCertificates('PlantBasedPizzaDomain', [
-      certificate
-    ]);
-
-
-    const internalSharedAlbWithListener = new ApplicationLoadBalancer(this, "InternalApplicationIngressWithListener", {
-      loadBalancerName: "shared-internal-ingress",
-      vpc: network.vpc,
-      internetFacing: false
-    });
-
-    new ARecord(this, "InternalDnsRecord", {
-      zone: hostedZoned,
-      recordName: internalDnsName,
-      target: RecordTarget.fromAlias(new LoadBalancerTarget(internalSharedAlbWithListener)),
-     });
-
-    const internalHttpListener = new ApplicationListener(this, "InternalHttpListener", {
-      loadBalancer: internalSharedAlbWithListener,
-      port: 80,
-      defaultAction: ListenerAction.fixedResponse(200)
-    });
-    const internalHttpsListener = new ApplicationListener(this, "InternalHttpsListener", {
-      loadBalancer: internalSharedAlbWithListener,
-      port: 443,
-      defaultAction: ListenerAction.fixedResponse(200)
-    });
-
-    internalHttpsListener.addCertificates('InternalPlantBasedPizzaDomain', [
       certificate
     ]);
 
@@ -128,21 +95,6 @@ export class PlantBasedPizzaSharedInfrastructureStack extends cdk.Stack {
     const listenerArnParameter = new StringParameter(this, "ListenerArnParam", {
       stringValue: httpsListener.listenerArn,
       parameterName: '/shared/alb-listener'
-    });
-    
-    const internalAlbEndpointParameter = new StringParameter(this, "InternalALBEndpointParam", {
-      stringValue: `http://${internalSharedAlbWithListener.loadBalancerDnsName}`,
-      parameterName: '/shared/internal-alb-endpoint'
-    });
-
-    const internalAlbArnParameter = new StringParameter(this, "InternalALBArnParam", {
-      stringValue: internalSharedAlbWithListener.loadBalancerArn,
-      parameterName: '/shared/internal-alb-arn'
-    });
-
-    const internalListenerArnParameter = new StringParameter(this, "InternalListenerArnParam", {
-      stringValue: internalHttpsListener.listenerArn,
-      parameterName: '/shared/internal-alb-listener'
     });
 
     const eventBusName = new StringParameter(this, "EventBusNameParam", {
