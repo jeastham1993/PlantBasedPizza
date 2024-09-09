@@ -6,7 +6,7 @@ import { RecipeService } from "../adapters/recipeService";
 import { CloudEventV1, HTTP } from "cloudevents";
 import { OrderConfirmedEvent } from "../integration-events/orderConfirmedEvent";
 import { EventBridgeClient } from "@aws-sdk/client-eventbridge";
-import { SpanContext, tracer } from "dd-trace";
+import { SpanContext, trace, tracer } from "dd-trace";
 import { getParameter } from "@aws-lambda-powertools/parameters/ssm";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { SpanContextWrapper } from "datadog-lambda-js/dist/trace/span-context-wrapper";

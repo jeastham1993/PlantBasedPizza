@@ -85,7 +85,7 @@
         <dependency>
             <groupId>com.datadoghq</groupId>
             <artifactId>dd-trace-api</artifactId>
-            <version>LATEST</version>
+            <version>1.37.1</version>
         </dependency>
         <dependency>
             <groupId>software.momento.java</groupId>

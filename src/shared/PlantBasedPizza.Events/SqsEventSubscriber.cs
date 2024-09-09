@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Net.Mime;
 using System.Text;
 using System.Text.Json;
@@ -73,6 +74,7 @@ public class SqsEventSubscriber
                 Parent = new SpanContext(traceId, spanId, SamplingPriority.AutoKeep, "integration-latency"),
                 StartTime = evtWrapper.Time,
             });
+            
             integrationSpan.Close();
 
             var evtData = evtWrapper.Data as T;
