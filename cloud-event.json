@@ -1,0 +1,19 @@
+{
+  "specversion": "1.0",
+  "type": "order.orderConfirmed.v2",
+  "source": "https://prod.orders.plantbasedpizza",
+  "id": "1b8470ed-b662-4f28-89d3-3e6f6ae1ccc6",
+  "time": "2024-07-20T17:31:00Z",
+  "traceparent": "4bf92f3577b34da6a3ce929d0e0e4736",
+  "tracestate": "",
+  "expirytime": "2024-07-20T19:31:00Z",
+  "datacontenttype": "application/json",
+  "data": {
+    "orderIdentifier": "ORD1234",
+    "customerIdentifier": "9745618",
+    "orderValue": {
+      "currency": "GBP",
+      "value": 127.60
+    }
+  }
+}

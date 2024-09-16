@@ -20,7 +20,7 @@ public class UserAccountRepository : IUserAccountRepository
         var queryBuilder = Builders<UserAccount>.Filter.Eq(p => p.EmailAddress, userAccount.EmailAddress);
 
         var existingAccount = await this._accounts.Find(queryBuilder).FirstOrDefaultAsync().ConfigureAwait(false);
-
+nn
         if (existingAccount is not null)
         {
             throw new UserExistsException();
