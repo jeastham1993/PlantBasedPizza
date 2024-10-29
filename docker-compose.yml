@@ -9,6 +9,11 @@ services:
     ports:
       - 27017:27017
 
+  consul:
+    image: hashicorp/consul:latest
+    ports:
+      - 8500:8500
+
   jaeger:
     image: jaegertracing/opentelemetry-all-in-one:latest
     ports:
@@ -16,11 +21,6 @@ services:
       - 13133:13133
       - 4317:4317
       - 4318:4318
-
-  consul:
-    image: hashicorp/consul:latest
-    ports:
-      - 8500:8500
   
   cache:
     image: redis:7.2
@@ -51,13 +51,13 @@ services:
       - OtlpEndpoint=http://jaeger:4317
       - Environment=local
       - RedisConnectionString=cache
-      - Services__Loyalty=http://LoyaltyApi
-      - Services__LoyaltyInternal=http://LoyaltyInternalApi
-      - Services__PaymentInternal=http://PaymentApi
-      - Services__Recipes=http://RecipeApi
-      - ServiceDiscovery__MyUrl=http://local.orders-api:8080
-      - ServiceDiscovery__ServiceName=OrdersApi
-      - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
+      - Services__Loyalty=http://local.loyalty-api
+      - Services__LoyaltyInternal=http://local.loyalty-internal-api
+      - Services__PaymentInternal=http://local.payment-api
+      - Services__Recipes=http://local.recipe-api
+      - ServiceDiscovery__MyUrl=
+      - ServiceDiscovery__ServiceName=
+      - ServiceDiscovery__ConsulServiceEndpoint=
       - Messaging__HostName=rabbitmq
       - Messaging__ExchangeName=local.plantbasedpizza
       - Messaging__UseAsyncApi=Y
@@ -77,14 +77,14 @@ services:
       - DatabaseConnection=mongodb://mongodb:27017
       - OtlpEndpoint=http://jaeger:4317
       - RedisConnectionString=cache
-      - Services__Loyalty=http://LoyaltyApi
-      - Services__LoyaltyInternal=http://LoyaltyInternalApi
-      - Services__PaymentInternal=http://PaymentApi
-      - Services__Recipes=http://RecipeApi
+      - Services__Loyalty=http://local.loyalty-api
+      - Services__LoyaltyInternal=http://local.loyalty-internal-api
+      - Services__PaymentInternal=http://local.payment-api
+      - Services__Recipes=http://local.recipe-api
       - Environment=local
       - ServiceDiscovery__MyUrl=
       - ServiceDiscovery__ServiceName=
-      - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
+      - ServiceDiscovery__ConsulServiceEndpoint=
       - Messaging__HostName=rabbitmq
       - Messaging__ExchangeName=local.plantbasedpizza
 
@@ -100,9 +100,9 @@ services:
       - DatabaseConnection=mongodb://mongodb:27017
       - OtlpEndpoint=http://jaeger:4317
       - Environment=local
-      - ServiceDiscovery__MyUrl=http://local.loyalty-api:8080
-      - ServiceDiscovery__ServiceName=LoyaltyApi
-      - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
+      - ServiceDiscovery__MyUrl=
+      - ServiceDiscovery__ServiceName=
+      - ServiceDiscovery__ConsulServiceEndpoint=
       - Messaging__HostName=rabbitmq
       - Messaging__ExchangeName=local.plantbasedpizza
       - Auth__Issuer=https://plantbasedpizza.com
@@ -121,9 +121,9 @@ services:
       - DatabaseConnection=mongodb://mongodb:27017
       - OtlpEndpoint=http://jaeger:4317
       - Environment=local
-      - ServiceDiscovery__MyUrl=http://local.loyalty-internal-api:8080
-      - ServiceDiscovery__ServiceName=LoyaltyInternalApi
-      - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
+      - ServiceDiscovery__MyUrl=
+      - ServiceDiscovery__ServiceName=
+      - ServiceDiscovery__ConsulServiceEndpoint=
       - Messaging__HostName=rabbitmq
       - Messaging__ExchangeName=local.plantbasedpizza
 
@@ -139,7 +139,7 @@ services:
       - Environment=local
       - ServiceDiscovery__MyUrl=
       - ServiceDiscovery__ServiceName=
-      - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
+      - ServiceDiscovery__ConsulServiceEndpoint=
       - Messaging__HostName=rabbitmq
       - Messaging__ExchangeName=local.plantbasedpizza
 
@@ -157,10 +157,10 @@ services:
       - OtlpEndpoint=http://jaeger:4317
       - Environment=local
       - RedisConnectionString=cache
-      - Services__Recipes=http://RecipeApi
-      - ServiceDiscovery__MyUrl=http://local.kitchen-api:8080
-      - ServiceDiscovery__ServiceName=KitchenApi
-      - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
+      - Services__Recipes=http://local.recipe-api
+      - ServiceDiscovery__MyUrl=
+      - ServiceDiscovery__ServiceName=
+      - ServiceDiscovery__ConsulServiceEndpoint=
       - Messaging__HostName=rabbitmq
       - Messaging__ExchangeName=local.plantbasedpizza
       - Auth__Issuer=https://plantbasedpizza.com
@@ -179,10 +179,10 @@ services:
       - OtlpEndpoint=http://jaeger:4317
       - Environment=local
       - RedisConnectionString=cache
-      - Services__Recipes=http://RecipeApi
+      - Services__Recipes=http://local.recipe-api
       - ServiceDiscovery__MyUrl=
       - ServiceDiscovery__ServiceName=
-      - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
+      - ServiceDiscovery__ConsulServiceEndpoint=
       - Messaging__HostName=rabbitmq
       - Messaging__ExchangeName=local.plantbasedpizza
 
@@ -197,9 +197,9 @@ services:
     environment:
       - OtlpEndpoint=http://jaeger:4317
       - Environment=local
-      - ServiceDiscovery__MyUrl=http://local.payment-api:8080
-      - ServiceDiscovery__ServiceName=PaymentApi
-      - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
+      - ServiceDiscovery__MyUrl=
+      - ServiceDiscovery__ServiceName=
+      - ServiceDiscovery__ConsulServiceEndpoint=
       - Messaging__HostName=rabbitmq
       - Messaging__ExchangeName=local.plantbasedpizza
       - Auth__ApiKey=the api key to use, use a secret store in production
@@ -216,9 +216,9 @@ services:
       - DatabaseConnection=mongodb://mongodb:27017
       - OtlpEndpoint=http://jaeger:4317
       - Environment=local
-      - ServiceDiscovery__MyUrl=http://local.recipe-api:8080
-      - ServiceDiscovery__ServiceName=RecipeApi
-      - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
+      - ServiceDiscovery__MyUrl=
+      - ServiceDiscovery__ServiceName=
+      - ServiceDiscovery__ConsulServiceEndpoint=
       - Messaging__HostName=rabbitmq
       - Messaging__ExchangeName=local.plantbasedpizza
       - Auth__Issuer=https://plantbasedpizza.com
@@ -238,9 +238,9 @@ services:
       - DatabaseConnection=mongodb://mongodb:27017
       - OtlpEndpoint=http://jaeger:4317
       - Environment=local
-      - ServiceDiscovery__MyUrl=http://local.delivery-api:8080
-      - ServiceDiscovery__ServiceName=DeliveryApi
-      - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
+      - ServiceDiscovery__MyUrl=
+      - ServiceDiscovery__ServiceName=
+      - ServiceDiscovery__ConsulServiceEndpoint=
       - Messaging__HostName=rabbitmq
       - Messaging__ExchangeName=local.plantbasedpizza
       - Auth__Issuer=https://plantbasedpizza.com
@@ -260,7 +260,7 @@ services:
       - Environment=local
       - ServiceDiscovery__MyUrl=
       - ServiceDiscovery__ServiceName=
-      - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
+      - ServiceDiscovery__ConsulServiceEndpoint=
       - Messaging__HostName=rabbitmq
       - Messaging__ExchangeName=local.plantbasedpizza
 
