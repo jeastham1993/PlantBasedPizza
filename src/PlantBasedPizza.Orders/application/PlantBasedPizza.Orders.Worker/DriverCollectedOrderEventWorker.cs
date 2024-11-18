@@ -34,7 +34,7 @@ public class DriverCollectedOrderEventWorker : BackgroundService
                 var evtDataResponse =
                     await _eventSubscriber.ParseEventFrom<DriverCollectedOrderEventV1>(ea.Body.ToArray());
 
-                using var processingActivity = _source.StartActivity("processing-order-completed-event",
+                using var processingActivity = _sour    ce.StartActivity("processing-order-completed-event",
                     ActivityKind.Server, evtDataResponse.TraceParent);
                 processingActivity.AddTag("queue.time", evtDataResponse.QueueTime);
 

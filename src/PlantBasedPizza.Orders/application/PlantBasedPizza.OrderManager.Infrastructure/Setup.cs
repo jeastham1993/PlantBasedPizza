@@ -110,6 +110,8 @@ namespace PlantBasedPizza.OrderManager.Infrastructure
                 .AddPolicyHandler(GetRetryPolicy());
             
             services.AddLogging();
+            
+            services.AddDaprClient();
 
             return services;
         }

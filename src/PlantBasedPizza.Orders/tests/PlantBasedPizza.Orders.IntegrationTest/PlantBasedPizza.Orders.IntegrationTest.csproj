@@ -44,5 +44,11 @@
     <ProjectReference Include="..\..\..\shared\PlantBasedPizza.IntegrationTest.Helpers\PlantBasedPizza.IntegrationTest.Helpers.csproj" />
     <ProjectReference Include="..\..\application\PlantBasedPizza.Orders.Worker\PlantBasedPizza.Orders.Worker.csproj" />
   </ItemGroup>
+  
+  <ItemGroup>
+    <Content Include="..\..\docker-compose-integration.yml">
+      <Link>docker-compose-integration.yml</Link>
+    </Content>
+  </ItemGroup>
 
 </Project>

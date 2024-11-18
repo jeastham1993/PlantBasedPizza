@@ -54,8 +54,7 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization();
 
 builder.Services.AddOrderManagerInfrastructure(builder.Configuration);
-builder.Services.AddSharedInfrastructure(builder.Configuration, "PlantBasedPizza")
-    .AddMessaging(builder.Configuration);
+builder.Services.AddSharedInfrastructure(builder.Configuration, "PlantBasedPizza");
 
 builder.Services.AddHttpClient();
 
