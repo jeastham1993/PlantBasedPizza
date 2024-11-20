@@ -48,7 +48,7 @@ jobs:
         run: |
           echo "sha_short=$(git rev-parse --short "$GITHUB_SHA")" >> "$GITHUB_ENV"
       -
-        name: Build and push
+        name: Build local image
         uses: docker/build-push-action@v5
         with:
           push: false
@@ -57,7 +57,7 @@ jobs:
           context: ./src
           file: ${{ inputs.dockerfile }}
       - name: Tag With Commit Hash
-        run: docker tag ${{inputs.image-name}} ${{inputs.docker-repository}}/${{inputs.image-name}}:${{ env.sha_short }}
+        run: docker tag ${{inputs.image-name}} ${{inputs.docker-repository}}:${{ env.sha_short }}
       - name: Push to DockerHub
         run: docker push ${{inputs.docker-repository}}:${{ env.sha_short }}
           
