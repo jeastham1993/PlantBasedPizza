@@ -3,7 +3,7 @@ name: Order Services CICD
 on:
     push:
       branches:
-        - microservices-module-6
+        - feat/dapr
       paths:
         - .github/workflows/build-and-push-base.yaml
         - .github/workflows/build-order-services.yaml
@@ -17,33 +17,21 @@ permissions:
 
 jobs:
   build-api-image:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@microservices-module-6
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-and-push-base.yaml@feat/dapr
     with:
-      unit-test-folder: src/PlantBasedPizza.Orders/tests/PlantBasedPizza.Orders.UnitTest
+      docker-repository: plantpowerjames/plant-based-pizza-order-api
       image-name: orders-api
       dockerfile: src/PlantBasedPizza.Orders/application/PlantBasedPizza.Orders.Api/Dockerfile-x86
     secrets:
-      deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
-      ecr-registry: ${{secrets.ECR_REGISTRY}}
+      DOCKERHUB_USERNAME: ${{secrets.DOCKERHUB_USERNAME}}
+      DOCKERHUB_TOKEN: ${{secrets.DOCKERHUB_TOKEN}}
 
   build-worker-image:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@microservices-module-6
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-and-push-base.yaml@feat/dapr
     with:
-      unit-test-folder: src/PlantBasedPizza.Orders/tests/PlantBasedPizza.Orders.UnitTest
+      docker-repository: plantpowerjames/plant-based-pizza-orders-worker
       image-name: orders-worker
       dockerfile: src/PlantBasedPizza.Orders/application/PlantBasedPizza.Orders.Worker/Dockerfile-x86
     secrets:
-      deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
-      ecr-registry: ${{secrets.ECR_REGISTRY}}
-
-  integration-test:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/integration-test-base.yaml@microservices-module-6
-    needs:
-      - build-api-image
-      - build-worker-image
-    with:
-      integration-test-compose-file: src/PlantBasedPizza.Orders/docker-compose-integration.yml
-      integration-test-folder: src/PlantBasedPizza.Orders/tests/PlantBasedPizza.Orders.IntegrationTest
-    secrets:
-      deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
-      ecr-registry: ${{secrets.ECR_REGISTRY}}
+      DOCKERHUB_USERNAME: ${{secrets.DOCKERHUB_USERNAME}}
+      DOCKERHUB_TOKEN: ${{secrets.DOCKERHUB_TOKEN}}

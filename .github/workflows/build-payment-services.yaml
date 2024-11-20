@@ -3,7 +3,7 @@ name: Payment API CICD
 on:
     push:
       branches:
-        - microservices-module-6
+        - feat/dapr
       paths:
         - .github/workflows/build-and-push-base.yaml
         - .github/workflows/build-payment-services.yaml
@@ -17,20 +17,11 @@ permissions:
 
 jobs:
   build-image:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@microservices-module-6
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-and-push-base.yaml@feat/dapr
     with:
-      unit-test-folder: src/PlantBasedPizza.Payments/tests/PlantBasedPizza.Payments.UnitTests
+      docker-repository: plantpowerjames/plant-based-pizza-payment-api
       image-name: payment-api
       dockerfile: src/PlantBasedPizza.Payments/application/PlantBasedPizza.Payments/Dockerfile-x86
     secrets:
-      deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
-      ecr-registry: ${{secrets.ECR_REGISTRY}}
-  integration-test:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/integration-test-base.yaml@microservices-module-6
-    needs: build-image
-    with:
-      integration-test-compose-file: src/PlantBasedPizza.Payments/docker-compose-integration.yml
-      integration-test-folder: src/PlantBasedPizza.Payments/tests/PlantBasedPizza.Payments.IntegrationTests
-    secrets:
-      deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
-      ecr-registry: ${{secrets.ECR_REGISTRY}}
+      DOCKERHUB_USERNAME: ${{secrets.DOCKERHUB_USERNAME}}
+      DOCKERHUB_TOKEN: ${{secrets.DOCKERHUB_TOKEN}}

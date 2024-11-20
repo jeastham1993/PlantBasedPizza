@@ -1,16 +1,16 @@
 name: Recipe API CICD
 
 on:
-    push:
-      branches:
-        - microservices-module-6
-      paths:
-        - .github/workflows/build-base.yaml
-        - .github/workflows/integration-test-base.yaml
-        - .github/workflows/build-recipe-services.yaml
-        - src/PlantBasedPizza.Recipes/**
-        - src/shared/**
-    workflow_dispatch:
+  push:
+    branches:
+      - feat/dapr
+    paths:
+      - .github/workflows/build-base.yaml
+      - .github/workflows/integration-test-base.yaml
+      - .github/workflows/build-recipe-services.yaml
+      - src/PlantBasedPizza.Recipes/**
+      - src/shared/**
+  workflow_dispatch:
 
 permissions:
   id-token: write
@@ -18,20 +18,11 @@ permissions:
 
 jobs:
   build-image:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@microservices-module-6
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-and-push-base.yaml@feat/dapr
     with:
-      unit-test-folder: src/PlantBasedPizza.Recipes/tests/PlantBasedPizza.Recipes.UnitTests
+      docker-repository: plantpowerjames/plant-based-pizza-recipe-api
       image-name: recipe-api
       dockerfile: src/PlantBasedPizza.Recipes/applications/PlantBasedPizza.Recipes.Api/Dockerfile-x86
     secrets:
-      deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
-      ecr-registry: ${{secrets.ECR_REGISTRY}}
-  integration-test:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/integration-test-base.yaml@microservices-module-6
-    needs: build-image
-    with:
-      integration-test-compose-file: src/PlantBasedPizza.Recipes/docker-compose-integration.yml
-      integration-test-folder: src/PlantBasedPizza.Recipes/tests/PlantBasedPizza.Recipes.IntegrationTests
-    secrets:
-      deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
-      ecr-registry: ${{secrets.ECR_REGISTRY}}
+      DOCKERHUB_USERNAME: ${{secrets.DOCKERHUB_USERNAME}}
+      DOCKERHUB_TOKEN: ${{secrets.DOCKERHUB_TOKEN}}

@@ -15,7 +15,7 @@ public static class Setup
 
         if (string.IsNullOrEmpty(momentoApiKey) || string.IsNullOrEmpty(cacheName))
         {
-            services.AddMemoryCache();
+            services.AddDistributedMemoryCache();
         }
         else
         {
