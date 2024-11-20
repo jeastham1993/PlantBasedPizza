@@ -58,6 +58,6 @@ jobs:
           file: ${{ inputs.dockerfile }}
       - name: Tag With Commit Hash
         run: docker tag ${{inputs.image-name}} ${{inputs.docker-repository}}/${{inputs.image-name}}:${{ env.sha_short }}
-      - name: Tag With Commit Hash
-        run: docker push ${{inputs.docker-repository}}/${{inputs.image-name}}:${{ env.sha_short }}
+      - name: Push to DockerHub
+        run: docker push ${{inputs.docker-repository}}:${{ env.sha_short }}
           
