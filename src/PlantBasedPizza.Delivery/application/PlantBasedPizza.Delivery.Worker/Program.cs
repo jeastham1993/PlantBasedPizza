@@ -9,6 +9,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Configuration
     .AddEnvironmentVariables();
 
+builder.Services.AddDaprClient();
+
 var serviceName = "DeliveryWorker";
 
 builder.Services
@@ -18,9 +20,11 @@ builder.Services
 
 builder.Services.AddSingleton<OrderReadyForDeliveryEventHandler>();
 
-builder.Services.AddHostedService<OrderReadyForDeliveryEventWorker>();
-
 var app = builder.Build();
+
+app.MapSubscribeHandler();
+app.UseCloudEvents();
+app.AddReadyForDeliveryHandler();
 
 app.MapGet("/deliver/health", () => "Healthy");
 

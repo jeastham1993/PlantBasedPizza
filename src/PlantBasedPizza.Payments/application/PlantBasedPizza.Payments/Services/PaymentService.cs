@@ -1,17 +1,17 @@
 using System.Security.Cryptography;
+using Dapr.Client;
 using Grpc.Core;
-using PlantBasedPizza.Events;
 using PlantBasedPizza.Payments.IntegrationEvents;
 
 namespace PlantBasedPizza.Payments.Services;
 
 public class PaymentService : Payment.PaymentBase
 {
-    private readonly IEventPublisher _eventPublisher;
+    private readonly DaprClient _daprClient;
 
-    public PaymentService(IEventPublisher eventPublisher)
+    public PaymentService(DaprClient daprClient)
     {
-        _eventPublisher = eventPublisher;
+        _daprClient = daprClient;
     }
 
     public override async Task<TakePaymentsReply> TakePayment(TakePaymentRequest request, ServerCallContext context)
@@ -20,11 +20,13 @@ public class PaymentService : Payment.PaymentBase
 
         await Task.Delay(TimeSpan.FromMilliseconds(randomSecondDelay));
 
-        await this._eventPublisher.Publish(new PaymentSuccessfulEventV1()
+        var evt = new PaymentSuccessfulEventV1()
         {
             OrderIdentifier = request.OrderIdentifier,
             CustomerIdentifier = request.CustomerIdentifier
-        });
+        };
+        
+        await this._daprClient.PublishEventAsync("public", $"{evt.EventName}.{evt.EventVersion}", evt);
 
         return new TakePaymentsReply()
         {

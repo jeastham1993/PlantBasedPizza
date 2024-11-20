@@ -1,8 +1,6 @@
-using PlantBasedPizza.Events;
 using PlantBasedPizza.Kitchen.Core.Adapters;
 using PlantBasedPizza.Kitchen.Core.Entities;
 using PlantBasedPizza.Kitchen.Core.Services;
-using PlantBasedPizza.Kitchen.Infrastructure.IntegrationEvents;
 using PlantBasedPizza.Kitchen.Worker.IntegrationEvents;
 using PlantBasedPizza.Shared.Guards;
 using PlantBasedPizza.Shared.Logging;

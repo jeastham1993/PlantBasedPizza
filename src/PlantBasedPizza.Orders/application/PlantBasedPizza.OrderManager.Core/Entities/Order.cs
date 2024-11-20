@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 using PlantBasedPizza.Events;
 using PlantBasedPizza.Shared.Guards;
 using PlantBasedPizza.Shared.Logging;
@@ -9,10 +9,10 @@ namespace PlantBasedPizza.OrderManager.Core.Entities
     {
         private const decimal DefaultDeliveryPrice = 3.50M;
 
-        [JsonProperty("items")]
+        [JsonPropertyName("items")]
         private List<OrderItem> _items;
         
-        [JsonProperty("history")]
+        [JsonPropertyName("history")]
         private List<OrderHistory> _history;
         
         [JsonConstructor]
@@ -62,25 +62,25 @@ namespace PlantBasedPizza.OrderManager.Core.Entities
             return order;
         }
 
-        [JsonProperty]
+        [JsonPropertyName("orderIdentifier")]
         public string OrderIdentifier { get; private set; }
         
-        [JsonProperty]
+        [JsonPropertyName("orderNumber")]
         public string OrderNumber { get; private set; }
 
-        [JsonProperty]
+        [JsonPropertyName("orderDate")]
         public DateTime OrderDate { get; private set; }
 
-        [JsonProperty]
+        [JsonPropertyName("loyaltyPointsAtOrder")]
         public decimal LoyaltyPointsAtOrder { get; private set; }
         
-        [JsonProperty]
+        [JsonPropertyName("awaitingCollection")]
         public bool AwaitingCollection { get; private set; }
 
-        [JsonProperty]
+        [JsonPropertyName("orderSubmittedOn")]
         public DateTime? OrderSubmittedOn { get; private set; }
 
-        [JsonProperty]
+        [JsonPropertyName("orderCompletedOn")]
         public DateTime? OrderCompletedOn { get; private set; }
 
         [JsonIgnore]
@@ -91,16 +91,16 @@ namespace PlantBasedPizza.OrderManager.Core.Entities
             return this._history.OrderBy(p => p.HistoryDate).ToList();
         }
 
-        [JsonProperty]
+        [JsonPropertyName("orderType")]
         public OrderType OrderType { get; private set; }
 
-        [JsonProperty]
+        [JsonPropertyName("customerIdentifier")]
         public string CustomerIdentifier { get; private set; }
 
-        [JsonProperty]
+        [JsonPropertyName("totalPrice")]
         public decimal TotalPrice { get; private set; }
 
-        [JsonProperty]
+        [JsonPropertyName("deliveryDetails")]
         public DeliveryDetails? DeliveryDetails { get; private set; }
 
         public void AddOrderItem(string recipeIdentifier, string itemName, int quantity, decimal price)

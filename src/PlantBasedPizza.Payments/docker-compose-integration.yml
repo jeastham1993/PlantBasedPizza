@@ -34,7 +34,7 @@ services:
     ports:
         - 5070:8080
     environment:
-      - OtlpEndpoint=http://jaeger:4317
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
       - Environment=local
       - ServiceDiscovery__MyUrl=
       - ServiceDiscovery__ServiceName=

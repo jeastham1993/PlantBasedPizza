@@ -1,4 +1,3 @@
-version: "3.7"
 services:
   mongodb:
     image: mongo
@@ -44,3 +43,12 @@ services:
     ports:
         - 5672:5672
         - 15672:15672
+
+  ############################
+  # Dapr placement service
+  ############################
+  placement:
+    image: "daprio/dapr"
+    command: ["./placement", "-port", "50006"]
+    ports:
+      - "50006:50006"

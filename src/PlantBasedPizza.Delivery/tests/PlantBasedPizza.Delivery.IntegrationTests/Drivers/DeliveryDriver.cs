@@ -1,12 +1,9 @@
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using PlantBasedPizza.Delivery.IntegrationTests.ViewModels;
 using PlantBasedPizza.Events;
 using PlantBasedPizza.IntegrationTest.Helpers;
-using Serilog.Extensions.Logging;
 
 namespace PlantBasedPizza.Delivery.IntegrationTests.Drivers
 {
@@ -32,12 +29,6 @@ namespace PlantBasedPizza.Delivery.IntegrationTests.Drivers
             this._driverHttpClient = new HttpClient();
             this._driverHttpClient.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", TestTokenGenerator.GenerateTestTokenForRole("driver"));
-
-            _eventPublisher = new RabbitMQEventPublisher(new OptionsWrapper<RabbitMqSettings>(new RabbitMqSettings()
-            {
-                ExchangeName = "dev.delivery",
-                HostName = "localhost"
-            }), new Logger<RabbitMQEventPublisher>(new SerilogLoggerFactory()), new RabbitMQConnection("localhost"));
         }
 
         public async Task ANewOrderIsReadyForDelivery(string orderIdentifier)

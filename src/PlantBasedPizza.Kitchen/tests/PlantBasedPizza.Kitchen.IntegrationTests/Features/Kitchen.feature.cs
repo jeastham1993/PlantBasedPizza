@@ -80,16 +80,16 @@ namespace PlantBasedPizza.Kitchen.IntegrationTests.Features
             this.TestTearDown();
         }
         
-        [Xunit.SkippableFactAttribute(DisplayName="Order should be moved through the requisite kitchen queues - prparing")]
+        [Xunit.SkippableFactAttribute(DisplayName="Order appears as new")]
         [Xunit.TraitAttribute("FeatureTitle", "KitchenFeature")]
-        [Xunit.TraitAttribute("Description", "Order should be moved through the requisite kitchen queues - prparing")]
+        [Xunit.TraitAttribute("Description", "Order appears as new")]
         [Xunit.TraitAttribute("Category", "kitchen")]
-        public void OrderShouldBeMovedThroughTheRequisiteKitchenQueues_Prparing()
+        public void OrderAppearsAsNew()
         {
             string[] tagsOfScenario = new string[] {
                     "kitchen"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Order should be moved through the requisite kitchen queues - prparing", null, tagsOfScenario, argumentsOfScenario, featureTags);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Order appears as new", null, tagsOfScenario, argumentsOfScenario, featureTags);
 #line 5
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
@@ -104,9 +104,39 @@ this.ScenarioInitialize(scenarioInfo);
     testRunner.Given("a new order submitted event is raised", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
 #line 7
+    testRunner.Then("order should appear as new", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [Xunit.SkippableFactAttribute(DisplayName="Order should be moved through the requisite kitchen queues - prparing")]
+        [Xunit.TraitAttribute("FeatureTitle", "KitchenFeature")]
+        [Xunit.TraitAttribute("Description", "Order should be moved through the requisite kitchen queues - prparing")]
+        [Xunit.TraitAttribute("Category", "kitchen")]
+        public void OrderShouldBeMovedThroughTheRequisiteKitchenQueues_Prparing()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "kitchen"};
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Order should be moved through the requisite kitchen queues - prparing", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 10
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 11
+    testRunner.Given("a new order submitted event is raised", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line hidden
+#line 12
     testRunner.When("order is marked as preparing", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 8
+#line 13
     testRunner.Then("order should appear in the preparing queue", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             }
@@ -123,7 +153,7 @@ this.ScenarioInitialize(scenarioInfo);
                     "kitchen"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Order should be moved through the requisite kitchen queues - prep complete", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 11
+#line 16
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
@@ -133,16 +163,16 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 this.ScenarioStart();
-#line 12
+#line 17
     testRunner.Given("a new order submitted event is raised", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
-#line 13
+#line 18
     testRunner.When("order is marked as preparing", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 14
+#line 19
     testRunner.And("order is marked as prep-complete", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 15
+#line 20
     testRunner.Then("order should appear in the baking queue", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             }
@@ -159,7 +189,7 @@ this.ScenarioInitialize(scenarioInfo);
                     "kitchen"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Order should be moved through the requisite kitchen queues - bake complete", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 18
+#line 23
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
@@ -169,19 +199,19 @@ this.ScenarioInitialize(scenarioInfo);
             else
             {
                 this.ScenarioStart();
-#line 19
+#line 24
     testRunner.Given("a new order submitted event is raised", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
-#line 20
+#line 25
     testRunner.When("order is marked as preparing", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 21
+#line 26
     testRunner.And("order is marked as prep-complete", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 22
+#line 27
     testRunner.And("order is marked as bake-complete", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 23
+#line 28
     testRunner.Then("order should appear in the quality check queue", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             }

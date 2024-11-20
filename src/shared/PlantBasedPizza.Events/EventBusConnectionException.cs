@@ -6,6 +6,6 @@ public class EventBusConnectionException : Exception
 
     public EventBusConnectionException(string hostName, string message) : base(message)
     {
-        this.HostName = hostName;
+        HostName = hostName;
     }
 }

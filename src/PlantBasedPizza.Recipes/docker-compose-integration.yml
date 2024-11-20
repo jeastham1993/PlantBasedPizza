@@ -39,7 +39,7 @@ services:
       - "5138:8080"
     environment:
       - DatabaseConnection=mongodb://mongodb:27017
-      - OtlpEndpoint=http://jaeger:4317
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
       - Environment=local
       - ServiceDiscovery__MyUrl=
       - ServiceDiscovery__ServiceName=

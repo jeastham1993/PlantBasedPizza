@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using FluentAssertions;
 using PlantBasedPizza.E2ETests.Drivers;
 using TechTalk.SpecFlow;
 

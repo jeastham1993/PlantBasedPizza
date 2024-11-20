@@ -1,6 +1,6 @@
+using Dapr.Client;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PlantBasedPizza.Events;
 using PlantBasedPizza.Recipes.Core.Commands;
 using PlantBasedPizza.Recipes.Core.Entities;
 using PlantBasedPizza.Recipes.Core.IntegrationEvents;
@@ -13,13 +13,13 @@ namespace PlantBasedPizza.Recipes.Infrastructure.Controllers
     {
         private readonly IRecipeRepository _recipeRepository;
         private readonly IObservabilityService _observability;
-        private readonly IEventPublisher _eventPublisher;
+        private readonly DaprClient _daprClient;
 
-        public RecipeController(IRecipeRepository recipeRepository, IObservabilityService observability, IEventPublisher eventPublisher)
+        public RecipeController(IRecipeRepository recipeRepository, IObservabilityService observability, DaprClient daprClient)
         {
             _recipeRepository = recipeRepository;
             _observability = observability;
-            _eventPublisher = eventPublisher;
+            _daprClient = daprClient;
         }
 
         /// <summary>
@@ -79,10 +79,11 @@ namespace PlantBasedPizza.Recipes.Infrastructure.Controllers
                 }
 
                 await this._recipeRepository.Add(recipe);
-                await this._eventPublisher.Publish(new RecipeCreatedEventV1()
+                var evt = new RecipeCreatedEventV1()
                 {
                     RecipeIdentifier = recipe.RecipeIdentifier
-                });
+                };
+                await this._daprClient.PublishEventAsync("public", $"{evt.EventName}.{evt.EventVersion}", evt);
 
                 return recipe;
             }

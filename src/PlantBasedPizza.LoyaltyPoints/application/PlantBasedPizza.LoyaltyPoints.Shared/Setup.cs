@@ -16,6 +16,7 @@ public static class Setup
         var client = new MongoClient(configuration["DatabaseConnection"]);
 
         services.AddSingleton(client);
+        services.AddDaprClient();
 
         services.AddSingleton<ICustomerLoyaltyPointsRepository, CustomerLoyaltyPointRepository>();
         services.AddSingleton<AddLoyaltyPointsCommandHandler>();

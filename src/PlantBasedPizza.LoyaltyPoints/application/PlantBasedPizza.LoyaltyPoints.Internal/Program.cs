@@ -1,4 +1,3 @@
-using PlantBasedPizza.LoyaltyPoints.Internal;
 using PlantBasedPizza.LoyaltyPoints.Internal.Services;
 using PlantBasedPizza.LoyaltyPoints.Shared;
 

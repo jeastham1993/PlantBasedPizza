@@ -1,7 +1,5 @@
 using System.Text;
 using System.Text.Json;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using PlantBasedPizza.Account.IntegrationTests.ViewModels;
 
 namespace PlantBasedPizza.Account.IntegrationTests.Drivers

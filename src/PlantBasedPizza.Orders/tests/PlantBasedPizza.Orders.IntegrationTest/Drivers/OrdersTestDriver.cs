@@ -1,7 +1,5 @@
 using System.Net.Http.Headers;
 using System.Text;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using PlantBasedPizza.Events;
 using PlantBasedPizza.IntegrationTest.Helpers;
@@ -11,7 +9,6 @@ using PlantBasedPizza.OrderManager.Core.CreateDeliveryOrder;
 using PlantBasedPizza.OrderManager.Core.CreatePickupOrder;
 using PlantBasedPizza.Orders.IntegrationTest.ViewModels;
 using PlantBasedPizza.Orders.Worker.IntegrationEvents;
-using Serilog.Extensions.Logging;
 
 namespace PlantBasedPizza.Orders.IntegrationTest.Drivers;
 
@@ -32,11 +29,11 @@ public class OrdersTestDriver
             _staffHttpClient = new HttpClient();
             _staffHttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", staffToken);
             
-            _eventPublisher = new RabbitMQEventPublisher(new OptionsWrapper<RabbitMqSettings>(new RabbitMqSettings()
-            {
-                ExchangeName = "dev.plantbasedpizza",
-                HostName = "localhost"
-            }), new Logger<RabbitMQEventPublisher>(new SerilogLoggerFactory()),  new RabbitMQConnection("localhost"));
+            // _eventPublisher = new RabbitMQEventPublisher(new OptionsWrapper<RabbitMqSettings>(new RabbitMqSettings()
+            // {
+            //     ExchangeName = "dev.plantbasedpizza",
+            //     HostName = "localhost"
+            // }), new Logger<RabbitMQEventPublisher>(new SerilogLoggerFactory()),  new RabbitMQConnection("localhost"));
         }
 
         public async Task SimulateLoyaltyPointsUpdatedEvent(string customerIdentifier, decimal totalPoints)

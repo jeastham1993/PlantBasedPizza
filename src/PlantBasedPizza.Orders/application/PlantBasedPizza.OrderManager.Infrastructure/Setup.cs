@@ -10,7 +10,7 @@ using PlantBasedPizza.OrderManager.Core.CreatePickupOrder;
 using PlantBasedPizza.OrderManager.Core.Entities;
 using PlantBasedPizza.OrderManager.Core.Services;
 using PlantBasedPizza.OrderManager.Infrastructure.IntegrationEvents;
-using PlantBasedPizza.Shared.ServiceDiscovery;
+using PlantBasedPizza.Shared.Caching;
 using Polly;
 using Polly.Contrib.WaitAndRetry;
 using Polly.Extensions.Http;
@@ -73,7 +73,6 @@ namespace PlantBasedPizza.OrderManager.Infrastructure
             })
             .ConfigureChannel((provider, channel) =>
             {
-                channel.HttpHandler = provider.GetRequiredService<ServiceRegistryHttpMessageHandler>();
                 channel.ServiceConfig = new ServiceConfig() { MethodConfigs = { defaultMethodConfig } };
             });
             
@@ -83,15 +82,10 @@ namespace PlantBasedPizza.OrderManager.Infrastructure
                 })
                 .ConfigureChannel((provider, channel) =>
                 {
-                    channel.HttpHandler = provider.GetRequiredService<ServiceRegistryHttpMessageHandler>();
                     channel.ServiceConfig = new ServiceConfig() { MethodConfigs = { defaultMethodConfig } };
                 });
             
-            services.AddStackExchangeRedisCache(options =>
-            {
-                options.Configuration = configuration["RedisConnectionString"];
-                options.InstanceName = "Orders";
-            });
+            services.AddCaching(configuration);
             
             services.AddSingleton<IOrderRepository, OrderRepository>();
             services.AddSingleton<CollectOrderCommandHandler>();
@@ -104,8 +98,7 @@ namespace PlantBasedPizza.OrderManager.Infrastructure
             services.AddSingleton<OrderManagerHealthChecks>();
             services.AddSingleton<IOrderEventPublisher, OrderEventPublisher>();
             
-            services.AddHttpClient("service-registry-http-client")
-                .AddHttpMessageHandler<ServiceRegistryHttpMessageHandler>()
+            services.AddHttpClient("retry-http-client")
                 .SetHandlerLifetime(TimeSpan.FromMinutes(5))
                 .AddPolicyHandler(GetRetryPolicy());
             

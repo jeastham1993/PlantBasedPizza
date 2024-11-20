@@ -1,5 +1,3 @@
-using System.Security.Cryptography;
-using System.Text;
 using MongoDB.Driver;
 using PlantBasedPizza.Account.Api.Core;
 

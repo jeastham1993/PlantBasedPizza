@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace PlantBasedPizza.OrderManager.Core.Entities
 {
@@ -16,10 +16,10 @@ namespace PlantBasedPizza.OrderManager.Core.Entities
             this.HistoryDate = historyDate;
         }
         
-        [JsonProperty]
+        [JsonPropertyName("description")]
         public string Description { get; private set; }
         
-        [JsonProperty]
+        [JsonPropertyName("historyDate")]
         public DateTime HistoryDate { get; private set; }
     }
 }

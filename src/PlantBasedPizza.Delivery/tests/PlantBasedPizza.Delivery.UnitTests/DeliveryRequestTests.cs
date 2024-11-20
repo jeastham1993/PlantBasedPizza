@@ -3,7 +3,6 @@ using Moq;
 using PlantBasedPizza.Deliver.Core.Entities;
 using PlantBasedPizza.Deliver.Core.Handlers;
 using PlantBasedPizza.Deliver.Core.IntegrationEvents;
-using PlantBasedPizza.Events;
 using PlantBasedPizza.Shared.Logging;
 
 namespace PlantBasedPizza.Delivery.UnitTests

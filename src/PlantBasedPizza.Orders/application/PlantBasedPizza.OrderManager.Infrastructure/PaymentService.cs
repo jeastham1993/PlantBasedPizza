@@ -15,7 +15,8 @@ public class PaymentService : IPaymentService
         _paymentClient = paymentClient;
         _metadata = new Metadata()
         {
-            { "APIKey", configuration["Auth:PaymentApiKey"] }
+            { "APIKey", configuration["Auth:PaymentApiKey"] },
+            { "dapr-app-id", "payment" }
         };
     }
 

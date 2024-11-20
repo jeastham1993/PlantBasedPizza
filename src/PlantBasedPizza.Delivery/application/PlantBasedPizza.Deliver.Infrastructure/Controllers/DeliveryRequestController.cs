@@ -4,9 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using PlantBasedPizza.Deliver.Core.Commands;
 using PlantBasedPizza.Deliver.Core.Entities;
 using PlantBasedPizza.Deliver.Core.GetDelivery;
-using PlantBasedPizza.Deliver.Core.IntegrationEvents;
-using PlantBasedPizza.Deliver.Infrastructure.IntegrationEvents;
-using PlantBasedPizza.Events;
 
 namespace PlantBasedPizza.Deliver.Infrastructure.Controllers
 {

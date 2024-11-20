@@ -1,14 +1,10 @@
 using System.Net.Http.Headers;
-using System.Text;
 using System.Text.Json;
 using Grpc.Net.Client;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using PlantBasedPizza.Events;
 using PlantBasedPizza.IntegrationTest.Helpers;
 using PlantBasedPizza.LoyaltyPoints.IntegrationTest.LoyaltyClient;
 using PlantBasedPizza.LoyaltyPoints.IntegrationTest.ViewModels;
-using Serilog.Extensions.Logging;
 
 namespace PlantBasedPizza.LoyaltyPoints.IntegrationTest.Drivers;
 
@@ -29,11 +25,11 @@ public class LoyaltyPointsDriver
             var channel = GrpcChannel.ForAddress(TestConstants.InternalTestEndpoint);
             this._loyaltyClient = new Loyalty.LoyaltyClient(channel);
 
-            _eventPublisher = new RabbitMQEventPublisher(new OptionsWrapper<RabbitMqSettings>(new RabbitMqSettings()
-            {
-                ExchangeName = "dev.loyalty",
-                HostName = "localhost"
-            }), new Logger<RabbitMQEventPublisher>(new SerilogLoggerFactory()), new RabbitMQConnection("localhost"));
+            // _eventPublisher = new RabbitMQEventPublisher(new OptionsWrapper<RabbitMqSettings>(new RabbitMqSettings()
+            // {
+            //     ExchangeName = "dev.loyalty",
+            //     HostName = "localhost"
+            // }), new Logger<RabbitMQEventPublisher>(new SerilogLoggerFactory()), new RabbitMQConnection("localhost"));
         }
 
         public async Task AddLoyaltyPoints(string orderIdentifier, decimal orderValue)

@@ -1,4 +1,4 @@
-using PlantBasedPizza.Events;
+using Dapr.Client;
 using PlantBasedPizza.Kitchen.Core.Entities;
 using Saunter.Attributes;
 
@@ -7,65 +7,75 @@ namespace PlantBasedPizza.Kitchen.Infrastructure.IntegrationEvents;
 [AsyncApi]
 public class KitchenEventPublisher : IKitchenEventPublisher
 {
-    private readonly IEventPublisher _eventPublisher;
+    private readonly DaprClient _daprClient;
 
-    public KitchenEventPublisher(IEventPublisher eventPublisher)
+    public KitchenEventPublisher(DaprClient daprClient)
     {
-        _eventPublisher = eventPublisher;
+        _daprClient = daprClient;
     }
 
     [Channel("kitchen.orderConfirmed.v1")]
     [PublishOperation(typeof(KitchenConfirmedOrderEventV1), Summary = "Published when the kitchen confirms an order.")]
     public async Task PublishKitchenConfirmedOrderEventV1(KitchenRequest request)
     {
-        await this._eventPublisher.Publish(new KitchenConfirmedOrderEventV1()
+        var evt = new KitchenConfirmedOrderEventV1()
         {
             OrderIdentifier = request.OrderIdentifier,
             KitchenIdentifier = request.KitchenRequestId
-        });
+        };
+
+        await this._daprClient.PublishEventAsync("public", $"{evt.EventName}.{evt.EventVersion}", evt);
     }
 
     [Channel("kitchen.orderBaked.v1")]
     [PublishOperation(typeof(OrderBakedEventV1), Summary = "Published when the kitchen finishes baking an order.")]
     public async Task PublishOrderBakedEventV1(KitchenRequest request)
     {
-        await this._eventPublisher.Publish(new OrderBakedEventV1()
+        var evt = new OrderBakedEventV1()
         {
             OrderIdentifier = request.OrderIdentifier,
             KitchenIdentifier = request.KitchenRequestId
-        });
+        };
+        
+        await this._daprClient.PublishEventAsync("public", $"{evt.EventName}.{evt.EventVersion}", evt);
     }
 
     [Channel("kitchen.orderPreparing.v1")]
     [PublishOperation(typeof(OrderPreparingEventV1), Summary = "Published when the kitchen starts preparing an order.")]
     public async Task PublishOrderPreparingEventV1(KitchenRequest request)
     {
-        await this._eventPublisher.Publish(new OrderPreparingEventV1()
+        var evt = new OrderPreparingEventV1()
         {
             OrderIdentifier = request.OrderIdentifier,
             KitchenIdentifier = request.KitchenRequestId
-        });
+        };
+        
+        await this._daprClient.PublishEventAsync("public", $"{evt.EventName}.{evt.EventVersion}", evt);
     }
 
     [Channel("kitchen.orderPrepComplete.v1")]
     [PublishOperation(typeof(OrderPreparingEventV1), Summary = "Published when the kitchen finishes preparing an order.")]
     public async Task PublishOrderPrepCompleteEventV1(KitchenRequest request)
     {
-        await this._eventPublisher.Publish(new OrderPrepCompleteEventV1()
+        var evt = new OrderPrepCompleteEventV1()
         {
             OrderIdentifier = request.OrderIdentifier,
             KitchenIdentifier = request.KitchenRequestId
-        });
+        };
+        
+        await this._daprClient.PublishEventAsync("public", $"{evt.EventName}.{evt.EventVersion}", evt);
     }
 
     [Channel("kitchen.qualityChecked.v1")]
     [PublishOperation(typeof(OrderQualityCheckedEventV1), Summary = "Published when the kitchen quality checks an order, this indicates it is ready.")]
     public async Task PublishOrderQualityCheckedEventV1(KitchenRequest request)
     {
-        await this._eventPublisher.Publish(new OrderQualityCheckedEventV1()
+        var evt = new OrderQualityCheckedEventV1()
         {
             OrderIdentifier = request.OrderIdentifier,
             KitchenIdentifier = request.KitchenRequestId
-        });
+        };
+        
+        await this._daprClient.PublishEventAsync("public", $"{evt.EventName}.{evt.EventVersion}", evt);
     }
 }

@@ -1,5 +1,5 @@
+using Dapr.Client;
 using PlantBasedPizza.Deliver.Core.Entities;
-using PlantBasedPizza.Events;
 using Saunter.Attributes;
 
 namespace PlantBasedPizza.Deliver.Infrastructure.IntegrationEvents;
@@ -7,31 +7,35 @@ namespace PlantBasedPizza.Deliver.Infrastructure.IntegrationEvents;
 [AsyncApi]
 public class DeliveryEventPublisher : IDeliveryEventPublisher
 {
-    private readonly IEventPublisher _eventPublisher;
+    private readonly DaprClient _daprClient;
 
-    public DeliveryEventPublisher(IEventPublisher eventPublisher)
+    public DeliveryEventPublisher(DaprClient daprClient)
     {
-        _eventPublisher = eventPublisher;
+        _daprClient = daprClient;
     }
 
     [Channel("delivery.driverCollectedOrder.v1")]
     [PublishOperation(typeof(DriverCollectedOrderEventV1), Summary = "Published when a driver collects an order.")]
     public async Task PublishDriverOrderCollectedEventV1(DeliveryRequest deliveryRequest)
     {
-        await this._eventPublisher.Publish(new DriverCollectedOrderEventV1()
+        var evt = new DriverCollectedOrderEventV1()
         {
             DriverName = deliveryRequest.Driver,
             OrderIdentifier = deliveryRequest.OrderIdentifier
-        });
+        };
+        
+        await this._daprClient.PublishEventAsync("public", $"{evt.EventName}.{evt.EventVersion}", evt);
     }
 
     [Channel("delivery.driverDeliveredOrder.v1")]
     [PublishOperation(typeof(DriverDeliveredOrderEventV1), Summary = "Published when a driver delivers an order.")]
     public async Task PublishDriverDeliveredOrderEventV1(DeliveryRequest deliveryRequest)
     {
-        await this._eventPublisher.Publish(new DriverDeliveredOrderEventV1()
+        var evt = new DriverDeliveredOrderEventV1()
         {
             OrderIdentifier = deliveryRequest.OrderIdentifier
-        });
+        };
+        
+        await this._daprClient.PublishEventAsync("public", $"{evt.EventName}.{evt.EventVersion}", evt);
     }
 }

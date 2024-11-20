@@ -5,9 +5,11 @@ using PlantBasedPizza.Kitchen.Worker;
 using PlantBasedPizza.Kitchen.Worker.Handlers;
 using PlantBasedPizza.Shared;
 
-var builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateSlimBuilder(args);
 builder.Configuration
     .AddEnvironmentVariables();
+
+builder.Services.AddDaprClient();
 
 var serviceName = "KitchenWorker";
 
@@ -18,10 +20,10 @@ builder.Services
 
 builder.Services.AddSingleton<OrderSubmittedEventHandler>();
 
-builder.Services.AddHostedService<OrderSubmittedEventWorker>();
-
 var app = builder.Build();
 
-app.MapGet("/kitchen/health", () => "Healthy");
+app.MapSubscribeHandler();
+app.UseCloudEvents();
+app.AddOrderSubmittedProcessing();
 
-app.Run();
+await app.RunAsync();

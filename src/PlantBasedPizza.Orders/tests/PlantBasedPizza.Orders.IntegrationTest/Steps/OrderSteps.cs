@@ -1,11 +1,8 @@
 using System.Diagnostics;
 using FluentAssertions;
 using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Caching.StackExchangeRedis;
-using Microsoft.Extensions.Options;
-using PlantBasedPizza.OrderManager.Core.Entities;
+using Microsoft.Extensions.Caching.Memory;
 using PlantBasedPizza.Orders.IntegrationTest.Drivers;
-using StackExchange.Redis;
 using TechTalk.SpecFlow;
 
 namespace PlantBasedPizza.Orders.IntegrationTest.Steps;
@@ -15,20 +12,15 @@ public partial class OrderSteps
 {
     private readonly OrdersTestDriver _driver;
     private readonly ScenarioContext _scenarioContext;
-    private readonly ConnectionMultiplexer _connectionMultiplexer;
     private readonly IDistributedCache _distributedCache;
     
     public OrderSteps(ScenarioContext scenarioContext)
     {
         _scenarioContext = scenarioContext;
         _driver = new OrdersTestDriver();
-        _connectionMultiplexer = ConnectionMultiplexer.Connect("localhost");
-        _connectionMultiplexer.GetDatabase();
-        _distributedCache = new RedisCache(Options.Create(new RedisCacheOptions()
-        {
-            InstanceName = "Orders",
-            Configuration = "localhost:6379"
-        }));
+        var memoryCache = new MemoryCache(new MemoryCacheOptions());
+        
+        _distributedCache = (memoryCache as IDistributedCache);
     }
     
     [Given(@"a LoyaltyPointsUpdatedEvent is published for customer (.*), with a points total of (.*)")]

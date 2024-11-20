@@ -12,6 +12,8 @@ builder.Services
     .AddSharedInfrastructure(builder.Configuration, "Payments")
     .AddMessaging(builder.Configuration);
 
+builder.Services.AddDaprClient();
+
 builder.Services.AddSingleton<APIKeyProvider>();
 
 var app = builder.Build();

@@ -1,5 +1,3 @@
-using System.Diagnostics;
-
 namespace PlantBasedPizza.Events;
 
 public class ParseEventResponse<T>

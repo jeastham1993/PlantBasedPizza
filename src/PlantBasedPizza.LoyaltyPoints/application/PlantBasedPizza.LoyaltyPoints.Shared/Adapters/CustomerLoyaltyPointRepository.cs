@@ -1,6 +1,6 @@
 using System.Diagnostics;
+using Dapr.Client;
 using MongoDB.Driver;
-using PlantBasedPizza.Events;
 using PlantBasedPizza.LoyaltyPoints.Shared.Core;
 
 namespace PlantBasedPizza.LoyaltyPoints.Shared.Adapters;
@@ -8,11 +8,11 @@ namespace PlantBasedPizza.LoyaltyPoints.Shared.Adapters;
 public class CustomerLoyaltyPointRepository : ICustomerLoyaltyPointsRepository
 {
     private readonly IMongoCollection<CustomerLoyaltyPoints> _loyaltyPoints;
-    private readonly IEventPublisher _eventPublisher;
+    private readonly DaprClient _daprClient;
 
-    public CustomerLoyaltyPointRepository(MongoClient client, IEventPublisher eventPublisher)
+    public CustomerLoyaltyPointRepository(MongoClient client, DaprClient daprClient)
     {
-        _eventPublisher = eventPublisher;
+        _daprClient = daprClient;
         var database = client.GetDatabase("LoyaltyPoints");
         this._loyaltyPoints = database.GetCollection<CustomerLoyaltyPoints>("loyalty");
     }
@@ -41,10 +41,12 @@ public class CustomerLoyaltyPointRepository : ICustomerLoyaltyPointsRepository
 
         await this._loyaltyPoints.UpdateOneAsync(queryBuilder, updateDefinition, new UpdateOptions() { IsUpsert = true });
 
-        await this._eventPublisher.Publish(new CustomerLoyaltyPointsUpdated()
+        var evt = new CustomerLoyaltyPointsUpdated()
         {
             CustomerIdentifier = points.CustomerId,
             TotalLoyaltyPoints = points.TotalPoints
-        });
+        };
+        
+        await this._daprClient.PublishEventAsync("public", $"{evt.EventName}.{evt.EventVersion}", evt);
     }
 }

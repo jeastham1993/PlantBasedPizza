@@ -1,13 +1,9 @@
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
-using Grpc.Net.Client;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using PlantBasedPizza.Events;
 using PlantBasedPizza.IntegrationTest.Helpers;
 using PlantBasedPizza.Kitchen.IntegrationTests.ViewModels;
-using Serilog.Extensions.Logging;
 
 namespace PlantBasedPizza.Kitchen.IntegrationTests.Drivers;
 
@@ -24,11 +20,11 @@ public class KitchenDriver
             this._httpClient = new HttpClient();
             this._httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", staffToken); 
 
-            _eventPublisher = new RabbitMQEventPublisher(new OptionsWrapper<RabbitMqSettings>(new RabbitMqSettings()
-            {
-                ExchangeName = "dev.kitchen",
-                HostName = "localhost"
-            }), new Logger<RabbitMQEventPublisher>(new SerilogLoggerFactory()), new RabbitMQConnection("localhost"));
+            // _eventPublisher = new RabbitMQEventPublisher(new OptionsWrapper<RabbitMqSettings>(new RabbitMqSettings()
+            // {
+            //     ExchangeName = "dev.kitchen",
+            //     HostName = "localhost"
+            // }), new Logger<RabbitMQEventPublisher>(new SerilogLoggerFactory()), new RabbitMQConnection("localhost"));
         }
 
         public async Task NewOrderSubmitted(string orderIdentifier)

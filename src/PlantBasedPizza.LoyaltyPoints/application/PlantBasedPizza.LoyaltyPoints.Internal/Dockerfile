@@ -1,4 +1,4 @@
-﻿FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
+﻿FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build-env
 WORKDIR /App
 
 # Copy everything
@@ -9,7 +9,7 @@ RUN dotnet restore PlantBasedPizza.LoyaltyPoints/application/PlantBasedPizza.Loy
 RUN dotnet publish PlantBasedPizza.LoyaltyPoints/application/PlantBasedPizza.LoyaltyPoints.Internal/PlantBasedPizza.LoyaltyPoints.Internal.csproj -c Release -o out -r linux-arm64
 
 # Build runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:8.0
+FROM mcr.microsoft.com/dotnet/aspnet:9.0
 WORKDIR /App
 COPY --from=build-env /App/out .
 ENTRYPOINT ["dotnet", "PlantBasedPizza.LoyaltyPoints.Internal.dll"]

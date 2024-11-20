@@ -1,82 +1,80 @@
 using System.Diagnostics;
-using Consul;
-using Grpc.Net.Client;
+using Dapr.Client;
+using Grpc.Core;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using PlantBasedPizza.Shared.ServiceDiscovery;
 
 namespace PlantBasedPizza.OrderManager.Infrastructure;
 
 public class OrderManagerHealthChecks
 {
     private readonly HttpClient _httpClient;
-    private readonly ServiceEndpoints _serviceEndpoints;
-    private readonly GrpcChannel _grpcChannel;
+    private readonly IOptions<ServiceEndpoints> _serviceEndpoints;
+    private readonly Loyalty.LoyaltyClient _loyaltyClient;
+    private readonly ILogger<OrderManagerHealthChecks> _logger;
 
-    public OrderManagerHealthChecks(HttpClient client, IServiceRegistry serviceRegistry, IOptions<ServiceEndpoints> serviceEndpoints)
+    public OrderManagerHealthChecks(IOptions<ServiceEndpoints> serviceEndpoints, DaprClient daprClient, ILogger<OrderManagerHealthChecks> logger, Loyalty.LoyaltyClient loyaltyClient)
     {
-        this._serviceEndpoints = serviceEndpoints.Value;
-        
-        this._httpClient = client;
-
-        var address = serviceRegistry.GetServiceAddress("PlantBasedPizza-LoyaltyPoints-Internal").GetAwaiter().GetResult();
-
-        if (string.IsNullOrEmpty(address))
-        {
-            address = _serviceEndpoints.LoyaltyInternal;
-        }
-        
-        this._grpcChannel = GrpcChannel.ForAddress(address);
+        _httpClient = DaprClient.CreateInvokeHttpClient();
+        _serviceEndpoints = serviceEndpoints;
+        _loyaltyClient = loyaltyClient;
+        _logger = logger;
     }
-    
+
     public async Task<OrderManagerHealthCheckResult> Check()
     {
         var result = new OrderManagerHealthCheckResult();
-        
+
         try
         {
-            var res = await _httpClient.GetAsync($"{_serviceEndpoints.Loyalty}/loyalty/health");
+            var res = await _httpClient.GetAsync($"http://{_serviceEndpoints.Value.Loyalty}/loyalty/health");
 
-            if (!res.IsSuccessStatusCode)
-            {
-                result.LoyaltyHttpStatus = "Offline";
-            }
-            
+            if (!res.IsSuccessStatusCode) result.LoyaltyHttpStatus = "Offline";
+
             Activity.Current?.AddTag("loyalty.healthy", res.IsSuccessStatusCode);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            this._logger.LogWarning(ex, "Healthcheck failure for loyalty service");
+            
             Activity.Current?.AddTag("loyalty.healthy", false);
-        
+
             result.LoyaltyHttpStatus = "Offline";
         }
-        
+
         try
         {
-            var res = await _httpClient.GetAsync($"{_serviceEndpoints.Recipes}/health");
+            var res = await _httpClient.GetAsync($"http://{_serviceEndpoints.Value.Recipes}/recipes/health");
 
-            if (!res.IsSuccessStatusCode)
-            {
-                result.RecipeHttpStatus = "Offline";
-            }
-            
+            if (!res.IsSuccessStatusCode) result.RecipeHttpStatus = "Offline";
+
             Activity.Current?.AddTag("recipe.api", res.IsSuccessStatusCode);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            this._logger.LogWarning(ex, "Healthcheck failure for recipe service");
+            
             Activity.Current?.AddTag("recipe.healthy", false);
-        
+
             result.RecipeHttpStatus = "Offline";
         }
 
         try
         {
-            using var source = new CancellationTokenSource();
-            source.CancelAfter(TimeSpan.FromSeconds(3));
+            var cancellationTokenSource = new CancellationTokenSource();
+            cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(3));
+            var metadata = new Metadata()
+            {
+                { "dapr-app-id", "loyaltyinternal" }
+            };
+            var response = await this._loyaltyClient.GetCustomerLoyaltyPointsAsync(new GetCustomerLoyaltyPointsRequest()
+                { CustomerIdentifier = "james" }, metadata);
             
-            await this._grpcChannel.ConnectAsync(source.Token);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            this._logger.LogWarning(ex, "Healthcheck failure for internal loyalty service");
+            
             Activity.Current?.AddTag("loyalty.gRPC.healthy", false);
             result.LoyaltyGrpcStatus = "Offline";
         }

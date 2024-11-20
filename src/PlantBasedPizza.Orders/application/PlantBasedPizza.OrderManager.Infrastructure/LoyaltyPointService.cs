@@ -1,9 +1,8 @@
 using System.Diagnostics;
+using Grpc.Core;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
-using MongoDB.Bson.Serialization.Conventions;
 using PlantBasedPizza.OrderManager.Core.Services;
-using StackExchange.Redis;
 
 namespace PlantBasedPizza.OrderManager.Infrastructure;
 
@@ -12,12 +11,17 @@ public class LoyaltyPointService : ILoyaltyPointService
     private readonly Loyalty.LoyaltyClient _loyaltyClient;
     private readonly ILogger<LoyaltyPointService> _logger;
     private readonly IDistributedCache _distributedCache;
+    private readonly Metadata _metadata;
 
     public LoyaltyPointService(ILogger<LoyaltyPointService> logger, Loyalty.LoyaltyClient loyaltyClient, IDistributedCache distributedCache)
     {
         _logger = logger;
         _loyaltyClient = loyaltyClient;
         _distributedCache = distributedCache;
+        _metadata = new Metadata()
+        {
+            { "dapr-app-id", "loyaltyinternal" }
+        };
     }
 
     public async Task<decimal> GetCustomerLoyaltyPoints(string customerId)
@@ -33,7 +37,7 @@ public class LoyaltyPointService : ILoyaltyPointService
                 return decimal.Parse(cacheCheck);
             }
         }
-        catch (RedisServerException ex)
+        catch (Exception ex)
         {
             this._logger.LogError(ex, "Failure reading loyalty points from cache");
             
@@ -46,12 +50,10 @@ public class LoyaltyPointService : ILoyaltyPointService
             new GetCustomerLoyaltyPointsRequest()
             {
                 CustomerIdentifier = customerId
-            });
+            }, _metadata);
 
         await this._distributedCache.SetStringAsync(customerId, loyaltyPoints.TotalPoints.ToString("n0"));
 
         return Convert.ToDecimal(loyaltyPoints.TotalPoints);
     }
 }
-
-public record CreateLoyaltyPointRequest(string CustomerIdentifier, string OrderIdentifier, decimal OrderValue);

@@ -18,6 +18,7 @@ namespace PlantBasedPizza.Deliver.Infrastructure
             var client = new MongoClient(configuration["DatabaseConnection"]);
 
             services.AddSingleton(client);
+            services.AddDaprClient();
             
             BsonClassMap.RegisterClassMap<DeliveryRequest>(map =>
             {

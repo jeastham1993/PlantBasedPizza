@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Logging;
-using PlantBasedPizza.Events;
 
 namespace PlantBasedPizza.LoyaltyPoints.Shared.Core;
 

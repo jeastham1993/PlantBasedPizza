@@ -1,4 +1,3 @@
-using PlantBasedPizza.Events;
 using PlantBasedPizza.OrderManager.Core.Entities;
 using PlantBasedPizza.OrderManager.Infrastructure.IntegrationEvents;
 using PlantBasedPizza.Orders.Worker.IntegrationEvents;
