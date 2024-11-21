@@ -1,5 +1,12 @@
-version: "3.7"
 services:
+
+  cache:
+    image: redis:7.2
+    expose:
+      - "6379"
+    networks:
+      - app
+
   mongodb:
     image: mongo
     container_name: delivery-mongodb
@@ -8,6 +15,8 @@ services:
       - PGID=1000
     ports:
       - 27017:27017
+    networks:
+      - app
 
   jaeger:
     image: jaegertracing/opentelemetry-all-in-one:latest
@@ -16,50 +25,110 @@ services:
       - 13133:13133
       - 4317:4317
       - 4318:4318
-
-  wiremock:
-    image: wiremock/wiremock:latest
-    ports:
-      - 8443:8080
-    volumes:
-      - ./mocks/recipe-api:/home/wiremock
-
-  rabbitmq:
-    image: rabbitmq:3-management-alpine
-    container_name: 'delivery-rabbitmq'
-    ports:
-        - 5672:5672
-        - 15672:15672
+    networks:
+      - app
 
   local.delivery-api:
-    image: ${REGISTRY}/delivery-api:${IMAGE_TAG}
+    image: delivery-api
     ports:
       - "5259:8080"
-    depends_on:
-      - rabbitmq
     environment:
       - DatabaseConnection=mongodb://mongodb:27017
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
       - Environment=local
-      - ServiceDiscovery__MyUrl=
-      - ServiceDiscovery__ServiceName=
-      - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
-      - Messaging__HostName=rabbitmq
-      - Messaging__ExchangeName=dev.delivery
       - Auth__Issuer=https://plantbasedpizza.com
       - Auth__Audience=https://plantbasedpizza.com
       - Auth__Key=This is a sample secret key - please don't use in production environment.'
+      - DAPR_HOST=host.docker.internal
+      - DAPR_GRPC_PORT=5101
+    networks:
+      - app
+
+  deliver-api-dapr:
+    image: "daprio/daprd:edge"
+    command: [
+        "./daprd",
+        "--app-id",
+        "delivery",
+        "--app-port",
+        "8080",
+        "--placement-host-address",
+        "placement:50006", # Dapr's placement service can be reach via the docker DNS entry
+        "--dapr-grpc-port",
+        "5101",
+        "--resources-path",
+        "../../components",
+      ]
+    volumes:
+      - "../../components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
+    depends_on:
+      - "local.delivery-api"
+    network_mode: "service:local.delivery-api"
 
   local.delivery-worker:
-    image: ${REGISTRY}/delivery-worker:${IMAGE_TAG}
-    depends_on:
-      - rabbitmq
+    image: delivery-worker
     environment:
       - DatabaseConnection=mongodb://mongodb:27017
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
       - Environment=local
-      - ServiceDiscovery__MyUrl=
-      - ServiceDiscovery__ServiceName=
-      - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
-      - Messaging__HostName=rabbitmq
-      - Messaging__ExchangeName=dev.delivery
+      - DAPR_HOST=host.docker.internal
+      - DAPR_GRPC_PORT=5101
+    networks:
+      - app
+
+  deliver-worker-dapr:
+    image: "daprio/daprd:edge"
+    command: [
+        "./daprd",
+        "--app-id",
+        "delivery-worker",
+        "--app-port",
+        "8080",
+        "--placement-host-address",
+        "placement:50006", # Dapr's placement service can be reach via the docker DNS entry
+        "--dapr-grpc-port",
+        "5101",
+        "--resources-path",
+        "../../components",
+      ]
+    volumes:
+      - "../../components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
+    depends_on:
+      - "local.delivery-worker"
+    network_mode: "service:local.delivery-worker"
+    
+
+  integration-test-dapr:
+    image: "daprio/daprd:edge"
+    command: [
+      "./daprd",
+      "--app-id",
+      "integration-tests",
+      "--placement-host-address",
+      "placement:50006", # Dapr's placement service can be reach via the docker DNS entry
+      "--dapr-grpc-port",
+      "5101",
+      "--resources-path",
+      "../../components",
+    ]
+    ports:
+      - "5101:5101"
+    volumes:
+      - "../../components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
+    networks:
+      - app
+
+
+  ############################
+  # Dapr placement service
+  ############################
+  placement:
+    image: "daprio/dapr"
+    command: ["./placement", "-port", "50006"]
+    ports:
+      - "50006:50006"
+    networks:
+      - app
+
+networks:
+  app:

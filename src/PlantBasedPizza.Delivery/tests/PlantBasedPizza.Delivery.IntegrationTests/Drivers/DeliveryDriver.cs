@@ -1,8 +1,8 @@
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using Dapr.Client;
 using PlantBasedPizza.Delivery.IntegrationTests.ViewModels;
-using PlantBasedPizza.Events;
 using PlantBasedPizza.IntegrationTest.Helpers;
 
 namespace PlantBasedPizza.Delivery.IntegrationTests.Drivers
@@ -14,7 +14,7 @@ namespace PlantBasedPizza.Delivery.IntegrationTests.Drivers
         private readonly HttpClient _userHttpClient;
         private readonly HttpClient _staffHttpClient;
         private readonly HttpClient _driverHttpClient;
-        private readonly IEventPublisher _eventPublisher;
+        private readonly DaprClient _daprClient;
 
         public DeliveryDriver()
         {
@@ -29,11 +29,14 @@ namespace PlantBasedPizza.Delivery.IntegrationTests.Drivers
             this._driverHttpClient = new HttpClient();
             this._driverHttpClient.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", TestTokenGenerator.GenerateTestTokenForRole("driver"));
+            this._daprClient = new DaprClientBuilder()
+                .UseGrpcEndpoint("http://localhost:5101")
+                .Build();
         }
 
         public async Task ANewOrderIsReadyForDelivery(string orderIdentifier)
         {
-            await this._eventPublisher.Publish(new OrderReadyForDeliveryEventV1()
+            await this._daprClient.PublishEventAsync("public", "order.readyForDelivery.v1", new OrderReadyForDeliveryEventV1()
             {
                 OrderIdentifier = orderIdentifier,
                 DeliveryAddressLine1 = "Address Line 1",
