@@ -1,6 +1,23 @@
-@PlantBasedPizza.Account.Api_HostAddress = http://localhost:5139
+@HostAddress = http://localhost:5139
 
-GET {{PlantBasedPizza.Account.Api_HostAddress}}/weatherforecast/
+POST {{HostAddress}}/account/register
 Accept: application/json
+Content-Type: application/json
+
+{
+  "emailAddress": "test@test.com",
+  "password": "thisisanewpassword"
+}
+
+###
+
+POST {{HostAddress}}/account/login
+Accept: application/json
+Content-Type: application/json
+
+{
+  "emailAddress": "test@test.com",
+  "password": "thisisanewpassword"
+}
 
 ###

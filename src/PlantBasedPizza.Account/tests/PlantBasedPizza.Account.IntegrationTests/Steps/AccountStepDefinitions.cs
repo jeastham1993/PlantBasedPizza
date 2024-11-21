@@ -17,7 +17,7 @@ public class AccountStepDefinitions
         this._driver = new AccountDriver();
     }
     [Given("an un-registered email address")]
-    public async Task AnUnregisteredEmail()
+    public void AnUnregisteredEmail()
     {
         Activity.Current = _scenarioContext.Get<Activity>("Activity");
         _scenarioContext.Add("emailAddress", "arandomemail@test.com");
@@ -54,7 +54,7 @@ public class AccountStepDefinitions
     }
 
     [Given(@"an invalid email address")]
-    public async Task AnInvalidEmailAddress()
+    public void AnInvalidEmailAddress()
     {
         Activity.Current = _scenarioContext.Get<Activity>("Activity");
 
@@ -65,7 +65,7 @@ public class AccountStepDefinitions
     }
 
     [Given(@"an invalid password")]
-    public async Task AnInvalidPassword()
+    public void AnInvalidPassword()
     {
         Activity.Current = _scenarioContext.Get<Activity>("Activity");
 
@@ -77,7 +77,7 @@ public class AccountStepDefinitions
     }
 
     [Given(@"an empty email address")]
-    public async Task AnEmptyEmailAddress()
+    public void AnEmptyEmailAddress()
     {
         Activity.Current = _scenarioContext.Get<Activity>("Activity");
 
@@ -88,7 +88,7 @@ public class AccountStepDefinitions
     }
 
     [Given(@"an empty password")]
-    public async Task AnEmptyPassword()
+    public void AnEmptyPassword()
     {
         Activity.Current = _scenarioContext.Get<Activity>("Activity");
 

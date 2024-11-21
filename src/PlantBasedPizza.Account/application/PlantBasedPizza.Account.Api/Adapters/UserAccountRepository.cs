@@ -12,7 +12,7 @@ public class UserAccountRepository : IUserAccountRepository
         var database = client.GetDatabase("PlantBasedPizza-Accounts");
         _accounts = database.GetCollection<UserAccount>("accounts");
     }
-
+    
     public async Task<UserAccount> CreateAccount(UserAccount userAccount)
     {
         var queryBuilder = Builders<UserAccount>.Filter.Eq(p => p.EmailAddress, userAccount.EmailAddress);

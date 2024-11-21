@@ -8,11 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="FastEndpoints" Version="5.31.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="7.0.0" />
     <PackageReference Include="MongoDB.Driver" Version="3.0.0" />
-      <PackageReference Include="Dapr.AspNetCore" Version="1.14.0" />
+    <PackageReference Include="Dapr.AspNetCore" Version="1.14.0" />
   </ItemGroup>
 
   <ItemGroup>
