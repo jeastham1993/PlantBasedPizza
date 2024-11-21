@@ -16,21 +16,27 @@ permissions:
   contents: read
 
 jobs:
-  build-api-image:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-and-push-base.yaml@feat/dapr
+  build-and-push:
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-and-push-make.yaml@feat/dapr
     with:
-      image-name: delivery-api
-      dockerfile: src/PlantBasedPizza.Delivery/application/PlantBasedPizza.Delivery.Api/Dockerfile-x86
-      docker-repository: plantpowerjames/plant-based-pizza-delivery-api
+      application-root-folder: ./src/PlantBasedPizza.Delivery/
     secrets:
       DOCKERHUB_USERNAME: ${{secrets.DOCKERHUB_USERNAME}}
       DOCKERHUB_TOKEN: ${{secrets.DOCKERHUB_TOKEN}}
-  build-worker-image:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-and-push-base.yaml@feat/dapr
-    with:
-      image-name: delivery-worker
-      dockerfile: src/PlantBasedPizza.Delivery/application/PlantBasedPizza.Delivery.Worker/Dockerfile-x86
-      docker-repository: plantpowerjames/plant-based-pizza-delivery-worker
-    secrets:
-      DOCKERHUB_USERNAME: ${{secrets.DOCKERHUB_USERNAME}}
-      DOCKERHUB_TOKEN: ${{secrets.DOCKERHUB_TOKEN}}
+  # build-worker-image:
+  #   uses: jeastham1993/PlantBasedPizza/.github/workflows/build-and-push-base.yaml@feat/dapr
+  #   with:
+  #     image-name: plant-based-pizza-delivery-worker
+  #     dockerfile: src/PlantBasedPizza.Delivery/application/PlantBasedPizza.Delivery.Worker/Dockerfile-x86
+  #     docker-repository: plantpowerjames/plant-based-pizza-delivery-worker
+  #   secrets:
+  #     DOCKERHUB_USERNAME: ${{secrets.DOCKERHUB_USERNAME}}
+  #     DOCKERHUB_TOKEN: ${{secrets.DOCKERHUB_TOKEN}}
+  # integration-test:
+  #   uses: jeastham1993/PlantBasedPizza/.github/workflows/integration-test-base.yaml@feat/dapr
+  #   needs:
+  #     - build-api-image
+  #     - build-worker-image
+  #   with:
+  #     integration-test-compose-file: ./src/PlantBasedPizza.Delivery/docker-compose-integration.yml
+  #     integration-test-folder: src/PlantBasedPizza.Delivery/tests/PlantBasedPizza.Delivery.IntegrationTests
