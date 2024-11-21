@@ -21,14 +21,11 @@ permissions:
 jobs:
   test-and-build:
     runs-on: ubuntu-latest
-    container: ubuntu
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      - name: Install packages
-        run: apt-get -y update; apt-get -y install curl build-essential libicu-dev
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "9"
