@@ -16,15 +16,10 @@ permissions:
   contents: read
 
 jobs:
-  build-image:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-and-push-base.yaml@feat/dapr
+  build-and-push:
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-and-push-make.yaml@feat/dapr
     with:
-      image-name: account-api
-      unit-test-path: src/PlantBasedPizza.Account/tests/PlantBasedPizza.Account.UnitTests
-      integration-test-compose-file: ./src/PlantBasedPizza.Account/docker-compose-integration.yml
-      integration-test-folder: src/PlantBasedPizza.Account/tests/PlantBasedPizza.Account.IntegrationTests
-      dockerfile: src/PlantBasedPizza.Account/application/PlantBasedPizza.Account.Api/Dockerfile-x86
-      docker-repository: plantpowerjames/plant-based-pizza-account-api
+      application-root-folder: ./src/PlantBasedPizza.Account/
     secrets:
       DOCKERHUB_USERNAME: ${{secrets.DOCKERHUB_USERNAME}}
       DOCKERHUB_TOKEN: ${{secrets.DOCKERHUB_TOKEN}}
