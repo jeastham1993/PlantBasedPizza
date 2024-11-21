@@ -40,7 +40,7 @@ services:
       - dapr
 
   local.order-api:
-    image: plant-based-orders-api-mod-6
+    image: order-api
     container_name: "local.order-api"
     depends_on:
       - cache
@@ -88,7 +88,7 @@ services:
     network_mode: "service:local.order-api"
 
   local.orders-worker:
-    image: plant-based-orders-worker-mod-6
+    image: order-worker
     container_name: local.orders-worker
     depends_on:
       - cache
@@ -128,7 +128,7 @@ services:
     network_mode: "service:local.orders-worker"
 
   local.loyalty-api:
-    image: loyalty-api-mod-6
+    image: loyalty-api
     container_name: local.loyalty-api
     ports:
       - "5050:8080"
@@ -167,7 +167,7 @@ services:
     network_mode: "service:local.loyalty-api"
 
   local.loyalty-internal-api:
-    image: loyalty-internal-api-mod-6
+    image: loyalty-internal-api
     container_name: local.loyalty-internal-api
     expose:
       - "8080"
@@ -205,7 +205,7 @@ services:
     network_mode: "service:local.loyalty-internal-api"
 
   local.loyalty-worker:
-    image: loyalty-worker-mod-6
+    image: loyalty-worker
     container_name: local.loyalty-worker
     environment:
       - DatabaseConnection=mongodb://mongodb:27017
@@ -239,7 +239,7 @@ services:
     network_mode: "service:local.loyalty-worker"
 
   local.kitchen-api:
-    image: plant-based-kitchen-api-mod-6
+    image: kitchen-api
     container_name: local.kitchen-api
     expose:
       - "8080"
@@ -282,7 +282,7 @@ services:
     network_mode: "service:local.kitchen-api"
 
   local.kitchen-worker:
-    image: plant-based-kitchen-worker-mod-6
+    image: kitchen-worker
     container_name: local.kitchen-worker
     ports:
       - "8081:8080"
@@ -322,7 +322,7 @@ services:
     network_mode: "service:local.kitchen-worker"
 
   local.payment-api:
-    image: payment-api-mod-6
+    image: payment-api
     container_name: local.payment-api
     expose:
       - "8080"
@@ -360,7 +360,7 @@ services:
     network_mode: "service:local.payment-api"
 
   local.recipe-api:
-    image: plant-based-recipes-api-mod-6
+    image: recipe-api
     container_name: local.recipe-api
     expose:
       - "8080"
@@ -399,7 +399,7 @@ services:
     network_mode: "service:local.recipe-api"
 
   local.delivery-api:
-    image: plant-based-delivery-api-mod-6
+    image: delivery-api
     container_name: local.delivery-api
     expose:
       - "8080"
@@ -440,7 +440,7 @@ services:
     network_mode: "service:local.delivery-api"
 
   local.delivery-worker:
-    image: plant-based-delivery-worker-mod-6
+    image: delivery-worker
     container_name: local.delivery-worker
     depends_on:
       - cache
@@ -476,7 +476,7 @@ services:
     network_mode: "service:local.delivery-worker"
 
   local.account-api:
-    image: plant-based-account-api-mod-6
+    image: account-api
     container_name: local.account-api
     expose:
       - "8080"

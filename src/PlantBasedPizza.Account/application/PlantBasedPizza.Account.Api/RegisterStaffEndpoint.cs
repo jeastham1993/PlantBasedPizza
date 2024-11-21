@@ -4,7 +4,7 @@ using PlantBasedPizza.Account.Api.Core;
 
 namespace PlantBasedPizza.Account.Api;
 
-[HttpPost("/account/staff/register")]
+[HttpPost("/staff/register")]
 [AllowAnonymous]
 [Authorize(Roles = "admin")]
 public class RegisterStaffEndpoint(UserAccountService userAccountService, ILogger<RegisterStaffEndpoint> logger)

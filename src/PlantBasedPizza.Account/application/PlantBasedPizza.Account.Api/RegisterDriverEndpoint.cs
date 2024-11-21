@@ -4,7 +4,7 @@ using PlantBasedPizza.Account.Api.Core;
 
 namespace PlantBasedPizza.Account.Api;
 
-[HttpPost("/account/driver/register")]
+[HttpPost("/driver/register")]
 [AllowAnonymous]
 [Authorize(Roles = "admin,staff")]
 public class RegisterDriverEndpoint(UserAccountService userAccountService, ILogger<RegisterDriverEndpoint> logger)
