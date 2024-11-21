@@ -7,8 +7,8 @@ tag-images:
 	docker tag delivery-worker plantpowerjames/plant-based-pizza-delivery-worker:${IMAGE_TAG}
 
 push:
-	docker push plantpowerjames/plant-based-pizza-delivery-api:${IMAGE_TAG }
-	docker push plantpowerjames/plant-based-pizza-delivery-worker:${IMAGE_TAG }
+	docker push plantpowerjames/plant-based-pizza-delivery-api:${IMAGE_TAG}
+	docker push plantpowerjames/plant-based-pizza-delivery-worker:${IMAGE_TAG}
 
 unit-test:
 	dotnet test tests/PlantBasedPizza.Delivery.UnitTests

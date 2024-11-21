@@ -48,6 +48,9 @@ jobs:
       - name: Build images
         run: |
           cd ${{inputs.application-root-folder}};make build
+      - name: Run Integration Tests
+        run: |
+          cd ${{inputs.application-root-folder}};make integration-test
       - name: Tag With Commit Hash
         run: cd ${{inputs.application-root-folder}};make tag-images
       - name: Push to DockerHub
