@@ -50,7 +50,7 @@ jobs:
           cd ${{inputs.application-root-folder}};make build
       - name: Run Integration Tests
         run: |
-          cd ${{inputs.application-root-folder}};make integration-test
+          cd ${{inputs.application-root-folder}};docker compose -f docker-compose-integration.yml;make integration-test
       - name: Tag With Commit Hash
         run: cd ${{inputs.application-root-folder}};make tag-images
       - name: Push to DockerHub
