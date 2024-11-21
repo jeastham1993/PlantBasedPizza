@@ -11,8 +11,6 @@ public class OrderManagerTests
     [Fact]
     public void CanCreateNewOrder_ShouldSetDefaultFields()
     {
-        string? createdOrder = null;
-        
         var order = Order.Create(DefaultOrderIdentifier, OrderType.Pickup, DefaultCustomerIdentifier);
 
         order.Items.Should().NotBeNull();
@@ -20,8 +18,6 @@ public class OrderManagerTests
         order.OrderNumber.Should().NotBeNullOrEmpty();
         order.OrderDate.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(5));
         order.OrderType.Should().Be(OrderType.Pickup);
-
-        createdOrder.Should().NotBeNull();
     }
     
     [Fact]
@@ -115,8 +111,6 @@ public class OrderManagerTests
     [Fact]
     public void CanCreateAndSubmitOrder_ShouldBeSubmitted()
     {
-        string submittedOrder = null;
-        
         var order = Order.Create(DefaultOrderIdentifier, OrderType.Delivery, DefaultCustomerIdentifier, new DeliveryDetails()
         {
             AddressLine1 = "TEST",
@@ -128,7 +122,6 @@ public class OrderManagerTests
         order.SubmitOrder();
 
         order.OrderSubmittedOn.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(5));
-        submittedOrder.Should().NotBeNull();
     }
     
     [Fact]
@@ -152,8 +145,6 @@ public class OrderManagerTests
     [Fact]
     public void CanCreateAndCompletetOrder_ShouldBeCompleted()
     {
-        string completedOrder = null;
-        
         var order = Order.Create(DefaultOrderIdentifier, OrderType.Delivery, DefaultCustomerIdentifier, new DeliveryDetails()
         {
             AddressLine1 = "TEST",
@@ -166,8 +157,6 @@ public class OrderManagerTests
 
         order.OrderCompletedOn.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(5));
         order.AwaitingCollection.Should().BeFalse();
-
-        completedOrder.Should().NotBeNull();
     }
     
     
