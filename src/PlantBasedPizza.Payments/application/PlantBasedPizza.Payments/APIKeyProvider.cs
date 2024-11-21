@@ -20,6 +20,8 @@ public class APIKeyProvider
 
         var expectedApiKey = _configuration["Auth:ApiKey"];
         
+        this._logger.LogInformation($"Comparing expected API Key: {expectedApiKey} to provided API key {inboundKey}");
+        
         return inboundKey.Equals(expectedApiKey, StringComparison.OrdinalIgnoreCase);
     }
 }
