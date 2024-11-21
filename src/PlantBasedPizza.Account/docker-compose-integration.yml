@@ -21,8 +21,6 @@ services:
     image: account-api
     ports:
       - "5139:8080"
-    depends_on:
-      - rabbitmq
     environment:
       - DatabaseConnection=mongodb://mongodb:27017
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
