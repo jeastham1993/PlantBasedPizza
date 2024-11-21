@@ -28,7 +28,7 @@ public class ApiKeyAuthenticationMiddleware
 
         if (!_apiKeyProvider.IsValidApiKey(providedApiKey))
         {
-            this._logger.LogInformation("Unauthorized");
+            this._logger.LogInformation($"Unauthorized");
             
             context.Response.StatusCode = 403;
             await context.Response.WriteAsync("Unauthorized client.");
