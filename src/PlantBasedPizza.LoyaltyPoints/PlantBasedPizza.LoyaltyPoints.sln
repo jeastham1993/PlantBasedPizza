@@ -1,0 +1,67 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.002.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{D7DCDCA8-6C5D-46DC-B8B7-69420A1322F0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlantBasedPizza.LoyaltyPoints.IntegrationTest", "tests\PlantBasedPizza.LoyaltyPoints.IntegrationTest\PlantBasedPizza.LoyaltyPoints.IntegrationTest.csproj", "{AAE8E22E-0D86-4D4F-B24B-BE002B04C296}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlantBasedPizza.LoyaltyPoints.UnitTest", "tests\PlantBasedPizza.LoyaltyPoints.UnitTest\PlantBasedPizza.LoyaltyPoints.UnitTest.csproj", "{ABBF05A0-620A-457E-A6D7-7BBB350FB4F2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "application", "application", "{D8149092-86BE-459D-964B-769C8727613A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlantBasedPizza.LoyaltyPoints.Worker", "application\PlantBasedPizza.LoyaltyPoints.Worker\PlantBasedPizza.LoyaltyPoints.Worker.csproj", "{C4E0B686-D929-4DA3-9A71-294B3C482AB4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlantBasedPizza.LoyaltyPoints", "application\PlantBasedPizza.LoyaltyPoints.Api\PlantBasedPizza.LoyaltyPoints.csproj", "{83449BAC-3591-4D19-B6CD-92698E483B7D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlantBasedPizza.LoyaltyPoints.Shared", "application\PlantBasedPizza.LoyaltyPoints.Shared\PlantBasedPizza.LoyaltyPoints.Shared.csproj", "{F40BA565-C81C-4850-9A3D-F921B28E7AEE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlantBasedPizza.LoyaltyPoints.Internal", "application\PlantBasedPizza.LoyaltyPoints.Internal\PlantBasedPizza.LoyaltyPoints.Internal.csproj", "{302B30B6-F60B-4F3D-BF81-A0E95E1317DA}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AAE8E22E-0D86-4D4F-B24B-BE002B04C296}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AAE8E22E-0D86-4D4F-B24B-BE002B04C296}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AAE8E22E-0D86-4D4F-B24B-BE002B04C296}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AAE8E22E-0D86-4D4F-B24B-BE002B04C296}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ABBF05A0-620A-457E-A6D7-7BBB350FB4F2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ABBF05A0-620A-457E-A6D7-7BBB350FB4F2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ABBF05A0-620A-457E-A6D7-7BBB350FB4F2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ABBF05A0-620A-457E-A6D7-7BBB350FB4F2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C4E0B686-D929-4DA3-9A71-294B3C482AB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4E0B686-D929-4DA3-9A71-294B3C482AB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4E0B686-D929-4DA3-9A71-294B3C482AB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4E0B686-D929-4DA3-9A71-294B3C482AB4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{83449BAC-3591-4D19-B6CD-92698E483B7D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{83449BAC-3591-4D19-B6CD-92698E483B7D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{83449BAC-3591-4D19-B6CD-92698E483B7D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{83449BAC-3591-4D19-B6CD-92698E483B7D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F40BA565-C81C-4850-9A3D-F921B28E7AEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F40BA565-C81C-4850-9A3D-F921B28E7AEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F40BA565-C81C-4850-9A3D-F921B28E7AEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F40BA565-C81C-4850-9A3D-F921B28E7AEE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{302B30B6-F60B-4F3D-BF81-A0E95E1317DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{302B30B6-F60B-4F3D-BF81-A0E95E1317DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{302B30B6-F60B-4F3D-BF81-A0E95E1317DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{302B30B6-F60B-4F3D-BF81-A0E95E1317DA}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{AAE8E22E-0D86-4D4F-B24B-BE002B04C296} = {D7DCDCA8-6C5D-46DC-B8B7-69420A1322F0}
+		{ABBF05A0-620A-457E-A6D7-7BBB350FB4F2} = {D7DCDCA8-6C5D-46DC-B8B7-69420A1322F0}
+		{C4E0B686-D929-4DA3-9A71-294B3C482AB4} = {D8149092-86BE-459D-964B-769C8727613A}
+		{83449BAC-3591-4D19-B6CD-92698E483B7D} = {D8149092-86BE-459D-964B-769C8727613A}
+		{F40BA565-C81C-4850-9A3D-F921B28E7AEE} = {D8149092-86BE-459D-964B-769C8727613A}
+		{302B30B6-F60B-4F3D-BF81-A0E95E1317DA} = {D8149092-86BE-459D-964B-769C8727613A}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {29D99BDC-F885-42FA-B34F-D405651EE0F7}
+	EndGlobalSection
+EndGlobal

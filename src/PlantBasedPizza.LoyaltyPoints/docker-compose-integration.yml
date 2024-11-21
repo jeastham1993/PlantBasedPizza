@@ -15,62 +15,140 @@ services:
       - 13133:13133
       - 4317:4317
       - 4318:4318
-
-  rabbitmq:
-    image: rabbitmq:3-management-alpine
+  
+  cache:
+    image: redis:7.2
     ports:
-        - 5672:5672
-        - 15672:15672
+      - "6379:6379"
 
   local.loyalty-api:
-    image: ${REGISTRY}/loyalty-api:${IMAGE_TAG}
-    depends_on:
-      - rabbitmq
+    image: loyalty-api
+    container_name: local.loyalty-api
     ports:
       - "5271:8080"
     environment:
       - DatabaseConnection=mongodb://mongodb:27017
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
       - Environment=local
-      - ServiceDiscovery__MyUrl=
-      - ServiceDiscovery__ServiceName=
-      - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
-      - Messaging__HostName=rabbitmq
-      - Messaging__ExchangeName=dev.loyalty
       - Auth__Issuer=https://plantbasedpizza.com
       - Auth__Audience=https://plantbasedpizza.com
       - Auth__Key=This is a sample secret key - please don't use in production environment.'
+      - DAPR_HOST=host.docker.internal
+      - DAPR_GRPC_PORT=5101
+
+  loyaltyapi-dapr:
+    image: "daprio/daprd:edge"
+    command: [
+        "./daprd",
+        "--app-id",
+        "loyalty",
+        "--app-port",
+        "8080",
+        "--placement-host-address",
+        "placement:50006", # Dapr's placement service can be reach via the docker DNS entry
+        "--dapr-grpc-port",
+        "5101",
+        "--resources-path",
+        "../../components",
+      ]
+    volumes:
+      - "../../components/:/components"
+    depends_on:
+      - "local.loyalty-api"
+
+    network_mode: "service:local.loyalty-api"
 
   local.loyalty-internal-api:
-    image: ${REGISTRY}/loyalty-internal-api:${IMAGE_TAG}
+    image: loyalty-internal-api
+    container_name: local.loyalty-internal-api
     ports:
       - "5069:8080"
-    depends_on:
-      - rabbitmq
-      - mongodb
-      - jaeger
     environment:
       - DatabaseConnection=mongodb://mongodb:27017
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
       - Environment=local
-      - ServiceDiscovery__MyUrl=
-      - ServiceDiscovery__ServiceName=
-      - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
-      - Messaging__HostName=rabbitmq
-      - Messaging__ExchangeName=dev.loyalty
+      - DAPR_HOST=host.docker.internal
+      - DAPR_GRPC_PORT=5101
+
+  loyaltyinternal-dapr:
+    image: "daprio/daprd:edge"
+    command: [
+        "./daprd",
+        "--app-id",
+        "loyaltyinternal",
+        "--app-port",
+        "8080",
+        "--placement-host-address",
+        "placement:50006", # Dapr's placement service can be reach via the docker DNS entry
+        "--dapr-grpc-port",
+        "5101",
+        "--resources-path",
+        "../../components",
+        "--app-protocol",
+        "grpc",
+      ]
+    volumes:
+      - "../../components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
+    depends_on:
+      - "local.loyalty-internal-api"
+
+    network_mode: "service:local.loyalty-internal-api"
 
   local.loyalty-worker:
-    image: ${REGISTRY}/loyalty-worker:${IMAGE_TAG}
-    depends_on:
-      - rabbitmq
-      - mongodb
-      - jaeger
+    image: loyalty-worker
+    container_name: local.loyalty-worker
     environment:
       - DatabaseConnection=mongodb://mongodb:27017
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
       - Environment=local
-      - ServiceDiscovery__MyUrl=
-      - ServiceDiscovery__ServiceName=
-      - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
-      - Messaging__HostName=rabbitmq
-      - Messaging__ExchangeName=dev.loyalty
+      - DAPR_HOST=host.docker.internal
+      - DAPR_GRPC_PORT=5101
+
+  loyaltyworker-dapr:
+    image: "daprio/daprd:edge"
+    command: [
+        "./daprd",
+        "--app-id",
+        "loyaltyworker",
+        "--app-port",
+        "8080",
+        "--placement-host-address",
+        "placement:50006", # Dapr's placement service can be reach via the docker DNS entry
+        "--dapr-grpc-port",
+        "5101",
+        "--resources-path",
+        "../../components",
+      ]
+    volumes:
+      - "../../components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
+    depends_on:
+      - "local.loyalty-worker"
+    network_mode: "service:local.loyalty-worker"
+    
+  integration-test-dapr:
+    image: "daprio/daprd:edge"
+    command: [
+      "./daprd",
+      "--app-id",
+      "integration-tests",
+      "--placement-host-address",
+      "placement:50006", # Dapr's placement service can be reach via the docker DNS entry
+      "--dapr-grpc-port",
+      "5101",
+      "--resources-path",
+      "../../components",
+    ]
+    ports:
+      - "5101:5101"
+    volumes:
+      - "../../components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
+
+
+  ############################
+  # Dapr placement service
+  ############################
+  placement:
+    image: "daprio/dapr"
+    command: ["./placement", "-port", "50006"]
+    ports:
+      - "50006:50006"

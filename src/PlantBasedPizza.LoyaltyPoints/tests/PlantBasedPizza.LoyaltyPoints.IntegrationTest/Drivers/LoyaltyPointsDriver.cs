@@ -1,5 +1,6 @@
 using System.Net.Http.Headers;
 using System.Text.Json;
+using Dapr.Client;
 using Grpc.Net.Client;
 using PlantBasedPizza.Events;
 using PlantBasedPizza.IntegrationTest.Helpers;
@@ -13,7 +14,7 @@ public class LoyaltyPointsDriver
         private static string BaseUrl = TestConstants.DefaultTestUrl;
 
         private readonly HttpClient _httpClient;
-        private readonly IEventPublisher _eventPublisher;
+        private readonly DaprClient _daprClient;
         private readonly Loyalty.LoyaltyClient _loyaltyClient;
 
         public LoyaltyPointsDriver()
@@ -25,16 +26,14 @@ public class LoyaltyPointsDriver
             var channel = GrpcChannel.ForAddress(TestConstants.InternalTestEndpoint);
             this._loyaltyClient = new Loyalty.LoyaltyClient(channel);
 
-            // _eventPublisher = new RabbitMQEventPublisher(new OptionsWrapper<RabbitMqSettings>(new RabbitMqSettings()
-            // {
-            //     ExchangeName = "dev.loyalty",
-            //     HostName = "localhost"
-            // }), new Logger<RabbitMQEventPublisher>(new SerilogLoggerFactory()), new RabbitMQConnection("localhost"));
+            this._daprClient = new DaprClientBuilder()
+                .UseGrpcEndpoint("http://localhost:5101")
+                .Build();
         }
 
         public async Task AddLoyaltyPoints(string orderIdentifier, decimal orderValue)
         {
-            await this._eventPublisher.Publish(new OrderCompletedIntegrationEventV1()
+            await this._daprClient.PublishEventAsync("public", "order.orderCompleted.v1", new OrderCompletedIntegrationEventV1()
             {
                 CustomerIdentifier = "user-account",
                 OrderIdentifier = orderIdentifier,

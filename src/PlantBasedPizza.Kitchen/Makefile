@@ -14,6 +14,7 @@ unit-test:
 	dotnet test tests/PlantBasedPizza.Kitchen.UnitTests
 
 integration-test:
+	docker compose -f docker-compose-integration.yml up -d
 	sleep 5
 	dotnet test tests/PlantBasedPizza.Kitchen.IntegrationTests
 	docker compose -f docker-compose-integration.yml down

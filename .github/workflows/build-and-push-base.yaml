@@ -3,31 +3,16 @@ name: Build & Push Base Workflow
 on:
   workflow_call:
     inputs:
-      unit-test-path:
-          required: true
-          type: string
-      image-name:
-          required: true
-          type: string
-      docker-repository:
-          required: true
-          type: string
-      dockerfile:
-          required: true
-          type: string
-      integration-test-compose-file:
-          required: true
-          type: string
-      integration-test-folder:
-          required: true
-          type: string
+      application-root-folder:
+        type: string
+        required: true
     secrets:
       DOCKERHUB_USERNAME:
-        description: 'The Dockerhub username to login with'
+        description: "The Dockerhub username to login with"
         required: true
       DOCKERHUB_TOKEN:
-          description: 'The Dockerhub token'
-          required: true
+        description: "The Dockerhub token"
+        required: true
 
 permissions:
   id-token: write
@@ -37,18 +22,16 @@ jobs:
   test-and-build:
     runs-on: ubuntu-latest
     steps:
-      -
-        name: Checkout
+      - name: Checkout
         uses: actions/checkout@v4
-      -
-        name: Set up Docker Buildx
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '9'
-
+          dotnet-version: "9"
       - name: Run unit tests
-        run: dotnet test ${{inputs.unit-test-path}}
+        run: |
+          cd ${{inputs.application-root-folder}};make unit-test
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -58,26 +41,14 @@ jobs:
       - name: Declare some variables
         shell: bash
         run: |
-          echo "sha_short=$(git rev-parse --short "$GITHUB_SHA")" >> "$GITHUB_ENV"
-      -
-        name: Build local image
-        uses: docker/build-push-action@v5
-        with:
-          push: false
-          load: true
-          tags: ${{ inputs.image-name }}:latest
-          context: ./src
-          file: ${{ inputs.dockerfile }}
-      - name: Start integration test infrastructure
-        run: docker compose -f ${{ inputs.integration-test-compose-file }} up -d
-      - name: Wait for docker to start - 20s
-        run: sleep 20
-      - name: Run Integration Tests
-        run: dotnet test ${{ inputs.integration-test-folder }}
-      - name: Teardown integration test infrastructure
-        run: docker compose -f ${{ inputs.integration-test-compose-file }} down
+          echo "IMAGE_TAG=$(git rev-parse --short "$GITHUB_SHA")" >> "$GITHUB_ENV"
+      - name: Build images
+        run: |
+          cd ${{inputs.application-root-folder}};make build
+      # - name: Run Integration Tests
+      #   run: |
+      #     cd ${{inputs.application-root-folder}};docker compose -f docker-compose-integration.yml up -d;make integration-test
       - name: Tag With Commit Hash
-        run: docker tag ${{inputs.image-name}} ${{inputs.docker-repository}}:${{ env.sha_short }}
+        run: cd ${{inputs.application-root-folder}};make tag-images
       - name: Push to DockerHub
-        run: docker push ${{inputs.docker-repository}}:${{ env.sha_short }}
-          
+        run: cd ${{inputs.application-root-folder}};make push

@@ -1,44 +1,34 @@
-version: "3.7"
 services:
-  loyalty-mongodb:
-    image: mongo
-    container_name: loyalty-mongodb
-    environment:
-      - PUID=1000
-      - PGID=1000
-    ports:
-      - 27017:27017
-
-  consul:
-    image: hashicorp/consul:latest
-    ports:
-      - 8500:8500
-
-  jaeger:
-    image: jaegertracing/opentelemetry-all-in-one:latest
-    ports:
-      - 16686:16686
-      - 13133:13133
-      - 4317:4317
-      - 4318:4318
-
-  rabbitmq:
-    image: rabbitmq:3-management-alpine
-    container_name: 'payments-rabbitmq'
-    ports:
-        - 5672:5672
-        - 15672:15672
-
   payment-api:
-    image: ${REGISTRY}/payment-api:${IMAGE_TAG}
+    image: payment-api
     ports:
-        - 5070:8080
+      - 5070:8080
     environment:
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
       - Environment=local
-      - ServiceDiscovery__MyUrl=
-      - ServiceDiscovery__ServiceName=
-      - ServiceDiscovery__ConsulServiceEndpoint=http://consul:8500
-      - Messaging__HostName=rabbitmq
-      - Messaging__ExchangeName=dev.payments
       - Auth__ApiKey=this is a test api key
+      - DAPR_HOST=host.docker.internal
+      - DAPR_GRPC_PORT=5101
+
+  paymentapi-dapr:
+    image: "daprio/daprd:edge"
+    command: [
+        "./daprd",
+        "--app-id",
+        "payment",
+        "--app-port",
+        "8080",
+        "--placement-host-address",
+        "placement:50006", # Dapr's placement service can be reach via the docker DNS entry
+        "--dapr-grpc-port",
+        "5101",
+        "--resources-path",
+        "../../components",
+        "--app-protocol",
+        "grpc",
+      ]
+    volumes:
+      - "../../components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
+    depends_on:
+      - "payment-api"
+    network_mode: "service:payment-api"

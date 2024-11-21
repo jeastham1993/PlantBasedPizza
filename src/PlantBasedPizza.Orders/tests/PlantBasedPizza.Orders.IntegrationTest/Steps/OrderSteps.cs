@@ -32,14 +32,6 @@ public partial class OrderSteps
 
         await Task.Delay(TimeSpan.FromSeconds(2));
     }
-
-    [Then(@"loyalty points should be cached for (.*) with a total amount of (.*)")]
-    public async Task ThenLoyaltyPointsShouldBeCachedWithATotalAmount(string p0, decimal p1)
-    {
-        var pointsTotal = await _distributedCache.GetStringAsync(p0.ToUpper());
-
-        pointsTotal.Should().Be(p1.ToString());
-    }
     
     [Given(@"a new order is created")]
         public async Task GivenANewOrderIsCreatedWithIdentifierOrd()

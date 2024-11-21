@@ -1,0 +1,36 @@
+name: Build & Push Base Workflow
+
+on:
+  workflow_call:
+    inputs:
+      integration-test-compose-file:
+          required: true
+          type: string
+      integration-test-folder:
+          required: true
+          type: string
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9'
+      - name: Start integration test infrastructure
+        run: docker compose -f ${{ inputs.integration-test-compose-file }} up -d
+      - name: Wait for docker to start - 20s
+        run: sleep 20
+      - name: Run Integration Tests
+        run: dotnet test ${{ inputs.integration-test-folder }}
+      - name: Teardown integration test infrastructure
+        run: docker compose -f ${{ inputs.integration-test-compose-file }} down
+          

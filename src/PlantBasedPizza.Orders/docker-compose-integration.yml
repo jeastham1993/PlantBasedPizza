@@ -1,63 +1,10 @@
-version: "3.7"
 services:
-  mongodb:
-    image: mongo
-    container_name: mongodb
-    environment:
-      - PUID=1000
-      - PGID=1000
-    expose:
-      - 27017
-
-  jaeger:
-    image: jaegertracing/opentelemetry-all-in-one:latest
-    expose:
-      - 16686
-      - 13133
-      - 4317
-      - 4318
-  
-  cache:
-    image: redis:7.2
-    ports:
-      - "6379:6379"
-
-  consul:
-    image: hashicorp/consul:latest
-    ports:
-      - 8500:8500
-
-  wiremock:
-    image: wiremock/wiremock:latest
-    expose:
-      - 8080
-    volumes:
-      - ./mocks/loyalty-api:/home/wiremock
-
-  gripmock:
-    image: tkpd/gripmock:latest
-    expose:
-      - 4770
-      - 4771
-    volumes:
-      - ./mocks/grpc-mocks:/proto
-    command: --stub=/proto/stubs /proto/loyalty.proto /proto/payment.proto
-
-  rabbitmq:
-    image: rabbitmq:3-management-alpine
-    container_name: 'rabbitmq'
-    ports:
-      - "5672:5672"
-      - "15672:15672"
-    healthcheck:
-      test: rabbitmq-diagnostics -q ping
-
-  local.orders-api:
-    image: ${REGISTRY}/orders-api:${IMAGE_TAG}
+  local.order-api:
+    image: order-api
+    container_name: "local.order-api"
     depends_on:
-      - rabbitmq
       - cache
-    restart: on-failure
+      - placement
     ports:
       - "5004:8080"
     environment:
@@ -65,37 +12,100 @@ services:
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
       - Environment=local
       - RedisConnectionString=cache
-      - Services__Loyalty=http://wiremock:8443
-      - Services__LoyaltyInternal=http://gripmock:4770
-      - Services__PaymentInternal=http://gripmock:4770
-      - Services__Recipes=http://wiremock:8443
-      - ServiceDiscovery__MyUrl=
-      - ServiceDiscovery__ServiceName=OrdersApi
-      - ServiceDiscovery__ConsulServiceEndpoint=
-      - Messaging__HostName=rabbitmq
-      - Messaging__ExchangeName=dev.plantbasedpizza
+      - Services__Loyalty=loyalty
+      - Services__LoyaltyInternal=http://localhost:5101
+      - Services__PaymentInternal=http://localhost:5101
+      - Services__Recipes=recipes
+      - Messaging__UseAsyncApi=Y
       - Auth__Issuer=https://plantbasedpizza.com
       - Auth__Audience=https://plantbasedpizza.com
       - Auth__Key=This is a sample secret key - please don't use in production environment.'
       - Auth__PaymentApiKey=the api key to use, use a secret store in production
+      - DAPR_HOST=host.docker.internal
+      - DAPR_GRPC_PORT=5101
+
+  orderapi-dapr:
+    image: "daprio/daprd:edge"
+    command: [
+        "./daprd",
+        "--app-id",
+        "orders",
+        "--app-port",
+        "8080",
+        "--placement-host-address",
+        "placement:50006", # Dapr's placement service can be reach via the docker DNS entry
+        "--dapr-grpc-port",
+        "5101",
+        "--resources-path",
+        "./components",
+      ]
+    volumes:
+      - "./components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
+    depends_on:
+      - "local.order-api"
+    network_mode: "service:local.order-api"
 
   local.orders-worker:
-    image: ${REGISTRY}/orders-worker:${IMAGE_TAG}
+    image: order-worker
+    container_name: local.orders-worker
     depends_on:
-      - rabbitmq
       - cache
-    restart: on-failure
     environment:
       - DatabaseConnection=mongodb://mongodb:27017
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
       - RedisConnectionString=cache
-      - Services__Loyalty=http://wiremock:8443
-      - Services__LoyaltyInternal=http://gripmock:4770
-      - Services__PaymentInternal=http://gripmock:4770
-      - Services__Recipes=http://wiremock:8443
+      - Services__Loyalty=loyalty
+      - Services__LoyaltyInternal=http://localhost:5101
+      - Services__PaymentInternal=http://localhost:5101
+      - Services__Recipes=recipes
       - Environment=local
-      - ServiceDiscovery__MyUrl=
-      - ServiceDiscovery__ServiceName=OrdersWorker
-      - ServiceDiscovery__ConsulServiceEndpoint=
-      - Messaging__HostName=rabbitmq
-      - Messaging__ExchangeName=dev.plantbasedpizza
+      - DAPR_HOST=host.docker.internal
+      - DAPR_GRPC_PORT=5101
+
+  ordersworker-dapr:
+    image: "daprio/daprd:edge"
+    command: [
+        "./daprd",
+        "--app-id",
+        "ordersworker",
+        "--app-port",
+        "8080",
+        "--placement-host-address",
+        "placement:50006", # Dapr's placement service can be reach via the docker DNS entry
+        "--dapr-grpc-port",
+        "5101",
+        "--resources-path",
+        "./components",
+      ]
+    volumes:
+      - "./components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
+    depends_on:
+      - "local.orders-worker"
+    network_mode: "service:local.orders-worker"
+    
+  integration-test-dapr:
+    image: "daprio/daprd:edge"
+    command: [
+      "./daprd",
+      "--app-id",
+      "integration-tests",
+      "--placement-host-address",
+      "placement:50006", # Dapr's placement service can be reach via the docker DNS entry
+      "--dapr-grpc-port",
+      "5101",
+      "--resources-path",
+      "../../components",
+    ]
+    ports:
+      - "5101:5101"
+    volumes:
+      - "../../components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
+
+  ############################
+  # Dapr placement service
+  ############################
+  placement:
+    image: "daprio/dapr"
+    command: ["./placement", "-port", "50006"]
+    ports:
+      - "50006:50006"

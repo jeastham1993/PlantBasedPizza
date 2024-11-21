@@ -80,16 +80,16 @@ namespace PlantBasedPizza.Orders.IntegrationTest.Features
             this.TestTearDown();
         }
         
-        [Xunit.SkippableFactAttribute(DisplayName="Loyalty Point Updates are cached")]
+        [Xunit.SkippableFactAttribute(DisplayName="Order can be created")]
         [Xunit.TraitAttribute("FeatureTitle", "Orders")]
-        [Xunit.TraitAttribute("Description", "Loyalty Point Updates are cached")]
-        [Xunit.TraitAttribute("Category", "LoyaltyPointUpdatesAreCached")]
-        public void LoyaltyPointUpdatesAreCached()
+        [Xunit.TraitAttribute("Description", "Order can be created")]
+        [Xunit.TraitAttribute("Category", "OrderWorkflow")]
+        public void OrderCanBeCreated()
         {
             string[] tagsOfScenario = new string[] {
-                    "LoyaltyPointUpdatesAreCached"};
+                    "OrderWorkflow"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Loyalty Point Updates are cached", null, tagsOfScenario, argumentsOfScenario, featureTags);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Order can be created", null, tagsOfScenario, argumentsOfScenario, featureTags);
 #line 5
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
@@ -101,46 +101,15 @@ this.ScenarioInitialize(scenarioInfo);
             {
                 this.ScenarioStart();
 #line 6
- testRunner.Given("a LoyaltyPointsUpdatedEvent is published for customer james, with a points total " +
-                        "of 50.00", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
-#line hidden
-#line 7
- testRunner.Then("loyalty points should be cached for james with a total amount of 50", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
-#line hidden
-            }
-            this.ScenarioCleanup();
-        }
-        
-        [Xunit.SkippableFactAttribute(DisplayName="Order can be created")]
-        [Xunit.TraitAttribute("FeatureTitle", "Orders")]
-        [Xunit.TraitAttribute("Description", "Order can be created")]
-        [Xunit.TraitAttribute("Category", "OrderWorkflow")]
-        public void OrderCanBeCreated()
-        {
-            string[] tagsOfScenario = new string[] {
-                    "OrderWorkflow"};
-            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Order can be created", null, tagsOfScenario, argumentsOfScenario, featureTags);
-#line 10
-this.ScenarioInitialize(scenarioInfo);
-#line hidden
-            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
-            {
-                testRunner.SkipScenario();
-            }
-            else
-            {
-                this.ScenarioStart();
-#line 11
     testRunner.Given("a new order is created", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
 #line hidden
-#line 12
+#line 7
     testRunner.When("a CREATEORDERTEST is added to order", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 13
+#line 8
     testRunner.And("order is submitted", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
-#line 14
+#line 9
     testRunner.Then("order should contain a Submitted order. event", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             }

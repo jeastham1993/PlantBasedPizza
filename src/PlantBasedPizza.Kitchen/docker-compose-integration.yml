@@ -8,8 +8,6 @@ services:
       - PGID=1000
     expose:
       - 27017
-    networks:
-      - app
 
   jaeger:
     image: jaegertracing/opentelemetry-all-in-one:latest
@@ -18,15 +16,11 @@ services:
       - 13133
       - 4317
       - 4318
-    networks:
-      - app
   
   cache:
     image: redis:7.2
     ports:
       - "6379:6379"
-    networks:
-      - app
 
   wiremock:
     image: wiremock/wiremock:latest
@@ -34,8 +28,6 @@ services:
       - 8080
     volumes:
       - ./mocks/recipe-api:/home/wiremock
-    networks:
-      - app
 
   wiremock-recipes-dapr:
     image: "daprio/daprd:edge"
@@ -71,8 +63,6 @@ services:
       - Auth__Issuer=https://plantbasedpizza.com
       - Auth__Audience=https://plantbasedpizza.com
       - Auth__Key=This is a sample secret key - please don't use in production environment.'
-    networks:
-      - app
 
   kitchen-api-dapr:
     image: "daprio/daprd:edge"
@@ -103,8 +93,6 @@ services:
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
       - Environment=local
       - Services__Recipes=recipes
-    networks:
-      - app
 
   kitchen-worker-dapr:
     image: "daprio/daprd:edge"
@@ -127,7 +115,6 @@ services:
       - "local.kitchen-worker"
     network_mode: "service:local.kitchen-worker"
     
-
   integration-test-dapr:
     image: "daprio/daprd:edge"
     command: [
@@ -145,8 +132,6 @@ services:
       - "5101:5101"
     volumes:
       - "../../components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
-    networks:
-      - app
 
 
   ############################
@@ -157,8 +142,3 @@ services:
     command: ["./placement", "-port", "50006"]
     ports:
       - "50006:50006"
-    networks:
-      - app
-
-networks:
-  app:

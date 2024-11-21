@@ -16,12 +16,10 @@ permissions:
   contents: read
 
 jobs:
-  build-image:
+  build-and-push:
     uses: jeastham1993/PlantBasedPizza/.github/workflows/build-and-push-base.yaml@feat/dapr
     with:
-      docker-repository: plantpowerjames/plant-based-pizza-payment-api
-      image-name: payment-api
-      dockerfile: src/PlantBasedPizza.Payments/application/PlantBasedPizza.Payments/Dockerfile-x86
+      application-root-folder: ./src/PlantBasedPizza.Payments/
     secrets:
       DOCKERHUB_USERNAME: ${{secrets.DOCKERHUB_USERNAME}}
       DOCKERHUB_TOKEN: ${{secrets.DOCKERHUB_TOKEN}}

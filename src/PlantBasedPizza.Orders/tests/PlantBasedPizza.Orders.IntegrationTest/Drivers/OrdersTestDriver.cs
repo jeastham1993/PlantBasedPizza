@@ -1,5 +1,6 @@
 using System.Net.Http.Headers;
 using System.Text;
+using Dapr.Client;
 using Newtonsoft.Json;
 using PlantBasedPizza.Events;
 using PlantBasedPizza.IntegrationTest.Helpers;
@@ -14,7 +15,7 @@ namespace PlantBasedPizza.Orders.IntegrationTest.Drivers;
 
 public class OrdersTestDriver
     {
-        private readonly IEventPublisher _eventPublisher;
+        private readonly DaprClient _daprClient;
         private readonly HttpClient _userHttpClient;
         private readonly HttpClient _staffHttpClient;
 
@@ -28,17 +29,15 @@ public class OrdersTestDriver
             
             _staffHttpClient = new HttpClient();
             _staffHttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", staffToken);
-            
-            // _eventPublisher = new RabbitMQEventPublisher(new OptionsWrapper<RabbitMqSettings>(new RabbitMqSettings()
-            // {
-            //     ExchangeName = "dev.plantbasedpizza",
-            //     HostName = "localhost"
-            // }), new Logger<RabbitMQEventPublisher>(new SerilogLoggerFactory()),  new RabbitMQConnection("localhost"));
+
+            this._daprClient = new DaprClientBuilder()
+                .UseGrpcEndpoint("http://localhost:5101")
+                .Build();
         }
 
         public async Task SimulateLoyaltyPointsUpdatedEvent(string customerIdentifier, decimal totalPoints)
         {
-            await this._eventPublisher.Publish(new CustomerLoyaltyPointsUpdatedEvent()
+            await this._daprClient.PublishEventAsync("public", "loyalty.customerLoyaltyPointsUpdated.v1", new CustomerLoyaltyPointsUpdatedEvent()
             {
                 CustomerIdentifier = customerIdentifier,
                 TotalLoyaltyPoints = totalPoints

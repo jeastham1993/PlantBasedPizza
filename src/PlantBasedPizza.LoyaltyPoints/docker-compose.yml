@@ -9,11 +9,6 @@ services:
     ports:
       - 27017:27017
 
-  loyalty-consul:
-    image: hashicorp/consul:latest
-    ports:
-      - 8500:8500
-
   loyalty-jaeger:
     image: jaegertracing/opentelemetry-all-in-one:latest
     ports:
@@ -21,10 +16,3 @@ services:
       - 13133:13133
       - 4317:4317
       - 4318:4318
-
-  loyalty-rabbitmq:
-    image: rabbitmq:3-management-alpine
-    container_name: 'loyalty-rabbitmq'
-    ports:
-        - 5672:5672
-        - 15672:15672
