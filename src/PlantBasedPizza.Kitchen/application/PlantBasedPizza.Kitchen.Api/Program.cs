@@ -1,20 +1,20 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using PlantBasedPizza.Events;
 using PlantBasedPizza.Kitchen.Infrastructure;
 using PlantBasedPizza.Kitchen.Infrastructure.IntegrationEvents;
 using PlantBasedPizza.Shared;
+using PlantBasedPizza.Shared.Logging;
 using Saunter;
 using Saunter.AsyncApiSchema.v2;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddEnvironmentVariables();
+builder.AddLoggerConfigs();
 
 var applicationName = "KitchenApi";
 
 builder.Services.AddSharedInfrastructure(builder.Configuration, applicationName)
-    .AddMessaging(builder.Configuration)
     .AddKitchenInfrastructure(builder.Configuration)
     .AddControllers();
 

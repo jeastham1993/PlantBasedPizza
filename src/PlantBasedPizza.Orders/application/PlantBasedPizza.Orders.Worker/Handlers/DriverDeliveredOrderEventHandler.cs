@@ -18,11 +18,11 @@ namespace PlantBasedPizza.Orders.Worker.Handlers
 
         public async Task Handle(DriverDeliveredOrderEventV1 evt)
         {
-            var order = await this._orderRepository.Retrieve(evt.OrderIdentifier);
+            var order = await _orderRepository.Retrieve(evt.OrderIdentifier);
 
             order.CompleteOrder();
             
-            await this._orderRepository.Update(order).ConfigureAwait(false);
+            await _orderRepository.Update(order).ConfigureAwait(false);
 
             var completedEvt = new OrderCompletedIntegrationEventV1()
             {
@@ -30,7 +30,7 @@ namespace PlantBasedPizza.Orders.Worker.Handlers
                 CustomerIdentifier = order.CustomerIdentifier,
                 OrderValue = order.TotalPrice
             };
-            await this._daprClient.PublishEventAsync("public", $"{evt.EventName}.{evt.EventVersion}", completedEvt);
+            await _daprClient.PublishEventAsync("public", $"{evt.EventName}.{evt.EventVersion}", completedEvt);
         }
     }
 }

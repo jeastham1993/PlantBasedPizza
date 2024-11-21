@@ -7,12 +7,12 @@ public class DeliveryRequestDto
 {
     public DeliveryRequestDto(DeliveryRequest request)
     {
-        this.OrderIdentifier = request.OrderIdentifier;
-        this.Driver = request.Driver;
-        this.AwaitingCollection = request.AwaitingCollection;
-        this.DeliveryAddress = new AddressDto(request.DeliveryAddress);
-        this.DriverCollectedOn = request.DriverCollectedOn;
-        this.DeliveredOn = request.DeliveredOn;
+        OrderIdentifier = request.OrderIdentifier;
+        Driver = request.Driver;
+        AwaitingCollection = request.AwaitingCollection;
+        DeliveryAddress = new AddressDto(request.DeliveryAddress);
+        DriverCollectedOn = request.DriverCollectedOn;
+        DeliveredOn = request.DeliveredOn;
     }
     
     public string OrderIdentifier { get; set; }

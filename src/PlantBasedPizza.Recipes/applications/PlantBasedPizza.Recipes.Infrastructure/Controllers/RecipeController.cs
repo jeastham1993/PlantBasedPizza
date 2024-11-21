@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using PlantBasedPizza.Recipes.Core.Commands;
 using PlantBasedPizza.Recipes.Core.Entities;
 using PlantBasedPizza.Recipes.Core.IntegrationEvents;
-using PlantBasedPizza.Shared.Logging;
 
 namespace PlantBasedPizza.Recipes.Infrastructure.Controllers
 {
@@ -12,13 +11,11 @@ namespace PlantBasedPizza.Recipes.Infrastructure.Controllers
     public class RecipeController : ControllerBase
     {
         private readonly IRecipeRepository _recipeRepository;
-        private readonly IObservabilityService _observability;
         private readonly DaprClient _daprClient;
 
-        public RecipeController(IRecipeRepository recipeRepository, IObservabilityService observability, DaprClient daprClient)
+        public RecipeController(IRecipeRepository recipeRepository,  DaprClient daprClient)
         {
             _recipeRepository = recipeRepository;
-            _observability = observability;
             _daprClient = daprClient;
         }
 
@@ -29,9 +26,7 @@ namespace PlantBasedPizza.Recipes.Infrastructure.Controllers
         [HttpGet("")]
         public async Task<IEnumerable<Recipe>> List()
         {
-            this._observability.Info("Retrieved request to list recipes");
-
-            return await this._recipeRepository.List();
+            return await _recipeRepository.List();
         }
 
         /// <summary>
@@ -42,7 +37,7 @@ namespace PlantBasedPizza.Recipes.Infrastructure.Controllers
         [HttpGet("{recipeIdentifier}")]
         public async Task<Recipe> Get(string recipeIdentifier)
         {
-            return await this._recipeRepository.Retrieve(recipeIdentifier);
+            return await _recipeRepository.Retrieve(recipeIdentifier);
         }
         
         /// <summary>
@@ -56,7 +51,7 @@ namespace PlantBasedPizza.Recipes.Infrastructure.Controllers
         {
             try
             {
-                var existingRecipe = await this._recipeRepository.Retrieve(request.RecipeIdentifier);
+                var existingRecipe = await _recipeRepository.Retrieve(request.RecipeIdentifier);
 
                 if (existingRecipe != null)
                 {
@@ -78,12 +73,12 @@ namespace PlantBasedPizza.Recipes.Infrastructure.Controllers
                     recipe.AddIngredient(item.Name, item.Quantity);
                 }
 
-                await this._recipeRepository.Add(recipe);
+                await _recipeRepository.Add(recipe);
                 var evt = new RecipeCreatedEventV1()
                 {
                     RecipeIdentifier = recipe.RecipeIdentifier
                 };
-                await this._daprClient.PublishEventAsync("public", $"{evt.EventName}.{evt.EventVersion}", evt);
+                await _daprClient.PublishEventAsync("public", $"{evt.EventName}.{evt.EventVersion}", evt);
 
                 return recipe;
             }

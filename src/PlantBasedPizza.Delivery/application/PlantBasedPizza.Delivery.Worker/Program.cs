@@ -2,12 +2,13 @@ using Microsoft.AspNetCore.Builder;
 using PlantBasedPizza.Deliver.Core.Handlers;
 using PlantBasedPizza.Deliver.Infrastructure;
 using PlantBasedPizza.Delivery.Worker;
-using PlantBasedPizza.Events;
 using PlantBasedPizza.Shared;
+using PlantBasedPizza.Shared.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration
     .AddEnvironmentVariables();
+builder.AddLoggerConfigs();
 
 builder.Services.AddDaprClient();
 
@@ -15,7 +16,6 @@ var serviceName = "DeliveryWorker";
 
 builder.Services
     .AddSharedInfrastructure(builder.Configuration, serviceName)
-    .AddMessaging(builder.Configuration)
     .AddDeliveryInfrastructure(builder.Configuration);
 
 builder.Services.AddSingleton<OrderReadyForDeliveryEventHandler>();

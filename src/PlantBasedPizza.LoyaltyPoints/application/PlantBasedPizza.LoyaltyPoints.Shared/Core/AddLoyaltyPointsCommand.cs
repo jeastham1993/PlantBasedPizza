@@ -10,6 +10,6 @@ public class AddLoyaltyPointsCommand
 
     public bool Validate()
     {
-        return !string.IsNullOrEmpty(this.OrderIdentifier) && !string.IsNullOrEmpty(this.CustomerIdentifier);
+        return !string.IsNullOrEmpty(OrderIdentifier) && !string.IsNullOrEmpty(CustomerIdentifier);
     }
 }

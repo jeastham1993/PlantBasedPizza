@@ -18,25 +18,25 @@ namespace PlantBasedPizza.Delivery.IntegrationTests.Drivers
 
         public DeliveryDriver()
         {
-            this._userHttpClient = new HttpClient();
-            this._userHttpClient.DefaultRequestHeaders.Authorization =
+            _userHttpClient = new HttpClient();
+            _userHttpClient.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", TestTokenGenerator.GenerateTestTokenForRole("user"));
             
-            this._staffHttpClient = new HttpClient();
-            this._staffHttpClient.DefaultRequestHeaders.Authorization =
+            _staffHttpClient = new HttpClient();
+            _staffHttpClient.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", TestTokenGenerator.GenerateTestTokenForRole("staff"));
             
-            this._driverHttpClient = new HttpClient();
-            this._driverHttpClient.DefaultRequestHeaders.Authorization =
+            _driverHttpClient = new HttpClient();
+            _driverHttpClient.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", TestTokenGenerator.GenerateTestTokenForRole("driver"));
-            this._daprClient = new DaprClientBuilder()
+            _daprClient = new DaprClientBuilder()
                 .UseGrpcEndpoint("http://localhost:5101")
                 .Build();
         }
 
         public async Task ANewOrderIsReadyForDelivery(string orderIdentifier)
         {
-            await this._daprClient.PublishEventAsync("public", "order.readyForDelivery.v1", new OrderReadyForDeliveryEventV1()
+            await _daprClient.PublishEventAsync("public", "order.readyForDelivery.v1", new OrderReadyForDeliveryEventV1()
             {
                 OrderIdentifier = orderIdentifier,
                 DeliveryAddressLine1 = "Address Line 1",
@@ -53,7 +53,7 @@ namespace PlantBasedPizza.Delivery.IntegrationTests.Drivers
 
         public async Task<List<DeliveryRequest>> GetAwaitingDriver()
         {
-            var result = await this._staffHttpClient.GetAsync(new Uri($"{BaseUrl}/delivery/awaiting-collection"))
+            var result = await _staffHttpClient.GetAsync(new Uri($"{BaseUrl}/delivery/awaiting-collection"))
                 .ConfigureAwait(false);
 
             var deliveryRequests =
@@ -74,7 +74,7 @@ namespace PlantBasedPizza.Delivery.IntegrationTests.Drivers
                 DriverName = driverName
             });
 
-            var result = await this._staffHttpClient.PostAsync(new Uri(url), new StringContent(content, Encoding.UTF8, "application/json")).ConfigureAwait(false);
+            var result = await _staffHttpClient.PostAsync(new Uri(url), new StringContent(content, Encoding.UTF8, "application/json")).ConfigureAwait(false);
 
             if (!result.IsSuccessStatusCode)
             {
@@ -93,12 +93,12 @@ namespace PlantBasedPizza.Delivery.IntegrationTests.Drivers
                 OrderIdentifier = orderIdentifier
             });
 
-            await this._driverHttpClient.PostAsync(new Uri(url), new StringContent(content, Encoding.UTF8, "application/json")).ConfigureAwait(false);
+            await _driverHttpClient.PostAsync(new Uri(url), new StringContent(content, Encoding.UTF8, "application/json")).ConfigureAwait(false);
         }
 
         public async Task<List<DeliveryRequest>> GetAssignedDeliveriesForDriver(string driverName)
         {
-            var result = await this._staffHttpClient.GetAsync(new Uri($"{BaseUrl}/delivery/driver/{driverName}/orders"))
+            var result = await _staffHttpClient.GetAsync(new Uri($"{BaseUrl}/delivery/driver/{driverName}/orders"))
                 .ConfigureAwait(false);
 
             var deliveryRequests =

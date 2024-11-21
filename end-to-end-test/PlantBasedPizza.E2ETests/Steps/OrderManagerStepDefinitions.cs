@@ -14,7 +14,7 @@ namespace PlantBasedPizza.E2ETests.Steps
         public OrderManagerStepDefinitions(ScenarioContext scenarioContext)
         {
             _scenarioContext = scenarioContext;
-            this._driver = new OrderManagerDriver();
+            _driver = new OrderManagerDriver();
         }
 
         [Given(@"a new order is created for customer (.*)")]
@@ -25,7 +25,7 @@ namespace PlantBasedPizza.E2ETests.Steps
             var orderId = Guid.NewGuid().ToString();
             _scenarioContext.Add("orderId", orderId);
             
-            await this._driver.AddNewOrder(orderId, p0).ConfigureAwait(false);
+            await _driver.AddNewOrder(orderId, p0).ConfigureAwait(false);
         }
 
         [When(@"a (.*) is added to order")]
@@ -34,7 +34,7 @@ namespace PlantBasedPizza.E2ETests.Steps
             Activity.Current = _scenarioContext.Get<Activity>("Activity");
             var orderId = _scenarioContext.Get<string>("orderId");
             
-            await this._driver.AddItemToOrder(orderId, p0, 1);
+            await _driver.AddItemToOrder(orderId, p0, 1);
         }
 
         [When(@"order is submitted")]
@@ -44,7 +44,7 @@ namespace PlantBasedPizza.E2ETests.Steps
             
             var orderId = _scenarioContext.Get<string>("orderId");
             
-            await this._driver.SubmitOrder(orderId);
+            await _driver.SubmitOrder(orderId);
         }
 
         [Then(@"order should be marked as (.*)")]
@@ -54,7 +54,7 @@ namespace PlantBasedPizza.E2ETests.Steps
             
             var orderId = _scenarioContext.Get<string>("orderId");
             
-            var order = await this._driver.GetOrder(orderId).ConfigureAwait(false);
+            var order = await _driver.GetOrder(orderId).ConfigureAwait(false);
 
             order.OrderCompletedOn.Should().NotBeNull();
         }
@@ -68,7 +68,7 @@ namespace PlantBasedPizza.E2ETests.Steps
             Activity.Current = _scenarioContext.Get<Activity>("Activity");
             var orderId = _scenarioContext.Get<string>("orderId");
             
-            var order = await this._driver.GetOrder(orderId).ConfigureAwait(false);
+            var order = await _driver.GetOrder(orderId).ConfigureAwait(false);
 
             order.History.Exists(p => p.Description == p0).Should().BeTrue();
         }
@@ -80,7 +80,7 @@ namespace PlantBasedPizza.E2ETests.Steps
             
             var orderId = _scenarioContext.Get<string>("orderId");
             
-            var order = await this._driver.GetOrder(orderId).ConfigureAwait(false);
+            var order = await _driver.GetOrder(orderId).ConfigureAwait(false);
 
             order.AwaitingCollection.Should().BeTrue();
         }
@@ -92,7 +92,7 @@ namespace PlantBasedPizza.E2ETests.Steps
             
             var orderId = _scenarioContext.Get<string>("orderId");
             
-            await this._driver.CollectOrder(orderId).ConfigureAwait(false);
+            await _driver.CollectOrder(orderId).ConfigureAwait(false);
         }
 
         [Given(@"a new delivery order is created for customer (.*)")]
@@ -103,7 +103,7 @@ namespace PlantBasedPizza.E2ETests.Steps
             var orderId = Guid.NewGuid().ToString();
             _scenarioContext.Add("orderId", orderId);
             
-            await this._driver.AddNewDeliveryOrder(orderId, p0);
+            await _driver.AddNewDeliveryOrder(orderId, p0);
         }
     }
 }

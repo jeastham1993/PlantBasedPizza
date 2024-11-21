@@ -17,7 +17,7 @@ public class UserAccountRepository : IUserAccountRepository
     {
         var queryBuilder = Builders<UserAccount>.Filter.Eq(p => p.EmailAddress, userAccount.EmailAddress);
 
-        var existingAccount = await this._accounts.Find(queryBuilder).FirstOrDefaultAsync().ConfigureAwait(false);
+        var existingAccount = await _accounts.Find(queryBuilder).FirstOrDefaultAsync().ConfigureAwait(false);
 
         if (existingAccount is not null)
         {
@@ -37,7 +37,7 @@ public class UserAccountRepository : IUserAccountRepository
         var filter = queryBuilder.Eq(account => account.EmailAddress, emailAddress) &
                      queryBuilder.Eq(account => account.Password, UserAccount.HashPassword(password));
 
-        var account = await this._accounts.Find(filter).FirstOrDefaultAsync().ConfigureAwait(false);
+        var account = await _accounts.Find(filter).FirstOrDefaultAsync().ConfigureAwait(false);
 
         if (account == null)
         {

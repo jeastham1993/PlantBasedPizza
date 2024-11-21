@@ -12,8 +12,8 @@ public class LoyaltyPointsDto
     
     public LoyaltyPointsDto(CustomerLoyaltyPoints points)
     {
-        this.TotalPoints = points.TotalPoints;
-        this.History = points.History.Select(history => new LoyaltyPointHistoryDto()
+        TotalPoints = points.TotalPoints;
+        History = points.History.Select(history => new LoyaltyPointHistoryDto()
         {
             DateTime = history.DateTime,
             PointsAdded = history.PointsAdded,

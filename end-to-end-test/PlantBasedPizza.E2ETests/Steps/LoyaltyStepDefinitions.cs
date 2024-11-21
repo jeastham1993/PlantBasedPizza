@@ -12,7 +12,7 @@ public class LoyaltyStepDefinitions
     [Then(@"the total points should be greater than (.*) for (.*)")]
     public async Task ThenTheTotalPointsShouldBe(int totalPoints, string customerIdentifier)
     {
-        var points = await this._driver.GetLoyaltyPoints(customerIdentifier);
+        var points = await _driver.GetLoyaltyPoints(customerIdentifier);
 
         points.TotalPoints.Should().BeGreaterThan(totalPoints);
     }

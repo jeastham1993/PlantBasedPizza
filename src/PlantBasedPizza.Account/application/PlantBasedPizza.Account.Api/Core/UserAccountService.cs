@@ -58,6 +58,7 @@ public class UserAccountService
         catch (LoginFailedException ex)
         {
             Activity.Current?.AddTag("login.failed", true);
+            Activity.Current?.AddException(ex);
 
             throw;
         }
@@ -87,16 +88,17 @@ public class UserAccountService
                     break;
             }
 
-            await this._userAccountRepository.CreateAccount(userAccount);
+            await _userAccountRepository.CreateAccount(userAccount);
             
             return new RegisterResponse()
             {
                 AccountId = userAccount.AccountId
             };
         }
-        catch (UserExistsException)
+        catch (UserExistsException ex)
         {
             Activity.Current?.AddTag("user.exists", true);
+            Activity.Current?.AddException(ex);
 
             throw;
         }

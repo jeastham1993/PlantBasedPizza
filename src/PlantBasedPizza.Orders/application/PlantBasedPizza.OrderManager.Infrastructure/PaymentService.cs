@@ -23,7 +23,7 @@ public class PaymentService : IPaymentService
     public async Task<TakePaymentResult> TakePaymentFor(Order order)
     {
         var result =
-            await this._paymentClient.TakePaymentAsync(new TakePaymentRequest()
+            await _paymentClient.TakePaymentAsync(new TakePaymentRequest()
             {
                 CustomerIdentifier = order.CustomerIdentifier,
                 PaymentAmount = Convert.ToDouble(order.TotalPrice)

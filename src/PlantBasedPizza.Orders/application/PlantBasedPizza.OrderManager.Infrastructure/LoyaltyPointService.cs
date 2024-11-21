@@ -28,7 +28,7 @@ public class LoyaltyPointService : ILoyaltyPointService
     {
         try
         {
-            var cacheCheck = await this._distributedCache.GetStringAsync(customerId);
+            var cacheCheck = await _distributedCache.GetStringAsync(customerId);
 
             if (cacheCheck != null)
             {
@@ -39,20 +39,20 @@ public class LoyaltyPointService : ILoyaltyPointService
         }
         catch (Exception ex)
         {
-            this._logger.LogError(ex, "Failure reading loyalty points from cache");
+            _logger.LogError(ex, "Failure reading loyalty points from cache");
             
             Activity.Current?.AddTag("cache.failure", true);
         }
         
         Activity.Current?.AddTag("loyalty.cacheMiss", true);
 
-        var loyaltyPoints = await this._loyaltyClient.GetCustomerLoyaltyPointsAsync(
+        var loyaltyPoints = await _loyaltyClient.GetCustomerLoyaltyPointsAsync(
             new GetCustomerLoyaltyPointsRequest()
             {
                 CustomerIdentifier = customerId
             }, _metadata);
 
-        await this._distributedCache.SetStringAsync(customerId, loyaltyPoints.TotalPoints.ToString("n0"));
+        await _distributedCache.SetStringAsync(customerId, loyaltyPoints.TotalPoints.ToString("n0"));
 
         return Convert.ToDecimal(loyaltyPoints.TotalPoints);
     }

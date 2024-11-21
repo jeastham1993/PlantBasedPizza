@@ -9,18 +9,18 @@ namespace PlantBasedPizza.Kitchen.Core.Entities
         [JsonConstructor]
         private KitchenRequest()
         {
-            this.Recipes = new List<RecipeAdapter>();
+            Recipes = new List<RecipeAdapter>();
         }
         
         public KitchenRequest(string orderIdentifier, List<RecipeAdapter> recipes)
         {
             Guard.AgainstNullOrEmpty(orderIdentifier, nameof(orderIdentifier));
             
-            this.KitchenRequestId = Guid.NewGuid().ToString();
-            this.OrderIdentifier = orderIdentifier;
-            this.OrderReceivedOn = DateTime.Now;
-            this.OrderState = OrderState.NEW;
-            this.Recipes = recipes;
+            KitchenRequestId = Guid.NewGuid().ToString();
+            OrderIdentifier = orderIdentifier;
+            OrderReceivedOn = DateTime.Now;
+            OrderState = OrderState.NEW;
+            Recipes = recipes;
         }
         
         [JsonPropertyName("kitchenRequestId")]
@@ -49,28 +49,28 @@ namespace PlantBasedPizza.Kitchen.Core.Entities
 
         public void Preparing(string correlationId = "")
         {
-            this.OrderState = OrderState.PREPARING;
+            OrderState = OrderState.PREPARING;
         }
 
         public void PrepComplete(string correlationId = "")
         {
-            this.OrderState = OrderState.BAKING;
+            OrderState = OrderState.BAKING;
             
-            this.PrepCompleteOn = DateTime.Now;
+            PrepCompleteOn = DateTime.Now;
         }
 
         public void BakeComplete(string correlationId = "")
         {
-            this.OrderState = OrderState.QUALITYCHECK;
+            OrderState = OrderState.QUALITYCHECK;
             
-            this.BakeCompleteOn = DateTime.Now;
+            BakeCompleteOn = DateTime.Now;
         }
 
         public async Task QualityCheckComplete(string correlationId = "")
         {
-            this.OrderState = OrderState.DONE;
+            OrderState = OrderState.DONE;
             
-            this.QualityCheckCompleteOn = DateTime.Now;
+            QualityCheckCompleteOn = DateTime.Now;
         }
     }
 }

@@ -1,15 +1,17 @@
-using PlantBasedPizza.Events;
 using PlantBasedPizza.LoyaltyPoints.Shared;
 using PlantBasedPizza.LoyaltyPoints.Worker;
+using PlantBasedPizza.Shared.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddEnvironmentVariables();
+builder.AddLoggerConfigs();
 
 builder.Services.AddDaprClient();
 
+var serviceName = "LoyaltyWorker";
+
 builder.Services
-    .AddLoyaltyServices(builder.Configuration, "LoyaltyPointsWorker")
-    .AddMessaging(builder.Configuration);
+    .AddLoyaltyServices(builder.Configuration, serviceName);
 
 var app = builder.Build();
 

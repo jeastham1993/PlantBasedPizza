@@ -4,7 +4,7 @@ public class InvalidUserException : Exception
 {
     public InvalidUserException(string reason)
     {
-        this.Reason = reason;
+        Reason = reason;
     }
     
     public string Reason { get; set; }

@@ -8,7 +8,7 @@ namespace PlantBasedPizza.E2ETests.Drivers
 
         public HealthCheckDriver()
         {
-            this._httpClient = new HttpClient();
+            _httpClient = new HttpClient();
         }
 
         public async Task<int> HealthCheck(bool loyalyPointSuccess = true)
@@ -16,7 +16,7 @@ namespace PlantBasedPizza.E2ETests.Drivers
             var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri($"{BaseUrl}/health"));
             httpRequestMessage.Headers.Add("Response", loyalyPointSuccess ? "Success" : "Failure");
             
-            var result = await this._httpClient
+            var result = await _httpClient
                 .SendAsync(httpRequestMessage)
                 .ConfigureAwait(false);
 

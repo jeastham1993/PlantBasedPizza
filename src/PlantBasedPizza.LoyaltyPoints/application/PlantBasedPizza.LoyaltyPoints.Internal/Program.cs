@@ -1,9 +1,13 @@
 using PlantBasedPizza.LoyaltyPoints.Internal.Services;
 using PlantBasedPizza.LoyaltyPoints.Shared;
+using PlantBasedPizza.Shared.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.AddLoggerConfigs();
 
-builder.Services.AddLoyaltyServices(builder.Configuration, "LoyaltyPointsInternal");
+var serviceName = "LoyaltyInternalApi";
+
+builder.Services.AddLoyaltyServices(builder.Configuration, serviceName);
 
 // Add services to the container.
 builder.Services.AddGrpc();

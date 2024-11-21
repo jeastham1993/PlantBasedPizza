@@ -19,7 +19,7 @@ public class CollectOrderCommandHandler
     {
         try
         {
-            var existingOrder = await this._orderRepository.Retrieve(command.OrderIdentifier);
+            var existingOrder = await _orderRepository.Retrieve(command.OrderIdentifier);
             
             if (existingOrder.OrderType == OrderType.Delivery || !existingOrder.AwaitingCollection)
             {
@@ -28,9 +28,9 @@ public class CollectOrderCommandHandler
 
             existingOrder.CompleteOrder();
 
-            await this._eventPublisher.PublishOrderCompletedEventV1(existingOrder);
+            await _eventPublisher.PublishOrderCompletedEventV1(existingOrder);
 
-            await this._orderRepository.Update(existingOrder).ConfigureAwait(false);
+            await _orderRepository.Update(existingOrder).ConfigureAwait(false);
 
             return new OrderDto(existingOrder);
         }

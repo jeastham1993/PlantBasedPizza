@@ -13,7 +13,7 @@ namespace PlantBasedPizza.E2ETests.Steps
         public KitchenStepDefinitions(ScenarioContext scenarioContext)
         {
             _scenarioContext = scenarioContext;
-            this._kitchenDriver = new KitchenDriver();
+            _kitchenDriver = new KitchenDriver();
         }
 
         [When(@"order is processed by the kitchen")]
@@ -23,10 +23,10 @@ namespace PlantBasedPizza.E2ETests.Steps
             
             var orderId = _scenarioContext.Get<string>("orderId");
             
-            await this._kitchenDriver.Preparing(orderId);
-            await this._kitchenDriver.PrepComplete(orderId);
-            await this._kitchenDriver.BakeComplete(orderId);
-            await this._kitchenDriver.QualityChecked(orderId);
+            await _kitchenDriver.Preparing(orderId);
+            await _kitchenDriver.PrepComplete(orderId);
+            await _kitchenDriver.BakeComplete(orderId);
+            await _kitchenDriver.QualityChecked(orderId);
         }
     }
 }

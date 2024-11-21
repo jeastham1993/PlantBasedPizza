@@ -24,7 +24,7 @@ public class DeliveryEventPublisher : IDeliveryEventPublisher
             OrderIdentifier = deliveryRequest.OrderIdentifier
         };
         
-        await this._daprClient.PublishEventAsync("public", $"{evt.EventName}.{evt.EventVersion}", evt);
+        await _daprClient.PublishEventAsync("public", $"{evt.EventName}.{evt.EventVersion}", evt);
     }
 
     [Channel("delivery.driverDeliveredOrder.v1")]
@@ -36,6 +36,6 @@ public class DeliveryEventPublisher : IDeliveryEventPublisher
             OrderIdentifier = deliveryRequest.OrderIdentifier
         };
         
-        await this._daprClient.PublishEventAsync("public", $"{evt.EventName}.{evt.EventVersion}", evt);
+        await _daprClient.PublishEventAsync("public", $"{evt.EventName}.{evt.EventVersion}", evt);
     }
 }

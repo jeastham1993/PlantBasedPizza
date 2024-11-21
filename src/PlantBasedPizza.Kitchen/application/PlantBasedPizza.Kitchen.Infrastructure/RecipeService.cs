@@ -19,7 +19,7 @@ namespace PlantBasedPizza.Kitchen.Infrastructure
 
         public async Task<RecipeAdapter> GetRecipe(string recipeIdentifier)
         {
-            var recipeResult = await this._httpClient.GetAsync($"http://{_serviceEndpoints.Recipes}/recipes/{recipeIdentifier}");
+            var recipeResult = await _httpClient.GetAsync($"http://{_serviceEndpoints.Recipes}/recipes/{recipeIdentifier}");
 
             var recipe = JsonSerializer.Deserialize<RecipeAdapter>(await recipeResult.Content.ReadAsStringAsync());
 

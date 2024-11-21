@@ -10,24 +10,24 @@ namespace PlantBasedPizza.UnitTest.Builders
 
         public KitchenRequestBuilder()
         {
-            this._request = new KitchenRequest(OrderIdentifier, new List<RecipeAdapter>(1));
+            _request = new KitchenRequest(OrderIdentifier, new List<RecipeAdapter>(1));
         }
 
         public KitchenRequestBuilder AddRecipe(string recipeName)
         {
-            if (this._request == null)
+            if (_request == null)
             {
                 return this;
             }
             
-            this._request.Recipes.Add(new RecipeAdapter(recipeName.ToUpper()));
+            _request.Recipes.Add(new RecipeAdapter(recipeName.ToUpper()));
 
             return this;
         }
 
         public KitchenRequest? Build()
         {
-            return this._request;
+            return _request;
         }
     }
 }

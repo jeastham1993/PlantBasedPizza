@@ -36,17 +36,17 @@ public class UserAccount
         };    
     }
     
-    public string AccountId { get; set; }
+    public string AccountId { get; set; } = string.Empty;
     
-    public string EmailAddress { get; set; }
+    public string EmailAddress { get; set; } = string.Empty;
     
-    public string Password { get; set; }
+    public string Password { get; set; } = string.Empty;
     
     public AccountType AccountType { get; set; }
 
     public string AsAuthenticatedRole()
     {
-        switch (this.AccountType)
+        switch (AccountType)
         {
             case AccountType.Admin:
                 return "admin";

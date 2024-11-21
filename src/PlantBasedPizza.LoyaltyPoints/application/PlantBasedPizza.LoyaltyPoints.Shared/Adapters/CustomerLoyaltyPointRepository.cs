@@ -14,14 +14,14 @@ public class CustomerLoyaltyPointRepository : ICustomerLoyaltyPointsRepository
     {
         _daprClient = daprClient;
         var database = client.GetDatabase("LoyaltyPoints");
-        this._loyaltyPoints = database.GetCollection<CustomerLoyaltyPoints>("loyalty");
+        _loyaltyPoints = database.GetCollection<CustomerLoyaltyPoints>("loyalty");
     }
     
     public async Task<CustomerLoyaltyPoints?> GetCurrentPointsFor(string customerIdentifier)
     {
         var queryBuilder = Builders<CustomerLoyaltyPoints>.Filter.Eq(p => p.CustomerId, customerIdentifier);
 
-        var currentPoints = await this._loyaltyPoints.Find(queryBuilder).FirstOrDefaultAsync();
+        var currentPoints = await _loyaltyPoints.Find(queryBuilder).FirstOrDefaultAsync();
         
         if (currentPoints == null)
         {
@@ -31,7 +31,7 @@ public class CustomerLoyaltyPointRepository : ICustomerLoyaltyPointsRepository
         return currentPoints;
     }
 
-    public async Task UpdatePoints(Core.CustomerLoyaltyPoints points)
+    public async Task UpdatePoints(CustomerLoyaltyPoints points)
     {
         var queryBuilder = Builders<CustomerLoyaltyPoints>.Filter.Eq(p => p.CustomerId, points.CustomerId);
 
@@ -39,7 +39,7 @@ public class CustomerLoyaltyPointRepository : ICustomerLoyaltyPointsRepository
             .Set(loyaltyPoint => loyaltyPoint.TotalPoints, points.TotalPoints)
             .Set(loyaltyPoint => loyaltyPoint.History, points.History);
 
-        await this._loyaltyPoints.UpdateOneAsync(queryBuilder, updateDefinition, new UpdateOptions() { IsUpsert = true });
+        await _loyaltyPoints.UpdateOneAsync(queryBuilder, updateDefinition, new UpdateOptions() { IsUpsert = true });
 
         var evt = new CustomerLoyaltyPointsUpdated()
         {
@@ -47,6 +47,6 @@ public class CustomerLoyaltyPointRepository : ICustomerLoyaltyPointsRepository
             TotalLoyaltyPoints = points.TotalPoints
         };
         
-        await this._daprClient.PublishEventAsync("public", $"{evt.EventName}.{evt.EventVersion}", evt);
+        await _daprClient.PublishEventAsync("public", $"{evt.EventName}.{evt.EventVersion}", evt);
     }
 }

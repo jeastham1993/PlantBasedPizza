@@ -6,20 +6,20 @@ public record OrderDto
 {
     public OrderDto(Order order)
     {
-        this.OrderIdentifier = order.OrderIdentifier;
-        this.OrderNumber = order.OrderNumber;
-        this.OrderDate = order.OrderDate;
-        this.AwaitingCollection = order.AwaitingCollection;
-        this.OrderSubmittedOn = order.OrderSubmittedOn;
-        this.OrderCompletedOn = order.OrderCompletedOn;
-        this.Items = order.Items.Select(item => new OrderItemDto()
+        OrderIdentifier = order.OrderIdentifier;
+        OrderNumber = order.OrderNumber;
+        OrderDate = order.OrderDate;
+        AwaitingCollection = order.AwaitingCollection;
+        OrderSubmittedOn = order.OrderSubmittedOn;
+        OrderCompletedOn = order.OrderCompletedOn;
+        Items = order.Items.Select(item => new OrderItemDto()
         {
             ItemName = item.ItemName,
             Price = item.Price,
             Quantity = item.Quantity,
             RecipeIdentifier = item.RecipeIdentifier
         }).ToList();
-        this.History = order.History().Select(history => new OrderHistoryDto()
+        History = order.History().Select(history => new OrderHistoryDto()
         {
             Description = history.Description,
             HistoryDate = history.HistoryDate
@@ -27,7 +27,7 @@ public record OrderDto
         
         if (order.DeliveryDetails != null)
         {
-            this.DeliveryDetails = new DeliveryDetailsDto()
+            DeliveryDetails = new DeliveryDetailsDto()
             {
                 AddressLine1 = order.DeliveryDetails.AddressLine1,
                 AddressLine2 = order.DeliveryDetails.AddressLine2,

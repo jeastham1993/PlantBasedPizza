@@ -13,8 +13,8 @@ public class LoyaltyPointsDriver
 
         public LoyaltyPointsDriver()
         {
-            this._httpClient = new HttpClient();
-            this._httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", TestTokenGenerator.GenerateTestTokenForRole("user"));
+            _httpClient = new HttpClient();
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", TestTokenGenerator.GenerateTestTokenForRole("user"));
         }
 
         public async Task<LoyaltyPointsDto?> GetLoyaltyPoints(string customerIdentifier)
@@ -24,7 +24,7 @@ public class LoyaltyPointsDriver
             
             var url = $"{BaseUrl}/loyalty";
             
-            var getResult = await this._httpClient.GetAsync(new Uri(url)).ConfigureAwait(false);
+            var getResult = await _httpClient.GetAsync(new Uri(url)).ConfigureAwait(false);
 
             return JsonSerializer.Deserialize<LoyaltyPointsDto>(await getResult.Content.ReadAsStringAsync());
         }

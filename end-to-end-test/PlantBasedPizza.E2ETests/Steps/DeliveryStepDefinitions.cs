@@ -14,7 +14,7 @@ namespace PlantBasedPizza.E2ETests.Steps
         public DeliveryStepDefinitions(ScenarioContext scenarioContext)
         {
             _scenarioContext = scenarioContext;
-            this._driver = new DeliveryDriver();
+            _driver = new DeliveryDriver();
         }
 
         [Then(@"order should be awaiting delivery collection")]
@@ -23,7 +23,7 @@ namespace PlantBasedPizza.E2ETests.Steps
             Activity.Current = _scenarioContext.Get<Activity>("Activity");
             var orderId = _scenarioContext.Get<string>("orderId");
             
-            var ordersAwaitingDriver = await this._driver.GetAwaitingDriver();
+            var ordersAwaitingDriver = await _driver.GetAwaitingDriver();
 
             ordersAwaitingDriver.Exists(p => p.OrderIdentifier == orderId).Should().BeTrue();
         }
@@ -34,7 +34,7 @@ namespace PlantBasedPizza.E2ETests.Steps
             Activity.Current = _scenarioContext.Get<Activity>("Activity");
             var orderId = _scenarioContext.Get<string>("orderId");
             
-            await this._driver.AssignDriver(orderId, p0);
+            await _driver.AssignDriver(orderId, p0);
         }
 
         [Then(@"order should appear in a list of (.*) deliveries")]
@@ -45,7 +45,7 @@ namespace PlantBasedPizza.E2ETests.Steps
             await Task.Delay(TimeSpan.FromSeconds(5));
             
             var orderId = _scenarioContext.Get<string>("orderId");
-            var ordersForDriver = await this._driver.GetAssignedDeliveriesForDriver(p0);
+            var ordersForDriver = await _driver.GetAssignedDeliveriesForDriver(p0);
 
             ordersForDriver.Exists(p => p.OrderIdentifier == orderId).Should().BeTrue();
         }
@@ -57,7 +57,7 @@ namespace PlantBasedPizza.E2ETests.Steps
             
             var orderId = _scenarioContext.Get<string>("orderId");
             
-            await this._driver.DeliverOrder(orderId);
+            await _driver.DeliverOrder(orderId);
         }
 
         [Then(@"order should no longer be assigned to a driver named (.*)")]
@@ -67,7 +67,7 @@ namespace PlantBasedPizza.E2ETests.Steps
             
             var orderId = _scenarioContext.Get<string>("orderId");
             
-            var ordersForDriver = await this._driver.GetAssignedDeliveriesForDriver(p0);
+            var ordersForDriver = await _driver.GetAssignedDeliveriesForDriver(p0);
 
             ordersForDriver.Exists(p => p.OrderIdentifier == orderId).Should().BeFalse();
         }

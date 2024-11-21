@@ -25,7 +25,7 @@ public class OrderEventPublisher : IOrderEventPublisher
             OrderValue = order.TotalPrice
         };
 
-        await this._daprClient.PublishEventAsync("public", $"{evt.EventName}.{evt.EventVersion}", evt);
+        await _daprClient.PublishEventAsync("public", $"{evt.EventName}.{evt.EventVersion}", evt);
     }
 
     [Channel("order.readyForDelivery.v1")]
@@ -43,7 +43,7 @@ public class OrderEventPublisher : IOrderEventPublisher
             Postcode = order.DeliveryDetails.Postcode,
         };
 
-        await this._daprClient.PublishEventAsync("public", $"{evt.EventName}.{evt.EventVersion}", evt);
+        await _daprClient.PublishEventAsync("public", $"{evt.EventName}.{evt.EventVersion}", evt);
     }
 
     [Channel("order.orderSubmitted.v1")]
@@ -60,6 +60,6 @@ public class OrderEventPublisher : IOrderEventPublisher
             }).ToList()
         };
 
-        await this._daprClient.PublishEventAsync("public", $"{evt.EventName}.{evt.EventVersion}", evt);
+        await _daprClient.PublishEventAsync("public", $"{evt.EventName}.{evt.EventVersion}", evt);
     }
 }

@@ -15,9 +15,9 @@ public class AddLoyaltyPointsCommandHandler
 
     public async Task<LoyaltyPointsDto> Handle(AddLoyaltyPointsCommand command)
     {
-        this._logger.LogInformation($"Handling AddLoyaltyPointsCommand for {command.OrderIdentifier}");
+        _logger.LogInformation($"Handling AddLoyaltyPointsCommand for {command.OrderIdentifier}");
         
-        var currentLoyaltyPoints = await this._customerLoyaltyPointsRepository.GetCurrentPointsFor(command.CustomerIdentifier);
+        var currentLoyaltyPoints = await _customerLoyaltyPointsRepository.GetCurrentPointsFor(command.CustomerIdentifier);
         
         if (currentLoyaltyPoints is null)
         {
@@ -26,7 +26,7 @@ public class AddLoyaltyPointsCommandHandler
         
         currentLoyaltyPoints.AddLoyaltyPoints(command.OrderValue, command.OrderIdentifier);
 
-        await this._customerLoyaltyPointsRepository.UpdatePoints(currentLoyaltyPoints);
+        await _customerLoyaltyPointsRepository.UpdatePoints(currentLoyaltyPoints);
 
         return new LoyaltyPointsDto(currentLoyaltyPoints);
     }

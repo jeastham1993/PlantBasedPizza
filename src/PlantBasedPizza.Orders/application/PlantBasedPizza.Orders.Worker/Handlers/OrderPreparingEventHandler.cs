@@ -16,13 +16,13 @@ namespace PlantBasedPizza.Orders.Worker.Handlers
         
         public async Task Handle(OrderPreparingEventV1 evt)
         {
-            this._logger.LogInformation($"[ORDER-MANAGER] Handling order preparing event");
+            _logger.LogInformation($"[ORDER-MANAGER] Handling order preparing event");
             
-            var order = await this._orderRepository.Retrieve(evt.OrderIdentifier);
+            var order = await _orderRepository.Retrieve(evt.OrderIdentifier);
 
             order.AddHistory("Order prep started");
 
-            await this._orderRepository.Update(order);
+            await _orderRepository.Update(order);
         }
     }
 }

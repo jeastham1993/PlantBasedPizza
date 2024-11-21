@@ -7,18 +7,18 @@ public class KitchenRequestDto
 {
     public KitchenRequestDto()
     {
-        this.KitchenRequestId = "";
-        this.OrderIdentifier = "";
+        KitchenRequestId = "";
+        OrderIdentifier = "";
     }
 
     public KitchenRequestDto(KitchenRequest request)
     {
-        this.KitchenRequestId = request.KitchenRequestId;
-        this.OrderIdentifier = request.OrderIdentifier;
-        this.OrderReceivedOn = request.OrderReceivedOn;
-        this.PrepCompleteOn = request.PrepCompleteOn;
-        this.BakeCompleteOn = request.BakeCompleteOn;
-        this.QualityCheckCompleteOn = request.QualityCheckCompleteOn;
+        KitchenRequestId = request.KitchenRequestId;
+        OrderIdentifier = request.OrderIdentifier;
+        OrderReceivedOn = request.OrderReceivedOn;
+        PrepCompleteOn = request.PrepCompleteOn;
+        BakeCompleteOn = request.BakeCompleteOn;
+        QualityCheckCompleteOn = request.QualityCheckCompleteOn;
     }
 
     [JsonPropertyName("kitchenRequestId")]

@@ -2,7 +2,6 @@ using System.Net.Http.Headers;
 using System.Text.Json;
 using Dapr.Client;
 using Grpc.Net.Client;
-using PlantBasedPizza.Events;
 using PlantBasedPizza.IntegrationTest.Helpers;
 using PlantBasedPizza.LoyaltyPoints.IntegrationTest.LoyaltyClient;
 using PlantBasedPizza.LoyaltyPoints.IntegrationTest.ViewModels;
@@ -19,21 +18,21 @@ public class LoyaltyPointsDriver
 
         public LoyaltyPointsDriver()
         {
-            this._httpClient = new HttpClient();
-            this._httpClient.DefaultRequestHeaders.Authorization =
+            _httpClient = new HttpClient();
+            _httpClient.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", TestTokenGenerator.GenerateTestTokenForRole("user"));
             
             var channel = GrpcChannel.ForAddress(TestConstants.InternalTestEndpoint);
-            this._loyaltyClient = new Loyalty.LoyaltyClient(channel);
+            _loyaltyClient = new Loyalty.LoyaltyClient(channel);
 
-            this._daprClient = new DaprClientBuilder()
+            _daprClient = new DaprClientBuilder()
                 .UseGrpcEndpoint("http://localhost:5101")
                 .Build();
         }
 
         public async Task AddLoyaltyPoints(string orderIdentifier, decimal orderValue)
         {
-            await this._daprClient.PublishEventAsync("public", "order.orderCompleted.v1", new OrderCompletedIntegrationEventV1()
+            await _daprClient.PublishEventAsync("public", "order.orderCompleted.v1", new OrderCompletedIntegrationEventV1()
             {
                 CustomerIdentifier = "user-account",
                 OrderIdentifier = orderIdentifier,
@@ -46,7 +45,7 @@ public class LoyaltyPointsDriver
             // Delay to allow for message processing
             await Task.Delay(TimeSpan.FromSeconds(5));
             
-            var points = await this._loyaltyClient.GetCustomerLoyaltyPointsAsync(new GetCustomerLoyaltyPointsRequest()
+            var points = await _loyaltyClient.GetCustomerLoyaltyPointsAsync(new GetCustomerLoyaltyPointsRequest()
             {
                 CustomerIdentifier = "user-account"
             });
@@ -64,7 +63,7 @@ public class LoyaltyPointsDriver
             
             var url = $"{BaseUrl}/loyalty";
             
-            var getResult = await this._httpClient.GetAsync(new Uri(url)).ConfigureAwait(false);
+            var getResult = await _httpClient.GetAsync(new Uri(url)).ConfigureAwait(false);
 
             return JsonSerializer.Deserialize<LoyaltyPointsDto>(await getResult.Content.ReadAsStringAsync());
         }

@@ -6,12 +6,12 @@ public record AddressDto
 {
     public AddressDto(Address address)
     {
-        this.AddressLine1 = address.AddressLine1;
-        this.AddressLine2 = address.AddressLine2;
-        this.AddressLine3 = address.AddressLine3;
-        this.AddressLine4 = address.AddressLine4;
-        this.AddressLine5 = address.AddressLine5;
-        this.Postcode = address.Postcode;
+        AddressLine1 = address.AddressLine1;
+        AddressLine2 = address.AddressLine2;
+        AddressLine3 = address.AddressLine3;
+        AddressLine4 = address.AddressLine4;
+        AddressLine5 = address.AddressLine5;
+        Postcode = address.Postcode;
     }
     public string AddressLine1 { get; set; }
     

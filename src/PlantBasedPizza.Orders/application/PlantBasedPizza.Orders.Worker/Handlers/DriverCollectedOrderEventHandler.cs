@@ -14,11 +14,11 @@ namespace PlantBasedPizza.Orders.Worker.Handlers
         
         public async Task Handle(DriverCollectedOrderEventV1 evt)
         {
-            var order = await this._orderRepository.Retrieve(evt.OrderIdentifier);
+            var order = await _orderRepository.Retrieve(evt.OrderIdentifier);
 
             order.AddHistory($"Order collected by driver {evt.DriverName}");
             
-            await this._orderRepository.Update(order).ConfigureAwait(false);
+            await _orderRepository.Update(order).ConfigureAwait(false);
         }
     }
 }

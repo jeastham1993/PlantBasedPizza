@@ -11,8 +11,8 @@ namespace PlantBasedPizza.Deliver.Core.Entities
         
         public DeliveryRequest(string orderIdentifier, Address deliveryAddress)
         {
-            this.OrderIdentifier = orderIdentifier;
-            this.DeliveryAddress = deliveryAddress;
+            OrderIdentifier = orderIdentifier;
+            DeliveryAddress = deliveryAddress;
         }
         
         [JsonPropertyName("orderIdentifier")]
@@ -21,7 +21,7 @@ namespace PlantBasedPizza.Deliver.Core.Entities
         [JsonPropertyName("driver")]
         public string Driver { get; private set; } = "";
         
-        public bool AwaitingCollection => !this.DriverCollectedOn.HasValue;
+        public bool AwaitingCollection => !DriverCollectedOn.HasValue;
         
         [JsonPropertyName("deliveryAddress")]
         public Address DeliveryAddress { get; private set; }
@@ -34,13 +34,13 @@ namespace PlantBasedPizza.Deliver.Core.Entities
 
         public async Task ClaimDelivery(string driverName, string correlationId = "")
         {
-            this.Driver = driverName;
-            this.DriverCollectedOn = DateTime.Now;
+            Driver = driverName;
+            DriverCollectedOn = DateTime.Now;
         }
 
         public async Task Deliver(string correlationId = "")
         {
-            this.DeliveredOn = DateTime.Now;
+            DeliveredOn = DateTime.Now;
         }
     }
 }

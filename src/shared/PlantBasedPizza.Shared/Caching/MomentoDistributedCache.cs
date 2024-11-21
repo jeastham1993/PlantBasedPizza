@@ -12,9 +12,8 @@ public class MomentoDistributedCache : IDistributedCache
 
     public MomentoDistributedCache(IOptions<MomentoCacheConfiguration> optionsAccessor)
     {
-        _cacheClient = new CacheClient(optionsAccessor.Value.Configuration, optionsAccessor.Value.CredentialProvider,
-            optionsAccessor.Value.DefaultTtl);
-        _cacheName = optionsAccessor.Value.CacheName;
+        _cacheClient = new CacheClient(optionsAccessor.Value.Configuration!, optionsAccessor.Value.CredentialProvider!, optionsAccessor.Value.DefaultTtl);
+        _cacheName = optionsAccessor.Value.CacheName ?? "";
     }
 
     public byte[]? Get(string key)
@@ -36,7 +35,7 @@ public class MomentoDistributedCache : IDistributedCache
 
     public void Refresh(string key)
     {
-        this.RefreshAsync(key).GetAwaiter().GetResult();
+        RefreshAsync(key).GetAwaiter().GetResult();
     }
 
     public async Task RefreshAsync(string key, CancellationToken token = new CancellationToken())
@@ -49,13 +48,18 @@ public class MomentoDistributedCache : IDistributedCache
         }
 
         var cacheHitData = cachedData as CacheGetResponse.Hit;
+        
+        if (cacheHitData is null)
+        {
+            return;
+        }
 
         await _cacheClient.SetAsync(_cacheName, key, cacheHitData.ValueByteArray);
     }
 
     public void Remove(string key)
     {
-        this.RemoveAsync(key).GetAwaiter().GetResult();
+        RemoveAsync(key).GetAwaiter().GetResult();
     }
 
     public async Task RemoveAsync(string key, CancellationToken token = new CancellationToken())
@@ -65,12 +69,12 @@ public class MomentoDistributedCache : IDistributedCache
 
     public void Set(string key, byte[] value, DistributedCacheEntryOptions options)
     {
-        this.SetAsync(key, value, options).GetAwaiter().GetResult();
+        SetAsync(key, value, options).GetAwaiter().GetResult();
     }
 
     public async Task SetAsync(string key, byte[] value, DistributedCacheEntryOptions options,
         CancellationToken token = new CancellationToken())
     {
-        await this._cacheClient.SetAsync(_cacheName, key, value, options.SlidingExpiration);
+        await _cacheClient.SetAsync(_cacheName, key, value, options.SlidingExpiration);
     }
 }

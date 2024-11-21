@@ -30,7 +30,7 @@ namespace PlantBasedPizza.Deliver.Infrastructure.Controllers
         [Authorize(Roles = "user")]
         public async Task<DeliveryRequestDto?> Get(string orderIdentifier)
         {
-            return await this._getDeliveryQueryHandler.Handle(new GetDeliveryQuery(orderIdentifier));
+            return await _getDeliveryQueryHandler.Handle(new GetDeliveryQuery(orderIdentifier));
         }
 
         /// <summary>
@@ -41,7 +41,7 @@ namespace PlantBasedPizza.Deliver.Infrastructure.Controllers
         [Authorize(Roles = "staff")]
         public async Task<List<DeliveryRequest>> GetAwaitingCollection()
         {
-            return await this._deliveryRequestRepository.GetAwaitingDriver();
+            return await _deliveryRequestRepository.GetAwaitingDriver();
         }
 
         /// <summary>
@@ -55,19 +55,19 @@ namespace PlantBasedPizza.Deliver.Infrastructure.Controllers
         {
             request.AddToTelemetry();
             
-            var existingDeliveryRequest = await this._deliveryRequestRepository.GetDeliveryStatusForOrder(request.OrderIdentifier);
+            var existingDeliveryRequest = await _deliveryRequestRepository.GetDeliveryStatusForOrder(request.OrderIdentifier);
 
             if (existingDeliveryRequest == null)
             {
-                return this.NotFound();
+                return NotFound();
             }
 
-            await existingDeliveryRequest.ClaimDelivery(request.DriverName, this.Request.Headers["CorrelationId"].ToString());
+            await existingDeliveryRequest.ClaimDelivery(request.DriverName, Request.Headers["CorrelationId"].ToString());
 
-            await this._deliveryRequestRepository.UpdateDeliveryRequest(existingDeliveryRequest);
-            await this._eventPublisher.PublishDriverOrderCollectedEventV1(existingDeliveryRequest);
+            await _deliveryRequestRepository.UpdateDeliveryRequest(existingDeliveryRequest);
+            await _eventPublisher.PublishDriverOrderCollectedEventV1(existingDeliveryRequest);
 
-            return this.Ok(existingDeliveryRequest);
+            return Ok(existingDeliveryRequest);
         }
 
         /// <summary>
@@ -81,19 +81,19 @@ namespace PlantBasedPizza.Deliver.Infrastructure.Controllers
         {
             request.AddToTelemetry();
             
-            var existingDeliveryRequest = await this._deliveryRequestRepository.GetDeliveryStatusForOrder(request.OrderIdentifier);
+            var existingDeliveryRequest = await _deliveryRequestRepository.GetDeliveryStatusForOrder(request.OrderIdentifier);
 
             if (existingDeliveryRequest == null)
             {
-                return this.NotFound();
+                return NotFound();
             }
 
-            await existingDeliveryRequest.Deliver(this.Request.Headers["CorrelationId"].ToString());
+            await existingDeliveryRequest.Deliver(Request.Headers["CorrelationId"].ToString());
             
-            await this._deliveryRequestRepository.UpdateDeliveryRequest(existingDeliveryRequest);
-            await this._eventPublisher.PublishDriverDeliveredOrderEventV1(existingDeliveryRequest);
+            await _deliveryRequestRepository.UpdateDeliveryRequest(existingDeliveryRequest);
+            await _eventPublisher.PublishDriverDeliveredOrderEventV1(existingDeliveryRequest);
 
-            return this.Ok(existingDeliveryRequest);
+            return Ok(existingDeliveryRequest);
         }
 
         /// <summary>
@@ -107,7 +107,7 @@ namespace PlantBasedPizza.Deliver.Infrastructure.Controllers
         {
             Activity.Current?.AddTag("driverName", driverName);
             
-            return await this._deliveryRequestRepository.GetOrdersWithDriver(driverName);
+            return await _deliveryRequestRepository.GetOrdersWithDriver(driverName);
         }
     }
 }

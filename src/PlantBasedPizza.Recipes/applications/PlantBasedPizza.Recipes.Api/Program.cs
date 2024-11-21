@@ -1,13 +1,14 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using PlantBasedPizza.Events;
 using PlantBasedPizza.Recipes.Core.Entities;
 using PlantBasedPizza.Recipes.Infrastructure;
 using PlantBasedPizza.Shared;
+using PlantBasedPizza.Shared.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddEnvironmentVariables();
+builder.AddLoggerConfigs();
 
 builder.Services.AddAuthentication(options =>
 {
@@ -34,8 +35,7 @@ builder.Services.AddAuthorization();
 var applicationName = "RecipesApi";
 
 builder.Services.AddRecipeInfrastructure(builder.Configuration);
-builder.Services.AddSharedInfrastructure(builder.Configuration, applicationName)
-    .AddMessaging(builder.Configuration);
+builder.Services.AddSharedInfrastructure(builder.Configuration, applicationName);
 
 builder.Services.AddHttpClient();
 

@@ -1,9 +1,9 @@
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Moq;
 using PlantBasedPizza.Deliver.Core.Entities;
 using PlantBasedPizza.Deliver.Core.Handlers;
 using PlantBasedPizza.Deliver.Core.IntegrationEvents;
-using PlantBasedPizza.Shared.Logging;
 
 namespace PlantBasedPizza.Delivery.UnitTests
 {
@@ -39,7 +39,7 @@ namespace PlantBasedPizza.Delivery.UnitTests
             var mockRepo = new Mock<IDeliveryRequestRepository>();
             mockRepo.Setup(p => p.AddNewDeliveryRequest(It.IsAny<DeliveryRequest>()))
                 .Verifiable();
-            var mockLogger = new Mock<IObservabilityService>();
+            var mockLogger = new Mock<ILogger<OrderReadyForDeliveryEventHandler>>();
 
             var handler = new OrderReadyForDeliveryEventHandler(mockRepo.Object, mockLogger.Object);
 
@@ -66,7 +66,7 @@ namespace PlantBasedPizza.Delivery.UnitTests
             mockRepo.Setup(p => p.GetDeliveryStatusForOrder(It.IsAny<string>()))
                 .ReturnsAsync(new DeliveryRequest(OrderIdentifier, new Address("Address line 1", "TY6 7UI")));
             
-            var mockLogger = new Mock<IObservabilityService>();
+            var mockLogger = new Mock<ILogger<OrderReadyForDeliveryEventHandler>>();
 
             var handler = new OrderReadyForDeliveryEventHandler(mockRepo.Object, mockLogger.Object);
 

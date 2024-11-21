@@ -16,18 +16,18 @@ public class Recipe
     [JsonConstructor]
     private Recipe()
     {
-        this.RecipeIdentifier = "";
-        this.Name = "";
-        this._ingredients = new List<Ingredient>();
+        RecipeIdentifier = "";
+        Name = "";
+        _ingredients = new List<Ingredient>();
     }
         
     public Recipe(RecipeCategory category, string recipeIdentifier, string name, decimal price)
     {
-        this.Category = category;
-        this.RecipeIdentifier = recipeIdentifier;
-        this.Name = name;
-        this.Price = price;
-        this._ingredients = new List<Ingredient>();
+        Category = category;
+        RecipeIdentifier = recipeIdentifier;
+        Name = name;
+        Price = price;
+        _ingredients = new List<Ingredient>();
     }
         
     [JsonPropertyName("recipeIdentifier")]
@@ -43,15 +43,15 @@ public class Recipe
     public decimal Price { get; private set; }
 
     [JsonPropertyName("ingredients")]
-    public IReadOnlyCollection<Ingredient> Ingredients => this._ingredients;
+    public IReadOnlyCollection<Ingredient> Ingredients => _ingredients;
 
     public void AddIngredient(string name, int quantity)
     {
-        if (this._ingredients == null)
+        if (_ingredients == null)
         {
-            this._ingredients = new List<Ingredient>();
+            _ingredients = new List<Ingredient>();
         }
             
-        this._ingredients.Add(new Ingredient(name, quantity));
+        _ingredients.Add(new Ingredient(name, quantity));
     }
 }

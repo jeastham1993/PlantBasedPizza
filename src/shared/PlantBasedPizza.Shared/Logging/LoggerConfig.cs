@@ -1,8 +1,9 @@
+using Microsoft.AspNetCore.Builder;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Json;
 
-namespace PlantBasedPizza.Account.Api.Configurations;
+namespace PlantBasedPizza.Shared.Logging;
 
 public static class LoggerConfigs
 {

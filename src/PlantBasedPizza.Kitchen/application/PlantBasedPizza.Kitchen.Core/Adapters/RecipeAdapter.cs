@@ -11,7 +11,7 @@ namespace PlantBasedPizza.Kitchen.Core.Adapters
         
         public RecipeAdapter(string recipeIdentifier)
         {
-            this.RecipeIdentifier = recipeIdentifier;
+            RecipeIdentifier = recipeIdentifier;
         }
         
         [JsonPropertyName("recipeIdentifier")]

@@ -1,5 +1,4 @@
 using PlantBasedPizza.OrderManager.Core.Entities;
-using PlantBasedPizza.Shared.Logging;
 
 namespace PlantBasedPizza.OrderManager.Core.CreateDeliveryOrder;
 
@@ -14,7 +13,7 @@ public class CreateDeliveryOrderCommandHandler
 
     public async Task<OrderDto?> Handle(CreateDeliveryOrder request)
     {
-        if (await this._orderRepository.Exists(request.OrderIdentifier))
+        if (await _orderRepository.Exists(request.OrderIdentifier))
         {
             return null;
         }
@@ -28,7 +27,7 @@ public class CreateDeliveryOrderCommandHandler
                 AddressLine4 = request.AddressLine4,
                 AddressLine5 = request.AddressLine5,
                 Postcode = request.Postcode
-            }, CorrelationContext.GetCorrelationId());
+            });
 
         await _orderRepository.Add(order);
 

@@ -26,7 +26,7 @@ public class PaymentService : Payment.PaymentBase
             CustomerIdentifier = request.CustomerIdentifier
         };
         
-        await this._daprClient.PublishEventAsync("public", $"{evt.EventName}.{evt.EventVersion}", evt);
+        await _daprClient.PublishEventAsync("public", $"{evt.EventName}.{evt.EventVersion}", evt);
 
         return new TakePaymentsReply()
         {

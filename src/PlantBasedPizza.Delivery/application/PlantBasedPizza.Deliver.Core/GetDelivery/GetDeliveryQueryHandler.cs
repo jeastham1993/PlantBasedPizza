@@ -16,7 +16,7 @@ public class GetDeliveryQueryHandler
     {
         Activity.Current?.AddTag("orderIdentifier", query.OrderIdentifier);
             
-        var deliveryRequest = await this._deliveryRequestRepository.GetDeliveryStatusForOrder(query.OrderIdentifier);
+        var deliveryRequest = await _deliveryRequestRepository.GetDeliveryStatusForOrder(query.OrderIdentifier);
 
         return new DeliveryRequestDto(deliveryRequest);
     }

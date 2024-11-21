@@ -2,7 +2,6 @@ using System.Net.Http.Headers;
 using System.Text;
 using Dapr.Client;
 using Newtonsoft.Json;
-using PlantBasedPizza.Events;
 using PlantBasedPizza.IntegrationTest.Helpers;
 using PlantBasedPizza.OrderManager.Core.AddItemToOrder;
 using PlantBasedPizza.OrderManager.Core.CollectOrder;
@@ -30,14 +29,14 @@ public class OrdersTestDriver
             _staffHttpClient = new HttpClient();
             _staffHttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", staffToken);
 
-            this._daprClient = new DaprClientBuilder()
+            _daprClient = new DaprClientBuilder()
                 .UseGrpcEndpoint("http://localhost:5101")
                 .Build();
         }
 
         public async Task SimulateLoyaltyPointsUpdatedEvent(string customerIdentifier, decimal totalPoints)
         {
-            await this._daprClient.PublishEventAsync("public", "loyalty.customerLoyaltyPointsUpdated.v1", new CustomerLoyaltyPointsUpdatedEvent()
+            await _daprClient.PublishEventAsync("public", "loyalty.customerLoyaltyPointsUpdated.v1", new CustomerLoyaltyPointsUpdatedEvent()
             {
                 CustomerIdentifier = customerIdentifier,
                 TotalLoyaltyPoints = totalPoints
@@ -49,7 +48,7 @@ public class OrdersTestDriver
         
         public async Task AddNewDeliveryOrder(string orderIdentifier, string customerIdentifier)
         {
-            await this._userHttpClient.PostAsync(new Uri($"{TestConstants.DefaultTestUrl}/order/deliver"), new StringContent(
+            await _userHttpClient.PostAsync(new Uri($"{TestConstants.DefaultTestUrl}/order/deliver"), new StringContent(
                 JsonConvert.SerializeObject(new CreateDeliveryOrder()
                 {
                     OrderIdentifier = orderIdentifier,
@@ -67,7 +66,7 @@ public class OrdersTestDriver
         {
             await Task.Delay(TimeSpan.FromSeconds(5));
             
-            await this._userHttpClient.PostAsync(new Uri($"{TestConstants.DefaultTestUrl}/order/pickup"), new StringContent(
+            await _userHttpClient.PostAsync(new Uri($"{TestConstants.DefaultTestUrl}/order/pickup"), new StringContent(
                 JsonConvert.SerializeObject(new CreatePickupOrderCommand()
                 {
                     OrderIdentifier = orderIdentifier,
@@ -81,7 +80,7 @@ public class OrdersTestDriver
             
             await checkRecipeExists(recipeIdentifier).ConfigureAwait(false);
 
-            await this._userHttpClient.PostAsync(new Uri($"{TestConstants.DefaultTestUrl}/order/{orderIdentifier}/items"),
+            await _userHttpClient.PostAsync(new Uri($"{TestConstants.DefaultTestUrl}/order/{orderIdentifier}/items"),
                 new StringContent(
                     JsonConvert.SerializeObject(new AddItemToOrderCommand()
                     {
@@ -93,7 +92,7 @@ public class OrdersTestDriver
 
         public async Task SubmitOrder(string orderIdentifier)
         {
-            await this._userHttpClient.PostAsync(new Uri($"{TestConstants.DefaultTestUrl}/order/{orderIdentifier}/submit"),
+            await _userHttpClient.PostAsync(new Uri($"{TestConstants.DefaultTestUrl}/order/{orderIdentifier}/submit"),
                 new StringContent(string.Empty, Encoding.UTF8, "application/json")).ConfigureAwait(false);
         }
 
@@ -102,7 +101,7 @@ public class OrdersTestDriver
             // Delay to allow async processing to catch up
             await Task.Delay(TimeSpan.FromSeconds(2));
             
-            var res = await this._staffHttpClient.PostAsync(new Uri($"{TestConstants.DefaultTestUrl}/order/collected"), new StringContent(
+            var res = await _staffHttpClient.PostAsync(new Uri($"{TestConstants.DefaultTestUrl}/order/collected"), new StringContent(
                 JsonConvert.SerializeObject(new CollectOrderRequest()
                 {
                     OrderIdentifier = orderIdentifier
@@ -116,7 +115,7 @@ public class OrdersTestDriver
 
         public async Task<Order> GetOrder(string orderIdentifier)
         {
-            var result = await this._userHttpClient.GetAsync(new Uri($"{TestConstants.DefaultTestUrl}/order/{orderIdentifier}/detail"))
+            var result = await _userHttpClient.GetAsync(new Uri($"{TestConstants.DefaultTestUrl}/order/{orderIdentifier}/detail"))
                 .ConfigureAwait(false);
 
             var order = JsonConvert.DeserializeObject<Order>(await result.Content.ReadAsStringAsync());
@@ -126,7 +125,7 @@ public class OrdersTestDriver
 
         private async Task checkRecipeExists(string recipeIdentifier)
         {
-            await this._userHttpClient.PostAsync($"{TestConstants.DefaultTestUrl}/recipes", new StringContent(
+            await _userHttpClient.PostAsync($"{TestConstants.DefaultTestUrl}/recipes", new StringContent(
                 JsonConvert.SerializeObject(new CreateRecipeCommand()
                 {
                     RecipeIdentifier = recipeIdentifier,

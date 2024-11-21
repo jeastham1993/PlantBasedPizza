@@ -14,7 +14,7 @@ public sealed class PaymentSteps
     public PaymentSteps(ScenarioContext scenarioContext)
     {
         _scenarioContext = scenarioContext;
-        this._driver = new PaymentDriver();
+        _driver = new PaymentDriver();
     }
 
     [Then(@"a payment is taken for (.*) then the result should be successful")]
@@ -22,7 +22,7 @@ public sealed class PaymentSteps
     {
         Activity.Current = _scenarioContext.Get<Activity>("Activity");
         
-        var result = await this._driver.TakePaymentFor("James", p0);
+        var result = await _driver.TakePaymentFor("James", p0);
         
         result.Should().BeTrue();
     }
@@ -32,7 +32,7 @@ public sealed class PaymentSteps
     {
         Activity.Current = _scenarioContext.Get<Activity>("Activity");
         
-        var result = await this._driver.TakePaymentWithoutAuth("James", p0);
+        var result = await _driver.TakePaymentWithoutAuth("James", p0);
         
         result.Should().BeFalse();
     }

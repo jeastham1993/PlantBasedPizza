@@ -6,8 +6,8 @@ public class KitchenRequestDto
 {
     public KitchenRequestDto()
     {
-        this.KitchenRequestId = "";
-        this.OrderIdentifier = "";
+        KitchenRequestId = "";
+        OrderIdentifier = "";
     }
 
     [JsonPropertyName("kitchenRequestId")]

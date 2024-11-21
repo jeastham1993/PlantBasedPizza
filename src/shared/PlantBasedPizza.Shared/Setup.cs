@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using PlantBasedPizza.Shared.Logging;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
@@ -13,8 +12,6 @@ namespace PlantBasedPizza.Shared
         public static IServiceCollection AddSharedInfrastructure(this IServiceCollection services,
             IConfiguration configuration, string applicationName)
         {
-            ApplicationLogger.Init();
-
             services.AddLogging();
             
             var otel = services.AddOpenTelemetry();
@@ -32,8 +29,7 @@ namespace PlantBasedPizza.Shared
                     otlpOptions.Endpoint = new Uri(configuration["OTEL_EXPORTER_OTLP_ENDPOINT"] ?? OTEL_DEFAULT_GRPC_ENDPOINT);
                 });
             });
-
-            services.AddSingleton<IObservabilityService, ObservabiityService>();
+            
             services.AddHttpContextAccessor();
 
             return services;

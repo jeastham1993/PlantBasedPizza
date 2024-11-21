@@ -14,7 +14,7 @@ public class AccountStepDefinitions
     public AccountStepDefinitions(ScenarioContext scenarioContext)
     {
         _scenarioContext = scenarioContext;
-        this._driver = new AccountDriver();
+        _driver = new AccountDriver();
     }
     [Given("an un-registered email address")]
     public void AnUnregisteredEmail()
@@ -35,7 +35,7 @@ public class AccountStepDefinitions
         var password = $"{Guid.NewGuid()}!A23";
         _scenarioContext.Add("password", password);
 
-        var res = await this._driver.RegisterUser(emailAddress, password);
+        var res = await _driver.RegisterUser(emailAddress, password);
 
         res.Should().NotBeNull();
     }
@@ -47,7 +47,7 @@ public class AccountStepDefinitions
         var emailAddress = _scenarioContext.Get<string>("emailAddress");
         var password = _scenarioContext.Get<string>("password");
             
-        var loginResponse = await this._driver.Login(emailAddress, password);
+        var loginResponse = await _driver.Login(emailAddress, password);
 
         loginResponse.Should().NotBeNull();
         loginResponse!.AuthToken.Should().NotBeEmpty();
@@ -105,7 +105,7 @@ public class AccountStepDefinitions
         Activity.Current = _scenarioContext.Get<Activity>("Activity");
         var emailAddress = _scenarioContext.Get<string>("emailAddress");
             
-        var loginResponse = await this._driver.Login(emailAddress, "some random stuff");
+        var loginResponse = await _driver.Login(emailAddress, "some random stuff");
 
         loginResponse.Should().BeNull();
     }
@@ -117,7 +117,7 @@ public class AccountStepDefinitions
         var emailAddress = _scenarioContext.Get<string>("emailAddress");
         var password = _scenarioContext.Get<string>("password");
             
-        var loginResponse = await this._driver.Login(emailAddress, "some random stuff");
+        var loginResponse = await _driver.Login(emailAddress, "some random stuff");
 
         loginResponse.Should().BeNull();
     }
@@ -129,7 +129,7 @@ public class AccountStepDefinitions
         var emailAddress = _scenarioContext.Get<string>("emailAddress");
         var password = _scenarioContext.Get<string>("password");
 
-        var registerResult = await this._driver.RegisterUser(emailAddress, password);
+        var registerResult = await _driver.RegisterUser(emailAddress, password);
 
         registerResult.Should().BeNull();
     }

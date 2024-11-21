@@ -28,7 +28,7 @@ public partial class OrderSteps
     {
         Activity.Current = _scenarioContext.Get<Activity>("Activity");
 
-        await this._driver.SimulateLoyaltyPointsUpdatedEvent(p0, p1);
+        await _driver.SimulateLoyaltyPointsUpdatedEvent(p0, p1);
 
         await Task.Delay(TimeSpan.FromSeconds(2));
     }
@@ -41,7 +41,7 @@ public partial class OrderSteps
             var orderId = Guid.NewGuid().ToString();
             _scenarioContext.Add("orderId", orderId);
             
-            await this._driver.AddNewOrder(orderId, "james").ConfigureAwait(false);
+            await _driver.AddNewOrder(orderId, "james").ConfigureAwait(false);
         }
 
         [When(@"a (.*) is added to order")]
@@ -50,7 +50,7 @@ public partial class OrderSteps
             Activity.Current = _scenarioContext.Get<Activity>("Activity");
             var orderId = _scenarioContext.Get<string>("orderId");
             
-            await this._driver.AddItemToOrder(orderId, p0, 1);
+            await _driver.AddItemToOrder(orderId, p0, 1);
         }
 
         [When(@"order is submitted")]
@@ -60,7 +60,7 @@ public partial class OrderSteps
             
             var orderId = _scenarioContext.Get<string>("orderId");
             
-            await this._driver.SubmitOrder(orderId);
+            await _driver.SubmitOrder(orderId);
         }
 
         [Then(@"order should be marked as (.*)")]
@@ -70,7 +70,7 @@ public partial class OrderSteps
             
             var orderId = _scenarioContext.Get<string>("orderId");
             
-            var order = await this._driver.GetOrder(orderId).ConfigureAwait(false);
+            var order = await _driver.GetOrder(orderId).ConfigureAwait(false);
 
             order.OrderCompletedOn.Should().NotBeNull();
         }
@@ -84,7 +84,7 @@ public partial class OrderSteps
             Activity.Current = _scenarioContext.Get<Activity>("Activity");
             var orderId = _scenarioContext.Get<string>("orderId");
             
-            var order = await this._driver.GetOrder(orderId).ConfigureAwait(false);
+            var order = await _driver.GetOrder(orderId).ConfigureAwait(false);
 
             order.History.Exists(p => p.Description == p0).Should().BeTrue();
         }
@@ -96,7 +96,7 @@ public partial class OrderSteps
             
             var orderId = _scenarioContext.Get<string>("orderId");
             
-            var order = await this._driver.GetOrder(orderId).ConfigureAwait(false);
+            var order = await _driver.GetOrder(orderId).ConfigureAwait(false);
 
             order.AwaitingCollection.Should().BeTrue();
         }
@@ -108,7 +108,7 @@ public partial class OrderSteps
             
             var orderId = _scenarioContext.Get<string>("orderId");
             
-            await this._driver.CollectOrder(orderId).ConfigureAwait(false);
+            await _driver.CollectOrder(orderId).ConfigureAwait(false);
         }
 
         [Given(@"a new delivery order is created for customer (.*)")]
@@ -119,6 +119,6 @@ public partial class OrderSteps
             var orderId = Guid.NewGuid().ToString();
             _scenarioContext.Add("orderId", orderId);
             
-            await this._driver.AddNewDeliveryOrder(orderId, p0);
+            await _driver.AddNewDeliveryOrder(orderId, p0);
         }
 }

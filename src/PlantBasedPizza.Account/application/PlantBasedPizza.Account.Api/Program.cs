@@ -2,8 +2,8 @@ using System.Text.Json;
 using FastEndpoints;
 using PlantBasedPizza.Account.Api.Configurations;
 using PlantBasedPizza.Account.Api.Core;
-using PlantBasedPizza.Events;
 using PlantBasedPizza.Shared;
+using PlantBasedPizza.Shared.Logging;
 using Serilog;
 using Serilog.Events;
 using Serilog.Extensions.Logging;
@@ -25,14 +25,13 @@ var appLogger = new SerilogLoggerFactory(logger)
 
 builder.Services.AddDaprClient();
 
-var serviceName = "PlantBasedPizza.Account";
+var serviceName = "AccountApi";
 
 builder.Services
     .AddFastEndpoints()
     .AddAuthConfigs(appLogger, builder)
     .AddServiceConfigs(appLogger, builder)
-    .AddSharedInfrastructure(builder.Configuration, serviceName)
-    .AddMessaging(builder.Configuration);
+    .AddSharedInfrastructure(builder.Configuration, serviceName);
 
 var app = builder.Build();
 

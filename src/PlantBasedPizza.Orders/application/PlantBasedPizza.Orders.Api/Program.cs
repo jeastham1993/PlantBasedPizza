@@ -1,10 +1,10 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using PlantBasedPizza.Events;
 using PlantBasedPizza.OrderManager.Infrastructure;
 using PlantBasedPizza.OrderManager.Infrastructure.IntegrationEvents;
 using PlantBasedPizza.Shared;
+using PlantBasedPizza.Shared.Logging;
 using Saunter;
 using Saunter.AsyncApiSchema.v2;
 
@@ -12,6 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder
     .Configuration
     .AddEnvironmentVariables();
+builder.AddLoggerConfigs();
 
 var generateAsyncApi = builder.Configuration["Messaging:UseAsyncApi"] == "Y";
 
@@ -53,9 +54,10 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
+var applicationName = "OrdersApi";
+
 builder.Services.AddOrderManagerInfrastructure(builder.Configuration);
-builder.Services.AddSharedInfrastructure(builder.Configuration, "PlantBasedPizza");
-builder.Services.AddMessaging(builder.Configuration);
+builder.Services.AddSharedInfrastructure(builder.Configuration, applicationName);
 
 builder.Services.AddHttpClient();
 

@@ -14,8 +14,8 @@ namespace PlantBasedPizza.E2ETests.Drivers
 
         public KitchenDriver()
         {
-            this._httpClient = new HttpClient();
-            this._httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", TestTokenGenerator.GenerateTestTokenForRole("staff"));
+            _httpClient = new HttpClient();
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", TestTokenGenerator.GenerateTestTokenForRole("staff"));
         }
         
         public async Task<List<KitchenRequest>> GetNew()
@@ -23,7 +23,7 @@ namespace PlantBasedPizza.E2ETests.Drivers
             // Delay to allow async processing to catch up
             await Task.Delay(TimeSpan.FromSeconds(2));
             
-            var result = await this._httpClient.GetAsync(new Uri($"{BaseUrl}/kitchen/new")).ConfigureAwait(false);
+            var result = await _httpClient.GetAsync(new Uri($"{BaseUrl}/kitchen/new")).ConfigureAwait(false);
 
             var kitchenRequests = JsonConvert.DeserializeObject<List<KitchenRequest>>(await result.Content.ReadAsStringAsync());
 
@@ -32,7 +32,7 @@ namespace PlantBasedPizza.E2ETests.Drivers
         
         public async Task<List<KitchenRequest>> GetPreparing()
         {
-            var result = await this._httpClient.GetAsync(new Uri($"{BaseUrl}/kitchen/prep")).ConfigureAwait(false);
+            var result = await _httpClient.GetAsync(new Uri($"{BaseUrl}/kitchen/prep")).ConfigureAwait(false);
 
             var kitchenRequests = JsonConvert.DeserializeObject<List<KitchenRequest>>(await result.Content.ReadAsStringAsync());
 
@@ -41,7 +41,7 @@ namespace PlantBasedPizza.E2ETests.Drivers
         
         public async Task<List<KitchenRequest>> GetBaking()
         {
-            var result = await this._httpClient.GetAsync(new Uri($"{BaseUrl}/kitchen/baking")).ConfigureAwait(false);
+            var result = await _httpClient.GetAsync(new Uri($"{BaseUrl}/kitchen/baking")).ConfigureAwait(false);
 
             var kitchenRequests = JsonConvert.DeserializeObject<List<KitchenRequest>>(await result.Content.ReadAsStringAsync());
 
@@ -50,7 +50,7 @@ namespace PlantBasedPizza.E2ETests.Drivers
         
         public async Task<List<KitchenRequest>> GetQualityChecked()
         {
-            var result = await this._httpClient.GetAsync(new Uri($"{BaseUrl}/kitchen/quality-check")).ConfigureAwait(false);
+            var result = await _httpClient.GetAsync(new Uri($"{BaseUrl}/kitchen/quality-check")).ConfigureAwait(false);
 
             var kitchenRequests = JsonConvert.DeserializeObject<List<KitchenRequest>>(await result.Content.ReadAsStringAsync());
 
@@ -61,28 +61,28 @@ namespace PlantBasedPizza.E2ETests.Drivers
         {
             await Task.Delay(TimeSpan.FromSeconds(5));
             
-            await this._httpClient.PutAsync(new Uri($"{BaseUrl}/kitchen/{orderIdentifier}/preparing"), new StringContent(string.Empty, Encoding.UTF8)).ConfigureAwait(false);
+            await _httpClient.PutAsync(new Uri($"{BaseUrl}/kitchen/{orderIdentifier}/preparing"), new StringContent(string.Empty, Encoding.UTF8)).ConfigureAwait(false);
         }
         
         public async Task PrepComplete(string orderIdentifier)
         {
             await Task.Delay(TimeSpan.FromSeconds(5));
             
-            await this._httpClient.PutAsync(new Uri($"{BaseUrl}/kitchen/{orderIdentifier}/prep-complete"), new StringContent(string.Empty, Encoding.UTF8)).ConfigureAwait(false);
+            await _httpClient.PutAsync(new Uri($"{BaseUrl}/kitchen/{orderIdentifier}/prep-complete"), new StringContent(string.Empty, Encoding.UTF8)).ConfigureAwait(false);
         }
         
         public async Task BakeComplete(string orderIdentifier)
         {
             await Task.Delay(TimeSpan.FromSeconds(5));
             
-            await this._httpClient.PutAsync(new Uri($"{BaseUrl}/kitchen/{orderIdentifier}/bake-complete"), new StringContent(string.Empty, Encoding.UTF8)).ConfigureAwait(false);
+            await _httpClient.PutAsync(new Uri($"{BaseUrl}/kitchen/{orderIdentifier}/bake-complete"), new StringContent(string.Empty, Encoding.UTF8)).ConfigureAwait(false);
         }
         
         public async Task QualityChecked(string orderIdentifier)
         {
             await Task.Delay(TimeSpan.FromSeconds(5));
             
-            await this._httpClient.PutAsync(new Uri($"{BaseUrl}/kitchen/{orderIdentifier}/quality-check"), new StringContent(string.Empty, Encoding.UTF8)).ConfigureAwait(false);
+            await _httpClient.PutAsync(new Uri($"{BaseUrl}/kitchen/{orderIdentifier}/quality-check"), new StringContent(string.Empty, Encoding.UTF8)).ConfigureAwait(false);
         }
     }
 }

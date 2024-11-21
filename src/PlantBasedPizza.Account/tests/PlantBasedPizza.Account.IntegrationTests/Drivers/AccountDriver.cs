@@ -12,7 +12,7 @@ namespace PlantBasedPizza.Account.IntegrationTests.Drivers
 
         public AccountDriver()
         {
-            this._httpClient = new HttpClient();
+            _httpClient = new HttpClient();
         }
 
         public async Task<RegisterResponse?> RegisterUser(string emailAddress, string password)
@@ -23,7 +23,7 @@ namespace PlantBasedPizza.Account.IntegrationTests.Drivers
                 password
             });
 
-            var registerResult = await this._httpClient.PostAsync(new Uri($"{BaseUrl}/account/register"),
+            var registerResult = await _httpClient.PostAsync(new Uri($"{BaseUrl}/account/register"),
                 new StringContent(requestBody, Encoding.Default, "application/json"));
             
             return registerResult.IsSuccessStatusCode
@@ -39,7 +39,7 @@ namespace PlantBasedPizza.Account.IntegrationTests.Drivers
                 password
             });
 
-            var loginResult = await this._httpClient.PostAsync(new Uri($"{BaseUrl}/account/login"),
+            var loginResult = await _httpClient.PostAsync(new Uri($"{BaseUrl}/account/login"),
                 new StringContent(requestBody, Encoding.Default, "application/json"));
 
             return loginResult.IsSuccessStatusCode

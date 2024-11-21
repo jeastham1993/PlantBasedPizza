@@ -125,7 +125,6 @@ services:
       - "./components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
     depends_on:
       - "local.orders-worker"
-
     network_mode: "service:local.orders-worker"
 
   local.loyalty-api:

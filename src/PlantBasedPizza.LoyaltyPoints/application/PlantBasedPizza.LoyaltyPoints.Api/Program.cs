@@ -6,9 +6,11 @@ using Microsoft.IdentityModel.Tokens;
 using PlantBasedPizza.LoyaltyPoints;
 using PlantBasedPizza.LoyaltyPoints.Shared;
 using PlantBasedPizza.LoyaltyPoints.Shared.Core;
+using PlantBasedPizza.Shared.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddEnvironmentVariables();
+builder.AddLoggerConfigs();
 
 builder.Services.AddAuthentication(options =>
 {
@@ -32,7 +34,9 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization();
 
-builder.Services.AddLoyaltyServices(builder.Configuration, "LoyaltyPointsAPI");
+var serviceName = "LoyaltyApi";
+
+builder.Services.AddLoyaltyServices(builder.Configuration, serviceName);
 
 var app = builder.Build();
 

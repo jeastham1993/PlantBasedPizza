@@ -7,8 +7,8 @@ public class CustomerLoyaltyPoints
     [JsonConstructor]
     internal CustomerLoyaltyPoints()
     {
-        this.CustomerId = "";
-        this.History = new List<LoyaltyPointsHistory>();
+        CustomerId = "";
+        History = new List<LoyaltyPointsHistory>();
     }
 
     public static CustomerLoyaltyPoints Create(string customerIdentifier)
@@ -29,20 +29,20 @@ public class CustomerLoyaltyPoints
 
     public void AddLoyaltyPoints(decimal orderValue, string orderIdentifier)
     {
-        if (this.History is null)
+        if (History is null)
         {
-            this.History = new List<LoyaltyPointsHistory>();
+            History = new List<LoyaltyPointsHistory>();
         }
 
-        if (this.History.Exists(p => p.OrderIdentifier.Equals(orderIdentifier, StringComparison.OrdinalIgnoreCase)))
+        if (History.Exists(p => p.OrderIdentifier.Equals(orderIdentifier, StringComparison.OrdinalIgnoreCase)))
         {
             return;
         }
 
         var points = Math.Round(orderValue, 0);
 
-        this.TotalPoints += points;
-        this.History.Add(new LoyaltyPointsHistory()
+        TotalPoints += points;
+        History.Add(new LoyaltyPointsHistory()
         {
             OrderIdentifier = orderIdentifier,
             DateTime = DateTime.Now,
@@ -53,20 +53,20 @@ public class CustomerLoyaltyPoints
 
     public void SpendPoints(decimal points, string orderIdentifier)
     {
-        if (this.History.Exists(p => p.OrderIdentifier.Equals(orderIdentifier, StringComparison.OrdinalIgnoreCase)))
+        if (History.Exists(p => p.OrderIdentifier.Equals(orderIdentifier, StringComparison.OrdinalIgnoreCase)))
         {
             return;
         }
         
-        var remainingPoints = this.TotalPoints - points;
+        var remainingPoints = TotalPoints - points;
         
         if (remainingPoints < 0)
         {
             throw new InsufficientPointsException();
         }
 
-        this.TotalPoints = remainingPoints;
-        this.History.Add(new LoyaltyPointsHistory()
+        TotalPoints = remainingPoints;
+        History.Add(new LoyaltyPointsHistory()
         {
             OrderIdentifier = orderIdentifier,
             DateTime = DateTime.Now,

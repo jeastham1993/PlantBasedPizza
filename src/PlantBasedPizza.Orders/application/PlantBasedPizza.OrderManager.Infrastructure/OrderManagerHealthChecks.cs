@@ -35,7 +35,7 @@ public class OrderManagerHealthChecks
         }
         catch (Exception ex)
         {
-            this._logger.LogWarning(ex, "Healthcheck failure for loyalty service");
+            _logger.LogWarning(ex, "Healthcheck failure for loyalty service");
             
             Activity.Current?.AddTag("loyalty.healthy", false);
 
@@ -52,7 +52,7 @@ public class OrderManagerHealthChecks
         }
         catch (Exception ex)
         {
-            this._logger.LogWarning(ex, "Healthcheck failure for recipe service");
+            _logger.LogWarning(ex, "Healthcheck failure for recipe service");
             
             Activity.Current?.AddTag("recipe.healthy", false);
 
@@ -67,13 +67,13 @@ public class OrderManagerHealthChecks
             {
                 { "dapr-app-id", "loyaltyinternal" }
             };
-            var response = await this._loyaltyClient.GetCustomerLoyaltyPointsAsync(new GetCustomerLoyaltyPointsRequest()
+            var response = await _loyaltyClient.GetCustomerLoyaltyPointsAsync(new GetCustomerLoyaltyPointsRequest()
                 { CustomerIdentifier = "james" }, metadata);
             
         }
         catch (Exception ex)
         {
-            this._logger.LogWarning(ex, "Healthcheck failure for internal loyalty service");
+            _logger.LogWarning(ex, "Healthcheck failure for internal loyalty service");
             
             Activity.Current?.AddTag("loyalty.gRPC.healthy", false);
             result.LoyaltyGrpcStatus = "Offline";

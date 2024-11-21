@@ -24,7 +24,7 @@ public class KitchenEventPublisher : IKitchenEventPublisher
             KitchenIdentifier = request.KitchenRequestId
         };
 
-        await this._daprClient.PublishEventAsync("public", $"{evt.EventName}.{evt.EventVersion}", evt);
+        await _daprClient.PublishEventAsync("public", $"{evt.EventName}.{evt.EventVersion}", evt);
     }
 
     [Channel("kitchen.orderBaked.v1")]
@@ -37,7 +37,7 @@ public class KitchenEventPublisher : IKitchenEventPublisher
             KitchenIdentifier = request.KitchenRequestId
         };
         
-        await this._daprClient.PublishEventAsync("public", $"{evt.EventName}.{evt.EventVersion}", evt);
+        await _daprClient.PublishEventAsync("public", $"{evt.EventName}.{evt.EventVersion}", evt);
     }
 
     [Channel("kitchen.orderPreparing.v1")]
@@ -50,7 +50,7 @@ public class KitchenEventPublisher : IKitchenEventPublisher
             KitchenIdentifier = request.KitchenRequestId
         };
         
-        await this._daprClient.PublishEventAsync("public", $"{evt.EventName}.{evt.EventVersion}", evt);
+        await _daprClient.PublishEventAsync("public", $"{evt.EventName}.{evt.EventVersion}", evt);
     }
 
     [Channel("kitchen.orderPrepComplete.v1")]
@@ -63,7 +63,7 @@ public class KitchenEventPublisher : IKitchenEventPublisher
             KitchenIdentifier = request.KitchenRequestId
         };
         
-        await this._daprClient.PublishEventAsync("public", $"{evt.EventName}.{evt.EventVersion}", evt);
+        await _daprClient.PublishEventAsync("public", $"{evt.EventName}.{evt.EventVersion}", evt);
     }
 
     [Channel("kitchen.qualityChecked.v1")]
@@ -76,6 +76,6 @@ public class KitchenEventPublisher : IKitchenEventPublisher
             KitchenIdentifier = request.KitchenRequestId
         };
         
-        await this._daprClient.PublishEventAsync("public", $"{evt.EventName}.{evt.EventVersion}", evt);
+        await _daprClient.PublishEventAsync("public", $"{evt.EventName}.{evt.EventVersion}", evt);
     }
 }

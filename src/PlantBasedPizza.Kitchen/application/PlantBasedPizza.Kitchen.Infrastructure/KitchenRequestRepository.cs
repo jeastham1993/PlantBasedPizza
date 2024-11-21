@@ -11,19 +11,19 @@ public class KitchenRequestRepository : IKitchenRequestRepository
     public KitchenRequestRepository(MongoClient client)
     {
         var database = client.GetDatabase("PlantBasedPizza");
-        this._kitchenRequests = database.GetCollection<KitchenRequest>("kitchen");
+        _kitchenRequests = database.GetCollection<KitchenRequest>("kitchen");
     }
 
     public async Task AddNew(KitchenRequest kitchenRequest)
     {
-        await this._kitchenRequests.InsertOneAsync(kitchenRequest).ConfigureAwait(false);
+        await _kitchenRequests.InsertOneAsync(kitchenRequest).ConfigureAwait(false);
     }
 
     public async Task Update(KitchenRequest kitchenRequest)
     {
         var queryBuilder = Builders<KitchenRequest>.Filter.Eq(req => req.OrderIdentifier, kitchenRequest.OrderIdentifier);
 
-        var updateResult = await this._kitchenRequests.ReplaceOneAsync(queryBuilder, kitchenRequest);
+        var updateResult = await _kitchenRequests.ReplaceOneAsync(queryBuilder, kitchenRequest);
         
         updateResult.AddToTelemetry();
     }
@@ -32,7 +32,7 @@ public class KitchenRequestRepository : IKitchenRequestRepository
     {
         var queryBuilder = Builders<KitchenRequest>.Filter.Eq(p => p.OrderIdentifier, orderIdentifier);
 
-        var kitchenRequest = await this._kitchenRequests.Find(queryBuilder).FirstOrDefaultAsync().ConfigureAwait(false);
+        var kitchenRequest = await _kitchenRequests.Find(queryBuilder).FirstOrDefaultAsync().ConfigureAwait(false);
 
         return kitchenRequest;
     }
@@ -41,7 +41,7 @@ public class KitchenRequestRepository : IKitchenRequestRepository
     {
         var queryBuilder = Builders<KitchenRequest>.Filter.Eq(p => p.OrderState, OrderState.NEW);
 
-        var kitchenRequests = await this._kitchenRequests.FindAsync(queryBuilder).ConfigureAwait(false);
+        var kitchenRequests = await _kitchenRequests.FindAsync(queryBuilder).ConfigureAwait(false);
 
         return await kitchenRequests.ToListAsync();
     }
@@ -50,7 +50,7 @@ public class KitchenRequestRepository : IKitchenRequestRepository
     {
         var queryBuilder = Builders<KitchenRequest>.Filter.Eq(p => p.OrderState, OrderState.PREPARING);
 
-        var kitchenRequests = await this._kitchenRequests.FindAsync(queryBuilder).ConfigureAwait(false);
+        var kitchenRequests = await _kitchenRequests.FindAsync(queryBuilder).ConfigureAwait(false);
 
         return await kitchenRequests.ToListAsync();
     }
@@ -59,7 +59,7 @@ public class KitchenRequestRepository : IKitchenRequestRepository
     {
         var queryBuilder = Builders<KitchenRequest>.Filter.Eq(p => p.OrderState, OrderState.BAKING);
 
-        var kitchenRequests = await this._kitchenRequests.FindAsync(queryBuilder).ConfigureAwait(false);
+        var kitchenRequests = await _kitchenRequests.FindAsync(queryBuilder).ConfigureAwait(false);
 
         return await kitchenRequests.ToListAsync();
     }
@@ -68,7 +68,7 @@ public class KitchenRequestRepository : IKitchenRequestRepository
     {
         var queryBuilder = Builders<KitchenRequest>.Filter.Eq(p => p.OrderState, OrderState.QUALITYCHECK);
 
-        var kitchenRequests = await this._kitchenRequests.FindAsync(queryBuilder).ConfigureAwait(false);
+        var kitchenRequests = await _kitchenRequests.FindAsync(queryBuilder).ConfigureAwait(false);
 
         return await kitchenRequests.ToListAsync();
     }

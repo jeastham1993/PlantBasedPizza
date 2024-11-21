@@ -18,7 +18,7 @@ public class ApiKeyAuthenticationMiddleware
     {
         if (!context.Request.Headers.TryGetValue(APIKEYNAME, out var extractedApiKey))
         {
-            this._logger.LogInformation("API Key not provided");
+            _logger.LogInformation("API Key not provided");
             context.Response.StatusCode = 401;
             await context.Response.WriteAsync("API Key was not provided. ");
             return;
@@ -28,7 +28,7 @@ public class ApiKeyAuthenticationMiddleware
 
         if (!_apiKeyProvider.IsValidApiKey(providedApiKey))
         {
-            this._logger.LogInformation($"Unauthorized");
+            _logger.LogInformation($"Unauthorized");
             
             context.Response.StatusCode = 403;
             await context.Response.WriteAsync("Unauthorized client.");

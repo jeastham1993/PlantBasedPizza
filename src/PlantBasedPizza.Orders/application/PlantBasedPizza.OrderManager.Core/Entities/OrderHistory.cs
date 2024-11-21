@@ -7,13 +7,13 @@ namespace PlantBasedPizza.OrderManager.Core.Entities
         [JsonConstructor]
         private OrderHistory()
         {
-            this.Description = "";
+            Description = "";
         }
         
         public OrderHistory(string description, DateTime historyDate)
         {
-            this.Description = description;
-            this.HistoryDate = historyDate;
+            Description = description;
+            HistoryDate = historyDate;
         }
         
         [JsonPropertyName("description")]

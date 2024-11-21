@@ -17,7 +17,7 @@ namespace PlantBasedPizza.Orders.Worker.Handlers
         
         public async Task Handle(OrderQualityCheckedEventV1 evt)
         {
-            var order = await this._orderRepository.Retrieve(evt.OrderIdentifier);
+            var order = await _orderRepository.Retrieve(evt.OrderIdentifier);
 
             order.AddHistory("Order quality checked");
 
@@ -25,14 +25,14 @@ namespace PlantBasedPizza.Orders.Worker.Handlers
             {
                 order.AddHistory("Sending for delivery");
 
-                await this._eventPublisher.PublishOrderReadyForDeliveryEventV1(order);
+                await _eventPublisher.PublishOrderReadyForDeliveryEventV1(order);
             }
             else
             {
                 order.IsAwaitingCollection();
             }
 
-            await this._orderRepository.Update(order).ConfigureAwait(false);
+            await _orderRepository.Update(order).ConfigureAwait(false);
         }
     }
 }

@@ -17,7 +17,7 @@ public class LoyaltyService : Loyalty.LoyaltyBase
 
     public override async Task<GetCustomerLoyaltyPointsReply> GetCustomerLoyaltyPoints(GetCustomerLoyaltyPointsRequest request, ServerCallContext context)
     {
-        var loyaltyPoints = await this._repository.GetCurrentPointsFor(request.CustomerIdentifier);
+        var loyaltyPoints = await _repository.GetCurrentPointsFor(request.CustomerIdentifier);
 
         return new GetCustomerLoyaltyPointsReply()
         {

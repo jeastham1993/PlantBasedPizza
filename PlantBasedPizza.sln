@@ -13,6 +13,11 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Events", "src\shared\PlantBasedPizza.Events\PlantBasedPizza.Events.csproj", "{3A09684B-8D40-44A0-8CD1-0BEE41F0FB07}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PlantBasedPizza.LoyaltyPoints", "PlantBasedPizza.LoyaltyPoints", "{A58FCAD4-DD5B-4B39-B5C7-A1123CFEE5DD}"
+	ProjectSection(SolutionItems) = preProject
+		src\PlantBasedPizza.LoyaltyPoints\docker-compose-integration.yml = src\PlantBasedPizza.LoyaltyPoints\docker-compose-integration.yml
+		src\PlantBasedPizza.LoyaltyPoints\docker-compose.yml = src\PlantBasedPizza.LoyaltyPoints\docker-compose.yml
+		src\PlantBasedPizza.LoyaltyPoints\Makefile = src\PlantBasedPizza.LoyaltyPoints\Makefile
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.LoyaltyPoints", "src\PlantBasedPizza.LoyaltyPoints\application\PlantBasedPizza.LoyaltyPoints.Api\PlantBasedPizza.LoyaltyPoints.csproj", "{7400815E-5023-408D-B452-2B403FB3E9D4}"
 EndProject
@@ -39,6 +44,11 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.LoyaltyPoints.Worker", "src\PlantBasedPizza.LoyaltyPoints\application\PlantBasedPizza.LoyaltyPoints.Worker\PlantBasedPizza.LoyaltyPoints.Worker.csproj", "{FE6FEE08-E808-43BB-9BEE-14FC48D82CA7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PlantBasedPizza.Orders", "PlantBasedPizza.Orders", "{A9C2D680-B17C-4D0F-AAF6-3BFAC457487E}"
+	ProjectSection(SolutionItems) = preProject
+		src\PlantBasedPizza.Orders\Makefile = src\PlantBasedPizza.Orders\Makefile
+		src\PlantBasedPizza.Orders\docker-compose.yml = src\PlantBasedPizza.Orders\docker-compose.yml
+		src\PlantBasedPizza.Orders\docker-compose-integration.yml = src\PlantBasedPizza.Orders\docker-compose-integration.yml
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Orders.Worker", "src\PlantBasedPizza.Orders\application\PlantBasedPizza.Orders.Worker\PlantBasedPizza.Orders.Worker.csproj", "{AAC4EC03-568D-451B-8DAC-C2A5816F918F}"
 EndProject
@@ -53,6 +63,11 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.OrderManager.Infrastructure", "src\PlantBasedPizza.Orders\application\PlantBasedPizza.OrderManager.Infrastructure\PlantBasedPizza.OrderManager.Infrastructure.csproj", "{BE8201F3-05A4-4B47-AB42-798E59157A34}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PlantBasedPizza.Kitchen", "PlantBasedPizza.Kitchen", "{495A86CC-F261-407B-B8E2-6918107129C2}"
+	ProjectSection(SolutionItems) = preProject
+		src\PlantBasedPizza.Kitchen\docker-compose.yml = src\PlantBasedPizza.Kitchen\docker-compose.yml
+		src\PlantBasedPizza.Kitchen\docker-compose-integration.yml = src\PlantBasedPizza.Kitchen\docker-compose-integration.yml
+		src\PlantBasedPizza.Kitchen\Makefile = src\PlantBasedPizza.Kitchen\Makefile
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Kitchen.Worker", "src\PlantBasedPizza.Kitchen\application\PlantBasedPizza.Kitchen.Worker\PlantBasedPizza.Kitchen.Worker.csproj", "{983C95C4-4BD4-4488-8A34-94FE61451C52}"
 EndProject
@@ -85,6 +100,11 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Recipes.UnitTests", "src\PlantBasedPizza.Recipes\tests\PlantBasedPizza.Recipes.UnitTests\PlantBasedPizza.Recipes.UnitTests.csproj", "{4A543E0E-AFDE-4807-B9FD-5162DE0EF9E4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PlantBasedPizza.Delivery", "PlantBasedPizza.Delivery", "{11645DBA-E9C6-49F6-B911-5026049B9151}"
+	ProjectSection(SolutionItems) = preProject
+		src\PlantBasedPizza.Delivery\docker-compose-integration.yml = src\PlantBasedPizza.Delivery\docker-compose-integration.yml
+		src\PlantBasedPizza.Delivery\docker-compose.yml = src\PlantBasedPizza.Delivery\docker-compose.yml
+		src\PlantBasedPizza.Delivery\Makefile = src\PlantBasedPizza.Delivery\Makefile
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Deliver.Infrastructure", "src\PlantBasedPizza.Delivery\application\PlantBasedPizza.Deliver.Infrastructure\PlantBasedPizza.Deliver.Infrastructure.csproj", "{316AA437-BA72-45FC-8B3E-68BDBE77EE38}"
 EndProject
@@ -101,6 +121,11 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Delivery.UnitTests", "src\PlantBasedPizza.Delivery\tests\PlantBasedPizza.Delivery.UnitTests\PlantBasedPizza.Delivery.UnitTests.csproj", "{1F7B874C-65E4-4B38-854F-9111F3473B4B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PlantBasedPizza.Account", "PlantBasedPizza.Account", "{D9915AEC-0362-47BC-BAA2-4FCCCE319341}"
+	ProjectSection(SolutionItems) = preProject
+		src\PlantBasedPizza.Account\docker-compose-integration.yml = src\PlantBasedPizza.Account\docker-compose-integration.yml
+		src\PlantBasedPizza.Account\docker-compose.yml = src\PlantBasedPizza.Account\docker-compose.yml
+		src\PlantBasedPizza.Account\Makefile = src\PlantBasedPizza.Account\Makefile
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Account.Api", "src\PlantBasedPizza.Account\application\PlantBasedPizza.Account.Api\PlantBasedPizza.Account.Api.csproj", "{E36550E1-BA63-4EB3-A6CA-78520D9C3AE5}"
 EndProject
@@ -111,8 +136,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.IntegrationTest.Helpers", "src\shared\PlantBasedPizza.IntegrationTest.Helpers\PlantBasedPizza.IntegrationTest.Helpers.csproj", "{1706DF7F-100F-423D-8AF4-3E1A66422EFD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Account.UnitTests", "src\PlantBasedPizza.Account\tests\PlantBasedPizza.Account.UnitTests\PlantBasedPizza.Account.UnitTests.csproj", "{52FC97FE-3A80-44A9-B215-1056FB8B324B}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Events.UnitTest", "src\shared\PlantBasedPizza.Events.UnitTest\PlantBasedPizza.Events.UnitTest.csproj", "{64F8CEE0-482C-4D64-99B1-30C55E615CCD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -167,7 +190,6 @@ Global
 		{B7504B0A-3A6D-4A15-8E0A-FDEC8885A2F4} = {820FFD25-5E88-4E5D-AB7C-C4BCFB3FF754}
 		{1706DF7F-100F-423D-8AF4-3E1A66422EFD} = {93B400D7-1E45-435D-935F-7DE6F032070A}
 		{52FC97FE-3A80-44A9-B215-1056FB8B324B} = {820FFD25-5E88-4E5D-AB7C-C4BCFB3FF754}
-		{64F8CEE0-482C-4D64-99B1-30C55E615CCD} = {93B400D7-1E45-435D-935F-7DE6F032070A}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{179E35BF-4F04-4660-8F82-413DA572E7F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -322,9 +344,5 @@ Global
 		{52FC97FE-3A80-44A9-B215-1056FB8B324B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{52FC97FE-3A80-44A9-B215-1056FB8B324B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{52FC97FE-3A80-44A9-B215-1056FB8B324B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{64F8CEE0-482C-4D64-99B1-30C55E615CCD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{64F8CEE0-482C-4D64-99B1-30C55E615CCD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{64F8CEE0-482C-4D64-99B1-30C55E615CCD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{64F8CEE0-482C-4D64-99B1-30C55E615CCD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

@@ -18,9 +18,9 @@ public class AddItemToOrderHandler
     {
         try
         {
-            var recipe = await this._recipeService.GetRecipe(command.RecipeIdentifier);
+            var recipe = await _recipeService.GetRecipe(command.RecipeIdentifier);
             
-            var order = await this._orderRepository.Retrieve(command.OrderIdentifier);
+            var order = await _orderRepository.Retrieve(command.OrderIdentifier);
 
             if (order.CustomerIdentifier != command.CustomerIdentifier)
             {
@@ -29,7 +29,7 @@ public class AddItemToOrderHandler
 
             order.AddOrderItem(command.RecipeIdentifier, recipe.ItemName, command.Quantity, recipe.Price);
 
-            await this._orderRepository.Update(order);
+            await _orderRepository.Update(order);
 
             return order;
         }

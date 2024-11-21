@@ -1,5 +1,4 @@
 using PlantBasedPizza.OrderManager.Core.Entities;
-using PlantBasedPizza.Shared.Logging;
 
 namespace PlantBasedPizza.OrderManager.Core.CreatePickupOrder;
 
@@ -14,14 +13,14 @@ public class CreatePickupOrderCommandHandler
 
     public async Task<OrderDto?> Handle(CreatePickupOrderCommand request)
     {
-        if (await this._orderRepository.Exists(request.OrderIdentifier))
+        if (await _orderRepository.Exists(request.OrderIdentifier))
         {
             return null;
         }
             
-        var order = Order.Create(request.OrderIdentifier, request.OrderType, request.CustomerIdentifier, null, CorrelationContext.GetCorrelationId());
+        var order = Order.Create(request.OrderIdentifier, request.OrderType, request.CustomerIdentifier, null);
 
-        await this._orderRepository.Add(order);
+        await _orderRepository.Add(order);
 
         return new OrderDto(order);
     }

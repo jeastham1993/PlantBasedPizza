@@ -1,18 +1,14 @@
-using PlantBasedPizza.Events;
-using PlantBasedPizza.Shared.Logging;
-
 namespace PlantBasedPizza.OrderManager.Core.Entities
 {
-    public class OrderSubmittedEvent : IDomainEvent
+    public class OrderSubmittedEvent
     {
         private readonly string _eventId;
 
         public OrderSubmittedEvent(string orderIdentifier)
         {
-            this._eventId = Guid.NewGuid().ToString();
-            this.EventDate = DateTime.Now;
-            this.OrderIdentifier = orderIdentifier;
-            this.CorrelationId = CorrelationContext.GetCorrelationId();
+            _eventId = Guid.NewGuid().ToString();
+            EventDate = DateTime.Now;
+            OrderIdentifier = orderIdentifier;
         }
 
         public string OrderIdentifier { get; private set; }
@@ -21,7 +17,7 @@ namespace PlantBasedPizza.OrderManager.Core.Entities
         
         public string EventVersion => "v1";
 
-        public string EventId => this._eventId;
+        public string EventId => _eventId;
 
         public DateTime EventDate { get; }
         public string CorrelationId { get; set; }

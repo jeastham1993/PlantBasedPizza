@@ -7,16 +7,16 @@ namespace PlantBasedPizza.OrderManager.Core.Entities
         [JsonConstructor]
         private OrderItem()
         {
-            this.RecipeIdentifier = "";
-            this.ItemName = "";
+            RecipeIdentifier = "";
+            ItemName = "";
         }
         
         internal OrderItem(string recipeIdentifier, string itemName, int quantity, decimal price)
         {
-            this.RecipeIdentifier = recipeIdentifier;
-            this.ItemName = itemName;
-            this.Quantity = quantity;
-            this.Price = price;
+            RecipeIdentifier = recipeIdentifier;
+            ItemName = itemName;
+            Quantity = quantity;
+            Price = price;
         }
         
         [JsonPropertyName("recipeIdentifier")]

@@ -12,19 +12,19 @@ namespace PlantBasedPizza.Deliver.Infrastructure
         public DeliveryRequestRepository(MongoClient client)
         {
             var database = client.GetDatabase("PlantBasedPizza");
-            this._collection = database.GetCollection<DeliveryRequest>("DeliveryRequests");
+            _collection = database.GetCollection<DeliveryRequest>("DeliveryRequests");
         }
         
         public async Task AddNewDeliveryRequest(DeliveryRequest request)
         {
-            await this._collection.InsertOneAsync(request).ConfigureAwait(false);
+            await _collection.InsertOneAsync(request).ConfigureAwait(false);
         }
 
         public async Task UpdateDeliveryRequest(DeliveryRequest request)
         {
             var queryBuilder = Builders<DeliveryRequest>.Filter.Eq(ord => ord.OrderIdentifier, request.OrderIdentifier);
 
-            var replaceResult = await this._collection.ReplaceOneAsync(queryBuilder, request);
+            var replaceResult = await _collection.ReplaceOneAsync(queryBuilder, request);
             
             replaceResult.AddToTelemetry();
         }
@@ -33,14 +33,14 @@ namespace PlantBasedPizza.Deliver.Infrastructure
         {
             var queryBuilder = Builders<DeliveryRequest>.Filter.Eq(p => p.OrderIdentifier, orderIdentifier);
 
-            var request = await this._collection.Find(queryBuilder).FirstOrDefaultAsync().ConfigureAwait(false);
+            var request = await _collection.Find(queryBuilder).FirstOrDefaultAsync().ConfigureAwait(false);
 
             return request;
         }
 
         public async Task<List<DeliveryRequest>> GetAwaitingDriver()
         {
-            var requests = await this._collection.Find(p => p.DriverCollectedOn == null).ToListAsync();
+            var requests = await _collection.Find(p => p.DriverCollectedOn == null).ToListAsync();
 
             Activity.Current?.AddTag("mongo.findCount", requests.Count);
 
@@ -49,7 +49,7 @@ namespace PlantBasedPizza.Deliver.Infrastructure
 
         public async Task<List<DeliveryRequest>> GetOrdersWithDriver(string driverName)
         {
-            var requests = await this._collection.Find(p => p.DeliveredOn == null && p.DriverCollectedOn != null && p.Driver == driverName).ToListAsync();
+            var requests = await _collection.Find(p => p.DeliveredOn == null && p.DriverCollectedOn != null && p.Driver == driverName).ToListAsync();
             
             Activity.Current?.AddTag("mongo.findCount", requests.Count);
 

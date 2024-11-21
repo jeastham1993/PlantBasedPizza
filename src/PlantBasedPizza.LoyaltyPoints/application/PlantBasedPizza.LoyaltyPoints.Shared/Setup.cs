@@ -2,7 +2,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
-using PlantBasedPizza.Events;
 using PlantBasedPizza.LoyaltyPoints.Shared.Adapters;
 using PlantBasedPizza.LoyaltyPoints.Shared.Core;
 using PlantBasedPizza.Shared;
@@ -29,8 +28,7 @@ public static class Setup
             map.SetIgnoreExtraElementsIsInherited(true);
         });
 
-        services.AddSharedInfrastructure(configuration, serviceName)
-            .AddMessaging(configuration);
+        services.AddSharedInfrastructure(configuration, serviceName);
         
         return services;
     }

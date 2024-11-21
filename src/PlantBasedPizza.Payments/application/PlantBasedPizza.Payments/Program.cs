@@ -1,19 +1,19 @@
-using PlantBasedPizza.Events;
 using PlantBasedPizza.Payments;
 using PlantBasedPizza.Payments.Services;
 using PlantBasedPizza.Shared;
+using PlantBasedPizza.Shared.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 builder
     .Configuration
     .AddEnvironmentVariables();
+builder.AddLoggerConfigs();
 
 // Add services to the container.
 builder.Services.AddGrpc();
 
 builder.Services
-    .AddSharedInfrastructure(builder.Configuration, "Payments")
-    .AddMessaging(builder.Configuration);
+    .AddSharedInfrastructure(builder.Configuration, "PaymentApi");
 
 builder.Services.AddDaprClient();
 

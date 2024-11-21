@@ -1,5 +1,4 @@
 using FluentAssertions;
-using PlantBasedPizza.Events;
 using PlantBasedPizza.OrderManager.Core.Entities;
 
 namespace PlantBasedPizza.Orders.UnitTest;
@@ -13,11 +12,6 @@ public class OrderManagerTests
     public void CanCreateNewOrder_ShouldSetDefaultFields()
     {
         string? createdOrder = null;
-        
-        DomainEvents.Register<OrderCreatedEvent>((evt) =>
-        {
-            createdOrder = evt.OrderIdentifier;
-        });
         
         var order = Order.Create(DefaultOrderIdentifier, OrderType.Pickup, DefaultCustomerIdentifier);
 
@@ -123,12 +117,6 @@ public class OrderManagerTests
     {
         string submittedOrder = null;
         
-        DomainEvents.Register<OrderSubmittedEvent>((evt) =>
-        {
-            submittedOrder = evt.OrderIdentifier;
-            evt.EventDate.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(5));
-        });
-        
         var order = Order.Create(DefaultOrderIdentifier, OrderType.Delivery, DefaultCustomerIdentifier, new DeliveryDetails()
         {
             AddressLine1 = "TEST",
@@ -165,11 +153,6 @@ public class OrderManagerTests
     public void CanCreateAndCompletetOrder_ShouldBeCompleted()
     {
         string completedOrder = null;
-        
-        DomainEvents.Register<OrderCompletedEvent>((evt) =>
-        {
-            completedOrder = evt.OrderIdentifier;
-        });
         
         var order = Order.Create(DefaultOrderIdentifier, OrderType.Delivery, DefaultCustomerIdentifier, new DeliveryDetails()
         {

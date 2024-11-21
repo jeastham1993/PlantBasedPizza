@@ -3,18 +3,18 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using PlantBasedPizza.Deliver.Infrastructure;
 using PlantBasedPizza.Deliver.Infrastructure.IntegrationEvents;
-using PlantBasedPizza.Events;
 using PlantBasedPizza.Shared;
+using PlantBasedPizza.Shared.Logging;
 using Saunter;
 using Saunter.AsyncApiSchema.v2;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddEnvironmentVariables();
+builder.AddLoggerConfigs();
 
 var applicationName = "DeliveryApi";
 
 builder.Services.AddSharedInfrastructure(builder.Configuration, applicationName)
-    .AddMessaging(builder.Configuration)
     .AddDeliveryInfrastructure(builder.Configuration)
     .AddControllers();
 
