@@ -14,7 +14,7 @@ push:
 	docker push plantpowerjames/plant-based-pizza-loyalty-worker:${IMAGE_TAG}
 
 unit-test:
-	dotnet test tests/PlantBasedPizza.LoyaltyPoints.UnitTests
+	dotnet test tests/PlantBasedPizza.LoyaltyPoints.UnitTest
 
 integration-test:
 	docker compose -f docker-compose-integration.yml up -d
