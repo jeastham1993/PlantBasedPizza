@@ -1,6 +1,7 @@
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using Dapr.Client;
 using PlantBasedPizza.Events;
 using PlantBasedPizza.IntegrationTest.Helpers;
 using PlantBasedPizza.Kitchen.IntegrationTests.ViewModels;
@@ -12,24 +13,22 @@ public class KitchenDriver
     private static string BaseUrl = TestConstants.DefaultTestUrl;
 
         private readonly HttpClient _httpClient;
-        private readonly IEventPublisher _eventPublisher;
+        private readonly DaprClient _daprClient;
 
         public KitchenDriver()
         {
             var staffToken = TestTokenGenerator.GenerateTestTokenForRole("staff");
             this._httpClient = new HttpClient();
             this._httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", staffToken); 
-
-            // _eventPublisher = new RabbitMQEventPublisher(new OptionsWrapper<RabbitMqSettings>(new RabbitMqSettings()
-            // {
-            //     ExchangeName = "dev.kitchen",
-            //     HostName = "localhost"
-            // }), new Logger<RabbitMQEventPublisher>(new SerilogLoggerFactory()), new RabbitMQConnection("localhost"));
+            
+            this._daprClient = new DaprClientBuilder()
+                .UseGrpcEndpoint("http://localhost:5101")
+                .Build();
         }
 
         public async Task NewOrderSubmitted(string orderIdentifier)
         {
-            await this._eventPublisher.Publish(new OrderSubmittedEventV1()
+            await this._daprClient.PublishEventAsync("public", "order.orderSubmitted.v1", new OrderSubmittedEventV1()
             {
                 OrderIdentifier = orderIdentifier,
                 Items = new List<OrderSubmittedEventItem>(1)

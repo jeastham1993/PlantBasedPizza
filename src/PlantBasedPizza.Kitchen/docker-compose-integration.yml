@@ -8,6 +8,8 @@ services:
       - PGID=1000
     expose:
       - 27017
+    networks:
+      - app
 
   jaeger:
     image: jaegertracing/opentelemetry-all-in-one:latest
@@ -16,16 +18,15 @@ services:
       - 13133
       - 4317
       - 4318
+    networks:
+      - app
   
   cache:
     image: redis:7.2
     ports:
       - "6379:6379"
-
-  consul:
-    image: hashicorp/consul:latest
-    ports:
-      - 8500:8500
+    networks:
+      - app
 
   wiremock:
     image: wiremock/wiremock:latest
@@ -33,51 +34,131 @@ services:
       - 8080
     volumes:
       - ./mocks/recipe-api:/home/wiremock
+    networks:
+      - app
 
-  rabbitmq:
-    image: rabbitmq:3-management-alpine
-    ports:
-        - "5672:5672"
-    healthcheck:
-      test: rabbitmq-diagnostics -q ping
+  wiremock-recipes-dapr:
+    image: "daprio/daprd:edge"
+    command: [
+        "./daprd",
+        "--app-id",
+        "recipes",
+        "--app-port",
+        "8080",
+        "--placement-host-address",
+        "placement:50006", # Dapr's placement service can be reach via the docker DNS entry
+        "--dapr-grpc-port",
+        "5101",
+        "--resources-path",
+        "../../components",
+      ]
+    volumes:
+      - "../../components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
+    depends_on:
+      - "wiremock"
+    network_mode: "service:wiremock"
 
   local.kitchen-api:
-    image: ${REGISTRY}/kitchen-api:${IMAGE_TAG}
+    image: kitchen-api
     ports:
       - "5097:8080"
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
     restart: on-failure
     environment:
       - DatabaseConnection=mongodb://mongodb:27017 
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
       - Environment=local
-      - RedisConnectionString=cache
-      - Services__Recipes=http://wiremock:8080
-      - ServiceDiscovery__MyUrl=
-      - ServiceDiscovery__ServiceName=KitchenApi
-      - ServiceDiscovery__ConsulServiceEndpoint=
-      - Messaging__HostName=rabbitmq
-      - Messaging__ExchangeName=dev.kitchen
+      - Services__Recipes=recipes
       - Auth__Issuer=https://plantbasedpizza.com
       - Auth__Audience=https://plantbasedpizza.com
       - Auth__Key=This is a sample secret key - please don't use in production environment.'
+    networks:
+      - app
+
+  kitchen-api-dapr:
+    image: "daprio/daprd:edge"
+    command: [
+        "./daprd",
+        "--app-id",
+        "kitchen",
+        "--app-port",
+        "8080",
+        "--placement-host-address",
+        "placement:50006", # Dapr's placement service can be reach via the docker DNS entry
+        "--dapr-grpc-port",
+        "5101",
+        "--resources-path",
+        "../../components",
+      ]
+    volumes:
+      - "../../components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
+    depends_on:
+      - "local.kitchen-api"
+    network_mode: "service:local.kitchen-api"
 
   local.kitchen-worker:
-    image: ${REGISTRY}/kitchen-worker:${IMAGE_TAG}
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
+    image: kitchen-worker
     restart: on-failure
     environment:
       - DatabaseConnection=mongodb://mongodb:27017
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
       - Environment=local
-      - RedisConnectionString=cache
-      - Services__Recipes=http://wiremock:8080
-      - ServiceDiscovery__MyUrl=
-      - ServiceDiscovery__ServiceName=KitchenWorker
-      - ServiceDiscovery__ConsulServiceEndpoint=
-      - Messaging__HostName=rabbitmq
-      - Messaging__ExchangeName=dev.kitchen
+      - Services__Recipes=recipes
+    networks:
+      - app
+
+  kitchen-worker-dapr:
+    image: "daprio/daprd:edge"
+    command: [
+        "./daprd",
+        "--app-id",
+        "kitchen-worker",
+        "--app-port",
+        "8080",
+        "--placement-host-address",
+        "placement:50006", # Dapr's placement service can be reach via the docker DNS entry
+        "--dapr-grpc-port",
+        "5101",
+        "--resources-path",
+        "../../components",
+      ]
+    volumes:
+      - "../../components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
+    depends_on:
+      - "local.kitchen-worker"
+    network_mode: "service:local.kitchen-worker"
+    
+
+  integration-test-dapr:
+    image: "daprio/daprd:edge"
+    command: [
+      "./daprd",
+      "--app-id",
+      "integration-tests",
+      "--placement-host-address",
+      "placement:50006", # Dapr's placement service can be reach via the docker DNS entry
+      "--dapr-grpc-port",
+      "5101",
+      "--resources-path",
+      "../../components",
+    ]
+    ports:
+      - "5101:5101"
+    volumes:
+      - "../../components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
+    networks:
+      - app
+
+
+  ############################
+  # Dapr placement service
+  ############################
+  placement:
+    image: "daprio/dapr"
+    command: ["./placement", "-port", "50006"]
+    ports:
+      - "50006:50006"
+    networks:
+      - app
+
+networks:
+  app:
