@@ -4,15 +4,15 @@ on:
   workflow_call:
     inputs:
       application-root-folder:
-          type: string
-          required: true
+        type: string
+        required: true
     secrets:
       DOCKERHUB_USERNAME:
-        description: 'The Dockerhub username to login with'
+        description: "The Dockerhub username to login with"
         required: true
       DOCKERHUB_TOKEN:
-          description: 'The Dockerhub token'
-          required: true
+        description: "The Dockerhub token"
+        required: true
 
 permissions:
   id-token: write
@@ -21,16 +21,15 @@ permissions:
 jobs:
   test-and-build:
     runs-on: ubuntu-latest
+    container: ubuntu
     steps:
-      -
-        name: Checkout
+      - name: Checkout
         uses: actions/checkout@v4
-      -
-        name: Set up Docker Buildx
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '9'
+          dotnet-version: "9"
 
       - name: Run unit tests
         run: |
@@ -55,4 +54,3 @@ jobs:
         run: cd ${{inputs.application-root-folder}};make tag-images
       - name: Push to DockerHub
         run: cd ${{inputs.application-root-folder}};make push
-          

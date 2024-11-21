@@ -1,15 +1,15 @@
 name: Account Services CICD
 
 on:
-    push:
-      branches:
-        - feat/dapr
-      paths:
-        - .github/workflows/build-and-push-base.yaml
-        - .github/workflows/build-account-services.yaml
-        - src/PlantBasedPizza.Account/**
-        - src/shared/**
-    workflow_dispatch:
+  push:
+    branches:
+      - feat/dapr
+    paths:
+      - .github/workflows/build-and-push-base.yaml
+      - .github/workflows/build-account-services.yaml
+      - src/PlantBasedPizza.Account/**
+      - src/shared/**
+  workflow_dispatch:
 
 permissions:
   id-token: write
