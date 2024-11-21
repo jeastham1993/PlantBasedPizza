@@ -3,8 +3,8 @@ build:
 	docker build -f application/PlantBasedPizza.Kitchen.Worker/Dockerfile -t kitchen-worker ../
 
 tag-images:
-	docker tag delivery-api plantpowerjames/plant-based-pizza-kitchen-api:${IMAGE_TAG}
-	docker tag delivery-worker plantpowerjames/plant-based-pizza-kitchen-worker:${IMAGE_TAG}
+	docker tag kitchen-api plantpowerjames/plant-based-pizza-kitchen-api:${IMAGE_TAG}
+	docker tag kitchen-worker plantpowerjames/plant-based-pizza-kitchen-worker:${IMAGE_TAG}
 
 push:
 	docker push plantpowerjames/plant-based-pizza-kitchen-api:${IMAGE_TAG}
