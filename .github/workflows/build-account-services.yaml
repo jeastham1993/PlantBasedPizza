@@ -5,7 +5,7 @@ on:
     branches:
       - feat/dapr
     paths:
-      - .github/workflows/build-and-push-base.yaml
+      - .github/workflows/build-and-push-make.yaml
       - .github/workflows/build-account-services.yaml
       - src/PlantBasedPizza.Account/**
       - src/shared/**
