@@ -10,6 +10,8 @@ namespace PlantBasedPizza.OrderManager.Core.Entities
 
         Task<List<Order>> GetAwaitingCollection();
         
+        Task<List<Order>> ForCustomer(string accountId);
+        
         Task Update(Order order);
     }
 }

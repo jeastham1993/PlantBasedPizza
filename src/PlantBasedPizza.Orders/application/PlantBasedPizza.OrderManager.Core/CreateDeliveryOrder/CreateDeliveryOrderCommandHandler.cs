@@ -13,12 +13,7 @@ public class CreateDeliveryOrderCommandHandler
 
     public async Task<OrderDto?> Handle(CreateDeliveryOrder request)
     {
-        if (await _orderRepository.Exists(request.OrderIdentifier))
-        {
-            return null;
-        }
-
-        var order = Order.Create(request.OrderIdentifier, request.OrderType, request.CustomerIdentifier,
+        var order = Order.Create(request.OrderType, request.CustomerIdentifier,
             new DeliveryDetails
             {
                 AddressLine1 = request.AddressLine1,

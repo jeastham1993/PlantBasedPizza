@@ -37,6 +37,31 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
         }
 
         /// <summary>
+        /// Get all the orders for the current customer.
+        /// </summary>
+        /// <param name="orderIdentifier">The order identifier.</param>
+        /// <returns></returns>
+        [HttpGet("")]
+        [Authorize(Roles = "user")]
+        public async Task<IEnumerable<OrderDto>> GetForCustomer()
+        {
+            try
+            {
+                var accountId = User.Claims.ExtractAccountId();
+
+                var orders = await _orderRepository.ForCustomer(accountId);
+                
+                return orders.Select(order => new OrderDto(order));
+            }
+            catch (Exception)
+            {
+                Response.StatusCode = 400;
+
+                return null;
+            }
+        }
+
+        /// <summary>
         /// Get the details of a given order.
         /// </summary>
         /// <param name="orderIdentifier">The order identifier.</param>

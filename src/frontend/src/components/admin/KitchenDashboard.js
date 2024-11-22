@@ -7,9 +7,8 @@ import {
   Sheet,
   Typography,
   Button,
-  ModalDialog,
-  ModalClose,
   Modal,
+  Snackbar,
 } from "@mui/joy";
 import Table from "@mui/joy/Table";
 import Moment from "moment";
@@ -21,13 +20,16 @@ function KitchenDashboard() {
   const [preparingOrders, setPreparingOrders] = useState([]);
   const [bakingOrders, setBakingOrders] = useState([]);
   const [qualityCheckOrders, setQualityCheckOrders] = useState([]);
-  const [viewedOrder, setViewedOrder] = useState({ itemsOnOrder: [] });
+  const [viewedOrder, setViewedOrder] = useState({ recipes: [] });
   const [modalOpen, setModalOpen] = React.useState(false);
+  const [snackbarOpen, setSnackbarOpen] = React.useState(false);
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log(localStorage.getItem("staffToken"));
-
     const staffToken = localStorage.getItem("staffToken");
 
     if (staffToken === undefined || staffToken === null) {
@@ -59,6 +61,38 @@ function KitchenDashboard() {
     fetchData();
   }, []);
 
+  async function bakeComplete(order) {
+    await kitchenApi.put(`/${order.orderIdentifier}/bake-complete`, {
+      orderIdentifier: order.orderIdentifier,
+    });
+    setSnackbarOpen(true);
+    await refreshOrders();
+  }
+
+  async function preparing(order) {
+    await kitchenApi.put(`/${order.orderIdentifier}/preparing`, {
+      orderIdentifier: order.orderIdentifier,
+    });
+    setSnackbarOpen(true);
+    await refreshOrders();
+  }
+
+  async function prepComplete(order) {
+    await kitchenApi.put(`/${order.orderIdentifier}/prep-complete`, {
+      orderIdentifier: order.orderIdentifier,
+    });
+    setSnackbarOpen(true);
+    await refreshOrders();
+  }
+
+  async function qualityChecked(order) {
+    await kitchenApi.put(`/${order.orderIdentifier}/quality-check`, {
+      orderIdentifier: order.orderIdentifier,
+    });
+    setSnackbarOpen(true);
+    await refreshOrders();
+  }
+
   async function refreshOrders() {
     try {
       const response = await kitchenApi.get(`/new`);
@@ -72,13 +106,6 @@ function KitchenDashboard() {
     } catch (error) {
       console.error("Error fetching orders:", error);
     }
-  }
-
-  async function prepComplete(order) {
-    // Make request to add item to order
-    await kitchenApi.put(`/${order.orderIdentifier}/preparing`, {});
-
-    refreshOrders();
   }
 
   return (
@@ -112,7 +139,6 @@ function KitchenDashboard() {
                       <td>
                         <Button
                           onClick={() => {
-                            console.log(order);
                             setViewedOrder(order);
                             setModalOpen(true);
                           }}
@@ -123,7 +149,7 @@ function KitchenDashboard() {
                       <td>
                         <Button
                           onClick={() => {
-                            prepComplete(order);
+                            preparing(order);
                           }}
                         >
                           Complete
@@ -168,6 +194,13 @@ function KitchenDashboard() {
                         >
                           View
                         </Button>
+                        <Button
+                          onClick={() => {
+                            prepComplete(order);
+                          }}
+                        >
+                          Done
+                        </Button>
                       </td>
                     </tr>
                   ))}
@@ -207,6 +240,13 @@ function KitchenDashboard() {
                           }}
                         >
                           View
+                        </Button>
+                        <Button
+                          onClick={() => {
+                            bakeComplete(order);
+                          }}
+                        >
+                          Done
                         </Button>
                       </td>
                     </tr>
@@ -248,6 +288,13 @@ function KitchenDashboard() {
                         >
                           View
                         </Button>
+                        <Button
+                          onClick={() => {
+                            qualityChecked(order);
+                          }}
+                        >
+                          Done
+                        </Button>
                       </td>
                     </tr>
                   ))}
@@ -257,12 +304,24 @@ function KitchenDashboard() {
           </Grid>
         </Grid>
       </Container>
+      <Box sx={{ width: 500 }}>
+        <Snackbar
+          autoHideDuration={2000}
+          variant="solid"
+          color="success"
+          anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+          open={snackbarOpen}
+          onClose={handleSnackbarClose}
+        >
+          Success!
+        </Snackbar>
+      </Box>
       <Modal
         aria-labelledby="modal-title"
         aria-describedby="modal-desc"
         open={modalOpen}
         onClose={() => {
-          setViewedOrder({ itemsOnOrder: [] });
+          setViewedOrder({ recipes: [] });
           setModalOpen(false);
         }}
         sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}
@@ -286,9 +345,20 @@ function KitchenDashboard() {
           >
             {viewedOrder.orderIdentifier}
           </Typography>
-          {viewedOrder.itemsOnOrder.map((item) => {
-            <p>{item.recipeIdentifier}</p>;
-          })}
+          <div>
+            {viewedOrder.recipes.map((recipe) => (
+              <div>
+                <Typography component="h3" textColor="inherit">
+                  {recipe.recipeIdentifier}
+                </Typography>
+                {recipe.ingredients.map((ingredient) => (
+                  <Typography component="p" textColor="inherit">
+                    {ingredient.quantity} x {ingredient.name}
+                  </Typography>
+                ))}
+              </div>
+            ))}
+          </div>
         </Sheet>
       </Modal>
     </Box>

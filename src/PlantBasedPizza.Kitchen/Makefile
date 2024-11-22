@@ -1,5 +1,9 @@
-build:
+build: build-api build-worker
+
+build-api:
 	docker build -f application/PlantBasedPizza.Kitchen.Api/Dockerfile -t kitchen-api ../
+
+build-worker:
 	docker build -f application/PlantBasedPizza.Kitchen.Worker/Dockerfile -t kitchen-worker ../
 
 tag-images:

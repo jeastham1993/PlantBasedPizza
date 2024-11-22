@@ -13,6 +13,7 @@ import {
   Grid,
 } from "@mui/joy";
 import axios from "axios";
+import { accountApi } from "../../axiosConfig";
 
 function AdminLogin() {
   const [emailAddress, setEmail] = useState("");
@@ -23,8 +24,8 @@ function AdminLogin() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await axios.post(
-        "https://app.dev.plantbasedpizza.net/account/login",
+      const response = await accountApi.post(
+        "/login",
         { emailAddress, password }
       );
       const token = response.data.authToken;

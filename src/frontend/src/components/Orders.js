@@ -52,8 +52,8 @@ function Orders() {
                 </thead>
                 <tbody>
                   {orders.map((order) => (
-                    <tr key={order.orderNumber}>
-                      <td>{order.orderNumber}</td>
+                    <tr key={order.orderIdentifier}>
+                      <td>{order.orderIdentifier}</td>
                       <td>
                         {Moment(order.orderDate).format("DD/MM/YYYY HH:mm:ss")}
                       </td>
@@ -64,7 +64,7 @@ function Orders() {
                         {order.itemCount}
                       </td>
                       <td>
-                        <Button component="a" href={`/orders/${order.orderNumber}`} >
+                        <Button component="a" href={`/orders/${order.orderIdentifier}`} >
                           View
                         </Button>
                       </td>

@@ -13,6 +13,7 @@ import {
   Grid,
 } from "@mui/joy";
 import axios from "axios";
+import { accountApi } from "../axiosConfig";
 
 function Login() {
   const [emailAddress, setEmail] = useState("");
@@ -23,12 +24,12 @@ function Login() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await axios.post(
-        "https://app.dev.plantbasedpizza.net/account/login",
+      const response = await accountApi.post('/login',
         { emailAddress, password }
       );
+      
       const token = response.data.authToken;
-      console.log(token);
+
       localStorage.setItem("token", token); // Save the token in localStorage
       navigate("/"); // Navigate to the home page after successful login
     } catch (err) {

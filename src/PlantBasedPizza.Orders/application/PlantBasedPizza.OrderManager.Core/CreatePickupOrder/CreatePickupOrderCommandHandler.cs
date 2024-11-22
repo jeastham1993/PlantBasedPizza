@@ -13,12 +13,7 @@ public class CreatePickupOrderCommandHandler
 
     public async Task<OrderDto?> Handle(CreatePickupOrderCommand request)
     {
-        if (await _orderRepository.Exists(request.OrderIdentifier))
-        {
-            return null;
-        }
-            
-        var order = Order.Create(request.OrderIdentifier, request.OrderType, request.CustomerIdentifier, null);
+        var order = Order.Create(request.OrderType, request.CustomerIdentifier);
 
         await _orderRepository.Add(order);
 

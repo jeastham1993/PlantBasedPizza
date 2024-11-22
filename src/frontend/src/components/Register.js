@@ -13,6 +13,7 @@ import {
   Grid,
 } from "@mui/joy";
 import axios from "axios";
+import { accountApi } from "../axiosConfig";
 
 function Register() {
   const [emailAddress, setEmail] = useState("");
@@ -23,8 +24,8 @@ function Register() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await axios.post(
-        "https://app.dev.plantbasedpizza.net/account/register",
+      const response = await accountApi.post(
+        "/register",
         { emailAddress, password }
       );
       navigate("/login"); // Navigate to the home page after successful register

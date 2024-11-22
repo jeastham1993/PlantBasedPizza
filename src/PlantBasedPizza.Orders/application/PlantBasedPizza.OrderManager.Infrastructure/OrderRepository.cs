@@ -21,7 +21,9 @@ public class OrderRepository : IOrderRepository
 
     public async Task<Order> Retrieve(string orderIdentifier)
     {
-        var queryBuilder = Builders<Order>.Filter.Eq(p => p.OrderIdentifier, orderIdentifier);
+        var queryBuilder = Builders<Order>
+            .Filter
+            .Eq(p => p.OrderIdentifier, orderIdentifier);
 
         var order = await _orders.Find(queryBuilder).FirstOrDefaultAsync().ConfigureAwait(false);
 
@@ -46,6 +48,13 @@ public class OrderRepository : IOrderRepository
     public async Task<List<Order>> GetAwaitingCollection()
     {
         var order = await _orders.Find(p => p.OrderType == OrderType.Pickup && p.AwaitingCollection).ToListAsync();
+
+        return order;
+    }
+
+    public async Task<List<Order>> ForCustomer(string accountId)
+    {
+        var order = await _orders.Find(p => p.CustomerIdentifier.ToLower() == accountId.ToLower()).ToListAsync();
 
         return order;
     }

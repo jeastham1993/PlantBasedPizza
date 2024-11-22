@@ -20,7 +20,7 @@ import {
 } from "@mui/joy";
 import recipeService from "../services/recipeService";
 import { ordersApi } from "../axiosConfig";
-import { Add, FavoriteBorder, ShoppingCart } from "@mui/icons-material";
+import { Add, ShoppingCart } from "@mui/icons-material";
 import Snackbar from "@mui/joy/Snackbar";
 
 function Home() {
@@ -96,11 +96,9 @@ function Home() {
 
     let addItemBody = {
       OrderIdentifier: orderNumber,
-      RecipeIdentifier: item.id.toString(),
+      RecipeIdentifier: item.recipeIdentifier.toString(),
       Quantity: 1,
     };
-
-    console.log(addItemBody);
 
     // Make request to add item to order
     let addItemResponse = await ordersApi.post(
@@ -199,6 +197,7 @@ function Home() {
               </ListItem>
               {order.items.map((item) => (
                 <Card
+                  key={item.recipeIdentifier}
                   sx={{
                     height: "100%",
                     display: "flex",
@@ -206,7 +205,7 @@ function Home() {
                   }}
                 >
                   <div>
-                    <Typography level="title-lg">{item.itemName}</Typography>
+                    <Typography level="title-lg">{item.recipeIdentifier}</Typography>
                     <Typography level="body-sm">{item.quantity}</Typography>
                   </div>
                 </Card>
@@ -224,7 +223,7 @@ function Home() {
                   <div key={category}>
                     <Grid container spacing={4}>
                       {menuItems[category].map((item) => (
-                        <Grid item key={item.id} xs={12} sm={6} md={4}>
+                        <Grid item key={item.recipeIdentifier} xs={12} sm={6} md={4}>
                           <Card
                             sx={{
                               maxWidth: "100%",

@@ -71,7 +71,7 @@ function CollectionDashboard() {
       <CssBaseline />
       <Container sx={{ py: 1 }} maxWidth="xl">
         <Grid container spacing={1}>
-          <Grid item xs={12} >
+          <Grid item xs={12}>
             <Typography level="h2" gutterBottom>
               Awaiting Collection
             </Typography>
@@ -108,18 +108,18 @@ function CollectionDashboard() {
           </Grid>
         </Grid>
       </Container>
-        <Box sx={{ width: 500 }}>
-          <Snackbar
-            autoHideDuration={2000}
-            variant="solid"
-            color="success"
-            anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-            open={snackbarOpen}
-            onClose={handleSnackbarClose}
-          >
-            Added successfully!
-          </Snackbar>
-        </Box>
+      <Box sx={{ width: 500 }}>
+        <Snackbar
+          autoHideDuration={2000}
+          variant="solid"
+          color="success"
+          anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+          open={snackbarOpen}
+          onClose={handleSnackbarClose}
+        >
+          Collected!
+        </Snackbar>
+      </Box>
     </Box>
   );
 }

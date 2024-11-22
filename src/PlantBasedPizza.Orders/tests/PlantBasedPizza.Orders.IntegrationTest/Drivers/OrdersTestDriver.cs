@@ -51,7 +51,6 @@ public class OrdersTestDriver
             await _userHttpClient.PostAsync(new Uri($"{TestConstants.DefaultTestUrl}/order/deliver"), new StringContent(
                 JsonConvert.SerializeObject(new CreateDeliveryOrder()
                 {
-                    OrderIdentifier = orderIdentifier,
                     CustomerIdentifier = customerIdentifier,
                     AddressLine1 = "My test address",
                     AddressLine2 = string.Empty,
@@ -69,7 +68,6 @@ public class OrdersTestDriver
             await _userHttpClient.PostAsync(new Uri($"{TestConstants.DefaultTestUrl}/order/pickup"), new StringContent(
                 JsonConvert.SerializeObject(new CreatePickupOrderCommand()
                 {
-                    OrderIdentifier = orderIdentifier,
                     CustomerIdentifier = customerIdentifier
                 }), Encoding.UTF8, "application/json")).ConfigureAwait(false);
         }

@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using PlantBasedPizza.Kitchen.Core.Adapters;
 using PlantBasedPizza.Kitchen.Core.Entities;
 
 namespace PlantBasedPizza.Kitchen.Infrastructure.DataTransfer;
@@ -19,6 +20,7 @@ public class KitchenRequestDto
         PrepCompleteOn = request.PrepCompleteOn;
         BakeCompleteOn = request.BakeCompleteOn;
         QualityCheckCompleteOn = request.QualityCheckCompleteOn;
+        Recipes = request.Recipes;
     }
 
     [JsonPropertyName("kitchenRequestId")]
@@ -38,4 +40,7 @@ public class KitchenRequestDto
         
     [JsonPropertyName("qualityCheckCompleteOn")]
     public DateTime? QualityCheckCompleteOn { get; set; }
+    
+    [JsonPropertyName("recipes")]
+    public List<RecipeAdapter> Recipes { get; set; } = new();
 }

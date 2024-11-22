@@ -5,9 +5,6 @@ namespace PlantBasedPizza.OrderManager.Core.CreateDeliveryOrder
 {
     public class CreateDeliveryOrder
     {
-        [JsonPropertyName("orderIdentifier")]
-        public string OrderIdentifier { get; init; } = "";
-
         [JsonIgnore]
         public string CustomerIdentifier { get; set; } = "";
 

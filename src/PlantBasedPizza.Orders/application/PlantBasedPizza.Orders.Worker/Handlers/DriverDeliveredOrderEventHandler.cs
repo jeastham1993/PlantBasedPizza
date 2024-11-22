@@ -30,7 +30,8 @@ namespace PlantBasedPizza.Orders.Worker.Handlers
                 CustomerIdentifier = order.CustomerIdentifier,
                 OrderValue = order.TotalPrice
             };
-            await _daprClient.PublishEventAsync("public", $"{evt.EventName}.{evt.EventVersion}", completedEvt);
+            
+            await _daprClient.PublishEventAsync("public", $"{completedEvt.EventName}.{completedEvt.EventVersion}", completedEvt);
         }
     }
 }

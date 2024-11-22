@@ -3,6 +3,14 @@ resource "azurerm_container_app" "account" {
   container_app_environment_id = data.azurerm_container_app_environment.env.id
   resource_group_name          = data.azurerm_resource_group.plant_based_pizza_rg.name
   revision_mode                = "Single"
+  secret {
+    name = "dd-api-key"
+    value = var.dd_api_key
+  }
+  secret {
+    name = "database-connection"
+    value = var.db_connection_string
+  }
   dapr {
     app_id = "account"
     app_port = 8080
@@ -30,7 +38,7 @@ resource "azurerm_container_app" "account" {
       memory = "0.5Gi"
       env {
         name = "DatabaseConnection"
-        value = var.db_connection_string
+        secret_name = "database-connection"
       }
       env {
         name = "Environment"
@@ -61,7 +69,7 @@ resource "azurerm_container_app" "account" {
       }
       env {
         name = "DD_API_KEY"
-        value = var.dd_api_key
+        secret_name = "dd-api-key"
       }
       env {
         name = "DD_ENV"

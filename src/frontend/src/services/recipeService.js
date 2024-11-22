@@ -1,8 +1,5 @@
 import axios from "axios";
-
-const recipeApi = axios.create({
-  baseURL: "https://app.dev.plantbasedpizza.net/recipes",
-});
+import { recipeApi } from "../axiosConfig";
 
 const recipeService = {
   listRecipes: async function () {

@@ -43,6 +43,8 @@ builder.Services.AddControllers();
 
 var app = builder.Build();
 
+app.UseCors(CorsSettings.ALLOW_ALL_POLICY_NAME);
+
 app.UseAuthentication();
 app.UseAuthorization();
 

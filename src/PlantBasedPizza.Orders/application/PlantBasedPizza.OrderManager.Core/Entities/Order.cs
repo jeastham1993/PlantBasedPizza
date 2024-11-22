@@ -14,35 +14,37 @@ namespace PlantBasedPizza.OrderManager.Core.Entities
         private List<OrderHistory> _history;
         
         [JsonConstructor]
-        internal Order(string? orderNumber = null)
+        internal Order(string? orderIdentifier = null)
         {
-            if (string.IsNullOrEmpty(orderNumber))
+            if (string.IsNullOrEmpty(orderIdentifier))
             {
-                orderNumber = Guid.NewGuid().ToString();
+                orderIdentifier = Guid.NewGuid().ToString();
             }
 
-            OrderIdentifier = "";
+            OrderIdentifier = orderIdentifier;
             CustomerIdentifier = "";
-            OrderNumber = orderNumber;
+            OrderNumber = orderIdentifier;
             _items = new List<OrderItem>();
             _history = new List<OrderHistory>();
         }
 
-        public static Order Create(string orderIdentifier, OrderType type, string customerIdentifier, DeliveryDetails? deliveryDetails = null, string correlationId = "")
+        public static Order Create(OrderType type, string customerIdentifier, DeliveryDetails? deliveryDetails = null, string correlationId = "")
         {
             Guard.AgainstNullOrEmpty(customerIdentifier, nameof(customerIdentifier));
-            Guard.AgainstNullOrEmpty(orderIdentifier, nameof(orderIdentifier));
             
             if (type == OrderType.Delivery && deliveryDetails == null)
             {
                 throw new ArgumentException("If order type is delivery a delivery address must be specified",
                     nameof(deliveryDetails));
             }
+            
+            var orderIdentifier = Guid.NewGuid().ToString();
 
             var order = new Order()
             {
                 OrderType = type,
                 OrderIdentifier = orderIdentifier,
+                OrderNumber = orderIdentifier,
                 CustomerIdentifier = customerIdentifier,
                 OrderDate = DateTime.Now,
                 DeliveryDetails = deliveryDetails

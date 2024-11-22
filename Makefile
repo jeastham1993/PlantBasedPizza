@@ -7,7 +7,6 @@ orders-deps-down:
 dapr-orders:
 	dapr run --app-id orders --app-port 8080 --components-path ./components -- dotnet run -p src/PlantBasedPizza.Orders/application/PlantBasedPizza.Orders.Api --urls http://localhost:8080
 
-
 redeploy-all: deploy-account deploy-delivery deploy-kitchen deploy-loyalty deploy-orders deploy-payments deploy-recipes
 	
 deploy-account:

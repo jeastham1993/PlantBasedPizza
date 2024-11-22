@@ -35,6 +35,8 @@ builder.Services
 
 var app = builder.Build();
 
+app.UseCors(CorsSettings.ALLOW_ALL_POLICY_NAME);
+
 app.UseAuthentication()
     .UseAuthorization()
     .UseFastEndpoints(options =>

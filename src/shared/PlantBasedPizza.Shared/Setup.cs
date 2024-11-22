@@ -32,6 +32,17 @@ namespace PlantBasedPizza.Shared
             
             services.AddHttpContextAccessor();
 
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: CorsSettings.ALLOW_ALL_POLICY_NAME,
+                    policy  =>
+                    {
+                        policy.AllowAnyOrigin()
+                            .AllowAnyHeader()
+                            .AllowAnyMethod();
+                    });
+            });
+
             return services;
         }
     }
