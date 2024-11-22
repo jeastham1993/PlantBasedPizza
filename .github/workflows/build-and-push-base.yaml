@@ -13,6 +13,8 @@ on:
       DOCKERHUB_TOKEN:
         description: "The Dockerhub token"
         required: true
+      DD_API_KEY:
+        required: true
 
 permissions:
   id-token: write
@@ -29,6 +31,12 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "9"
+      - name: Configure Datadog Test Visibility
+        uses: datadog/test-visibility-github-action@v2
+        with:
+          languages: dotnet
+          api_key: ${{ secrets.DD_API_KEY }}
+          site: datadoghq.com # Change if your site is not US1
       - name: Run unit tests
         run: |
           cd ${{inputs.application-root-folder}};make unit-test
