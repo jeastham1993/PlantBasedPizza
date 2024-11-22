@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using PlantBasedPizza.E2ETests.Requests;
 using PlantBasedPizza.E2ETests.ViewModels;
 using PlantBasedPizza.IntegrationTest.Helpers;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace PlantBasedPizza.E2ETests.Drivers
 {
@@ -26,12 +27,11 @@ namespace PlantBasedPizza.E2ETests.Drivers
             _staffHttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", staffToken);
         }
 
-        public async Task AddNewDeliveryOrder(string orderIdentifier, string customerIdentifier)
+        public async Task<Order> AddNewDeliveryOrder(string customerIdentifier)
         {
-            await _userHttpClient.PostAsync(new Uri($"{BaseUrl}/order/deliver"), new StringContent(
+            var response = await _userHttpClient.PostAsync(new Uri($"{BaseUrl}/order/deliver"), new StringContent(
                 JsonConvert.SerializeObject(new CreateDeliveryOrder()
                 {
-                    OrderIdentifier = orderIdentifier,
                     CustomerIdentifier = customerIdentifier,
                     AddressLine1 = "My test address",
                     AddressLine2 = string.Empty,
@@ -40,18 +40,31 @@ namespace PlantBasedPizza.E2ETests.Drivers
                     AddressLine5 = string.Empty,
                     Postcode = "TYi9PO"
                 }), Encoding.UTF8, "application/json")).ConfigureAwait(false);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception($"Unexpected response from order service: {response.StatusCode}");
+            }
+            
+            return JsonSerializer.Deserialize<Order>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
 
-        public async Task AddNewOrder(string orderIdentifier, string customerIdentifier)
+        public async Task<Order> AddNewOrder(string customerIdentifier)
         {
             await Task.Delay(TimeSpan.FromSeconds(5));
             
-            await _userHttpClient.PostAsync(new Uri($"{BaseUrl}/order/pickup"), new StringContent(
+            var response = await _userHttpClient.PostAsync(new Uri($"{BaseUrl}/order/pickup"), new StringContent(
                 JsonConvert.SerializeObject(new CreatePickupOrderCommand()
                 {
-                    OrderIdentifier = orderIdentifier,
                     CustomerIdentifier = customerIdentifier
                 }), Encoding.UTF8, "application/json")).ConfigureAwait(false);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception($"Unexpected response from order service: {response.StatusCode}");
+            }
+            
+            return JsonSerializer.Deserialize<Order>(await response.Content.ReadAsStringAsync().ConfigureAwait(false));
         }
 
         public async Task AddItemToOrder(string orderIdentifier, string recipeIdentifier, int quantity)

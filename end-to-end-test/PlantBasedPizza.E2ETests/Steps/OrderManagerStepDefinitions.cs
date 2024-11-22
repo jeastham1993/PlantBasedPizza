@@ -21,11 +21,10 @@ namespace PlantBasedPizza.E2ETests.Steps
         public async Task GivenANewOrderIsCreatedWithIdentifierOrd(string p0)
         {
             Activity.Current = _scenarioContext.Get<Activity>("Activity");
-
-            var orderId = Guid.NewGuid().ToString();
-            _scenarioContext.Add("orderId", orderId);
             
-            await _driver.AddNewOrder(orderId, p0).ConfigureAwait(false);
+            var order = await _driver.AddNewOrder(p0).ConfigureAwait(false);
+            
+            _scenarioContext.Add("orderId", order.OrderIdentifier);
         }
 
         [When(@"a (.*) is added to order")]
@@ -100,10 +99,9 @@ namespace PlantBasedPizza.E2ETests.Steps
         {
             Activity.Current = _scenarioContext.Get<Activity>("Activity");
 
-            var orderId = Guid.NewGuid().ToString();
-            _scenarioContext.Add("orderId", orderId);
+            var order = await _driver.AddNewDeliveryOrder(p0);
             
-            await _driver.AddNewDeliveryOrder(orderId, p0);
+            _scenarioContext.Add("orderId", order.OrderIdentifier);
         }
     }
 }

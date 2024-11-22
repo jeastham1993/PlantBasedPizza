@@ -17,7 +17,7 @@ public class LoyaltyPointsDriver
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", TestTokenGenerator.GenerateTestTokenForRole("user"));
         }
 
-        public async Task<LoyaltyPointsDto?> GetLoyaltyPoints(string customerIdentifier)
+        public async Task<LoyaltyPointsDto?> GetLoyaltyPoints()
         {
             // Delay to allow async processing to catch up
             await Task.Delay(TimeSpan.FromSeconds(2));

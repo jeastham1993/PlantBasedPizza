@@ -61,28 +61,48 @@ namespace PlantBasedPizza.E2ETests.Drivers
         {
             await Task.Delay(TimeSpan.FromSeconds(5));
             
-            await _httpClient.PutAsync(new Uri($"{BaseUrl}/kitchen/{orderIdentifier}/preparing"), new StringContent(string.Empty, Encoding.UTF8)).ConfigureAwait(false);
+            var result = await _httpClient.PutAsync(new Uri($"{BaseUrl}/kitchen/{orderIdentifier}/preparing"), new StringContent(string.Empty, Encoding.UTF8)).ConfigureAwait(false);
+
+            if (!result.IsSuccessStatusCode)
+            {
+                throw new Exception($"Unexected response from kitchen API: {result.StatusCode}");
+            }
         }
         
         public async Task PrepComplete(string orderIdentifier)
         {
             await Task.Delay(TimeSpan.FromSeconds(5));
             
-            await _httpClient.PutAsync(new Uri($"{BaseUrl}/kitchen/{orderIdentifier}/prep-complete"), new StringContent(string.Empty, Encoding.UTF8)).ConfigureAwait(false);
+            var result = await _httpClient.PutAsync(new Uri($"{BaseUrl}/kitchen/{orderIdentifier}/prep-complete"), new StringContent(string.Empty, Encoding.UTF8)).ConfigureAwait(false);
+
+            if (!result.IsSuccessStatusCode)
+            {
+                throw new Exception($"Unexected response from kitchen API: {result.StatusCode}");
+            }
         }
         
         public async Task BakeComplete(string orderIdentifier)
         {
             await Task.Delay(TimeSpan.FromSeconds(5));
             
-            await _httpClient.PutAsync(new Uri($"{BaseUrl}/kitchen/{orderIdentifier}/bake-complete"), new StringContent(string.Empty, Encoding.UTF8)).ConfigureAwait(false);
+            var result = await _httpClient.PutAsync(new Uri($"{BaseUrl}/kitchen/{orderIdentifier}/bake-complete"), new StringContent(string.Empty, Encoding.UTF8)).ConfigureAwait(false);
+
+            if (!result.IsSuccessStatusCode)
+            {
+                throw new Exception($"Unexected response from kitchen API: {result.StatusCode}");
+            }
         }
         
         public async Task QualityChecked(string orderIdentifier)
         {
             await Task.Delay(TimeSpan.FromSeconds(5));
             
-            await _httpClient.PutAsync(new Uri($"{BaseUrl}/kitchen/{orderIdentifier}/quality-check"), new StringContent(string.Empty, Encoding.UTF8)).ConfigureAwait(false);
+            var result = await _httpClient.PutAsync(new Uri($"{BaseUrl}/kitchen/{orderIdentifier}/quality-check"), new StringContent(string.Empty, Encoding.UTF8)).ConfigureAwait(false);
+
+            if (!result.IsSuccessStatusCode)
+            {
+                throw new Exception($"Unexected response from kitchen API: {result.StatusCode}");
+            }
         }
     }
 }

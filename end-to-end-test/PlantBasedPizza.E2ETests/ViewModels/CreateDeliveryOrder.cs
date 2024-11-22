@@ -2,8 +2,6 @@ namespace PlantBasedPizza.E2ETests.ViewModels
 {
     public class CreateDeliveryOrder
     {
-        public string OrderIdentifier { get; set; }
-        
         public string CustomerIdentifier { get; set; }
         
         public string AddressLine1 { get;  set; }
