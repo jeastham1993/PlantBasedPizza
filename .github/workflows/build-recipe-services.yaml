@@ -17,8 +17,17 @@ permissions:
   contents: read
 
 jobs:
+  static-analysis:
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/static-analysis.yaml@feat/dapr
+    with:
+      service-name: recipes
+      directory: ./src/PlantBasedPizza.Recipes/
+    secrets:
+      dd_api_key: ${{secrets.ACA_DD_API_KEY}}
+      dd_app_key: ${{secrets.ACA_DD_APP_KEY}}
   build-and-push:
     uses: jeastham1993/PlantBasedPizza/.github/workflows/build-and-push-base.yaml@feat/dapr
+    needs: static-analysis
     with:
       application-root-folder: ./src/PlantBasedPizza.Recipes/
     secrets:
