@@ -1,7 +1,7 @@
 build:
-	docker build -f application/PlantBasedPizza.LoyaltyPoints.Api/Dockerfile -t loyalty-api ../
-	docker build -f application/PlantBasedPizza.LoyaltyPoints.Internal/Dockerfile -t loyalty-internal-api ../
-	docker build -f application/PlantBasedPizza.LoyaltyPoints.Worker/Dockerfile -t loyalty-worker ../
+	docker build -f application/PlantBasedPizza.LoyaltyPoints.Api/Dockerfile-x86 -t loyalty-api ../
+	docker build -f application/PlantBasedPizza.LoyaltyPoints.Internal/Dockerfile-x86 -t loyalty-internal-api ../
+	docker build -f application/PlantBasedPizza.LoyaltyPoints.Worker/Dockerfile-x86 -t loyalty-worker ../
 
 tag-images:
 	docker tag loyalty-api plantpowerjames/plant-based-pizza-loyalty-api:${IMAGE_TAG}

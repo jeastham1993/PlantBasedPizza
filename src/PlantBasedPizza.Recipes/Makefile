@@ -1,5 +1,5 @@
 build:
-	docker build -f applications/PlantBasedPizza.Recipes.Api/Dockerfile -t recipe-api ../
+	docker build -f applications/PlantBasedPizza.Recipes.Api/Dockerfile-x86 -t recipe-api ../
 
 tag-images:
 	docker tag recipe-api plantpowerjames/plant-based-pizza-recipe-api:${IMAGE_TAG}

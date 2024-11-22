@@ -1,9 +1,9 @@
 build: build-api build-worker
 	
 build-worker:
-	docker build -f application/PlantBasedPizza.Orders.Worker/Dockerfile -t order-worker ../
+	docker build -f application/PlantBasedPizza.Orders.Worker/Dockerfile-x86 -t order-worker ../
 build-api:
-	docker build -f application/PlantBasedPizza.Orders.Api/Dockerfile -t order-api ../
+	docker build -f application/PlantBasedPizza.Orders.Api/Dockerfile-x86 -t order-api ../
 
 tag-images:
 	docker tag order-api plantpowerjames/plant-based-pizza-order-api:${IMAGE_TAG}

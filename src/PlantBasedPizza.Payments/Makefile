@@ -1,5 +1,5 @@
 build:
-	docker build -f application/PlantBasedPizza.Payments/Dockerfile -t payment-api ../
+	docker build -f application/PlantBasedPizza.Payments/Dockerfile-x86 -t payment-api ../
 
 tag-images:
 	docker tag payment-api plantpowerjames/plant-based-pizza-payment-api:${IMAGE_TAG}

@@ -146,7 +146,7 @@ resource "azurerm_container_app" "orders-worker" {
     max_replicas = 1
     container {
       name   = "application"
-      image  = "plantpowerjames/plant-based-pizza-orders-worker:${var.app_version}"
+      image  = "plantpowerjames/plant-based-pizza-order-worker:${var.app_version}"
       cpu    = 0.25
       memory = "0.5Gi"
       env {

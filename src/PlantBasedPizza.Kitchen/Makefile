@@ -1,10 +1,10 @@
 build: build-api build-worker
 
 build-api:
-	docker build -f application/PlantBasedPizza.Kitchen.Api/Dockerfile -t kitchen-api ../
+	docker build -f application/PlantBasedPizza.Kitchen.Api/Dockerfile-x86 -t kitchen-api ../
 
 build-worker:
-	docker build -f application/PlantBasedPizza.Kitchen.Worker/Dockerfile -t kitchen-worker ../
+	docker build -f application/PlantBasedPizza.Kitchen.Worker/Dockerfile-x86 -t kitchen-worker ../
 
 tag-images:
 	docker tag kitchen-api plantpowerjames/plant-based-pizza-kitchen-api:${IMAGE_TAG}

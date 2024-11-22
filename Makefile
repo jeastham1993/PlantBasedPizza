@@ -10,22 +10,22 @@ dapr-orders:
 redeploy-all: deploy-account deploy-delivery deploy-kitchen deploy-loyalty deploy-orders deploy-payments deploy-recipes
 	
 deploy-account:
-	cd infra/account;terraform apply --var-file dev.tfvars -auto-approve
+	cd infra/account;terraform init;terraform apply --var-file dev.tfvars -auto-approve
 	
-deploy delivery:
-	cd infra/delivery;terraform apply --var-file dev.tfvars -auto-approve
+deploy-delivery:
+	cd infra/delivery;terraform init;terraform apply --var-file dev.tfvars -auto-approve
 
 deploy-kitchen:
-	cd infra/kitchen;terraform apply --var-file dev.tfvars -auto-approve
+	cd infra/kitchen;terraform init;terraform apply --var-file dev.tfvars -auto-approve
 
 deploy-loyalty:
-	cd infra/loyalty;terraform apply --var-file dev.tfvars -auto-approve
+	cd infra/loyalty;terraform init;terraform apply --var-file dev.tfvars -auto-approve
 
 deploy-orders:
-	cd infra/orders;terraform apply --var-file dev.tfvars -auto-approve
+	cd infra/orders;terraform init;terraform apply --var-file dev.tfvars -auto-approve
 
 deploy-payments:
-	cd infra/payments;terraform apply --var-file dev.tfvars -auto-approve
+	cd infra/payments;terraform init;terraform apply --var-file dev.tfvars -auto-approve
 
 deploy-recipes:
-	cd infra/recipes;terraform apply --var-file dev.tfvars -auto-approve
+	cd infra/recipes;terraform init;terraform apply --var-file dev.tfvars -auto-approve
