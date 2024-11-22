@@ -3,7 +3,9 @@ using MongoDB.Driver;
 
 using PlantBasedPizza.Deliver.Infrastructure;
 using PlantBasedPizza.Kitchen.Infrastructure;
+using PlantBasedPizza.OrderManager.Core.Entities;
 using PlantBasedPizza.OrderManager.Infrastructure;
+using PlantBasedPizza.Recipes.Core.Entities;
 using PlantBasedPizza.Recipes.Infrastructure;
 using PlantBasedPizza.Shared;
 using PlantBasedPizza.Shared.Events;
@@ -13,6 +15,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder
     .Configuration
     .AddEnvironmentVariables();
+builder.Services.AddAWSLambdaHosting(LambdaEventSource.HttpApi);
 
 var client = new MongoClient(builder.Configuration["DatabaseConnection"]);
 
@@ -30,6 +33,8 @@ builder.Services.AddControllers();
 var app = builder.Build();
 
 DomainEvents.Container = app.Services;
+
+Amazon.Lambda.Core.SnapshotRestore.RegisterBeforeSnapshot(async () => await Snapstart.BeforeRestore(app.Services));
 
 var httpClient = app.Services.GetRequiredService<IHttpClientFactory>().CreateClient();
 
@@ -86,3 +91,18 @@ app.Use(async (context, next) =>
 app.MapControllers();
 
 app.Run();
+
+static class Snapstart
+{
+    public static async ValueTask BeforeRestore(IServiceProvider services)
+    {
+        var orderRepository = services.GetRequiredService<IOrderRepository>();
+        var recipeRepository = services.GetRequiredService<IRecipeRepository>();
+
+        for (var x = 30; x > 0; x++)
+        {
+            await orderRepository.Retrieve("test");
+            await recipeRepository.List();
+        }
+    }
+}

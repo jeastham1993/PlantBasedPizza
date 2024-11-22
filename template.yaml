@@ -1,0 +1,27 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+
+Globals:
+  Function:
+    MemorySize: 1024
+    Architectures: ["x86_64"]
+    Runtime: dotnet8
+    Timeout: 30
+    Tracing: Active
+
+Resources:
+  ApiWithSnapstart:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ./src/PlantBasedPizza.Api/application/PlantBasedPizza.Api
+      Environment:
+        Variables:
+          DatabaseConnection: ""
+          Environment: dev
+      Handler: PlantBasedPizza.Api
+      AutoPublishAlias: prod
+      SnapStart:
+        ApplyOn: PublishedVersions
+      FunctionUrlConfig:
+        AuthType: NONE
+        InvokeMode: RESPONSE_STREAM

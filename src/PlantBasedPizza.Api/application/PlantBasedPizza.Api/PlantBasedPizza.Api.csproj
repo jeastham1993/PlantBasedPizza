@@ -9,6 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Amazon.Lambda.AspNetCoreServer.Hosting" Version="1.7.2" />
+    <PackageReference Include="Amazon.Lambda.Core" Version="2.5.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     <PackageReference Include="OpenTelemetry" Version="1.7.0" />
     <PackageReference Include="OpenTelemetry.Exporter.Console" Version="1.7.0" />
