@@ -98,11 +98,25 @@ static class Snapstart
     {
         var orderRepository = services.GetRequiredService<IOrderRepository>();
         var recipeRepository = services.GetRequiredService<IRecipeRepository>();
+        var logger = services.GetRequiredService<ILogger<Program>>();
 
-        for (var x = 30; x > 0; x++)
+        for (var x = 0; x < 30; x++)
         {
-            await orderRepository.Retrieve("test");
-            await recipeRepository.List();
+            try
+            {
+                logger.LogInformation($"Before Restore: {x}");
+                
+                await orderRepository.Retrieve("test");
+                await recipeRepository.List();
+                
+                logger.LogInformation($"After Warming: {x}");
+            }
+            catch (Exception)
+            {
+                // Empty exception block is ok, this code is meant to JIT handlers and not return meaningful results
+            }
         }
+        
+        logger.LogInformation("Before restore complete");
     }
 }
