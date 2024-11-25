@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using PlantBasedPizza.Deliver.Infrastructure;
 using PlantBasedPizza.Deliver.Infrastructure.IntegrationEvents;
+using PlantBasedPizza.Delivery.Api;
 using PlantBasedPizza.Shared;
 using PlantBasedPizza.Shared.Logging;
 using Saunter;
@@ -68,15 +69,24 @@ app.UseRouting();
 
 app.UseAuthorization();
 
-app.MapControllers();
+app.MapGet("/delivery/{orderIdentifier}/status", Endpoints.GetOrderStatus)
+    .RequireAuthorization(options => options.RequireRole("user"));
+app.MapGet("/delivery/awaiting-collection", Endpoints.GetAwaitingCollection)
+    .RequireAuthorization(options => options.RequireRole("staff", "admin"));
+app.MapGet("/delivery/driver/{driverName}/orders", Endpoints.GetOrdersForDriver)
+    .RequireAuthorization(options => options.RequireRole("staff", "admin"));
+app.MapPost("/delivery/assign", Endpoints.CollectOrder)
+    .RequireAuthorization(options => options.RequireRole("user", "admin"));
+app.MapPost("/delivery/delivered", Endpoints.MarkOrderDelivered)
+    .RequireAuthorization(options => options.RequireRole("driver"));
 
-if (generateAsyncApi)
+app.UseEndpoints(endpoints =>
 {
-    app.UseEndpoints(endpoints =>
+    if (generateAsyncApi)
     {
         endpoints.MapAsyncApiDocuments();
         endpoints.MapAsyncApiUi();
-    });   
-}
+    }
+});
 
-app.Run();
+await app.RunAsync();

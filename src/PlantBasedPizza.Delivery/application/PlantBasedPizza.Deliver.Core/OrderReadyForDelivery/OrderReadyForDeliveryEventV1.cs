@@ -1,4 +1,4 @@
-namespace PlantBasedPizza.Deliver.Core.IntegrationEvents;
+namespace PlantBasedPizza.Deliver.Core.OrderReadyForDelivery;
 
 public class OrderReadyForDeliveryEventV1
 {

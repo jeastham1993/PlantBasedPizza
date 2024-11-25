@@ -2,8 +2,7 @@ using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
 using PlantBasedPizza.Deliver.Core.Entities;
-using PlantBasedPizza.Deliver.Core.Handlers;
-using PlantBasedPizza.Deliver.Core.IntegrationEvents;
+using PlantBasedPizza.Deliver.Core.OrderReadyForDelivery;
 
 namespace PlantBasedPizza.Delivery.UnitTests
 {

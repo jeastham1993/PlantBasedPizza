@@ -1,8 +1,7 @@
 using Microsoft.Extensions.Logging;
 using PlantBasedPizza.Deliver.Core.Entities;
-using PlantBasedPizza.Deliver.Core.IntegrationEvents;
 
-namespace PlantBasedPizza.Deliver.Core.Handlers
+namespace PlantBasedPizza.Deliver.Core.OrderReadyForDelivery
 {
     public class OrderReadyForDeliveryEventHandler
     {
@@ -32,16 +31,12 @@ namespace PlantBasedPizza.Deliver.Core.Handlers
                 _logger.LogInformation("Delivery request for order received, skipping");
                 return;
             }
-
-            _logger.LogInformation("Creating and storing delivery request");
-
+            
             var request = new DeliveryRequest(evt.OrderIdentifier,
                 new Address(evt.DeliveryAddressLine1, evt.DeliveryAddressLine2, evt.DeliveryAddressLine3,
                     evt.DeliveryAddressLine4, evt.DeliveryAddressLine5, evt.Postcode));
 
             await _deliveryRequestRepository.AddNewDeliveryRequest(request);
-
-            _logger.LogInformation("Delivery request added");
         }
     }
 }

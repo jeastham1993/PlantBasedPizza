@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Builder;
-using PlantBasedPizza.Deliver.Core.Handlers;
+using PlantBasedPizza.Deliver.Core.OrderReadyForDelivery;
 using PlantBasedPizza.Deliver.Infrastructure;
 using PlantBasedPizza.Delivery.Worker;
 using PlantBasedPizza.Shared;

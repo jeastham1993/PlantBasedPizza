@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using PlantBasedPizza.Deliver.Core.Entities;
 
-namespace PlantBasedPizza.Deliver.Core.GetDelivery;
+namespace PlantBasedPizza.Deliver.Core.GetDeliveryStatus;
 
 public class GetDeliveryQueryHandler
 {

@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace PlantBasedPizza.Deliver.Core.Commands
+namespace PlantBasedPizza.Deliver.Core.MarkOrderDelivered
 {
     public class MarkOrderDeliveredRequest
     {

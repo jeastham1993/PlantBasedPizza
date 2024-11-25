@@ -1,8 +1,7 @@
 using Dapr;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using PlantBasedPizza.Deliver.Core.Handlers;
-using PlantBasedPizza.Deliver.Core.IntegrationEvents;
+using PlantBasedPizza.Deliver.Core.OrderReadyForDelivery;
 
 namespace PlantBasedPizza.Delivery.Worker;
 
