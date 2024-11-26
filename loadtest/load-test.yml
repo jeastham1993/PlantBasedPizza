@@ -1,5 +1,5 @@
 config:
-  target: "http://localhost:5051"
+  target: ""
   http:
     timeout : 60
   processor: "generator.js"

@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Globalization;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -32,8 +33,15 @@ public class UserAccountService
             {
                 new Claim(JwtRegisteredClaimNames.Sub, account.AccountId),
                 new Claim(JwtRegisteredClaimNames.Email, account.EmailAddress),
-                new Claim(ClaimTypes.Role, account.AsAuthenticatedRole())
+                new Claim(ClaimTypes.Role, account.AsAuthenticatedRole()),
+                new Claim("UserType", account.AccountType.ToString()),
+                new Claim("UserTier", account.AccountTier.ToString()),
+                new Claim("AccountAge", account.AccountAge.ToString(CultureInfo.InvariantCulture)),
             };
+            
+            Activity.Current?.AddTag("user.type", account.AccountType.ToString());
+            Activity.Current?.AddTag("user.tier", account.AccountTier.ToString());
+            Activity.Current?.AddTag("user.account_age", account.AccountAge);
         
             var tokenDescriptor = new SecurityTokenDescriptor
             {

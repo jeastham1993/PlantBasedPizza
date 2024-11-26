@@ -7,8 +7,8 @@ using PlantBasedPizza.OrderManager.Core.CreateDeliveryOrder;
 using PlantBasedPizza.OrderManager.Core.CreatePickupOrder;
 using PlantBasedPizza.OrderManager.Core.Entities;
 using PlantBasedPizza.OrderManager.Core.Services;
-using PlantBasedPizza.OrderManager.Infrastructure.Extensions;
 using PlantBasedPizza.OrderManager.Infrastructure.IntegrationEvents;
+using PlantBasedPizza.Shared.Logging;
 
 namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
 {

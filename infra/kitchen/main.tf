@@ -56,6 +56,10 @@ resource "azurerm_container_app" "kitchen-api" {
         name = "Auth__Key"
         value = "This is a sample secret key - please don't use in production environment."
       }
+      env {
+        name  = "OTEL_EXPORTER_OTLP_ENDPOINT"
+        value = "http://localhost:4317"
+      }
     }
     container {
       name   = "datadog"
@@ -82,6 +86,14 @@ resource "azurerm_container_app" "kitchen-api" {
       env {
         name = "DD_SERVICE"
         value = "kitchen"
+      }
+      env {
+        name = "DD_LOGS_ENABLED"
+        value = "true"
+      }
+      env {
+        name = "DD_LOGS_INJECTION"
+        value = "true"
       }
       env {
         name = "DD_APM_IGNORE_RESOURCES"
@@ -145,6 +157,10 @@ resource "azurerm_container_app" "kitchen-worker" {
         name = "Services__Recipes"
         value = "recipes"
       }
+      env {
+        name  = "OTEL_EXPORTER_OTLP_ENDPOINT"
+        value = "http://localhost:4317"
+      }
     }
     container {
       name   = "datadog"
@@ -171,6 +187,14 @@ resource "azurerm_container_app" "kitchen-worker" {
       env {
         name = "DD_SERVICE"
         value = "kitchen"
+      }
+      env {
+        name = "DD_LOGS_ENABLED"
+        value = "true"
+      }
+      env {
+        name = "DD_LOGS_INJECTION"
+        value = "true"
       }
       env {
         name = "DD_APM_IGNORE_RESOURCES"

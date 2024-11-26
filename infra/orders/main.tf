@@ -72,6 +72,42 @@ resource "azurerm_container_app" "orders-api" {
         name = "Auth__PaymentApiKey"
         value = "the api key to use, use a secret store in production"
       }
+      env {
+        name  = "OTEL_EXPORTER_OTLP_ENDPOINT"
+        value = "http://localhost:4317"
+      }
+      env {
+        name = "ApplicationConfig__TeamName"
+        value = "orders"
+      }
+      env {
+        name = "ApplicationConfig__ApplicationName"
+        value = "order-api"
+      }
+      env {
+        name = "ApplicationConfig__Environment"
+        value = var.env
+      }
+      env {
+        name = "ApplicationConfig__Version"
+        value = var.app_version
+      }
+      env {
+        name = "ApplicationConfig__DeployedAt"
+        value = var.app_version
+      }
+      env {
+        name = "ApplicationConfig__MemoryMb"
+        value = "500"
+      }
+      env {
+        name = "ApplicationConfig__CpuCount"
+        value = "0.25"
+      }
+      env {
+        name = "ApplicationConfig__CloudRegion"
+        value = "europe-west2"
+      }
     }
     container {
       name   = "datadog"
@@ -98,6 +134,26 @@ resource "azurerm_container_app" "orders-api" {
       env {
         name = "DD_SERVICE"
         value = "orders"
+      }
+      env {
+        name = "DD_LOGS_ENABLED"
+        value = "true"
+      }
+      env {
+        name = "DD_LOGS_INJECTION"
+        value = "true"
+      }
+      env {
+        name = "DD_APM_COMPUTE_STATS_BY_SPAN_KIND"
+        value = "true"
+      }
+      env {
+        name = "DD_APM_PEER_TAGS_AGGREGATION"
+        value = "true"
+      }
+      env {
+        name = "DD_TRACE_REMOVE_INTEGRATION_SERVICE_NAMES_ENABLED"
+        value = "true"
       }
       env {
         name = "DD_APM_IGNORE_RESOURCES"
@@ -173,6 +229,42 @@ resource "azurerm_container_app" "orders-worker" {
         name = "Services__Recipes"
         value = "recipes"
       }
+      env {
+        name  = "OTEL_EXPORTER_OTLP_ENDPOINT"
+        value = "http://localhost:4317"
+      }
+      env {
+        name = "ApplicationConfig__TeamName"
+        value = "orders"
+      }
+      env {
+        name = "ApplicationConfig__ApplicationName"
+        value = "order-worker"
+      }
+      env {
+        name = "ApplicationConfig__Environment"
+        value = var.env
+      }
+      env {
+        name = "ApplicationConfig__Version"
+        value = var.app_version
+      }
+      env {
+        name = "ApplicationConfig__DeployedAt"
+        value = var.app_version
+      }
+      env {
+        name = "ApplicationConfig__MemoryMb"
+        value = "500"
+      }
+      env {
+        name = "ApplicationConfig__CpuCount"
+        value = "0.25"
+      }
+      env {
+        name = "ApplicationConfig__CloudRegion"
+        value = "europe-west2"
+      }
     }
     container {
       name   = "datadog"
@@ -199,6 +291,14 @@ resource "azurerm_container_app" "orders-worker" {
       env {
         name = "DD_SERVICE"
         value = "orders"
+      }
+      env {
+        name = "DD_LOGS_ENABLED"
+        value = "true"
+      }
+      env {
+        name = "DD_LOGS_INJECTION"
+        value = "true"
       }
       env {
         name = "DD_APM_IGNORE_RESOURCES"

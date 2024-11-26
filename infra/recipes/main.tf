@@ -48,13 +48,16 @@ resource "azurerm_container_app" "recipes-api" {
         name = "Auth__Key"
         value = "This is a sample secret key - please don't use in production environment."
       }
+      env {
+        name  = "OTEL_EXPORTER_OTLP_ENDPOINT"
+        value = "http://localhost:4317"
+      }
     }
     container {
       name   = "datadog"
       image  = "index.docker.io/datadog/serverless-init:latest"
       cpu    = 0.25
       memory = "0.5Gi"
-
       env {
         name = "DD_SITE"
         value = var.dd_site
@@ -74,6 +77,14 @@ resource "azurerm_container_app" "recipes-api" {
       env {
         name = "DD_SERVICE"
         value = "recipes"
+      }
+      env {
+        name = "DD_LOGS_ENABLED"
+        value = "true"
+      }
+      env {
+        name = "DD_LOGS_INJECTION"
+        value = "true"
       }
       env {
         name = "DD_APM_IGNORE_RESOURCES"

@@ -36,6 +36,10 @@ resource "azurerm_container_app" "payment-api" {
         name = "Auth__ApiKey"
         value = "the api key to use, use a secret store in production"
       }
+      env {
+        name  = "OTEL_EXPORTER_OTLP_ENDPOINT"
+        value = "http://localhost:4317"
+      }
     }
     container {
       name   = "datadog"
@@ -62,6 +66,14 @@ resource "azurerm_container_app" "payment-api" {
       env {
         name = "DD_SERVICE"
         value = "payments"
+      }
+      env {
+        name = "DD_LOGS_ENABLED"
+        value = "true"
+      }
+      env {
+        name = "DD_LOGS_INJECTION"
+        value = "true"
       }
       env {
         name = "DD_APM_IGNORE_RESOURCES"

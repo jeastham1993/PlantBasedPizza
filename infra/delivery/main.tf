@@ -52,6 +52,10 @@ resource "azurerm_container_app" "delivery-api" {
         name = "Auth__PaymentApiKey"
         value = "the api key to use, use a secret store in production"
       }
+      env {
+        name  = "OTEL_EXPORTER_OTLP_ENDPOINT"
+        value = "http://localhost:4317"
+      }
     }
     container {
       name   = "datadog"
@@ -78,6 +82,14 @@ resource "azurerm_container_app" "delivery-api" {
       env {
         name = "DD_SERVICE"
         value = "delivery"
+      }
+      env {
+        name = "DD_LOGS_ENABLED"
+        value = "true"
+      }
+      env {
+        name = "DD_LOGS_INJECTION"
+        value = "true"
       }
       env {
         name = "DD_APM_IGNORE_RESOURCES"
@@ -137,6 +149,10 @@ resource "azurerm_container_app" "delivery-worker" {
         name = "Environment"
         value = var.env
       }
+      env {
+        name  = "OTEL_EXPORTER_OTLP_ENDPOINT"
+        value = "http://localhost:4317"
+      }
     }
     container {
       name   = "datadog"
@@ -163,6 +179,14 @@ resource "azurerm_container_app" "delivery-worker" {
       env {
         name = "DD_SERVICE"
         value = "delivery"
+      }
+      env {
+        name = "DD_LOGS_ENABLED"
+        value = "true"
+      }
+      env {
+        name = "DD_LOGS_INJECTION"
+        value = "true"
       }
       env {
         name = "DD_APM_IGNORE_RESOURCES"

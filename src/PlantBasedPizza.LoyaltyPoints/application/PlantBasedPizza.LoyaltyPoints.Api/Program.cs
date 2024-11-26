@@ -55,8 +55,6 @@ app.MapGet("/loyalty", async (ClaimsPrincipal user) =>
 {
     var accountId = user.Claims.ExtractAccountId();
     
-    Activity.Current?.AddTag("loyalty.customerId", accountId);
-    
     var loyalty = await loyaltyRepo.GetCurrentPointsFor(accountId);
 
     if (loyalty == null)

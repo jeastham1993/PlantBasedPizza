@@ -16,6 +16,7 @@ namespace PlantBasedPizza.Shared
             
             var otel = services.AddOpenTelemetry();
             otel.ConfigureResource(resource => resource
+                .AddDefaultOtelTags(configuration)
                 .AddService(serviceName: applicationName));
             
             otel.WithTracing(tracing =>

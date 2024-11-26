@@ -48,6 +48,10 @@ resource "azurerm_container_app" "loyalty-api" {
         name = "Auth__Key"
         value = "This is a sample secret key - please don't use in production environment."
       }
+      env {
+        name  = "OTEL_EXPORTER_OTLP_ENDPOINT"
+        value = "http://localhost:4317"
+      }
     }
     container {
       name   = "datadog"
@@ -74,6 +78,14 @@ resource "azurerm_container_app" "loyalty-api" {
       env {
         name = "DD_SERVICE"
         value = "loyalty"
+      }
+      env {
+        name = "DD_LOGS_ENABLED"
+        value = "true"
+      }
+      env {
+        name = "DD_LOGS_INJECTION"
+        value = "true"
       }
       env {
         name = "DD_APM_IGNORE_RESOURCES"
@@ -133,6 +145,10 @@ resource "azurerm_container_app" "loyalty-internal-api" {
         name = "Environment"
         value = var.env
       }
+      env {
+        name  = "OTEL_EXPORTER_OTLP_ENDPOINT"
+        value = "http://localhost:4317"
+      }
     }
     container {
       name   = "datadog"
@@ -159,6 +175,14 @@ resource "azurerm_container_app" "loyalty-internal-api" {
       env {
         name = "DD_SERVICE"
         value = "loyalty"
+      }
+      env {
+        name = "DD_LOGS_ENABLED"
+        value = "true"
+      }
+      env {
+        name = "DD_LOGS_INJECTION"
+        value = "true"
       }
       env {
         name = "DD_APM_IGNORE_RESOURCES"
@@ -218,6 +242,10 @@ resource "azurerm_container_app" "loyalty-worker" {
         name = "Environment"
         value = var.env
       }
+      env {
+        name  = "OTEL_EXPORTER_OTLP_ENDPOINT"
+        value = "http://localhost:4317"
+      }
     }
     container {
       name   = "datadog"
@@ -244,6 +272,14 @@ resource "azurerm_container_app" "loyalty-worker" {
       env {
         name = "DD_SERVICE"
         value = "loyalty"
+      }
+      env {
+        name = "DD_LOGS_ENABLED"
+        value = "true"
+      }
+      env {
+        name = "DD_LOGS_INJECTION"
+        value = "true"
       }
       env {
         name = "DD_APM_IGNORE_RESOURCES"

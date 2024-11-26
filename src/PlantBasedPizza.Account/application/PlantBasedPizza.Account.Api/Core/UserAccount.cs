@@ -13,6 +13,12 @@ public enum AccountType
     Driver
 }
 
+public enum AccountTier
+{
+    Std,
+    Premium
+}
+
 public class UserAccount
 {
     public static UserAccount Create(string emailAddress, string password, AccountType accountType)
@@ -32,7 +38,9 @@ public class UserAccount
             AccountId = Guid.NewGuid().ToString(),
             EmailAddress = emailAddress,
             Password = HashPassword(password),
-            AccountType = accountType
+            AccountType = accountType,
+            DateCreated = DateTime.UtcNow,
+            AccountTier = AccountTier.Std
         };    
     }
     
@@ -41,6 +49,12 @@ public class UserAccount
     public string EmailAddress { get; set; } = string.Empty;
     
     public string Password { get; set; } = string.Empty;
+
+    public int AccountAge => (DateTime.UtcNow - this.DateCreated).Days;
+    
+    public DateTime DateCreated { get; set; }
+    
+    public AccountTier AccountTier { get; set; }
     
     public AccountType AccountType { get; set; }
 

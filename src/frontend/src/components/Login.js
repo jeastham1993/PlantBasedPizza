@@ -1,18 +1,12 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Container,
   Box,
-  Typography,
   Input,
   Button,
-  CssBaseline,
-  Alert,
   FormControl,
-  FormLabel,
   Grid,
 } from "@mui/joy";
-import axios from "axios";
 import { accountApi } from "../axiosConfig";
 
 function Login() {
@@ -24,15 +18,19 @@ function Login() {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
+      console.log('logging in');
       const response = await accountApi.post('/login',
         { emailAddress, password }
       );
       
       const token = response.data.authToken;
 
+      console.log(token);
+
       localStorage.setItem("token", token); // Save the token in localStorage
       navigate("/"); // Navigate to the home page after successful login
     } catch (err) {
+      console.log(err);
       setError("Login failed. Please check your credentials and try again.");
     }
   };
