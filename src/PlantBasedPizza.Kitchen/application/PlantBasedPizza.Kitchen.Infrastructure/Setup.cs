@@ -35,6 +35,7 @@ namespace PlantBasedPizza.Kitchen.Infrastructure
                 .AddPolicyHandler(GetRetryPolicy());
             
             services.AddSingleton<IRecipeService, RecipeService>();
+            services.AddSingleton<IOrderService, OrderService>();
             services.AddSingleton<IKitchenRequestRepository, KitchenRequestRepository>();
             services.AddSingleton<IKitchenEventPublisher, KitchenEventPublisher>();
 

@@ -69,6 +69,8 @@ app.UseRouting();
 
 app.UseAuthorization();
 
+app.UseSharedMiddleware();
+
 app.MapGet("/delivery/{orderIdentifier}/status", Endpoints.GetOrderStatus)
     .RequireAuthorization(options => options.RequireRole("user"));
 app.MapGet("/delivery/awaiting-collection", Endpoints.GetAwaitingCollection)

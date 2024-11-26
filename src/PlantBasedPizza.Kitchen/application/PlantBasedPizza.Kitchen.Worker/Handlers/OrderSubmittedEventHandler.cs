@@ -11,14 +11,16 @@ namespace PlantBasedPizza.Kitchen.Worker.Handlers
         private readonly IKitchenEventPublisher _eventPublisher;
         private readonly IKitchenRequestRepository _kitchenRequestRepository;
         private readonly IRecipeService _recipeService;
+        private readonly IOrderService _orderService;
         private readonly ILogger<OrderSubmittedEventHandler> _logger;
 
-        public OrderSubmittedEventHandler(IKitchenRequestRepository kitchenRequestRepository, IRecipeService recipeService, ILogger<OrderSubmittedEventHandler> logger, IKitchenEventPublisher eventPublisher)
+        public OrderSubmittedEventHandler(IKitchenRequestRepository kitchenRequestRepository, IRecipeService recipeService, ILogger<OrderSubmittedEventHandler> logger, IKitchenEventPublisher eventPublisher, IOrderService orderService)
         {
             _kitchenRequestRepository = kitchenRequestRepository;
             _recipeService = recipeService;
             _logger = logger;
             _eventPublisher = eventPublisher;
+            _orderService = orderService;
         }
         
         public async Task Handle(OrderSubmittedEventV1 evt)
@@ -29,9 +31,11 @@ namespace PlantBasedPizza.Kitchen.Worker.Handlers
 
             var recipes = new List<RecipeAdapter>();
             
-            _logger.LogInformation("[KITCHEN] Order has {itemCount} item(s)", evt.Items.Count);
+            var orderDetails = await this._orderService.GetOrderDetails(evt.OrderIdentifier);
+            
+            _logger.LogInformation("[KITCHEN] Order has {itemCount} item(s)", orderDetails.Items.Count);
 
-            foreach (var recipe in evt.Items)
+            foreach (var recipe in orderDetails.Items)
             {
                 _logger.LogInformation("[KITCHEN] Adding item {itemName}", recipe.ItemName);
                 

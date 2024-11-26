@@ -73,6 +73,8 @@ app.UseRouting();
 
 app.UseAuthorization();
 
+app.UseSharedMiddleware();
+
 var orderManagerHealthChecks = app.Services.GetRequiredService<OrderManagerHealthChecks>();
 
 app.Map("/order/health", async () =>

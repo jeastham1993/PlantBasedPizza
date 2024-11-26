@@ -29,6 +29,8 @@ namespace PlantBasedPizza.OrderManager.Infrastructure
             var client = new MongoClient(configuration["DatabaseConnection"]);
 
             services.AddSingleton(client);
+
+            services.AddCaching(configuration);
             
             BsonClassMap.RegisterClassMap<Order>(map =>
             {

@@ -1,6 +1,7 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using PlantBasedPizza.Kitchen.Api;
 using PlantBasedPizza.Kitchen.Infrastructure;
 using PlantBasedPizza.Kitchen.Infrastructure.IntegrationEvents;
 using PlantBasedPizza.Shared;
@@ -68,17 +69,34 @@ app.UseRouting();
 
 app.UseAuthorization();
 
-app.MapControllers();
+app.UseSharedMiddleware();
 
 app.MapGet("/kitchen/health", () => "Healthy");
 
-if (generateAsyncApi)
+app.MapGet("/kitchen/new", Endpoints.GetNew)
+    .RequireAuthorization(options => options.RequireRole("staff", "admin"));
+app.MapPut("/kitchen/{orderIdentifier}/preparing", Endpoints.MarkPreparing)
+    .RequireAuthorization(options => options.RequireRole("staff", "admin"));
+app.MapGet("/kitchen/prep", Endpoints.GetPrep)
+    .RequireAuthorization(options => options.RequireRole("staff", "admin"));
+app.MapPut("/kitchen/{orderIdentifier}/prep-complete", Endpoints.MarkPrepComplete)
+    .RequireAuthorization(options => options.RequireRole("staff", "admin"));
+app.MapGet("/kitchen/baking", Endpoints.GetBaking)
+    .RequireAuthorization(options => options.RequireRole("staff", "admin"));
+app.MapPut("/kitchen/{orderIdentifier}/bake-complete", Endpoints.MarkBakeComplete)
+    .RequireAuthorization(options => options.RequireRole("staff", "admin"));
+app.MapGet("/kitchen/quality-check", Endpoints.GetAwaitingQualityCheck)
+    .RequireAuthorization(options => options.RequireRole("staff", "admin"));
+app.MapPut("/kitchen/{orderIdentifier}/quality-check", Endpoints.MarkQualityChecked)
+    .RequireAuthorization(options => options.RequireRole("staff", "admin"));
+
+app.UseEndpoints(endpoints =>
 {
-    app.UseEndpoints(endpoints =>
+    if (generateAsyncApi)
     {
         endpoints.MapAsyncApiDocuments();
         endpoints.MapAsyncApiUi();
-    });   
-}
+    }
+});
 
-app.Run();
+await app.RunAsync();

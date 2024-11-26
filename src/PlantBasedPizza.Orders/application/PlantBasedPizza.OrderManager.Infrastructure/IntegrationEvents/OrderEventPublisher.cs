@@ -53,11 +53,6 @@ public class OrderEventPublisher : IOrderEventPublisher
         var evt = new OrderSubmittedEventV1()
         {
             OrderIdentifier = order.OrderIdentifier,
-            Items = order.Items.Select(item => new OrderSubmittedEventItem()
-            {
-                ItemName = item.ItemName,
-                RecipeIdentifier = item.RecipeIdentifier
-            }).ToList()
         };
 
         await _daprClient.PublishEventAsync("public", $"{evt.EventName}.{evt.EventVersion}", evt);

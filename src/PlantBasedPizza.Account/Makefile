@@ -1,6 +1,9 @@
 build:
 	docker build -f application/PlantBasedPizza.Account.Api/Dockerfile-x86 -t account-api ../
 
+build-arm:
+	docker build -f application/PlantBasedPizza.Account.Api/Dockerfile -t account-api ../
+
 tag-images:
 	docker tag account-api plantpowerjames/plant-based-pizza-account-api:${IMAGE_TAG}
 

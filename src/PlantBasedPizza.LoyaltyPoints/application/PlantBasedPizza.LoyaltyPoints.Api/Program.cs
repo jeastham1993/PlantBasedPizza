@@ -1,9 +1,7 @@
-using System.Diagnostics;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using PlantBasedPizza.LoyaltyPoints;
 using PlantBasedPizza.LoyaltyPoints.Shared;
 using PlantBasedPizza.LoyaltyPoints.Shared.Core;
 using PlantBasedPizza.Shared;
@@ -46,6 +44,8 @@ app.UseCors(CorsSettings.ALLOW_ALL_POLICY_NAME);
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseSharedMiddleware();
 
 var loyaltyRepo = app.Services.GetRequiredService<ICustomerLoyaltyPointsRepository>();
 

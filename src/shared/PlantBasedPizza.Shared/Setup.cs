@@ -1,7 +1,9 @@
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using PlantBasedPizza.Shared.Logging;
 
 namespace PlantBasedPizza.Shared
 {
@@ -45,6 +47,12 @@ namespace PlantBasedPizza.Shared
             });
 
             return services;
+        }
+        
+        public static IApplicationBuilder UseSharedMiddleware(
+            this IApplicationBuilder builder)
+        {
+            return builder.UseUserExtractionMiddleware();
         }
     }
 }

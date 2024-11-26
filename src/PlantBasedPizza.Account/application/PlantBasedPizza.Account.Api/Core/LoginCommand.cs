@@ -1,5 +1,3 @@
-using FastEndpoints;
-
 namespace PlantBasedPizza.Account.Api.Core;
 
 public class LoginCommand

@@ -2,6 +2,10 @@ build:
 	docker build -f application/PlantBasedPizza.Delivery.Api/Dockerfile-x86 -t delivery-api ../
 	docker build -f application/PlantBasedPizza.Delivery.Worker/Dockerfile-x86 -t delivery-worker ../
 
+build-arm:
+	docker build -f application/PlantBasedPizza.Delivery.Api/Dockerfile -t delivery-api ../
+	docker build -f application/PlantBasedPizza.Delivery.Worker/Dockerfile -t delivery-worker ../
+
 tag-images:
 	docker tag delivery-api plantpowerjames/plant-based-pizza-delivery-api:${IMAGE_TAG}
 	docker tag delivery-worker plantpowerjames/plant-based-pizza-delivery-worker:${IMAGE_TAG}

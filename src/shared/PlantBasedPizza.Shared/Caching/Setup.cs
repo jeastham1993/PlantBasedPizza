@@ -12,10 +12,19 @@ public static class Setup
     {
         var momentoApiKey = configuration.GetValue<string>("MOMENTO_API_KEY");
         var cacheName = configuration.GetValue<string>("CACHE_NAME");
+        var redisConnectionString = configuration.GetValue<string>("REDIS_CONNECTION_STRING");
 
         if (string.IsNullOrEmpty(momentoApiKey) || string.IsNullOrEmpty(cacheName))
         {
             services.AddDistributedMemoryCache();
+        }
+        else if (string.IsNullOrEmpty(redisConnectionString) || string.IsNullOrEmpty(cacheName))
+        {
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = configuration.GetConnectionString("MyRedisConStr");
+                options.InstanceName = cacheName;
+            });
         }
         else
         {

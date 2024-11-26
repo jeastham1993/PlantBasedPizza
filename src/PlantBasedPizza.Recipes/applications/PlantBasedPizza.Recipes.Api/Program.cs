@@ -47,6 +47,7 @@ app.UseCors(CorsSettings.ALLOW_ALL_POLICY_NAME);
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseSharedMiddleware();
 
 var recipeRepo = app.Services.GetRequiredService<IRecipeRepository>();
 await recipeRepo.SeedRecipes();

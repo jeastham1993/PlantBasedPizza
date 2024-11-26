@@ -2,12 +2,26 @@ using PlantBasedPizza.Payments;
 using PlantBasedPizza.Payments.Services;
 using PlantBasedPizza.Shared;
 using PlantBasedPizza.Shared.Logging;
+using Serilog;
+using Serilog.Events;
+using Serilog.Extensions.Logging;
+using Serilog.Formatting.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 builder
     .Configuration
     .AddEnvironmentVariables();
+
+var logger = Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .MinimumLevel.Override("Microsoft", LogEventLevel.Error)
+    .Enrich.FromLogContext()
+    .WriteTo.Console(new JsonFormatter())
+    .CreateLogger();
 builder.AddLoggerConfigs();
+
+var appLogger = new SerilogLoggerFactory(logger)
+    .CreateLogger<Program>();
 
 // Add services to the container.
 builder.Services.AddGrpc();
@@ -26,4 +40,6 @@ app.UseMiddleware<ApiKeyAuthenticationMiddleware>();
 app.MapGrpcService<PaymentService>();
 app.MapGet("/payments/health", () => "Healthy");
 
-app.Run();
+appLogger.LogInformation("Running!");
+
+await app.RunAsync();

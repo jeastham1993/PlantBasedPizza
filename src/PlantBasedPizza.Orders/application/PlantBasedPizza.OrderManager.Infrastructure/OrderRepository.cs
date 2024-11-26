@@ -1,4 +1,6 @@
 ﻿using System.Diagnostics;
+using System.Text.Json;
+using Microsoft.Extensions.Caching.Distributed;
 using MongoDB.Driver;
 using PlantBasedPizza.OrderManager.Core.Entities;
 
@@ -7,9 +9,11 @@ namespace PlantBasedPizza.OrderManager.Infrastructure;
 public class OrderRepository : IOrderRepository
 {
     private readonly IMongoCollection<Order> _orders;
+    private readonly IDistributedCache _cache;
 
-    public OrderRepository(MongoClient client)
+    public OrderRepository(MongoClient client, IDistributedCache cache)
     {
+        _cache = cache;
         var database = client.GetDatabase("PlantBasedPizza");
         _orders = database.GetCollection<Order>("orders");
     }
@@ -17,6 +21,8 @@ public class OrderRepository : IOrderRepository
     public async Task Add(Order order)
     {
         await _orders.InsertOneAsync(order).ConfigureAwait(false);
+        
+        await _cache.SetStringAsync(order.OrderIdentifier, JsonSerializer.Serialize(new OrderDto(order)));
     }
 
     public async Task<Order> Retrieve(string orderIdentifier)
@@ -64,5 +70,7 @@ public class OrderRepository : IOrderRepository
         var queryBuilder = Builders<Order>.Filter.Eq(ord => ord.OrderIdentifier, order.OrderIdentifier);
 
         await _orders.ReplaceOneAsync(queryBuilder, order);
+        
+        await _cache.SetStringAsync(order.OrderIdentifier, JsonSerializer.Serialize(new OrderDto(order)));
     }
 }

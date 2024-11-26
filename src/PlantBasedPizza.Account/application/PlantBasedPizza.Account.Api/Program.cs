@@ -1,6 +1,5 @@
 using System.Text.Json;
 using FastEndpoints;
-using PlantBasedPizza.Account.Api;
 using PlantBasedPizza.Account.Api.Configurations;
 using PlantBasedPizza.Account.Api.Core;
 using PlantBasedPizza.Shared;

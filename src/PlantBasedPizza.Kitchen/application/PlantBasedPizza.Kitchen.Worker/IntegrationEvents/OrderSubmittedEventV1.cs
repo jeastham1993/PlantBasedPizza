@@ -11,16 +11,4 @@ public class OrderSubmittedEventV1 : IntegrationEvent
 
     [JsonPropertyName("OrderIdentifier")]
     public string OrderIdentifier { get; init; }
-
-    [JsonPropertyName("Items")]
-    public List<OrderSubmittedEventItem> Items { get; init; }
-}
-
-public record OrderSubmittedEventItem
-{
-    [JsonPropertyName("ItemName")]
-    public string ItemName { get; init; } = "";
-
-    [JsonPropertyName("RecipeIdentifier")]
-    public string RecipeIdentifier { get; init; } = "";
 }
