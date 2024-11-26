@@ -1,3 +1,5 @@
+using Grpc.Core;
+using Grpc.Net.Client.Configuration;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
@@ -33,6 +35,29 @@ namespace PlantBasedPizza.Kitchen.Infrastructure
             services.AddHttpClient("retry-http-client")
                 .SetHandlerLifetime(TimeSpan.FromMinutes(5))
                 .AddPolicyHandler(GetRetryPolicy());
+            
+            // Add default gRPC retries
+            var defaultMethodConfig = new MethodConfig
+            {
+                Names = { MethodName.Default },
+                RetryPolicy = new RetryPolicy
+                {
+                    MaxAttempts = 5,
+                    InitialBackoff = TimeSpan.FromSeconds(1),
+                    MaxBackoff = TimeSpan.FromSeconds(5),
+                    BackoffMultiplier = 1.5,
+                    RetryableStatusCodes = { StatusCode.Unavailable }
+                }
+            };
+            
+            services.AddGrpcClient<Orders.Internal.Orders.OrdersClient>(o =>
+                {
+                    o.Address = new Uri(configuration["Services:OrdersInternal"]);
+                })
+                .ConfigureChannel((provider, channel) =>
+                {
+                    channel.ServiceConfig = new ServiceConfig() { MethodConfigs = { defaultMethodConfig } };
+                });
             
             services.AddSingleton<IRecipeService, RecipeService>();
             services.AddSingleton<IOrderService, OrderService>();
