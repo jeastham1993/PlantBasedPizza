@@ -12,4 +12,4 @@ RUN dotnet publish PlantBasedPizza.Orders/application/PlantBasedPizza.Orders.Int
 FROM mcr.microsoft.com/dotnet/aspnet:9.0
 WORKDIR /App
 COPY --from=build-env /App/out .
-ENTRYPOINT ["dotnet", "PlantBasedPizza.LoyaltyPoints.Internal.dll"]
+ENTRYPOINT ["dotnet", "PlantBasedPizza.Orders.Internal.dll"]

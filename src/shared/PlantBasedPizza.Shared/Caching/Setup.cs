@@ -14,11 +14,11 @@ public static class Setup
         var cacheName = configuration.GetValue<string>("CACHE_NAME");
         var redisConnectionString = configuration.GetValue<string>("REDIS_CONNECTION_STRING");
 
-        if (string.IsNullOrEmpty(momentoApiKey) || string.IsNullOrEmpty(cacheName))
+        if (!string.IsNullOrEmpty(momentoApiKey) && !string.IsNullOrEmpty(cacheName))
         {
             services.AddDistributedMemoryCache();
         }
-        else if (string.IsNullOrEmpty(redisConnectionString) || string.IsNullOrEmpty(cacheName))
+        else if (!string.IsNullOrEmpty(redisConnectionString) && !string.IsNullOrEmpty(cacheName))
         {
             services.AddStackExchangeRedisCache(options =>
             {
