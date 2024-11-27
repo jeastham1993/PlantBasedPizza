@@ -1,6 +1,7 @@
 using System.Net.Http.Headers;
 using System.Text.Json;
 using Dapr.Client;
+using Grpc.Core;
 using Grpc.Net.Client;
 using PlantBasedPizza.IntegrationTest.Helpers;
 using PlantBasedPizza.LoyaltyPoints.IntegrationTest.LoyaltyClient;
@@ -11,6 +12,7 @@ namespace PlantBasedPizza.LoyaltyPoints.IntegrationTest.Drivers;
 public class LoyaltyPointsDriver
     {
         private static string BaseUrl = TestConstants.DefaultTestUrl;
+        private readonly Metadata _grpcMetadata;
 
         private readonly HttpClient _httpClient;
         private readonly DaprClient _daprClient;
@@ -24,6 +26,11 @@ public class LoyaltyPointsDriver
             
             var channel = GrpcChannel.ForAddress(TestConstants.InternalTestEndpoint);
             _loyaltyClient = new Loyalty.LoyaltyClient(channel);
+            
+            _grpcMetadata = new Metadata
+            {
+                { "dapr-app-id", "loyaltyinternal" }
+            };
 
             _daprClient = new DaprClientBuilder()
                 .UseGrpcEndpoint("http://localhost:5101")
@@ -48,7 +55,7 @@ public class LoyaltyPointsDriver
             var points = await _loyaltyClient.GetCustomerLoyaltyPointsAsync(new GetCustomerLoyaltyPointsRequest()
             {
                 CustomerIdentifier = "user-account"
-            });
+            }, _grpcMetadata);
 
             return new LoyaltyPointsDto()
             {

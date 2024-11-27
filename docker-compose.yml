@@ -343,6 +343,7 @@ services:
       - Environment=local
       - RedisConnectionString=cache
       - Services__Recipes=recipes
+      - Services__OrdersInternal=http://localhost:5101
       - DAPR_HOST=host.docker.internal
       - DAPR_GRPC_PORT=5101
     networks:
@@ -580,6 +581,26 @@ services:
       - "local.recipe-api"
       - "local.loyalty-api"
       - "local.account-api"
+
+  integration-test-dapr:
+    image: "daprio/daprd:edge"
+    command: [
+      "./daprd",
+      "--app-id",
+      "integration-tests",
+      "--placement-host-address",
+      "placement:50006", # Dapr's placement service can be reach via the docker DNS entry
+      "--dapr-grpc-port",
+      "5101",
+      "--resources-path",
+      "./components",
+    ]
+    ports:
+      - "5101:5101"
+    volumes:
+      - "./components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument
+    networks:
+      - dapr
 
 networks:
   dapr: null

@@ -16,6 +16,15 @@ public class ApiKeyAuthenticationMiddleware
 
     public async Task InvokeAsync(HttpContext context)
     {
+        _logger.LogInformation("Received request to {Path}", context.Request.Path);
+        
+        if (context.Request.Path.StartsWithSegments("/health") || (context.Request.Path.Value ?? "").Contains("dapr"))
+        {
+            _logger.LogInformation("Internal call, skipping auth");
+            await _next(context);
+            return;
+        }
+        
         if (!context.Request.Headers.TryGetValue(APIKEYNAME, out var extractedApiKey))
         {
             _logger.LogInformation("API Key not provided");

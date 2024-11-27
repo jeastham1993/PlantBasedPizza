@@ -1,8 +1,8 @@
 services:
   payment-api:
     image: payment-api
-    ports:
-      - 5070:8080
+    expose:
+      - 8080
     environment:
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
       - Environment=local
@@ -32,3 +32,31 @@ services:
     depends_on:
       - "payment-api"
     network_mode: "service:payment-api"
+
+  integration-test-dapr:
+    image: "daprio/daprd:edge"
+    command: [
+      "./daprd",
+      "--app-id",
+      "integration-tests",
+      "--placement-host-address",
+      "placement:50006", # Dapr's placement service can be reach via the docker DNS entry
+      "--dapr-grpc-port",
+      "5101",
+      "--resources-path",
+      "../../components",
+    ]
+    ports:
+      - "5101:5101"
+    volumes:
+      - "../../components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument
+
+
+  ############################
+  # Dapr placement service
+  ############################
+  placement:
+    image: "daprio/dapr"
+    command: ["./placement", "-port", "50006"]
+    ports:
+      - "50006:50006"

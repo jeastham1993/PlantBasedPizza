@@ -37,8 +37,16 @@ resource "azurerm_container_app" "kitchen-api" {
         value = var.env
       }
       env {
+        name = "Services__OrdersInternal"
+        value = "http://localhost:50001"
+      }
+      env {
         name = "Services__Recipes"
         value = "recipes"
+      }
+      env {
+        name = "Services__OrdersInternal"
+        value = "http://localhost:50001"
       }
       env {
         name = "Messaging__UseAsyncApi"
@@ -152,6 +160,10 @@ resource "azurerm_container_app" "kitchen-worker" {
       env {
         name = "Environment"
         value = var.env
+      }
+      env {
+        name = "Services__OrdersInternal"
+        value = "http://localhost:50001"
       }
       env {
         name = "Services__Recipes"

@@ -12,7 +12,8 @@ public class PaymentDriver
         {
             _apiKeyHeaders = new Metadata
             {
-                { "APIKey", "this is a test api key" }
+                { "APIKey", "this is a test api key" },
+                { "dapr-app-id", "payment" }
             };
             
             var channel = GrpcChannel.ForAddress(TestConstants.InternalTestEndpoint);
