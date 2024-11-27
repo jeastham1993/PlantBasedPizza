@@ -22,7 +22,7 @@ public static class Setup
         {
             services.AddStackExchangeRedisCache(options =>
             {
-                options.Configuration = configuration.GetConnectionString("MyRedisConStr");
+                options.Configuration = redisConnectionString;
                 options.InstanceName = cacheName;
             });
         }
