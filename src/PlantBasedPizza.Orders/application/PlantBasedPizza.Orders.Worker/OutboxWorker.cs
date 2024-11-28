@@ -25,9 +25,7 @@ public class OutboxWorker : BackgroundService
     {
         while (!stoppingToken.IsCancellationRequested)
         {
-            var outboxItems = await _outboxItems.Find(p => p.Processed == false).ToListAsync();
-            
-            _logger.LogInformation("Outbox Items: {OutboxItems}", outboxItems.Count);
+            var outboxItems = await _outboxItems.Find(p => !p.Processed).ToListAsync(cancellationToken: stoppingToken);
 
             foreach (var outboxItem in outboxItems)
             {

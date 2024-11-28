@@ -70,7 +70,9 @@ public static class Endpoints
     
     public static async Task<KitchenRequestDto> MarkPreparing([FromServices] IKitchenRequestRepository kitchenRequestRepository, [FromServices] IKitchenEventPublisher eventPublisher, string orderIdentifier)
     {
-        var kitchenRequest = kitchenRequestRepository.Retrieve(orderIdentifier).Result;
+        Activity.Current?.AddTag("orderIdentifier", orderIdentifier);
+        
+        var kitchenRequest = await kitchenRequestRepository.Retrieve(orderIdentifier);
 
         kitchenRequest.Preparing();
 
@@ -82,6 +84,8 @@ public static class Endpoints
     
     public static async Task<KitchenRequestDto> MarkPrepComplete([FromServices] IKitchenRequestRepository kitchenRequestRepository, [FromServices] IKitchenEventPublisher eventPublisher, string orderIdentifier)
     {
+        Activity.Current?.AddTag("orderIdentifier", orderIdentifier);
+        
         var kitchenRequest = kitchenRequestRepository.Retrieve(orderIdentifier).Result;
 
         kitchenRequest.PrepComplete();
@@ -94,6 +98,8 @@ public static class Endpoints
     
     public static async Task<KitchenRequestDto> MarkBakeComplete([FromServices] IKitchenRequestRepository kitchenRequestRepository, [FromServices] IKitchenEventPublisher eventPublisher, string orderIdentifier)
     {
+        Activity.Current?.AddTag("orderIdentifier", orderIdentifier);
+        
         var kitchenRequest = kitchenRequestRepository.Retrieve(orderIdentifier).Result;
 
         kitchenRequest.BakeComplete();
@@ -106,6 +112,8 @@ public static class Endpoints
     
     public static async Task<KitchenRequestDto> MarkQualityChecked([FromServices] IKitchenRequestRepository kitchenRequestRepository, [FromServices] IKitchenEventPublisher eventPublisher, string orderIdentifier)
     {
+        Activity.Current?.AddTag("orderIdentifier", orderIdentifier);
+        
         var kitchenRequest = kitchenRequestRepository.Retrieve(orderIdentifier).Result;
 
         await kitchenRequest.QualityCheckComplete();

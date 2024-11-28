@@ -1,9 +1,11 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
+using PlantBasedPizza.Deliver.Core.AssignDriver;
 using PlantBasedPizza.Deliver.Core.Entities;
 using PlantBasedPizza.Deliver.Core.GetAwaitingCollection;
 using PlantBasedPizza.Deliver.Core.GetDeliveryStatus;
+using PlantBasedPizza.Deliver.Core.MarkOrderDelivered;
 using PlantBasedPizza.Deliver.Core.OrderReadyForDelivery;
 using PlantBasedPizza.Deliver.Infrastructure.IntegrationEvents;
 
@@ -38,9 +40,11 @@ namespace PlantBasedPizza.Deliver.Infrastructure
             services.AddSingleton<IDeliveryRequestRepository, DeliveryRequestRepository>();
             services.AddSingleton<IDeliveryEventPublisher, DeliveryEventPublisher>();
             services.AddSingleton<OrderReadyForDeliveryEventHandler>();
+            services.AddSingleton<AssignDriverRequestHandler>();
+            services.AddSingleton<MarkOrderDeliveredRequestHandler>();
             services.AddSingleton<GetDeliveryQueryHandler>();
             services.AddSingleton<GetAwaitingCollectionQueryHandler>();
-
+            
             return services;
         }
     }

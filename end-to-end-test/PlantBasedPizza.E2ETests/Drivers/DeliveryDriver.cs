@@ -26,7 +26,7 @@ namespace PlantBasedPizza.E2ETests.Drivers
         public async Task<List<DeliveryRequest>> GetAwaitingDriver()
         {
             // Delay to allow async processing to catch up
-            await Task.Delay(TimeSpan.FromSeconds(2));
+            await Task.Delay(TimeSpan.FromSeconds(20));
             
             var result = await _staffHttpClient.GetAsync(new Uri($"{BaseUrl}/delivery/awaiting-collection"))
                 .ConfigureAwait(false);
@@ -40,7 +40,7 @@ namespace PlantBasedPizza.E2ETests.Drivers
         public async Task AssignDriver(string orderIdentifier, string driverName)
         {
             // Delay to allow async process to catch up
-            await Task.Delay(TimeSpan.FromSeconds(2));
+            await Task.Delay(TimeSpan.FromSeconds(10));
             var url = $"{BaseUrl}/delivery/assign";
 
             var content = JsonSerializer.Serialize(new AssignDriverRequest()
@@ -50,7 +50,6 @@ namespace PlantBasedPizza.E2ETests.Drivers
             });
 
             var retries = 10;
-            var isSuccess = false;
 
             while (retries > 0)
             {
@@ -58,7 +57,6 @@ namespace PlantBasedPizza.E2ETests.Drivers
 
                 if (result.IsSuccessStatusCode)
                 {
-                    isSuccess = true;
                     return;
                 }
 
@@ -66,10 +64,7 @@ namespace PlantBasedPizza.E2ETests.Drivers
                 await Task.Delay(TimeSpan.FromSeconds(2));
             }
 
-            if (!isSuccess)
-            {
-                throw new Exception($"Failed to assign driver");   
-            }
+            throw new Exception($"Failed to assign driver");
         }
 
         public async Task DeliverOrder(string orderIdentifier)

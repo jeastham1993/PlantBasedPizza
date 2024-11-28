@@ -1,6 +1,6 @@
 using System.Net.Http.Headers;
 using System.Text;
-using Newtonsoft.Json;
+using System.Text.Json;
 using PlantBasedPizza.E2ETests.ViewModels;
 using PlantBasedPizza.IntegrationTest.Helpers;
 
@@ -25,7 +25,7 @@ namespace PlantBasedPizza.E2ETests.Drivers
             
             var result = await _httpClient.GetAsync(new Uri($"{BaseUrl}/kitchen/new")).ConfigureAwait(false);
 
-            var kitchenRequests = JsonConvert.DeserializeObject<List<KitchenRequest>>(await result.Content.ReadAsStringAsync());
+            var kitchenRequests = JsonSerializer.Deserialize<List<KitchenRequest>>(await result.Content.ReadAsStringAsync());
 
             return kitchenRequests;
         }
@@ -34,7 +34,7 @@ namespace PlantBasedPizza.E2ETests.Drivers
         {
             var result = await _httpClient.GetAsync(new Uri($"{BaseUrl}/kitchen/prep")).ConfigureAwait(false);
 
-            var kitchenRequests = JsonConvert.DeserializeObject<List<KitchenRequest>>(await result.Content.ReadAsStringAsync());
+            var kitchenRequests = JsonSerializer.Deserialize<List<KitchenRequest>>(await result.Content.ReadAsStringAsync());
 
             return kitchenRequests;
         }
@@ -43,7 +43,7 @@ namespace PlantBasedPizza.E2ETests.Drivers
         {
             var result = await _httpClient.GetAsync(new Uri($"{BaseUrl}/kitchen/baking")).ConfigureAwait(false);
 
-            var kitchenRequests = JsonConvert.DeserializeObject<List<KitchenRequest>>(await result.Content.ReadAsStringAsync());
+            var kitchenRequests = JsonSerializer.Deserialize<List<KitchenRequest>>(await result.Content.ReadAsStringAsync());
 
             return kitchenRequests;
         }
@@ -52,16 +52,20 @@ namespace PlantBasedPizza.E2ETests.Drivers
         {
             var result = await _httpClient.GetAsync(new Uri($"{BaseUrl}/kitchen/quality-check")).ConfigureAwait(false);
 
-            var kitchenRequests = JsonConvert.DeserializeObject<List<KitchenRequest>>(await result.Content.ReadAsStringAsync());
+            var kitchenRequests = JsonSerializer.Deserialize<List<KitchenRequest>>(await result.Content.ReadAsStringAsync());
 
             return kitchenRequests;
         }
 
         public async Task Preparing(string orderIdentifier)
         {
-            await Task.Delay(TimeSpan.FromSeconds(5));
+            // Longer delay here to allow for order outbox to pick up and publish the event
+            await Task.Delay(TimeSpan.FromSeconds(20));
             
-            var result = await _httpClient.PutAsync(new Uri($"{BaseUrl}/kitchen/{orderIdentifier}/preparing"), new StringContent(string.Empty, Encoding.UTF8)).ConfigureAwait(false);
+            var result = await _httpClient.PutAsync(new Uri($"{BaseUrl}/kitchen/{orderIdentifier}/preparing"), new StringContent(JsonSerializer.Serialize(new
+            {
+                orderIdentifier
+            }), Encoding.UTF8, "application/json")).ConfigureAwait(false);
 
             if (!result.IsSuccessStatusCode)
             {
@@ -73,7 +77,10 @@ namespace PlantBasedPizza.E2ETests.Drivers
         {
             await Task.Delay(TimeSpan.FromSeconds(5));
             
-            var result = await _httpClient.PutAsync(new Uri($"{BaseUrl}/kitchen/{orderIdentifier}/prep-complete"), new StringContent(string.Empty, Encoding.UTF8)).ConfigureAwait(false);
+            var result = await _httpClient.PutAsync(new Uri($"{BaseUrl}/kitchen/{orderIdentifier}/prep-complete"), new StringContent(JsonSerializer.Serialize(new
+            {
+                orderIdentifier
+            }), Encoding.UTF8, "application/json")).ConfigureAwait(false);
 
             if (!result.IsSuccessStatusCode)
             {
@@ -85,7 +92,10 @@ namespace PlantBasedPizza.E2ETests.Drivers
         {
             await Task.Delay(TimeSpan.FromSeconds(5));
             
-            var result = await _httpClient.PutAsync(new Uri($"{BaseUrl}/kitchen/{orderIdentifier}/bake-complete"), new StringContent(string.Empty, Encoding.UTF8)).ConfigureAwait(false);
+            var result = await _httpClient.PutAsync(new Uri($"{BaseUrl}/kitchen/{orderIdentifier}/bake-complete"), new StringContent(JsonSerializer.Serialize(new
+            {
+                orderIdentifier
+            }), Encoding.UTF8, "application/json")).ConfigureAwait(false);
 
             if (!result.IsSuccessStatusCode)
             {
@@ -97,7 +107,10 @@ namespace PlantBasedPizza.E2ETests.Drivers
         {
             await Task.Delay(TimeSpan.FromSeconds(5));
             
-            var result = await _httpClient.PutAsync(new Uri($"{BaseUrl}/kitchen/{orderIdentifier}/quality-check"), new StringContent(string.Empty, Encoding.UTF8)).ConfigureAwait(false);
+            var result = await _httpClient.PutAsync(new Uri($"{BaseUrl}/kitchen/{orderIdentifier}/quality-check"), new StringContent(JsonSerializer.Serialize(new
+            {
+                orderIdentifier
+            }), Encoding.UTF8, "application/json")).ConfigureAwait(false);
 
             if (!result.IsSuccessStatusCode)
             {

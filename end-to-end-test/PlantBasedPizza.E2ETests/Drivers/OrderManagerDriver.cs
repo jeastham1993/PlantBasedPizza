@@ -87,6 +87,9 @@ namespace PlantBasedPizza.E2ETests.Drivers
         {
             await _userHttpClient.PostAsync(new Uri($"{BaseUrl}/order/{orderIdentifier}/submit"),
                 new StringContent(string.Empty, Encoding.UTF8, "application/json")).ConfigureAwait(false);
+            
+            // Allow time for payment processor to run
+            await Task.Delay(TimeSpan.FromSeconds(10));
         }
 
         public async Task CollectOrder(string orderIdentifier)

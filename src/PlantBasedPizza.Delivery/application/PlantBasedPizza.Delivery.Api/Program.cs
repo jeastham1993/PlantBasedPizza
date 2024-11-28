@@ -77,8 +77,8 @@ app.MapGet("/delivery/awaiting-collection", Endpoints.GetAwaitingCollection)
     .RequireAuthorization(options => options.RequireRole("staff", "admin"));
 app.MapGet("/delivery/driver/{driverName}/orders", Endpoints.GetOrdersForDriver)
     .RequireAuthorization(options => options.RequireRole("staff", "admin"));
-app.MapPost("/delivery/assign", Endpoints.CollectOrder)
-    .RequireAuthorization(options => options.RequireRole("user", "admin"));
+app.MapPost("/delivery/assign", Endpoints.AssignToDriver)
+    .RequireAuthorization(options => options.RequireRole("staff", "admin"));
 app.MapPost("/delivery/delivered", Endpoints.MarkOrderDelivered)
     .RequireAuthorization(options => options.RequireRole("driver"));
 

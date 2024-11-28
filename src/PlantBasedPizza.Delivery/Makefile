@@ -1,9 +1,17 @@
-build:
+build: build-api build-worker
+
+build-api:
 	docker build -f application/PlantBasedPizza.Delivery.Api/Dockerfile-x86 -t delivery-api ../
+
+build-worker:
 	docker build -f application/PlantBasedPizza.Delivery.Worker/Dockerfile-x86 -t delivery-worker ../
 
-build-arm:
+build-arm: build-api-arm build-worker-arm
+
+build-api-arm:
 	docker build -f application/PlantBasedPizza.Delivery.Api/Dockerfile -t delivery-api ../
+
+build-worker-arm:
 	docker build -f application/PlantBasedPizza.Delivery.Worker/Dockerfile -t delivery-worker ../
 
 tag-images:

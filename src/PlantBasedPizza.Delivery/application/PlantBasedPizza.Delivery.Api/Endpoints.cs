@@ -34,7 +34,7 @@ public static class Endpoints
         return request.Select(r => new DeliveryRequestDto(r));
     }
 
-    public static async Task<IResult> CollectOrder([FromServices] AssignDriverRequestHandler handler, [FromBody] AssignDriverRequest request, CancellationToken token)
+    public static async Task<IResult> AssignToDriver([FromServices] AssignDriverRequestHandler handler, [FromBody] AssignDriverRequest request, CancellationToken token)
     {
         request.AddToTelemetry();
         
