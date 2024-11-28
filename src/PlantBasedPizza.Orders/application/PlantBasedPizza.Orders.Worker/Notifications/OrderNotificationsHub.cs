@@ -1,0 +1,19 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.SignalR;
+using PlantBasedPizza.Shared.Logging;
+
+namespace PlantBasedPizza.Orders.Worker.Notifications;
+
+[Authorize(Roles = "user")]
+public class OrderNotificationsHub(ILogger<OrderNotificationsHub> logger) : Hub
+{
+    public override async Task OnConnectedAsync()
+    {
+        logger.LogInformation("Client connected");
+    }
+
+    public async Task SendMessage(string user, string message)
+    {
+        await Clients.All.SendAsync("ReceiveMessage", user, message);
+    }
+}

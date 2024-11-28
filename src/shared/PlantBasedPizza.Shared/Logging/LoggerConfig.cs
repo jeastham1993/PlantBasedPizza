@@ -12,7 +12,7 @@ public static class LoggerConfigs
         builder.Host.UseSerilog((_, config) =>
         {
             config.MinimumLevel.Information()
-                .MinimumLevel.Override("Microsoft", LogEventLevel.Error)
+                .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
                 .Enrich.FromLogContext()
                 .WriteTo.Console(new JsonFormatter());
         });

@@ -1,5 +1,6 @@
 using PlantBasedPizza.OrderManager.Core.Entities;
 using PlantBasedPizza.Orders.Worker.IntegrationEvents;
+using PlantBasedPizza.Orders.Worker.Notifications;
 
 namespace PlantBasedPizza.Orders.Worker.Handlers
 {
@@ -7,11 +8,13 @@ namespace PlantBasedPizza.Orders.Worker.Handlers
     {
         private readonly IOrderRepository _orderRepository;
         private readonly ILogger<OrderPreparingEventHandler> _logger;
+        private readonly IUserNotificationService _userNotificationService;
 
-        public OrderPreparingEventHandler(IOrderRepository orderRepository, ILogger<OrderPreparingEventHandler> logger)
+        public OrderPreparingEventHandler(IOrderRepository orderRepository, ILogger<OrderPreparingEventHandler> logger, IUserNotificationService userNotificationService)
         {
             _orderRepository = orderRepository;
             _logger = logger;
+            _userNotificationService = userNotificationService;
         }
         
         public async Task Handle(OrderPreparingEventV1 evt)
@@ -23,6 +26,7 @@ namespace PlantBasedPizza.Orders.Worker.Handlers
             order.AddHistory("Order prep started");
 
             await _orderRepository.Update(order);
+            await _userNotificationService.NotifyOrderPreparing(order.CustomerIdentifier, order.OrderIdentifier);
         }
     }
 }

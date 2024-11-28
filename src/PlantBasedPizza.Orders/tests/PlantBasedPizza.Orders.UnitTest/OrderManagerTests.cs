@@ -8,7 +8,7 @@ public class OrderManagerTests
     internal const string DefaultCustomerIdentifier = "James";
 
     [Fact]
-    public void CanCreateNewOrder_ShouldSetDefaultFields()
+    public async Task CanCreateNewOrder_ShouldSetDefaultFields()
     {
         var order = Order.Create(OrderType.Pickup, DefaultCustomerIdentifier);
 

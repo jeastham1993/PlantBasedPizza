@@ -144,6 +144,9 @@ services:
       - Services__LoyaltyInternal=http://localhost:5101
       - Services__Recipes=recipes
       - Environment=local
+      - Auth__Issuer=https://plantbasedpizza.com
+      - Auth__Audience=https://plantbasedpizza.com
+      - Auth__Key=This is a sample secret key - please don't use in production environment.'
       - DAPR_HOST=host.docker.internal
       - DAPR_GRPC_PORT=5101
     networks:
