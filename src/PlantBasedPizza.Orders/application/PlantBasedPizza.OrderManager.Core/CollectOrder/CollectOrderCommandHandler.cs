@@ -1,18 +1,14 @@
 using PlantBasedPizza.OrderManager.Core.Entities;
-using PlantBasedPizza.OrderManager.Core.Services;
-using PlantBasedPizza.OrderManager.Infrastructure.IntegrationEvents;
 
 namespace PlantBasedPizza.OrderManager.Core.CollectOrder;
 
 public class CollectOrderCommandHandler
 {
     private readonly IOrderRepository _orderRepository;
-    private readonly IOrderEventPublisher _eventPublisher;
 
-    public CollectOrderCommandHandler(IOrderRepository orderRepository, ILoyaltyPointService loyaltyPointService, IOrderEventPublisher eventPublisher)
+    public CollectOrderCommandHandler(IOrderRepository orderRepository)
     {
         _orderRepository = orderRepository;
-        _eventPublisher = eventPublisher;
     }
     
     public async Task<OrderDto?> Handle(CollectOrderRequest command)
@@ -27,8 +23,6 @@ public class CollectOrderCommandHandler
             }
 
             existingOrder.CompleteOrder();
-
-            await _eventPublisher.PublishOrderCompletedEventV1(existingOrder);
 
             await _orderRepository.Update(existingOrder).ConfigureAwait(false);
 

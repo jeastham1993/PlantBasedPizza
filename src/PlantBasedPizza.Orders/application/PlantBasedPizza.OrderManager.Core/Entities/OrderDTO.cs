@@ -4,8 +4,11 @@ namespace PlantBasedPizza.OrderManager.Core.Entities;
 
 public record OrderDto
 {
+    public OrderDto(){}
+    
     public OrderDto(Order order)
     {
+        CustomerIdentifier = order.CustomerIdentifier;
         OrderIdentifier = order.OrderIdentifier;
         OrderNumber = order.OrderNumber;
         OrderDate = order.OrderDate;
@@ -24,6 +27,7 @@ public record OrderDto
             Description = history.Description,
             HistoryDate = history.HistoryDate
         }).ToList();
+        TotalPrice = order.TotalPrice;
         
         if (order.DeliveryDetails != null)
         {
@@ -39,14 +43,20 @@ public record OrderDto
         }
     }
     
+    [JsonPropertyName("customerIdentifier")]
+    public string CustomerIdentifier { get; set; }
+    
     [JsonPropertyName("orderIdentifier")]
     public string OrderIdentifier { get; set; }
+    
+    [JsonPropertyName("totalPrice")]
+    public decimal TotalPrice { get; set; }
     
     [JsonPropertyName("orderNumber")]
     public string OrderNumber { get; set; }
     
     [JsonPropertyName("deliveryDetails")]
-    public DeliveryDetailsDto DeliveryDetails { get; set; }
+    public DeliveryDetailsDto? DeliveryDetails { get; set; }
     
     [JsonPropertyName("orderDate")]
     public DateTime OrderDate { get; set; }

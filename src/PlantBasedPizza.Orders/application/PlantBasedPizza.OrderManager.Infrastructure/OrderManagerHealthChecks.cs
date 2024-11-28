@@ -27,23 +27,6 @@ public class OrderManagerHealthChecks
 
         try
         {
-            var res = await _httpClient.GetAsync($"http://{_serviceEndpoints.Value.Loyalty}/loyalty/health");
-
-            if (!res.IsSuccessStatusCode) result.LoyaltyHttpStatus = "Offline";
-
-            Activity.Current?.AddTag("loyalty.healthy", res.IsSuccessStatusCode);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogWarning(ex, "Healthcheck failure for loyalty service");
-            
-            Activity.Current?.AddTag("loyalty.healthy", false);
-
-            result.LoyaltyHttpStatus = "Offline";
-        }
-
-        try
-        {
             var res = await _httpClient.GetAsync($"http://{_serviceEndpoints.Value.Recipes}/recipes/health");
 
             if (!res.IsSuccessStatusCode) result.RecipeHttpStatus = "Offline";

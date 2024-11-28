@@ -1,6 +1,6 @@
 using PlantBasedPizza.Events;
 
-namespace PlantBasedPizza.Payments.IntegrationEvents;
+namespace PlantBasedPizza.Orders.Worker.IntegrationEvents;
 
 public class PaymentSuccessfulEventV1 : IntegrationEvent
 {
@@ -9,6 +9,7 @@ public class PaymentSuccessfulEventV1 : IntegrationEvent
     
     public override Uri Source => new("https://payments.plantbasedpizza.com");
     
-    public string CustomerIdentifier { get; init; }
     public string OrderIdentifier { get; init; }
+    
+    public decimal Amount { get; init; }
 }

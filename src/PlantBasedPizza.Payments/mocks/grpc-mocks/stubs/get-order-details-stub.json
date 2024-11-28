@@ -1,0 +1,6 @@
+{
+    "service": "Orders",
+    "method": "GetOrderDetails",
+    "input": { "matches": { "orderIdentifier": ".*" } },
+    "output": { "data": { "orderIdentifier": "test", "orderValue": 50, "items": [] } }
+}

@@ -1,6 +1,10 @@
+using Grpc.Core;
+using Grpc.Net.Client.Configuration;
+using PlantBasedPizza.Orders.Internal;
 using PlantBasedPizza.Payments;
-using PlantBasedPizza.Payments.Services;
+using PlantBasedPizza.Payments.ExternalEvents;
 using PlantBasedPizza.Shared;
+using PlantBasedPizza.Shared.Caching;
 using PlantBasedPizza.Shared.Logging;
 using Serilog;
 using Serilog.Events;
@@ -27,18 +31,40 @@ var appLogger = new SerilogLoggerFactory(logger)
 builder.Services.AddGrpc();
 
 builder.Services
-    .AddSharedInfrastructure(builder.Configuration, "PaymentApi");
+    .AddSharedInfrastructure(builder.Configuration, "PaymentApi")
+    .AddCaching(builder.Configuration);
+
+builder.Services.AddSingleton<OrderSubmittedEventHandler>();
 
 builder.Services.AddDaprClient();
 
-builder.Services.AddSingleton<APIKeyProvider>();
+// Add default gRPC retries
+var defaultMethodConfig = new MethodConfig
+{
+    Names = { MethodName.Default },
+    RetryPolicy = new RetryPolicy
+    {
+        MaxAttempts = 5,
+        InitialBackoff = TimeSpan.FromSeconds(1),
+        MaxBackoff = TimeSpan.FromSeconds(5),
+        BackoffMultiplier = 1.5,
+        RetryableStatusCodes = { StatusCode.Unavailable }
+    }
+};
+
+builder.Services.AddGrpcClient<Orders.OrdersClient>(o => { o.Address = new Uri(builder.Configuration["Services:OrdersInternal"]); })
+    .ConfigureChannel((provider, channel) =>
+    {
+        channel.ServiceConfig = new ServiceConfig { MethodConfigs = { defaultMethodConfig } };
+    });
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-app.UseMiddleware<ApiKeyAuthenticationMiddleware>();
-app.MapGrpcService<PaymentService>();
 app.MapGet("/payments/health", () => "Healthy");
+
+app.MapSubscribeHandler();
+app.UseCloudEvents();
+app.AddEventHandlers();
 
 appLogger.LogInformation("Running!");
 

@@ -1,5 +1,4 @@
 using PlantBasedPizza.OrderManager.Core.Entities;
-using PlantBasedPizza.OrderManager.Infrastructure.IntegrationEvents;
 using PlantBasedPizza.Orders.Worker.IntegrationEvents;
 
 namespace PlantBasedPizza.Orders.Worker.Handlers
@@ -7,12 +6,10 @@ namespace PlantBasedPizza.Orders.Worker.Handlers
     public class OrderQualityCheckedEventHandler
     {
         private readonly IOrderRepository _orderRepository;
-        private readonly IOrderEventPublisher _eventPublisher;
 
-        public OrderQualityCheckedEventHandler(IOrderRepository orderRepository, IOrderEventPublisher eventPublisher)
+        public OrderQualityCheckedEventHandler(IOrderRepository orderRepository)
         {
             _orderRepository = orderRepository;
-            _eventPublisher = eventPublisher;
         }
         
         public async Task Handle(OrderQualityCheckedEventV1 evt)
@@ -23,16 +20,14 @@ namespace PlantBasedPizza.Orders.Worker.Handlers
 
             if (order.OrderType == OrderType.Delivery)
             {
-                order.AddHistory("Sending for delivery");
-
-                await _eventPublisher.PublishOrderReadyForDeliveryEventV1(order);
+                order.ReadyForDelivery();
             }
             else
             {
                 order.IsAwaitingCollection();
             }
 
-            await _orderRepository.Update(order).ConfigureAwait(false);
+            await _orderRepository.Update(order);
         }
     }
 }

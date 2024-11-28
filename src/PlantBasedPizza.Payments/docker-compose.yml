@@ -6,7 +6,45 @@ services:
       - "13133:13133"
       - "4317:4317"
       - "4318:4318"
+
   cache:
     image: redis:7.2
     ports:
       - "6379:6379"
+
+  orders-gripmock:
+    image: tkpd/gripmock:latest
+    ports:
+      - "8083:4770"
+      - "8084:4771"
+    volumes:
+      - ./mocks/grpc-mocks:/proto
+    command: --stub=/proto/stubs /proto/orders.proto
+
+  integration-test-dapr:
+    image: "daprio/daprd:edge"
+    command: [
+      "./daprd",
+      "--app-id",
+      "integration-tests",
+      "--placement-host-address",
+      "placement:50006", # Dapr's placement service can be reach via the docker DNS entry
+      "--dapr-grpc-port",
+      "5101",
+      "--resources-path",
+      "../../components",
+    ]
+    ports:
+      - "5101:5101"
+    volumes:
+      - "../../components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument
+
+
+  ############################
+  # Dapr placement service
+  ############################
+  placement:
+    image: "daprio/dapr"
+    command: ["./placement", "-port", "50006"]
+    ports:
+      - "50006:50006"

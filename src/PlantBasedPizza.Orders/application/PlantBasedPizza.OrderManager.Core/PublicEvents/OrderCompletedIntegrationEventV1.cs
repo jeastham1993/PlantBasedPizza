@@ -1,7 +1,8 @@
-using Newtonsoft.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using PlantBasedPizza.Events;
 
-namespace PlantBasedPizza.OrderManager.Infrastructure.IntegrationEvents;
+namespace PlantBasedPizza.OrderManager.Core.PublicEvents;
 
 public class OrderCompletedIntegrationEventV1 : IntegrationEvent
 {
@@ -19,4 +20,9 @@ public class OrderCompletedIntegrationEventV1 : IntegrationEvent
     public string CustomerIdentifier { get; set; } = "";
     
     public decimal OrderValue { get; set; }
+
+    public override string AsString()
+    {
+        return JsonSerializer.Serialize(this);
+    }
 }

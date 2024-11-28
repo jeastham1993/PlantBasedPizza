@@ -1,7 +1,7 @@
 using System.Net.Http.Headers;
 using System.Text;
+using System.Text.Json;
 using Dapr.Client;
-using Newtonsoft.Json;
 using PlantBasedPizza.IntegrationTest.Helpers;
 using PlantBasedPizza.OrderManager.Core.AddItemToOrder;
 using PlantBasedPizza.OrderManager.Core.CollectOrder;
@@ -45,11 +45,23 @@ public class OrdersTestDriver
             // Delay to allow for message processing
             await Task.Delay(TimeSpan.FromSeconds(2));
         }
-        
-        public async Task AddNewDeliveryOrder(string orderIdentifier, string customerIdentifier)
+
+        public async Task SimulatePaymentSuccessEvent(string orderIdentifier, decimal paymentValue)
         {
-            await _userHttpClient.PostAsync(new Uri($"{TestConstants.DefaultTestUrl}/order/deliver"), new StringContent(
-                JsonConvert.SerializeObject(new CreateDeliveryOrder()
+            await _daprClient.PublishEventAsync("public", "payments.paymentSuccessful.v1", new PaymentSuccessfulEventV1()
+            {
+                OrderIdentifier = orderIdentifier,
+                Amount = paymentValue
+            });
+
+            // Delay to allow for message processing
+            await Task.Delay(TimeSpan.FromSeconds(2));
+        }
+        
+        public async Task<Order> AddNewDeliveryOrder(string customerIdentifier)
+        {
+            var response = await _userHttpClient.PostAsync(new Uri($"{TestConstants.DefaultTestUrl}/order/deliver"), new StringContent(
+                JsonSerializer.Serialize(new CreateDeliveryOrder()
                 {
                     CustomerIdentifier = customerIdentifier,
                     AddressLine1 = "My test address",
@@ -59,39 +71,61 @@ public class OrdersTestDriver
                     AddressLine5 = string.Empty,
                     Postcode = "TYi9PO"
                 }), Encoding.UTF8, "application/json")).ConfigureAwait(false);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception($"Request failed: {response.StatusCode}");
+            }
+            
+            return JsonSerializer.Deserialize<Order>(await response.Content.ReadAsStringAsync());
         }
 
-        public async Task AddNewOrder(string orderIdentifier, string customerIdentifier)
+        public async Task<Order> AddNewOrder(string customerIdentifier)
         {
             await Task.Delay(TimeSpan.FromSeconds(5));
             
-            await _userHttpClient.PostAsync(new Uri($"{TestConstants.DefaultTestUrl}/order/pickup"), new StringContent(
-                JsonConvert.SerializeObject(new CreatePickupOrderCommand()
+            var response = await _userHttpClient.PostAsync(new Uri($"{TestConstants.DefaultTestUrl}/order/pickup"), new StringContent(
+                JsonSerializer.Serialize(new CreatePickupOrderCommand()
                 {
                     CustomerIdentifier = customerIdentifier
                 }), Encoding.UTF8, "application/json")).ConfigureAwait(false);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception($"Request failed: {response.StatusCode}");
+            }
+            
+            return JsonSerializer.Deserialize<Order>(await response.Content.ReadAsStringAsync());
         }
 
         public async Task AddItemToOrder(string orderIdentifier, string recipeIdentifier, int quantity)
         {
             await Task.Delay(TimeSpan.FromSeconds(5));
-            
-            await checkRecipeExists(recipeIdentifier).ConfigureAwait(false);
 
-            await _userHttpClient.PostAsync(new Uri($"{TestConstants.DefaultTestUrl}/order/{orderIdentifier}/items"),
+            var response = await _userHttpClient.PostAsync(new Uri($"{TestConstants.DefaultTestUrl}/order/{orderIdentifier}/items"),
                 new StringContent(
-                    JsonConvert.SerializeObject(new AddItemToOrderCommand()
+                    JsonSerializer.Serialize(new AddItemToOrderCommand()
                     {
                         OrderIdentifier = orderIdentifier,
                         RecipeIdentifier = recipeIdentifier,
                         Quantity = quantity
                     }), Encoding.UTF8, "application/json")).ConfigureAwait(false);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception($"Request failed: {response.StatusCode}");
+            }
         }
 
         public async Task SubmitOrder(string orderIdentifier)
         {
-            await _userHttpClient.PostAsync(new Uri($"{TestConstants.DefaultTestUrl}/order/{orderIdentifier}/submit"),
+            var response = await _userHttpClient.PostAsync(new Uri($"{TestConstants.DefaultTestUrl}/order/{orderIdentifier}/submit"),
                 new StringContent(string.Empty, Encoding.UTF8, "application/json")).ConfigureAwait(false);
+            
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception($"Request failed: {response.StatusCode}");
+            }
         }
 
         public async Task CollectOrder(string orderIdentifier)
@@ -100,7 +134,7 @@ public class OrdersTestDriver
             await Task.Delay(TimeSpan.FromSeconds(2));
             
             var res = await _staffHttpClient.PostAsync(new Uri($"{TestConstants.DefaultTestUrl}/order/collected"), new StringContent(
-                JsonConvert.SerializeObject(new CollectOrderRequest()
+                JsonSerializer.Serialize(new CollectOrderRequest()
                 {
                     OrderIdentifier = orderIdentifier
                 }), Encoding.UTF8, "application/json")).ConfigureAwait(false);
@@ -113,30 +147,16 @@ public class OrdersTestDriver
 
         public async Task<Order> GetOrder(string orderIdentifier)
         {
-            var result = await _userHttpClient.GetAsync(new Uri($"{TestConstants.DefaultTestUrl}/order/{orderIdentifier}/detail"))
+            var response = await _userHttpClient.GetAsync(new Uri($"{TestConstants.DefaultTestUrl}/order/{orderIdentifier}/detail"))
                 .ConfigureAwait(false);
 
-            var order = JsonConvert.DeserializeObject<Order>(await result.Content.ReadAsStringAsync());
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception($"Request failed: {response.StatusCode}");
+            }
+
+            var order = JsonSerializer.Deserialize<Order>(await response.Content.ReadAsStringAsync());
 
             return order;
-        }
-
-        private async Task checkRecipeExists(string recipeIdentifier)
-        {
-            await _userHttpClient.PostAsync($"{TestConstants.DefaultTestUrl}/recipes", new StringContent(
-                JsonConvert.SerializeObject(new CreateRecipeCommand()
-                {
-                    RecipeIdentifier = recipeIdentifier,
-                    Name = recipeIdentifier,
-                    Price = 10,
-                    Ingredients = new List<CreateRecipeCommandItem>(1)
-                    {
-                        new CreateRecipeCommandItem()
-                        {
-                            Name = "Pizza",
-                            Quantity = 1
-                        }
-                    }
-                }), Encoding.UTF8, "application/json"));
         }
     }

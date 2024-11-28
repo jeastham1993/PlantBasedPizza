@@ -68,7 +68,7 @@ public static class Endpoints
         }
     }
     
-    public static async Task<KitchenRequestDto> MarkPreparing([FromServices] IKitchenRequestRepository kitchenRequestRepository, [FromServices] KitchenEventPublisher eventPublisher, string orderIdentifier)
+    public static async Task<KitchenRequestDto> MarkPreparing([FromServices] IKitchenRequestRepository kitchenRequestRepository, [FromServices] IKitchenEventPublisher eventPublisher, string orderIdentifier)
     {
         var kitchenRequest = kitchenRequestRepository.Retrieve(orderIdentifier).Result;
 
@@ -80,7 +80,7 @@ public static class Endpoints
         return new KitchenRequestDto(kitchenRequest);
     }
     
-    public static async Task<KitchenRequestDto> MarkPrepComplete([FromServices] IKitchenRequestRepository kitchenRequestRepository, [FromServices] KitchenEventPublisher eventPublisher, string orderIdentifier)
+    public static async Task<KitchenRequestDto> MarkPrepComplete([FromServices] IKitchenRequestRepository kitchenRequestRepository, [FromServices] IKitchenEventPublisher eventPublisher, string orderIdentifier)
     {
         var kitchenRequest = kitchenRequestRepository.Retrieve(orderIdentifier).Result;
 
@@ -92,7 +92,7 @@ public static class Endpoints
         return new KitchenRequestDto(kitchenRequest);
     }
     
-    public static async Task<KitchenRequestDto> MarkBakeComplete([FromServices] IKitchenRequestRepository kitchenRequestRepository, [FromServices] KitchenEventPublisher eventPublisher, string orderIdentifier)
+    public static async Task<KitchenRequestDto> MarkBakeComplete([FromServices] IKitchenRequestRepository kitchenRequestRepository, [FromServices] IKitchenEventPublisher eventPublisher, string orderIdentifier)
     {
         var kitchenRequest = kitchenRequestRepository.Retrieve(orderIdentifier).Result;
 
@@ -104,7 +104,7 @@ public static class Endpoints
         return new KitchenRequestDto(kitchenRequest);
     }
     
-    public static async Task<KitchenRequestDto> MarkQualityChecked([FromServices] IKitchenRequestRepository kitchenRequestRepository, [FromServices] KitchenEventPublisher eventPublisher, string orderIdentifier)
+    public static async Task<KitchenRequestDto> MarkQualityChecked([FromServices] IKitchenRequestRepository kitchenRequestRepository, [FromServices] IKitchenEventPublisher eventPublisher, string orderIdentifier)
     {
         var kitchenRequest = kitchenRequestRepository.Retrieve(orderIdentifier).Result;
 

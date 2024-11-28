@@ -12,4 +12,6 @@ public abstract class IntegrationEvent
     
     [JsonIgnore]
     public abstract Uri Source { get; }
+
+    public virtual string AsString() => "";
 }

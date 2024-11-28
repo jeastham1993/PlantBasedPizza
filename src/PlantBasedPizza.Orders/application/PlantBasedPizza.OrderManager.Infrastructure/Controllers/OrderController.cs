@@ -1,13 +1,13 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using PlantBasedPizza.OrderManager.Core.AddItemToOrder;
 using PlantBasedPizza.OrderManager.Core.CollectOrder;
 using PlantBasedPizza.OrderManager.Core.CreateDeliveryOrder;
 using PlantBasedPizza.OrderManager.Core.CreatePickupOrder;
 using PlantBasedPizza.OrderManager.Core.Entities;
-using PlantBasedPizza.OrderManager.Core.Services;
-using PlantBasedPizza.OrderManager.Infrastructure.IntegrationEvents;
+using PlantBasedPizza.OrderManager.Core.OrderSubmitted;
 using PlantBasedPizza.Shared.Logging;
 
 namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
@@ -16,24 +16,22 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
     public class OrderController : ControllerBase 
     {
         private readonly IOrderRepository _orderRepository;
-        private readonly IPaymentService _paymentService;
-        private readonly IOrderEventPublisher _eventPublisher;
-        private readonly ILoyaltyPointService _loyaltyPointService;
         private readonly CollectOrderCommandHandler _collectOrderCommandHandler;
         private readonly AddItemToOrderHandler _addItemToOrderHandler;
         private readonly CreateDeliveryOrderCommandHandler _createDeliveryOrderCommandHandler;
         private readonly CreatePickupOrderCommandHandler _createPickupOrderCommandHandler;
+        private readonly SubmitOrderCommandHandler _submitOrderHandler;
+        private readonly ILogger<OrderController> _logger;
 
-        public OrderController(IOrderRepository orderRepository, CollectOrderCommandHandler collectOrderCommandHandler, AddItemToOrderHandler addItemToOrderHandler, CreateDeliveryOrderCommandHandler createDeliveryOrderCommandHandler, CreatePickupOrderCommandHandler createPickupOrderCommandHandler, IPaymentService paymentService, ILoyaltyPointService loyaltyPointService, IOrderEventPublisher eventPublisher)
+        public OrderController(IOrderRepository orderRepository, CollectOrderCommandHandler collectOrderCommandHandler, AddItemToOrderHandler addItemToOrderHandler, CreateDeliveryOrderCommandHandler createDeliveryOrderCommandHandler, CreatePickupOrderCommandHandler createPickupOrderCommandHandler, SubmitOrderCommandHandler submitOrderHandler, ILogger<OrderController> logger)
         {
             _orderRepository = orderRepository;
             _collectOrderCommandHandler = collectOrderCommandHandler;
             _addItemToOrderHandler = addItemToOrderHandler;
             _createDeliveryOrderCommandHandler = createDeliveryOrderCommandHandler;
             _createPickupOrderCommandHandler = createPickupOrderCommandHandler;
-            _paymentService = paymentService;
-            _loyaltyPointService = loyaltyPointService;
-            _eventPublisher = eventPublisher;
+            _submitOrderHandler = submitOrderHandler;
+            _logger = logger;
         }
 
         /// <summary>
@@ -57,7 +55,7 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
             {
                 Response.StatusCode = 400;
 
-                return null;
+                return new List<OrderDto>();
             }
         }
 
@@ -151,27 +149,28 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Controllers
         /// <returns></returns>
         [HttpPost("{orderIdentifier}/submit")]
         [Authorize(Roles = "user")]
-        public async Task<OrderDto> SubmitOrder(string orderIdentifier)
+        public async Task<OrderDto?> SubmitOrder(string orderIdentifier)
         {
             var accountId = User.Claims.ExtractAccountId();
-            
-            var order = await _orderRepository.Retrieve(orderIdentifier);
-            
-            if (order.CustomerIdentifier != accountId)
+
+            try
             {
-                throw new OrderNotFoundException(orderIdentifier);
+                var result = await this._submitOrderHandler.Handle(new SubmitOrderCommand()
+                {
+                    OrderIdentifier = orderIdentifier,
+                    CustomerIdentifier = accountId
+                });
+
+                Response.StatusCode = 201;
+                return result;
             }
-
-            await _paymentService.TakePaymentFor(order);
-            var loyaltyPoints = await _loyaltyPointService.GetCustomerLoyaltyPoints(order.CustomerIdentifier);
-            
-            order.AddCustomerLoyaltyPoints(loyaltyPoints);
-            order.SubmitOrder();
-
-            await _orderRepository.Update(order);
-            await _eventPublisher.PublishOrderSubmittedEventV1(order);
-
-            return new OrderDto(order);
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Failure submitting order");
+                
+                Response.StatusCode = 500;
+                return null;
+            }
         }
 
         /// <summary>

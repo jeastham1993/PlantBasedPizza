@@ -5,8 +5,10 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
-    expose:
-      - 27017
+    ports:
+      - "27017:27017"
+    networks:
+      - dapr
 
   jaeger:
     image: jaegertracing/opentelemetry-all-in-one:latest
@@ -15,98 +17,77 @@ services:
       - "13133:13133"
       - "4317:4317"
       - "4318:4318"
+    networks:
+      - dapr
   
   cache:
     image: redis:7.2
     ports:
       - "6379:6379"
+    networks:
+      - dapr
 
   wiremock:
     image: wiremock/wiremock:latest
-    expose:
-      - 8080
+    ports:
+      - "8080:8080"
     volumes:
       - ./mocks/loyalty-api:/home/wiremock
-
-  wiremock-loyalty-api-dapr:
-    image: "daprio/daprd:edge"
-    command: [
-        "./daprd",
-        "--app-id",
-        "loyalty",
-        "--app-port",
-        "8080",
-        "--placement-host-address",
-        "placement:50006", # Dapr's placement service can be reach via the docker DNS entry
-        "--dapr-grpc-port",
-        "5101",
-        "--resources-path",
-        "../../components",
-      ]
-    volumes:
-      - "../../components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
-    depends_on:
-      - "wiremock"
-    network_mode: "service:wiremock"
+    networks:
+      - dapr
 
   loyalty-gripmock:
     image: tkpd/gripmock:latest
-    expose:
-      - 4770
-      - 4771
+    ports:
+      - "8081:4770"
+      - "8082:4771"
     volumes:
       - ./mocks/grpc-mocks:/proto
     command: --stub=/proto/stubs /proto/loyalty.proto
-
-  loyalty-gripmock-dapr:
-    image: "daprio/daprd:edge"
-    command: [
-        "./daprd",
-        "--app-id",
-        "loyaltyinternal",
-        "--app-port",
-        "4770",
-        "--placement-host-address",
-        "placement:50006", # Dapr's placement service can be reach via the docker DNS entry
-        "--dapr-grpc-port",
-        "5101",
-        "--resources-path",
-        "../../components",
-        "--app-protocol",
-        "grpc",
-      ]
-    volumes:
-      - "../../components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
-    depends_on:
-      - "loyalty-gripmock"
-    network_mode: "service:loyalty-gripmock"
+    networks:
+      - dapr
 
   payment-gripmock:
     image: tkpd/gripmock:latest
-    expose:
-      - 4770
-      - 4771
+    ports:
+      - "8083:4770"
+      - "8084:4771"
     volumes:
       - ./mocks/grpc-mocks:/proto
     command: --stub=/proto/stubs /proto/payment.proto
+    networks:
+      - dapr
 
-  payment-gripmock-dapr:
+  integration-test-dapr:
     image: "daprio/daprd:edge"
     command: [
-        "./daprd",
-        "--app-id",
-        "payment",
-        "--app-port",
-        "4770",
-        "--placement-host-address",
-        "placement:50006", # Dapr's placement service can be reach via the docker DNS entry
-        "--dapr-grpc-port",
-        "5101",
-        "--resources-path",
-        "../../components",
-      ]
+      "./daprd",
+      "--app-id",
+      "integration-tests",
+      "--placement-host-address",
+      "placement:50006", # Dapr's placement service can be reach via the docker DNS entry
+      "--dapr-grpc-port",
+      "5101",
+      "--resources-path",
+      "../../components",
+    ]
+    ports:
+      - "5101:5101"
     volumes:
       - "../../components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
-    depends_on:
-      - "payment-gripmock"
-    network_mode: "service:payment-gripmock"
+    networks:
+      - dapr
+
+  ############################
+  # Dapr placement service
+  ############################
+  placement:
+    image: "daprio/dapr"
+    command: ["./placement", "-port", "50006"]
+    ports:
+      - "50006:50006"
+    networks:
+      - dapr
+
+networks:
+  dapr: null

@@ -34,6 +34,11 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.LoyaltyPoints.Shared", "src\PlantBasedPizza.LoyaltyPoints\application\PlantBasedPizza.LoyaltyPoints.Shared\PlantBasedPizza.LoyaltyPoints.Shared.csproj", "{BEB6D543-0283-4AD1-9BF9-17224D211362}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PlantBasedPizza.Payment", "PlantBasedPizza.Payment", "{0036B08E-D3DA-4B08-941D-CEC2404C4158}"
+	ProjectSection(SolutionItems) = preProject
+		src\PlantBasedPizza.Payments\docker-compose-integration.yml = src\PlantBasedPizza.Payments\docker-compose-integration.yml
+		src\PlantBasedPizza.Payments\docker-compose.yml = src\PlantBasedPizza.Payments\docker-compose.yml
+		src\PlantBasedPizza.Payments\Makefile = src\PlantBasedPizza.Payments\Makefile
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{F8DC95A1-59E3-4317-A307-2AB2D30D96C1}"
 EndProject

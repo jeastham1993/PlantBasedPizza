@@ -3,9 +3,9 @@ using PlantBasedPizza.Events;
 
 namespace PlantBasedPizza.Kitchen.Worker.IntegrationEvents;
 
-public class OrderSubmittedEventV1 : IntegrationEvent
+public class OrderConfirmedEventV1 : IntegrationEvent
 {
-    public override string EventName => "order.orderSubmitted";
+    public override string EventName => "order.orderConfirmed";
     public override string EventVersion => "v1";
     public override Uri Source => new("https://orders.plantbasedpizza");
 

@@ -1,6 +1,7 @@
+using System.Text.Json;
 using PlantBasedPizza.Events;
 
-namespace PlantBasedPizza.OrderManager.Infrastructure.IntegrationEvents;
+namespace PlantBasedPizza.OrderManager.Core.PublicEvents;
 
 public class OrderReadyForDeliveryEventV1 : IntegrationEvent
 {
@@ -20,4 +21,9 @@ public class OrderReadyForDeliveryEventV1 : IntegrationEvent
     public string DeliveryAddressLine5 { get; init; } = "";
         
     public string Postcode { get; init; } = "";
+
+    public override string AsString()
+    {
+        return JsonSerializer.Serialize(this);
+    }
 }

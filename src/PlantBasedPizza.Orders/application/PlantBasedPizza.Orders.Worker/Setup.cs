@@ -2,6 +2,7 @@ using Dapr;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
+using PlantBasedPizza.OrderManager.Core.OrderSubmitted;
 using PlantBasedPizza.Orders.Worker.Handlers;
 using PlantBasedPizza.Orders.Worker.IntegrationEvents;
 
@@ -11,6 +12,17 @@ public static class Setup
 {
     public static WebApplication AddEventHandlers(this WebApplication app)
     {
+        var paymentSuccessEventHandler = app.Services.GetRequiredService<PaymentSuccessEventHandler>();
+        app.MapPost("/payment-success",
+            [Topic("public", "payments.paymentSuccessful.v1")]
+            async (
+                PaymentSuccessfulEventV1 evt) =>
+            {
+                await paymentSuccessEventHandler.Handle(evt);
+
+                return Results.Ok();
+            });
+        
         var driverCollectedHandler = app.Services.GetRequiredService<DriverCollectedOrderEventHandler>();
         app.MapPost("/driver-collected",
             [Topic("public", "delivery.driverCollectedOrder.v1")]

@@ -1,6 +1,4 @@
-using Dapr.Client;
 using PlantBasedPizza.OrderManager.Core.Entities;
-using PlantBasedPizza.OrderManager.Infrastructure.IntegrationEvents;
 using PlantBasedPizza.Orders.Worker.IntegrationEvents;
 
 namespace PlantBasedPizza.Orders.Worker.Handlers
@@ -8,12 +6,10 @@ namespace PlantBasedPizza.Orders.Worker.Handlers
     public class DriverDeliveredOrderEventHandler
     {
         private readonly IOrderRepository _orderRepository;
-        private readonly DaprClient _daprClient;
 
-        public DriverDeliveredOrderEventHandler(IOrderRepository orderRepository, DaprClient daprClient)
+        public DriverDeliveredOrderEventHandler(IOrderRepository orderRepository)
         {
             _orderRepository = orderRepository;
-            _daprClient = daprClient;
         }
 
         public async Task Handle(DriverDeliveredOrderEventV1 evt)
@@ -23,15 +19,6 @@ namespace PlantBasedPizza.Orders.Worker.Handlers
             order.CompleteOrder();
             
             await _orderRepository.Update(order).ConfigureAwait(false);
-
-            var completedEvt = new OrderCompletedIntegrationEventV1()
-            {
-                OrderIdentifier = order.OrderIdentifier,
-                CustomerIdentifier = order.CustomerIdentifier,
-                OrderValue = order.TotalPrice
-            };
-            
-            await _daprClient.PublishEventAsync("public", $"{completedEvt.EventName}.{completedEvt.EventVersion}", completedEvt);
         }
     }
 }

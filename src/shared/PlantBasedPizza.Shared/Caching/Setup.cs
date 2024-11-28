@@ -16,7 +16,13 @@ public static class Setup
 
         if (!string.IsNullOrEmpty(momentoApiKey) && !string.IsNullOrEmpty(cacheName))
         {
-            services.AddDistributedMemoryCache();
+            services.AddMomentoCache(options =>
+            {
+                options.Configuration = Configurations.InRegion.LowLatency.Latest();
+                options.CredentialProvider = new StringMomentoTokenProvider(momentoApiKey);
+                options.DefaultTtl = TimeSpan.FromMinutes(1);
+                options.CacheName = cacheName;
+            });
         }
         else if (!string.IsNullOrEmpty(redisConnectionString) && !string.IsNullOrEmpty(cacheName))
         {
@@ -28,13 +34,7 @@ public static class Setup
         }
         else
         {
-            services.AddMomentoCache(options =>
-            {
-                options.Configuration = Configurations.InRegion.LowLatency.Latest();
-                options.CredentialProvider = new StringMomentoTokenProvider(momentoApiKey);
-                options.DefaultTtl = TimeSpan.FromMinutes(1);
-                options.CacheName = cacheName;
-            });
+            services.AddDistributedMemoryCache();
         }
 
         return services;

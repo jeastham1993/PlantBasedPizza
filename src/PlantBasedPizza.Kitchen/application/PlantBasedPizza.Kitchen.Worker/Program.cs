@@ -18,7 +18,7 @@ builder.Services
     .AddSharedInfrastructure(builder.Configuration, serviceName)
     .AddKitchenInfrastructure(builder.Configuration);
 
-builder.Services.AddSingleton<OrderSubmittedEventHandler>();
+builder.Services.AddSingleton<OrderConfirmedEventHandler>();
 
 var app = builder.Build();
 

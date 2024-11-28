@@ -44,6 +44,7 @@
     
     <ItemGroup>
       <ProjectReference Include="..\..\..\shared\PlantBasedPizza.Events\PlantBasedPizza.Events.csproj" />
+      <ProjectReference Include="..\..\application\PlantBasedPizza.Payments\PlantBasedPizza.Payments.csproj" />
     </ItemGroup>
 
 </Project>

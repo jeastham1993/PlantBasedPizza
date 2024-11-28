@@ -16,6 +16,7 @@ message GetOrderDetailsRequest {
 message GetOrderDetailsReply {
   string orderIdentifier = 1;
   repeated OrderDetailItem items = 2;
+  double orderValue = 3;
 }
 
 message OrderDetailItem {

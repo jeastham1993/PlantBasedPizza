@@ -10,11 +10,11 @@ public static class Setup
 {
     public static WebApplication AddOrderSubmittedProcessing(this WebApplication app)
     {
-        var handler = app.Services.GetRequiredService<OrderSubmittedEventHandler>();
+        var handler = app.Services.GetRequiredService<OrderConfirmedEventHandler>();
 
-        app.MapPost("/order-submitted",
-            [Topic("public", "order.orderSubmitted.v1")] async (
-                OrderSubmittedEventV1 evt) =>
+        app.MapPost("/order-confirmed",
+            [Topic("public", "order.orderConfirmed.v1")] async (
+                OrderConfirmedEventV1 evt) =>
             {
                 await handler.Handle(evt);
                 

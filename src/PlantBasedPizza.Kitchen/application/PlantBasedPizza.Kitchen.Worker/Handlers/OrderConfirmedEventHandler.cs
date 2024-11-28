@@ -6,15 +6,15 @@ using PlantBasedPizza.Shared.Guards;
 
 namespace PlantBasedPizza.Kitchen.Worker.Handlers
 {
-    public class OrderSubmittedEventHandler
+    public class OrderConfirmedEventHandler
     {
         private readonly IKitchenEventPublisher _eventPublisher;
         private readonly IKitchenRequestRepository _kitchenRequestRepository;
         private readonly IRecipeService _recipeService;
         private readonly IOrderService _orderService;
-        private readonly ILogger<OrderSubmittedEventHandler> _logger;
+        private readonly ILogger<OrderConfirmedEventHandler> _logger;
 
-        public OrderSubmittedEventHandler(IKitchenRequestRepository kitchenRequestRepository, IRecipeService recipeService, ILogger<OrderSubmittedEventHandler> logger, IKitchenEventPublisher eventPublisher, IOrderService orderService)
+        public OrderConfirmedEventHandler(IKitchenRequestRepository kitchenRequestRepository, IRecipeService recipeService, ILogger<OrderConfirmedEventHandler> logger, IKitchenEventPublisher eventPublisher, IOrderService orderService)
         {
             _kitchenRequestRepository = kitchenRequestRepository;
             _recipeService = recipeService;
@@ -23,7 +23,7 @@ namespace PlantBasedPizza.Kitchen.Worker.Handlers
             _orderService = orderService;
         }
         
-        public async Task Handle(OrderSubmittedEventV1 evt)
+        public async Task Handle(OrderConfirmedEventV1 evt)
         {
             Guard.AgainstNull(evt, nameof(evt));
 

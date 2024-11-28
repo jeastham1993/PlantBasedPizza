@@ -11,18 +11,20 @@ services:
       - DatabaseConnection=mongodb://mongodb:27017
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
       - Environment=local
-      - RedisConnectionString=cache
-      - Services__Loyalty=loyalty
-      - Services__LoyaltyInternal=http://localhost:5101
-      - Services__PaymentInternal=http://localhost:5101
-      - Services__Recipes=recipes
+      - REDIS_CONNECTION_STRING=cache
+      - CACHE_NAME=orders
+      - Services__LoyaltyInternal=http://loyalty-gripmock:4770
+      - Services__PaymentInternal=http://payment-gripmock:4770
+      - Services__Recipes=wiremock:8080
       - Messaging__UseAsyncApi=Y
       - Auth__Issuer=https://plantbasedpizza.com
       - Auth__Audience=https://plantbasedpizza.com
-      - Auth__Key=This is a sample secret key - please don't use in production environment.'
+      - Auth__Key=This is a sample secret key - please don't use in production environment.
       - Auth__PaymentApiKey=the api key to use, use a secret store in production
       - DAPR_HOST=host.docker.internal
       - DAPR_GRPC_PORT=5101
+    networks:
+      - dapr
 
   orderapi-dapr:
     image: "daprio/daprd:edge"
@@ -37,10 +39,10 @@ services:
         "--dapr-grpc-port",
         "5101",
         "--resources-path",
-        "./components",
+        "../../components",
       ]
     volumes:
-      - "./components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
+      - "../../components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
     depends_on:
       - "local.order-api"
     network_mode: "service:local.order-api"
@@ -48,19 +50,24 @@ services:
   local.orders-worker:
     image: order-worker
     container_name: local.orders-worker
+    ports:
+      - "5005:8080"
     depends_on:
       - cache
     environment:
       - DatabaseConnection=mongodb://mongodb:27017
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
-      - RedisConnectionString=cache
-      - Services__Loyalty=loyalty
-      - Services__LoyaltyInternal=http://localhost:5101
-      - Services__PaymentInternal=http://localhost:5101
-      - Services__Recipes=recipes
+      - REDIS_CONNECTION_STRING=cache
+      - CACHE_NAME=orders
+      - Services__LoyaltyInternal=http://loyalty-gripmock:4770
+      - Services__PaymentInternal=http://payment-gripmock:4770
+      - Services__Recipes=localhost:8080
       - Environment=local
+      - Auth__PaymentApiKey=the api key to use, use a secret store in production
       - DAPR_HOST=host.docker.internal
       - DAPR_GRPC_PORT=5101
+    networks:
+      - dapr
 
   ordersworker-dapr:
     image: "daprio/daprd:edge"
@@ -75,37 +82,52 @@ services:
         "--dapr-grpc-port",
         "5101",
         "--resources-path",
-        "./components",
+        "../../components",
       ]
     volumes:
-      - "./components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
+      - "../../components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
     depends_on:
       - "local.orders-worker"
     network_mode: "service:local.orders-worker"
-    
-  integration-test-dapr:
+
+  local.order-internal:
+    image: order-internal
+    container_name: local.order-internal
+    depends_on:
+      - cache
+    environment:
+      - DatabaseConnection=mongodb://mongodb:27017
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+      - REDIS_CONNECTION_STRING=cache
+      - CACHE_NAME=orders
+      - Services__LoyaltyInternal=http://loyalty-gripmock:4770
+      - Services__PaymentInternal=http://payment-gripmock:4770
+      - Services__Recipes=localhost:8080
+      - Environment=local
+      - DAPR_HOST=host.docker.internal
+      - DAPR_GRPC_PORT=5101
+    networks:
+      - dapr
+
+  ordersinternal-dapr:
     image: "daprio/daprd:edge"
     command: [
       "./daprd",
       "--app-id",
-      "integration-tests",
+      "orderinternal",
+      "--app-port",
+      "8080",
       "--placement-host-address",
       "placement:50006", # Dapr's placement service can be reach via the docker DNS entry
       "--dapr-grpc-port",
       "5101",
       "--resources-path",
       "../../components",
+      "--app-protocol",
+      "grpc",
     ]
-    ports:
-      - "5101:5101"
     volumes:
       - "../../components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
-
-  ############################
-  # Dapr placement service
-  ############################
-  placement:
-    image: "daprio/dapr"
-    command: ["./placement", "-port", "50006"]
-    ports:
-      - "50006:50006"
+    depends_on:
+      - "local.order-internal"
+    network_mode: "service:local.order-internal"

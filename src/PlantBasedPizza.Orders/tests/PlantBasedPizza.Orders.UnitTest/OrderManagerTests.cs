@@ -6,7 +6,7 @@ namespace PlantBasedPizza.Orders.UnitTest;
 public class OrderManagerTests
 {
     internal const string DefaultCustomerIdentifier = "James";
-    
+
     [Fact]
     public void CanCreateNewOrder_ShouldSetDefaultFields()
     {

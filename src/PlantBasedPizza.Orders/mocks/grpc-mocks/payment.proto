@@ -13,6 +13,7 @@ service Payment {
 message TakePaymentRequest {
   string customerIdentifier = 1;
   double paymentAmount = 2;
+  string orderIdentifier = 3;
 }
 
 message TakePaymentsReply {

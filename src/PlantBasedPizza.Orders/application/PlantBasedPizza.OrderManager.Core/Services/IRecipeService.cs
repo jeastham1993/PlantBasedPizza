@@ -2,6 +2,6 @@ namespace PlantBasedPizza.OrderManager.Core.Services
 {
     public interface IRecipeService
     {
-        Task<Recipe> GetRecipe(string recipeIdentifier);
+        Task<Recipe?> GetRecipe(string recipeIdentifier);
     }
 }

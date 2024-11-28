@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using System.Text.Json;
-using Google.Protobuf.Collections;
 using Grpc.Core;
 using Microsoft.Extensions.Caching.Distributed;
 using PlantBasedPizza.OrderManager.Core.Entities;
@@ -29,7 +28,8 @@ public class OrdersService : Orders.OrdersBase
             
             var reply = new GetOrderDetailsReply()
             {
-                OrderIdentifier = cachedOrder.OrderIdentifier
+                OrderIdentifier = cachedOrder.OrderIdentifier,
+                OrderValue = Convert.ToDouble(cachedOrder.TotalPrice)
             };
 
             foreach (var item in cachedOrder.Items)
@@ -50,7 +50,8 @@ public class OrdersService : Orders.OrdersBase
             
         var orderReply = new GetOrderDetailsReply()
         {
-            OrderIdentifier = order.OrderIdentifier
+            OrderIdentifier = order.OrderIdentifier,
+            OrderValue = Convert.ToDouble(order.TotalPrice)
         };
 
         foreach (var item in order.Items)

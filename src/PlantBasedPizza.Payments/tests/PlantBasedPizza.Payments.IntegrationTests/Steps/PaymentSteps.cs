@@ -17,23 +17,24 @@ public sealed class PaymentSteps
         _driver = new PaymentDriver();
     }
 
-    [Then(@"a payment is taken for (.*) then the result should be successful")]
-    public async Task ThenAPaymentIsTakenForThenTheResultShouldBeSuccessful(double p0)
+    [When(@"an order submitted event is received")]
+    public async Task ThenAOrderSubmittedEventIsHandled()
     {
         Activity.Current = _scenarioContext.Get<Activity>("Activity");
         
-        var result = await _driver.TakePaymentFor("James", p0);
+        var orderIdentifier = Guid.NewGuid().ToString();
+        _scenarioContext.Add("orderId", orderIdentifier);
         
-        result.Should().BeTrue();
+        await _driver.SimulateOrderSubmittedEvent(orderIdentifier);
     }
 
-    [Then(@"a payment is taken for (.*) then the result should be unsuccessful")]
-    public async Task ThenAPaymentIsTakenForThenTheResultShouldBeUnSuccessful(double p0)
+    [Then("the payment should be processed and cached")]
+    public async Task ThenThePaymentShouldBeProcessedAndCached()
     {
-        Activity.Current = _scenarioContext.Get<Activity>("Activity");
+        var orderId = _scenarioContext.Get<string>("orderId");
         
-        var result = await _driver.TakePaymentWithoutAuth("James", p0);
-        
-        result.Should().BeFalse();
+        var paymentStatus = await _driver.GetCachedPaymentStatus(orderId);
+        paymentStatus.Should().NotBeNull();
+        paymentStatus.Should().Be("processed");
     }
 }

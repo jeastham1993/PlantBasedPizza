@@ -11,9 +11,6 @@
   <ItemGroup>
       <Protobuf Include="Protos\loyalty.proto" GrpcServices="Client" />
   </ItemGroup>
-  <ItemGroup>
-      <Protobuf Include="Protos\payment.proto" GrpcServices="Client" />
-  </ItemGroup>
 
   <ItemGroup>
       <PackageReference Include="Dapr.AspNetCore" Version="1.14.0" />

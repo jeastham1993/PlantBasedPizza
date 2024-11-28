@@ -1,4 +1,7 @@
 using System.Text.Json.Serialization;
+using PlantBasedPizza.Events;
+using PlantBasedPizza.OrderManager.Core.OrderSubmitted;
+using PlantBasedPizza.OrderManager.Core.PublicEvents;
 using PlantBasedPizza.Shared.Guards;
 
 namespace PlantBasedPizza.OrderManager.Core.Entities
@@ -6,6 +9,9 @@ namespace PlantBasedPizza.OrderManager.Core.Entities
     public class Order
     {
         private const decimal DefaultDeliveryPrice = 3.50M;
+
+        [JsonIgnore]
+        private List<IntegrationEvent> _events;
 
         [JsonPropertyName("items")]
         private List<OrderItem> _items;
@@ -26,6 +32,7 @@ namespace PlantBasedPizza.OrderManager.Core.Entities
             OrderNumber = orderIdentifier;
             _items = new List<OrderItem>();
             _history = new List<OrderHistory>();
+            _events = new List<IntegrationEvent>();
         }
 
         public static Order Create(OrderType type, string customerIdentifier, DeliveryDetails? deliveryDetails = null, string correlationId = "")
@@ -51,6 +58,10 @@ namespace PlantBasedPizza.OrderManager.Core.Entities
             };
 
             order.AddHistory("Order created");
+            order._events.Add(new OrderCreatedEventV1()
+            {
+                OrderIdentifier = orderIdentifier,
+            });
 
             return order;
         }
@@ -84,6 +95,20 @@ namespace PlantBasedPizza.OrderManager.Core.Entities
             return _history.OrderBy(p => p.HistoryDate).ToList();
         }
 
+        [JsonIgnore]
+        public IReadOnlyCollection<IntegrationEvent> Events
+        {
+            get
+            {
+                if (_events == null)
+                {
+                    _events = [];
+                }
+                
+                return _events;
+            }
+        }
+        
         [JsonPropertyName("orderType")]
         public OrderType OrderType { get; private set; }
 
@@ -156,16 +181,6 @@ namespace PlantBasedPizza.OrderManager.Core.Entities
             Recalculate();
         }
 
-        public void AddHistory(string description)
-        {
-            if (_history == null)
-            {
-                _history = new List<OrderHistory>(1);
-            }
-            
-            _history.Add(new OrderHistory(description, DateTime.Now));
-        }
-
         public void Recalculate()
         {
             TotalPrice = _items.Sum(p => p.Quantity * p.Price);
@@ -176,11 +191,38 @@ namespace PlantBasedPizza.OrderManager.Core.Entities
             }
         }
 
-        public void AddCustomerLoyaltyPoints(decimal pointsAtTimeOfOrder)
+        public void Confirm(decimal paymentAmount)
         {
-            LoyaltyPointsAtOrder = pointsAtTimeOfOrder;
+            AddHistory($"Payment taken for {paymentAmount}!");
+            AddHistory("Order confirmed");
+            
+            addEvent(new OrderConfirmedEventV1()
+            {
+                OrderIdentifier = OrderIdentifier,
+            });
         }
 
+        public void ReadyForDelivery()
+        {
+            if (OrderType != OrderType.Delivery || DeliveryDetails == null)
+            {
+                return;
+            }
+            
+            AddHistory("Sending for delivery");
+
+            addEvent(new OrderReadyForDeliveryEventV1()
+            {
+                OrderIdentifier = OrderIdentifier,
+                DeliveryAddressLine1 = DeliveryDetails.AddressLine1,
+                DeliveryAddressLine2 = DeliveryDetails.AddressLine2,
+                DeliveryAddressLine3 = DeliveryDetails.AddressLine3,
+                DeliveryAddressLine4 = DeliveryDetails.AddressLine4,
+                DeliveryAddressLine5 = DeliveryDetails.AddressLine5,
+                Postcode = DeliveryDetails.Postcode,
+            });
+        }
+        
         public void SubmitOrder()
         {
             if (!_items.Any())
@@ -191,6 +233,10 @@ namespace PlantBasedPizza.OrderManager.Core.Entities
             OrderSubmittedOn = DateTime.Now;
             
             AddHistory($"Submitted order.");
+            addEvent(new OrderSubmittedEventV1()
+            {
+                OrderIdentifier = OrderIdentifier,
+            });
         }
 
         public void IsAwaitingCollection()
@@ -206,6 +252,33 @@ namespace PlantBasedPizza.OrderManager.Core.Entities
             AwaitingCollection = false;
             
             AddHistory($"Order completed.");
+            
+            addEvent(new OrderCompletedIntegrationEventV1()
+            {
+                OrderIdentifier = OrderIdentifier,
+                CustomerIdentifier = CustomerIdentifier,
+                OrderValue = TotalPrice,
+            });
+        }
+        
+        public void AddHistory(string description)
+        {
+            if (_history == null)
+            {
+                _history = new List<OrderHistory>(1);
+            }
+            
+            _history.Add(new OrderHistory(description, DateTime.Now));
+        }
+
+        private void addEvent(IntegrationEvent evt)
+        {
+            if (_events is null)
+            {
+                _events = new List<IntegrationEvent>();
+            }
+            
+            _events.Add(evt);
         }
     }
 }

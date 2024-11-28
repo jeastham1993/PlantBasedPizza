@@ -1,12 +1,17 @@
-using PlantBasedPizza.OrderManager.Core.Entities;
+using PlantBasedPizza.OrderManager.Core.OrderSubmitted;
+using PlantBasedPizza.OrderManager.Core.PublicEvents;
 
-namespace PlantBasedPizza.OrderManager.Infrastructure.IntegrationEvents;
+namespace PlantBasedPizza.OrderManager.Core.Entities;
 
 public interface IOrderEventPublisher
 {
-    Task PublishOrderCompletedEventV1(Order order);
+    Task PublishOrderSubmittedEventV1(OrderSubmittedEventV1 evt);
     
-    Task PublishOrderReadyForDeliveryEventV1(Order order);
+    Task PublishOrderCompletedEventV1(OrderCompletedIntegrationEventV1 evt);
     
-    Task PublishOrderSubmittedEventV1(Order order);
+    Task PublishOrderReadyForDeliveryEventV1(OrderReadyForDeliveryEventV1 evt);
+    
+    Task PublishOrderConfirmedEventV1(OrderConfirmedEventV1 evt);
+
+    Task PublishOrderCreatedEventV1(OrderCreatedEventV1 evt);
 }

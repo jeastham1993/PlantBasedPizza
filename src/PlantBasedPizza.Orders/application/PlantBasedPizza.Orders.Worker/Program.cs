@@ -25,6 +25,9 @@ builder.Services.AddSingleton<OrderBakedEventHandler>();
 builder.Services.AddSingleton<OrderPreparingEventHandler>();
 builder.Services.AddSingleton<OrderPrepCompleteEventHandler>();
 builder.Services.AddSingleton<OrderQualityCheckedEventHandler>();
+builder.Services.AddSingleton<PaymentSuccessEventHandler>();
+
+builder.Services.AddHostedService<OutboxWorker>();
 
 var app = builder.Build();
 
@@ -34,4 +37,4 @@ app.MapSubscribeHandler();
 app.UseCloudEvents();
 app.AddEventHandlers();
 
-app.Run();
+await app.RunAsync();

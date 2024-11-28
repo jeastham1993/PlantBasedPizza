@@ -1,52 +1,42 @@
+using Dapr.Client;
 using Grpc.Core;
 using Grpc.Net.Client;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.StackExchangeRedis;
+using Microsoft.Extensions.Options;
+using PlantBasedPizza.Payments.ExternalEvents;
 
 namespace PlantBasedPizza.Payments.IntegrationTests.Drivers;
 
 public class PaymentDriver
     {
-        private readonly Payment.PaymentClient _paymentClient;
         private readonly Metadata _apiKeyHeaders;
+        private readonly DaprClient _daprClient;
+        private readonly IDistributedCache _distributedCache;
 
         public PaymentDriver()
         {
-            _apiKeyHeaders = new Metadata
+            _daprClient = new DaprClientBuilder()
+                .UseGrpcEndpoint("http://localhost:5101")
+                .Build();
+            _distributedCache = new RedisCache(Options.Create<RedisCacheOptions>(new RedisCacheOptions() { Configuration = "localhost:6379", InstanceName = "payments" }));
+        }
+
+        public async Task SimulateOrderSubmittedEvent(string orderIdentifier)
+        {
+            await _daprClient.PublishEventAsync("public", "order.orderSubmitted.v1", new OrderSubmittedEventV1()
             {
-                { "APIKey", "this is a test api key" },
-                { "dapr-app-id", "payment" }
-            };
+                OrderIdentifier = orderIdentifier
+            });
+
+            // Delay to allow for message processing
+            await Task.Delay(TimeSpan.FromSeconds(2));
+        }
+
+        public async Task<string?> GetCachedPaymentStatus(string orderIdentifier)
+        {
+            var cachedValue = await _distributedCache.GetStringAsync(orderIdentifier);
             
-            var channel = GrpcChannel.ForAddress(TestConstants.InternalTestEndpoint);
-            _paymentClient = new Payment.PaymentClient(channel);
-        }
-
-        public async Task<bool> TakePaymentFor(string customerIdentifier, double paymentAmount)
-        {
-            var res = await _paymentClient.TakePaymentAsync(new TakePaymentRequest()
-            {
-                CustomerIdentifier = customerIdentifier,
-                PaymentAmount = paymentAmount
-            }, _apiKeyHeaders);
-
-            return res.IsSuccess;
-        }
-
-        public async Task<bool> TakePaymentWithoutAuth(string customerIdentifier, double paymentAmount)
-        {
-            try
-            {
-                var res = await _paymentClient.TakePaymentAsync(new TakePaymentRequest()
-                {
-                    CustomerIdentifier = customerIdentifier,
-                    PaymentAmount = paymentAmount,
-                    OrderIdentifier = Guid.NewGuid().ToString()
-                });
-
-                return res.IsSuccess;
-            }
-            catch (RpcException)
-            {
-                return false;
-            }
+            return cachedValue;
         }
     }
