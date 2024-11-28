@@ -13,7 +13,7 @@ public class RecipeRepository : IRecipeRepository
         _recipes = database.GetCollection<Recipe>("recipes");
     }
     
-    public async Task<Recipe> Retrieve(string recipeIdentifier)
+    public async Task<Recipe?> Retrieve(string recipeIdentifier)
     {
         var queryBuilder = Builders<Recipe>.Filter.Eq(p => p.RecipeIdentifier, recipeIdentifier);
 
@@ -28,9 +28,23 @@ public class RecipeRepository : IRecipeRepository
 
         return recipes;
     }
+    
+
+    public async Task<bool> Exists(Recipe recipe)
+    {
+        var existingRecipe = await this.Retrieve(recipe.RecipeIdentifier);
+        
+        return existingRecipe is not null;
+    }
 
     public async Task Add(Recipe recipe)
     {
+        var recipeExists = await this.Exists(recipe);
+        if (recipeExists)
+        {
+            return;
+        }
+        
         await _recipes.InsertOneAsync(recipe).ConfigureAwait(false);
     }
 
