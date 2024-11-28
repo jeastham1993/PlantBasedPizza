@@ -1,4 +1,6 @@
-﻿using MongoDB.Driver;
+﻿using System.Text.Json;
+using MongoDB.Driver;
+using PlantBasedPizza.Events;
 using PlantBasedPizza.Kitchen.Core.Entities;
 using PlantBasedPizza.Shared.Logging;
 
@@ -7,23 +9,45 @@ namespace PlantBasedPizza.Kitchen.Infrastructure;
 public class KitchenRequestRepository : IKitchenRequestRepository
 {
     private readonly IMongoCollection<KitchenRequest> _kitchenRequests;
+    private readonly IMongoCollection<OutboxItem> _outboxItems;
 
     public KitchenRequestRepository(MongoClient client)
     {
         var database = client.GetDatabase("PlantBasedPizza");
         _kitchenRequests = database.GetCollection<KitchenRequest>("kitchen");
+        _outboxItems = database.GetCollection<OutboxItem>("kitchen_outboxitems");
     }
 
-    public async Task AddNew(KitchenRequest kitchenRequest)
+    public async Task AddNew(KitchenRequest kitchenRequest, List<IntegrationEvent> events = null)
     {
         await _kitchenRequests.InsertOneAsync(kitchenRequest).ConfigureAwait(false);
+            
+        foreach (var evt in (events ?? new()))
+        {
+            await _outboxItems.InsertOneAsync(new OutboxItem()
+            {
+                EventData = evt.AsString(),
+                EventType = evt.GetType().Name,
+                Processed = false
+            });
+        }
     }
 
-    public async Task Update(KitchenRequest kitchenRequest)
+    public async Task Update(KitchenRequest kitchenRequest, List<IntegrationEvent> events = null)
     {
         var queryBuilder = Builders<KitchenRequest>.Filter.Eq(req => req.OrderIdentifier, kitchenRequest.OrderIdentifier);
 
         var updateResult = await _kitchenRequests.ReplaceOneAsync(queryBuilder, kitchenRequest);
+            
+        foreach (var evt in (events ?? new()))
+        {
+            await _outboxItems.InsertOneAsync(new OutboxItem()
+            {
+                EventData = evt.AsString(),
+                EventType = evt.GetType().Name,
+                Processed = false
+            });
+        }
         
         updateResult.AddToTelemetry();
     }

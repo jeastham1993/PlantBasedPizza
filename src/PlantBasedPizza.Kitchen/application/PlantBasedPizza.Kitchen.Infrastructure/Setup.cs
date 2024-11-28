@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
 using PlantBasedPizza.Kitchen.Core.Entities;
 using PlantBasedPizza.Kitchen.Core.Services;
-using PlantBasedPizza.Kitchen.Infrastructure.IntegrationEvents;
+using PlantBasedPizza.Shared.Caching;
 using Polly;
 using Polly.Contrib.WaitAndRetry;
 using Polly.Extensions.Http;
@@ -24,6 +24,14 @@ namespace PlantBasedPizza.Kitchen.Infrastructure
             services.AddSingleton(client);
             services.Configure<ServiceEndpoints>(configuration.GetSection("Services"));
             services.AddDaprClient();
+            services.AddCaching(configuration);
+            
+            BsonClassMap.RegisterClassMap<OutboxItem>(map =>
+            {
+                map.AutoMap();
+                map.SetIgnoreExtraElements(true);
+                map.SetIgnoreExtraElementsIsInherited(true);
+            });
             
             BsonClassMap.RegisterClassMap<KitchenRequest>(map =>
             {

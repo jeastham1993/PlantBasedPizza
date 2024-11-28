@@ -16,7 +16,8 @@ var serviceName = "KitchenWorker";
 
 builder.Services
     .AddSharedInfrastructure(builder.Configuration, serviceName)
-    .AddKitchenInfrastructure(builder.Configuration);
+    .AddKitchenInfrastructure(builder.Configuration)
+    .AddHostedService<OutboxWorker>();
 
 builder.Services.AddSingleton<OrderConfirmedEventHandler>();
 

@@ -1,6 +1,7 @@
+using System.Text.Json;
 using PlantBasedPizza.Events;
 
-namespace PlantBasedPizza.Kitchen.Infrastructure.IntegrationEvents;
+namespace PlantBasedPizza.Kitchen.Core.PublicEvents;
 
 public class OrderPrepCompleteEventV1 : IntegrationEvent
 {
@@ -11,4 +12,9 @@ public class OrderPrepCompleteEventV1 : IntegrationEvent
     public string OrderIdentifier { get; init; } = "";
 
     public string KitchenIdentifier { get; init; } = "";
+
+    public override string AsString()
+    {
+        return JsonSerializer.Serialize(this);
+    }
 }

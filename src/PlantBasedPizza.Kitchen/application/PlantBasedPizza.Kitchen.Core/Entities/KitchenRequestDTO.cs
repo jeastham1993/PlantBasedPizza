@@ -1,8 +1,7 @@
 using System.Text.Json.Serialization;
 using PlantBasedPizza.Kitchen.Core.Adapters;
-using PlantBasedPizza.Kitchen.Core.Entities;
 
-namespace PlantBasedPizza.Kitchen.Infrastructure.DataTransfer;
+namespace PlantBasedPizza.Kitchen.Core.Entities;
 
 public class KitchenRequestDto
 {

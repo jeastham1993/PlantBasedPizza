@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.Text.Json;
 using MongoDB.Driver;
 using PlantBasedPizza.Deliver.Core.Entities;
 using PlantBasedPizza.Events;
@@ -27,7 +26,7 @@ namespace PlantBasedPizza.Deliver.Infrastructure
             {
                 await _outboxItems.InsertOneAsync(new OutboxItem()
                 {
-                    EventData = JsonSerializer.Serialize(evt),
+                    EventData = evt.AsString(),
                     EventType = evt.GetType().Name,
                     Processed = false
                 });
@@ -44,7 +43,7 @@ namespace PlantBasedPizza.Deliver.Infrastructure
             {
                 await _outboxItems.InsertOneAsync(new OutboxItem()
                 {
-                    EventData = JsonSerializer.Serialize(evt),
+                    EventData = evt.AsString(),
                     EventType = evt.GetType().Name,
                     Processed = false
                 });

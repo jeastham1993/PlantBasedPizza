@@ -30,7 +30,7 @@ public class OrderRepository : IOrderRepository
         {
             await _outboxItems.InsertOneAsync(new OutboxItem()
             {
-                EventData = JsonSerializer.Serialize(evt),
+                EventData = evt.AsString(),
                 EventType = evt.GetType().Name,
                 Processed = false
             });

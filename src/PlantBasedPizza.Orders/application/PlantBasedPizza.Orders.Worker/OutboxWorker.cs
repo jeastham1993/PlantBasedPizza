@@ -24,55 +24,64 @@ public class OutboxWorker : BackgroundService
     {
         while (!stoppingToken.IsCancellationRequested)
         {
-            var outboxItems = await _outboxItems.Find(p => !p.Processed).ToListAsync(cancellationToken: stoppingToken);
+            var outboxItems = await _outboxItems.Find(p => !p.Processed && !p.Failed).ToListAsync(cancellationToken: stoppingToken);
 
             foreach (var outboxItem in outboxItems)
             {
                 try
                 {
-                    _logger.LogInformation("Processing outbox item: Type: {OutboxItemType}. Data: {OutboxItemData}", outboxItem.EventType, outboxItem.EventData);
+                    _logger.LogInformation("Processing outbox item: Type: {OutboxItemType}. Data: {OutboxItemData}",
+                        outboxItem.EventType, outboxItem.EventData);
 
                     switch (outboxItem.EventType)
                     {
                         case nameof(OrderCompletedIntegrationEventV1):
-                            var orderCompletedIntegrationEvt = JsonSerializer.Deserialize<OrderCompletedIntegrationEventV1>(outboxItem.EventData);
+                            var orderCompletedIntegrationEvt =
+                                JsonSerializer.Deserialize<OrderCompletedIntegrationEventV1>(outboxItem.EventData);
                             await _eventPublisher.PublishOrderCompletedEventV1(orderCompletedIntegrationEvt);
                             outboxItem.Processed = true;
                             break;
                         case nameof(OrderReadyForDeliveryEventV1):
-                            var orderReadyForDeliveryEvt = JsonSerializer.Deserialize<OrderReadyForDeliveryEventV1>(outboxItem.EventData);
+                            var orderReadyForDeliveryEvt =
+                                JsonSerializer.Deserialize<OrderReadyForDeliveryEventV1>(outboxItem.EventData);
                             await _eventPublisher.PublishOrderReadyForDeliveryEventV1(orderReadyForDeliveryEvt);
                             outboxItem.Processed = true;
                             break;
                         case nameof(OrderConfirmedEventV1):
-                            var orderSubmittedEvt = JsonSerializer.Deserialize<OrderConfirmedEventV1>(outboxItem.EventData);
+                            var orderSubmittedEvt =
+                                JsonSerializer.Deserialize<OrderConfirmedEventV1>(outboxItem.EventData);
                             await _eventPublisher.PublishOrderConfirmedEventV1(orderSubmittedEvt);
                             outboxItem.Processed = true;
                             break;
                         case nameof(OrderCreatedEventV1):
-                            var orderCreatedEvent = JsonSerializer.Deserialize<OrderCreatedEventV1>(outboxItem.EventData);
+                            var orderCreatedEvent =
+                                JsonSerializer.Deserialize<OrderCreatedEventV1>(outboxItem.EventData);
                             await _eventPublisher.PublishOrderCreatedEventV1(orderCreatedEvent);
                             outboxItem.Processed = true;
                             break;
                         case nameof(OrderSubmittedEventV1):
-                            var submittedEvent = JsonSerializer.Deserialize<OrderSubmittedEventV1>(outboxItem.EventData);
+                            var submittedEvent =
+                                JsonSerializer.Deserialize<OrderSubmittedEventV1>(outboxItem.EventData);
                             await _eventPublisher.PublishOrderSubmittedEventV1(submittedEvent);
                             outboxItem.Processed = true;
                             break;
                         default:
                             _logger.LogWarning("Unknown event type: {EventType}", outboxItem.EventType);
-                            outboxItem.Processed = true;
+                            outboxItem.Failed = true;
+                            outboxItem.FailureReason = $"Unknown event type: {outboxItem.EventType}";
                             break;
                     }
-                
-                    var queryBuilder = Builders<OutboxItem>.Filter.Eq(item => item.ItemId, outboxItem.ItemId);
-            
-                    await _outboxItems.ReplaceOneAsync(queryBuilder, outboxItem, cancellationToken: stoppingToken);
                 }
                 catch (Exception e)
                 {
                     _logger.LogError(e, "An error occured while processing outbox item.");
+                    outboxItem.Failed = true;
+                    outboxItem.FailureReason =
+                        $"An error occured while processing outbox item.: {e.Message} - {e.StackTrace}";
                 }
+
+                var queryBuilder = Builders<OutboxItem>.Filter.Eq(item => item.ItemId, outboxItem.ItemId);
+                await _outboxItems.ReplaceOneAsync(queryBuilder, outboxItem, cancellationToken: stoppingToken);
             }
 
             await Task.Delay(5000, stoppingToken);

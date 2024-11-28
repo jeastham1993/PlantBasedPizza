@@ -1,5 +1,4 @@
 using Grpc.Core;
-using Microsoft.Extensions.Configuration;
 using PlantBasedPizza.Kitchen.Core.Adapters;
 using PlantBasedPizza.Kitchen.Core.Services;
 using PlantBasedPizza.Orders.Internal;
@@ -11,7 +10,7 @@ public class OrderService : IOrderService
     private readonly Metadata _metadata;
     private readonly Orders.Internal.Orders.OrdersClient _orders;
 
-    public OrderService(IConfiguration configuration, Orders.Internal.Orders.OrdersClient orders)
+    public OrderService(Orders.Internal.Orders.OrdersClient orders)
     {
         _orders = orders;
         _metadata = new Metadata()

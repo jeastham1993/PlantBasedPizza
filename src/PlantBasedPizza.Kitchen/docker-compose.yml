@@ -29,9 +29,11 @@ services:
     volumes:
       - ./mocks/recipe-api:/home/wiremock
 
-  rabbitmq:
-    image: rabbitmq:3-management-alpine
-    container_name: 'kitchen-rabbitmq'
+  orders-gripmock:
+    image: tkpd/gripmock:latest
     ports:
-        - 5672:5672
-        - 15672:15672
+      - "8083:4770"
+      - "8084:4771"
+    volumes:
+      - ./mocks/grpc-mocks:/proto
+    command: --stub=/proto/stubs /proto/orders.proto

@@ -1,6 +1,7 @@
+using System.Text.Json;
 using PlantBasedPizza.Events;
 
-namespace PlantBasedPizza.Kitchen.Infrastructure.IntegrationEvents;
+namespace PlantBasedPizza.Kitchen.Core.PublicEvents;
 
 public class KitchenConfirmedOrderEventV1 : IntegrationEvent
 {
@@ -8,7 +9,12 @@ public class KitchenConfirmedOrderEventV1 : IntegrationEvent
     public override string EventVersion => "v1";
     public override Uri Source => new Uri("https://kitchen.plantbasedpizza");
 
-    public string OrderIdentifier { get; init; } = "";
+    public string OrderIdentifier { get; set; } = "";
 
-    public string KitchenIdentifier { get; init; } = "";
+    public string KitchenIdentifier { get; set; } = "";
+
+    public override string AsString()
+    {
+        return JsonSerializer.Serialize(this);
+    }
 }

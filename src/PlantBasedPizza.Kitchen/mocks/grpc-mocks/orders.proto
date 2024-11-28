@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+option csharp_namespace = "PlantBasedPizza.Orders.Internal";
+
+package orders;
+
+// The Orders service definition.
+service Orders {
+  rpc GetOrderDetails (GetOrderDetailsRequest) returns (GetOrderDetailsReply);
+}
+
+message GetOrderDetailsRequest {
+  string orderIdentifier = 1;
+}
+
+message GetOrderDetailsReply {
+  string orderIdentifier = 1;
+  repeated OrderDetailItem items = 2;
+  double orderValue = 3;
+}
+
+message OrderDetailItem {
+  string itemName = 1;
+  string recipeIdentifier = 2;
+}

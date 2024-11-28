@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using PlantBasedPizza.Kitchen.Core.Entities;
-using PlantBasedPizza.Kitchen.Infrastructure.DataTransfer;
+using PlantBasedPizza.Kitchen.Core.PublicEvents;
 
 namespace PlantBasedPizza.Kitchen.Api;
 
@@ -67,7 +67,7 @@ public static class Endpoints
         }
     }
     
-    public static async Task<KitchenRequestDto> MarkPreparing([FromServices] IKitchenRequestRepository kitchenRequestRepository, [FromServices] IKitchenEventPublisher eventPublisher, string orderIdentifier)
+    public static async Task<KitchenRequestDto> MarkPreparing([FromServices] IKitchenRequestRepository kitchenRequestRepository, string orderIdentifier)
     {
         Activity.Current?.AddTag("orderIdentifier", orderIdentifier);
         
@@ -75,13 +75,15 @@ public static class Endpoints
 
         kitchenRequest.Preparing();
 
-        await kitchenRequestRepository.Update(kitchenRequest);
-        await eventPublisher.PublishOrderPreparingEventV1(kitchenRequest);
+        await kitchenRequestRepository.Update(kitchenRequest, [new OrderPreparingEventV1()
+        {
+            OrderIdentifier = orderIdentifier
+        }]);
 
         return new KitchenRequestDto(kitchenRequest);
     }
     
-    public static async Task<KitchenRequestDto> MarkPrepComplete([FromServices] IKitchenRequestRepository kitchenRequestRepository, [FromServices] IKitchenEventPublisher eventPublisher, string orderIdentifier)
+    public static async Task<KitchenRequestDto> MarkPrepComplete([FromServices] IKitchenRequestRepository kitchenRequestRepository, string orderIdentifier)
     {
         Activity.Current?.AddTag("orderIdentifier", orderIdentifier);
         
@@ -89,13 +91,15 @@ public static class Endpoints
 
         kitchenRequest.PrepComplete();
 
-        await kitchenRequestRepository.Update(kitchenRequest);
-        await eventPublisher.PublishOrderPrepCompleteEventV1(kitchenRequest);
+        await kitchenRequestRepository.Update(kitchenRequest, [new OrderPrepCompleteEventV1()
+        {
+            OrderIdentifier = orderIdentifier
+        }]);
 
         return new KitchenRequestDto(kitchenRequest);
     }
     
-    public static async Task<KitchenRequestDto> MarkBakeComplete([FromServices] IKitchenRequestRepository kitchenRequestRepository, [FromServices] IKitchenEventPublisher eventPublisher, string orderIdentifier)
+    public static async Task<KitchenRequestDto> MarkBakeComplete([FromServices] IKitchenRequestRepository kitchenRequestRepository, string orderIdentifier)
     {
         Activity.Current?.AddTag("orderIdentifier", orderIdentifier);
         
@@ -103,13 +107,15 @@ public static class Endpoints
 
         kitchenRequest.BakeComplete();
 
-        await kitchenRequestRepository.Update(kitchenRequest);
-        await eventPublisher.PublishOrderBakedEventV1(kitchenRequest);
+        await kitchenRequestRepository.Update(kitchenRequest, [new OrderBakedEventV1()
+        {
+            OrderIdentifier = orderIdentifier
+        }]);
 
         return new KitchenRequestDto(kitchenRequest);
     }
     
-    public static async Task<KitchenRequestDto> MarkQualityChecked([FromServices] IKitchenRequestRepository kitchenRequestRepository, [FromServices] IKitchenEventPublisher eventPublisher, string orderIdentifier)
+    public static async Task<KitchenRequestDto> MarkQualityChecked([FromServices] IKitchenRequestRepository kitchenRequestRepository, string orderIdentifier)
     {
         Activity.Current?.AddTag("orderIdentifier", orderIdentifier);
         
@@ -117,8 +123,10 @@ public static class Endpoints
 
         await kitchenRequest.QualityCheckComplete();
 
-        await kitchenRequestRepository.Update(kitchenRequest);
-        await eventPublisher.PublishOrderQualityCheckedEventV1(kitchenRequest);
+        await kitchenRequestRepository.Update(kitchenRequest, [new OrderQualityCheckedEventV1()
+        {
+            OrderIdentifier = orderIdentifier
+        }]);
 
         return new KitchenRequestDto(kitchenRequest);
     }

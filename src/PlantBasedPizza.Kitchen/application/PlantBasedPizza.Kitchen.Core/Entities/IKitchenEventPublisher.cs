@@ -1,14 +1,16 @@
+using PlantBasedPizza.Kitchen.Core.PublicEvents;
+
 namespace PlantBasedPizza.Kitchen.Core.Entities;
 
 public interface IKitchenEventPublisher
 {
-    Task PublishKitchenConfirmedOrderEventV1(KitchenRequest request);
+    Task PublishKitchenConfirmedOrderEventV1(KitchenConfirmedOrderEventV1 evt);
 
-    Task PublishOrderBakedEventV1(KitchenRequest request);
+    Task PublishOrderBakedEventV1(OrderBakedEventV1 evt);
     
-    Task PublishOrderPreparingEventV1(KitchenRequest request);
+    Task PublishOrderPreparingEventV1(OrderPreparingEventV1 evt);
     
-    Task PublishOrderPrepCompleteEventV1(KitchenRequest request);
+    Task PublishOrderPrepCompleteEventV1(OrderPrepCompleteEventV1 evt);
     
-    Task PublishOrderQualityCheckedEventV1(KitchenRequest request);
+    Task PublishOrderQualityCheckedEventV1(OrderQualityCheckedEventV1 evt);
 }

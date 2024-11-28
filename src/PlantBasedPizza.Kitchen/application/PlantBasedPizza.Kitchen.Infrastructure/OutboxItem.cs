@@ -1,4 +1,4 @@
-namespace PlantBasedPizza.OrderManager.Infrastructure;
+namespace PlantBasedPizza.Kitchen.Infrastructure;
 
 public class OutboxItem
 {
@@ -15,7 +15,7 @@ public class OutboxItem
     
     public DateTime EventTime { get; set; }
 
-    public bool Processed { get; set; } = false;
+    public bool Processed { get; set; }
 
     public bool Failed { get; set; }
     
