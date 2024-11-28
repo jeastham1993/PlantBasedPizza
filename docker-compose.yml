@@ -141,7 +141,6 @@ services:
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
       - REDIS_CONNECTION_STRING=cache:6379
       - CACHE_NAME=orders
-      - Services__Loyalty=loyalty
       - Services__LoyaltyInternal=http://localhost:5101
       - Services__Recipes=recipes
       - Environment=local

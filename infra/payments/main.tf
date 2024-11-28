@@ -6,7 +6,7 @@ resource "azurerm_container_app" "payment-api" {
   dapr {
     app_id = "payment"
     app_port = 8080
-    app_protocol = "grpc"
+    app_protocol = "http"
   }
   identity {
     identity_ids = [ azurerm_user_assigned_identity.app_identity.id ]
@@ -33,8 +33,16 @@ resource "azurerm_container_app" "payment-api" {
         value = var.env
       }
       env {
-        name = "Auth__ApiKey"
-        value = "the api key to use, use a secret store in production"
+        name = "MOMENTO_API_KEY"
+        value = var.momento_api_key
+      }
+      env {
+        name = "CACHE_NAME"
+        value = var.cache_name
+      }
+      env {
+        name = "Services__OrdersInternal"
+        value = "http://localhost:50001"
       }
       env {
         name  = "OTEL_EXPORTER_OTLP_ENDPOINT"

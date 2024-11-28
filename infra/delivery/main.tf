@@ -49,12 +49,16 @@ resource "azurerm_container_app" "delivery-api" {
         value = "This is a sample secret key - please don't use in production environment."
       }
       env {
-        name = "Auth__PaymentApiKey"
-        value = "the api key to use, use a secret store in production"
-      }
-      env {
         name  = "OTEL_EXPORTER_OTLP_ENDPOINT"
         value = "http://localhost:4317"
+      }
+      env {
+        name = "MOMENTO_API_KEY"
+        value = var.momento_api_key
+      }
+      env {
+        name = "CACHE_NAME"
+        value = var.cache_name
       }
     }
     container {
@@ -152,6 +156,14 @@ resource "azurerm_container_app" "delivery-worker" {
       env {
         name  = "OTEL_EXPORTER_OTLP_ENDPOINT"
         value = "http://localhost:4317"
+      }
+      env {
+        name = "MOMENTO_API_KEY"
+        value = var.momento_api_key
+      }
+      env {
+        name = "CACHE_NAME"
+        value = var.cache_name
       }
     }
     container {

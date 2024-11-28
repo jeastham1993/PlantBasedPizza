@@ -37,10 +37,6 @@ resource "azurerm_container_app" "kitchen-api" {
         value = var.env
       }
       env {
-        name = "Services__OrdersInternal"
-        value = "http://localhost:50001"
-      }
-      env {
         name = "Services__Recipes"
         value = "recipes"
       }
@@ -67,6 +63,14 @@ resource "azurerm_container_app" "kitchen-api" {
       env {
         name  = "OTEL_EXPORTER_OTLP_ENDPOINT"
         value = "http://localhost:4317"
+      }
+      env {
+        name = "MOMENTO_API_KEY"
+        value = var.momento_api_key
+      }
+      env {
+        name = "CACHE_NAME"
+        value = var.cache_name
       }
     }
     container {
@@ -172,6 +176,14 @@ resource "azurerm_container_app" "kitchen-worker" {
       env {
         name  = "OTEL_EXPORTER_OTLP_ENDPOINT"
         value = "http://localhost:4317"
+      }
+      env {
+        name = "MOMENTO_API_KEY"
+        value = var.momento_api_key
+      }
+      env {
+        name = "CACHE_NAME"
+        value = var.cache_name
       }
     }
     container {

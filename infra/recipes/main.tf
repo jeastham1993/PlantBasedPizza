@@ -52,6 +52,14 @@ resource "azurerm_container_app" "recipes-api" {
         name  = "OTEL_EXPORTER_OTLP_ENDPOINT"
         value = "http://localhost:4317"
       }
+      env {
+        name = "MOMENTO_API_KEY"
+        value = var.momento_api_key
+      }
+      env {
+        name = "CACHE_NAME"
+        value = var.cache_name
+      }
     }
     container {
       name   = "datadog"

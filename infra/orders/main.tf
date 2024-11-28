@@ -37,15 +37,7 @@ resource "azurerm_container_app" "orders-api" {
         value = var.env
       }
       env {
-        name = "Services__Loyalty"
-        value = "loyalty"
-      }
-      env {
         name = "Services__LoyaltyInternal"
-        value = "http://localhost:50001"
-      }
-      env {
-        name = "Services__PaymentInternal"
         value = "http://localhost:50001"
       }
       env {
@@ -67,10 +59,6 @@ resource "azurerm_container_app" "orders-api" {
       env {
         name = "Auth__Key"
         value = "This is a sample secret key - please don't use in production environment."
-      }
-      env {
-        name = "Auth__PaymentApiKey"
-        value = "the api key to use, use a secret store in production"
       }
       env {
         name  = "OTEL_EXPORTER_OTLP_ENDPOINT"
@@ -222,15 +210,7 @@ resource "azurerm_container_app" "orders-worker" {
         value = var.env
       }
       env {
-        name = "Services__Loyalty"
-        value = "loyalty"
-      }
-      env {
         name = "Services__LoyaltyInternal"
-        value = "http://localhost:50001"
-      }
-      env {
-        name = "Services__PaymentInternal"
         value = "http://localhost:50001"
       }
       env {

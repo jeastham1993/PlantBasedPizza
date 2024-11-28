@@ -22,10 +22,6 @@ variable "dd_api_key" {
     type = string
 }
 
-variable "momento_api_key" {
-  type = string
-}
-
 variable "db_connection_string" {
     type = string
 }
