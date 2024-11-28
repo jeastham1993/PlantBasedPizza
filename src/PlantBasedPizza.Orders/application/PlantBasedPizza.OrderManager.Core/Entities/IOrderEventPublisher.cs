@@ -1,4 +1,3 @@
-using PlantBasedPizza.OrderManager.Core.OrderSubmitted;
 using PlantBasedPizza.OrderManager.Core.PublicEvents;
 
 namespace PlantBasedPizza.OrderManager.Core.Entities;

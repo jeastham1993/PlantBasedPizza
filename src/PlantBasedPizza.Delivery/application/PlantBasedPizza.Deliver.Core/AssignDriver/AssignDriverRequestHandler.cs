@@ -1,8 +1,9 @@
 using PlantBasedPizza.Deliver.Core.Entities;
+using PlantBasedPizza.Deliver.Core.PublicEvents;
 
 namespace PlantBasedPizza.Deliver.Core.AssignDriver;
 
-public class AssignDriverRequestHandler(IDeliveryRequestRepository deliveryRequests, IDeliveryEventPublisher eventPublisher)
+public class AssignDriverRequestHandler(IDeliveryRequestRepository deliveryRequests)
 {
     public async Task<DeliveryRequestDto?> Handle(AssignDriverRequest request)
     {
@@ -12,8 +13,7 @@ public class AssignDriverRequestHandler(IDeliveryRequestRepository deliveryReque
 
         await existingDeliveryRequest.ClaimDelivery(request.DriverName);
 
-        await deliveryRequests.UpdateDeliveryRequest(existingDeliveryRequest);
-        await eventPublisher.PublishDriverOrderCollectedEventV1(new DriverCollectedOrderEventV1(existingDeliveryRequest));
+        await deliveryRequests.UpdateDeliveryRequest(existingDeliveryRequest, [new DriverCollectedOrderEventV1(existingDeliveryRequest)]);
 
         return new DeliveryRequestDto(existingDeliveryRequest);
     }

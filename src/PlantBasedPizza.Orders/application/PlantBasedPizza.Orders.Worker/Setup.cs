@@ -2,7 +2,6 @@ using Dapr;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Caching.Distributed;
-using PlantBasedPizza.OrderManager.Core.OrderSubmitted;
 using PlantBasedPizza.Orders.Worker.Handlers;
 using PlantBasedPizza.Orders.Worker.IntegrationEvents;
 

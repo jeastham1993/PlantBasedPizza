@@ -16,7 +16,8 @@ var serviceName = "DeliveryWorker";
 
 builder.Services
     .AddSharedInfrastructure(builder.Configuration, serviceName)
-    .AddDeliveryInfrastructure(builder.Configuration);
+    .AddDeliveryInfrastructure(builder.Configuration)
+    .AddHostedService<OutboxWorker>();
 
 builder.Services.AddSingleton<OrderReadyForDeliveryEventHandler>();
 
@@ -28,4 +29,4 @@ app.AddReadyForDeliveryHandler();
 
 app.MapGet("/deliver/health", () => "Healthy");
 
-app.Run();
+await app.RunAsync();

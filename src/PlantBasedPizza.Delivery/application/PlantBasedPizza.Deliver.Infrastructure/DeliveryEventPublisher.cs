@@ -1,10 +1,9 @@
 using Dapr.Client;
-using PlantBasedPizza.Deliver.Core.AssignDriver;
 using PlantBasedPizza.Deliver.Core.Entities;
-using PlantBasedPizza.Deliver.Core.MarkOrderDelivered;
+using PlantBasedPizza.Deliver.Core.PublicEvents;
 using Saunter.Attributes;
 
-namespace PlantBasedPizza.Deliver.Infrastructure.IntegrationEvents;
+namespace PlantBasedPizza.Deliver.Infrastructure;
 
 [AsyncApi]
 public class DeliveryEventPublisher(DaprClient daprClient) : IDeliveryEventPublisher

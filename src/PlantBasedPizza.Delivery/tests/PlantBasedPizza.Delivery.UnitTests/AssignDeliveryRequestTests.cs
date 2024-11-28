@@ -16,7 +16,7 @@ public class AssignDeliveryRequestTests
         
         var eventPublisher = new Mock<IDeliveryEventPublisher>();
 
-        var handler = new AssignDriverRequestHandler(repository.Object, eventPublisher.Object);
+        var handler = new AssignDriverRequestHandler(repository.Object);
 
         var result = await handler.Handle(new AssignDriverRequest()
         {
@@ -35,7 +35,7 @@ public class AssignDeliveryRequestTests
         
         var eventPublisher = new Mock<IDeliveryEventPublisher>();
 
-        var handler = new AssignDriverRequestHandler(repository.Object, eventPublisher.Object);
+        var handler = new AssignDriverRequestHandler(repository.Object);
 
         var result = await handler.Handle(new AssignDriverRequest()
         {

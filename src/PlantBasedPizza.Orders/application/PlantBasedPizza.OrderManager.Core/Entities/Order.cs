@@ -1,6 +1,5 @@
 using System.Text.Json.Serialization;
 using PlantBasedPizza.Events;
-using PlantBasedPizza.OrderManager.Core.OrderSubmitted;
 using PlantBasedPizza.OrderManager.Core.PublicEvents;
 using PlantBasedPizza.Shared.Guards;
 

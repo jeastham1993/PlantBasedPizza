@@ -1,6 +1,8 @@
 using System.Diagnostics;
+using System.Text.Json;
 using MongoDB.Driver;
 using PlantBasedPizza.Deliver.Core.Entities;
+using PlantBasedPizza.Events;
 using PlantBasedPizza.Shared.Logging;
 
 namespace PlantBasedPizza.Deliver.Infrastructure
@@ -8,23 +10,45 @@ namespace PlantBasedPizza.Deliver.Infrastructure
     public class DeliveryRequestRepository : IDeliveryRequestRepository
     {
         private readonly IMongoCollection<DeliveryRequest> _collection;
+        private readonly IMongoCollection<OutboxItem> _outboxItems;
 
         public DeliveryRequestRepository(MongoClient client)
         {
             var database = client.GetDatabase("PlantBasedPizza");
             _collection = database.GetCollection<DeliveryRequest>("DeliveryRequests");
+            _outboxItems = database.GetCollection<OutboxItem>("DeliveryRequests_outboxitems");
         }
         
-        public async Task AddNewDeliveryRequest(DeliveryRequest request)
+        public async Task AddNewDeliveryRequest(DeliveryRequest request, List<IntegrationEvent> events = null)
         {
             await _collection.InsertOneAsync(request).ConfigureAwait(false);
+            
+            foreach (var evt in (events ?? new()))
+            {
+                await _outboxItems.InsertOneAsync(new OutboxItem()
+                {
+                    EventData = JsonSerializer.Serialize(evt),
+                    EventType = evt.GetType().Name,
+                    Processed = false
+                });
+            }
         }
 
-        public async Task UpdateDeliveryRequest(DeliveryRequest request)
+        public async Task UpdateDeliveryRequest(DeliveryRequest request, List<IntegrationEvent> events = null)
         {
             var queryBuilder = Builders<DeliveryRequest>.Filter.Eq(ord => ord.OrderIdentifier, request.OrderIdentifier);
 
             var replaceResult = await _collection.ReplaceOneAsync(queryBuilder, request);
+            
+            foreach (var evt in (events ?? new()))
+            {
+                await _outboxItems.InsertOneAsync(new OutboxItem()
+                {
+                    EventData = JsonSerializer.Serialize(evt),
+                    EventType = evt.GetType().Name,
+                    Processed = false
+                });
+            }
             
             replaceResult.AddToTelemetry();
         }

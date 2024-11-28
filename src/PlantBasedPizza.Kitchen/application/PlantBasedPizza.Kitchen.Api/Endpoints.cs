@@ -2,7 +2,6 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using PlantBasedPizza.Kitchen.Core.Entities;
 using PlantBasedPizza.Kitchen.Infrastructure.DataTransfer;
-using PlantBasedPizza.Kitchen.Infrastructure.IntegrationEvents;
 
 namespace PlantBasedPizza.Kitchen.Api;
 

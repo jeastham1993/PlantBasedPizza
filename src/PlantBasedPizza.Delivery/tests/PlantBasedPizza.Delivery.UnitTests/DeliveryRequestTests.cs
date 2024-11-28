@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using PlantBasedPizza.Deliver.Core.Entities;
 using PlantBasedPizza.Deliver.Core.OrderReadyForDelivery;
+using PlantBasedPizza.Events;
 
 namespace PlantBasedPizza.Delivery.UnitTests
 {
@@ -36,7 +37,7 @@ namespace PlantBasedPizza.Delivery.UnitTests
         public async Task OrderReadyForDeliveryHandler_ShouldStoreNewDeliveryRequest()
         {
             var mockRepo = new Mock<IDeliveryRequestRepository>();
-            mockRepo.Setup(p => p.AddNewDeliveryRequest(It.IsAny<DeliveryRequest>()))
+            mockRepo.Setup(p => p.AddNewDeliveryRequest(It.IsAny<DeliveryRequest>(), It.IsAny<List<IntegrationEvent>>()))
                 .Verifiable();
             var mockLogger = new Mock<ILogger<OrderReadyForDeliveryEventHandler>>();
 
@@ -53,14 +54,14 @@ namespace PlantBasedPizza.Delivery.UnitTests
                 Postcode = "Postcode"
             });
             
-            mockRepo.Verify(p => p.AddNewDeliveryRequest(It.IsAny<DeliveryRequest>()), Times.Once);
+            mockRepo.Verify(p => p.AddNewDeliveryRequest(It.IsAny<DeliveryRequest>(), It.IsAny<List<IntegrationEvent>>()), Times.Once);
         }
         
         [Fact]
         public async Task OrderReadyForDeliveryHandlerImmutabilityCheck_ShouldSkipIfOrderAlreadyFound()
         {
             var mockRepo = new Mock<IDeliveryRequestRepository>();
-            mockRepo.Setup(p => p.AddNewDeliveryRequest(It.IsAny<DeliveryRequest>()))
+            mockRepo.Setup(p => p.AddNewDeliveryRequest(It.IsAny<DeliveryRequest>(), It.IsAny<List<IntegrationEvent>>()))
                 .Verifiable();
             mockRepo.Setup(p => p.GetDeliveryStatusForOrder(It.IsAny<string>()))
                 .ReturnsAsync(new DeliveryRequest(OrderIdentifier, new Address("Address line 1", "TY6 7UI")));
@@ -80,7 +81,7 @@ namespace PlantBasedPizza.Delivery.UnitTests
                 Postcode = "Postcode"
             });
             
-            mockRepo.Verify(p => p.AddNewDeliveryRequest(It.IsAny<DeliveryRequest>()), Times.Never);
+            mockRepo.Verify(p => p.AddNewDeliveryRequest(It.IsAny<DeliveryRequest>(), It.IsAny<List<IntegrationEvent>>()), Times.Never);
         }
     }
 }

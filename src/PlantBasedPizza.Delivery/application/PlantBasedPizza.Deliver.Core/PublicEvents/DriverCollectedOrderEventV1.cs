@@ -1,10 +1,12 @@
+using System.Text.Json;
 using PlantBasedPizza.Deliver.Core.Entities;
 using PlantBasedPizza.Events;
 
-namespace PlantBasedPizza.Deliver.Core.AssignDriver;
+namespace PlantBasedPizza.Deliver.Core.PublicEvents;
 
 public class DriverCollectedOrderEventV1 : IntegrationEvent
 {
+    public DriverCollectedOrderEventV1(){}
     public DriverCollectedOrderEventV1(DeliveryRequest request)
     {
         OrderIdentifier = request.OrderIdentifier;
@@ -18,4 +20,9 @@ public class DriverCollectedOrderEventV1 : IntegrationEvent
     public string DriverName { get; init; }
     
     public string OrderIdentifier { get; init; }
+
+    public override string AsString()
+    {
+        return JsonSerializer.Serialize(this);
+    }
 }

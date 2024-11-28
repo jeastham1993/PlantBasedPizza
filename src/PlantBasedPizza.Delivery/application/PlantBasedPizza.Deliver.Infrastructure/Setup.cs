@@ -7,7 +7,6 @@ using PlantBasedPizza.Deliver.Core.GetAwaitingCollection;
 using PlantBasedPizza.Deliver.Core.GetDeliveryStatus;
 using PlantBasedPizza.Deliver.Core.MarkOrderDelivered;
 using PlantBasedPizza.Deliver.Core.OrderReadyForDelivery;
-using PlantBasedPizza.Deliver.Infrastructure.IntegrationEvents;
 
 namespace PlantBasedPizza.Deliver.Infrastructure
 {
@@ -22,6 +21,13 @@ namespace PlantBasedPizza.Deliver.Infrastructure
 
             services.AddSingleton(client);
             services.AddDaprClient();
+
+            BsonClassMap.RegisterClassMap<OutboxItem>(map =>
+            {
+                map.AutoMap();
+                map.SetIgnoreExtraElements(true);
+                map.SetIgnoreExtraElementsIsInherited(true);
+            });
             
             BsonClassMap.RegisterClassMap<DeliveryRequest>(map =>
             {

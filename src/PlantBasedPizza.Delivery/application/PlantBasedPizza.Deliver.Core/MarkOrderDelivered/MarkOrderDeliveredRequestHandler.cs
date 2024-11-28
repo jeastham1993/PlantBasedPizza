@@ -1,8 +1,9 @@
 using PlantBasedPizza.Deliver.Core.Entities;
+using PlantBasedPizza.Deliver.Core.PublicEvents;
 
 namespace PlantBasedPizza.Deliver.Core.MarkOrderDelivered;
 
-public class MarkOrderDeliveredRequestHandler(IDeliveryRequestRepository deliveryRequests, IDeliveryEventPublisher eventPublisher)
+public class MarkOrderDeliveredRequestHandler(IDeliveryRequestRepository deliveryRequests)
 {
     public async Task<DeliveryRequestDto?> Handle(MarkOrderDeliveredRequest request)
     {
@@ -12,8 +13,7 @@ public class MarkOrderDeliveredRequestHandler(IDeliveryRequestRepository deliver
 
         await existingDeliveryRequest.Deliver();
             
-        await deliveryRequests.UpdateDeliveryRequest(existingDeliveryRequest);
-        await eventPublisher.PublishDriverDeliveredOrderEventV1(new DriverDeliveredOrderEventV1(existingDeliveryRequest));
+        await deliveryRequests.UpdateDeliveryRequest(existingDeliveryRequest, [new DriverDeliveredOrderEventV1(existingDeliveryRequest)]);
 
         return new DeliveryRequestDto(existingDeliveryRequest);
     }

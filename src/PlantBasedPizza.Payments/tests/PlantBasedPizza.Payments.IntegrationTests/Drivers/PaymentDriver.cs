@@ -1,6 +1,5 @@
 using Dapr.Client;
 using Grpc.Core;
-using Grpc.Net.Client;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.Extensions.Options;
@@ -10,7 +9,6 @@ namespace PlantBasedPizza.Payments.IntegrationTests.Drivers;
 
 public class PaymentDriver
     {
-        private readonly Metadata _apiKeyHeaders;
         private readonly DaprClient _daprClient;
         private readonly IDistributedCache _distributedCache;
 

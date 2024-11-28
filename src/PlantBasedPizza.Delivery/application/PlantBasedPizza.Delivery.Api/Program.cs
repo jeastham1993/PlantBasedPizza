@@ -2,7 +2,6 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using PlantBasedPizza.Deliver.Infrastructure;
-using PlantBasedPizza.Deliver.Infrastructure.IntegrationEvents;
 using PlantBasedPizza.Delivery.Api;
 using PlantBasedPizza.Shared;
 using PlantBasedPizza.Shared.Logging;

@@ -1,7 +1,5 @@
 using Dapr.Client;
-using Microsoft.Extensions.Logging;
 using PlantBasedPizza.OrderManager.Core.Entities;
-using PlantBasedPizza.OrderManager.Core.OrderSubmitted;
 using PlantBasedPizza.OrderManager.Core.PublicEvents;
 using Saunter.Attributes;
 
