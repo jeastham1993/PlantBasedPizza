@@ -10,7 +10,7 @@ namespace PlantBasedPizza.OrderManager.Infrastructure;
 public class OrderEventPublisher(DaprClient daprClient) : IOrderEventPublisher
 {
     private const string SOURCE = "orders";
-    private const string PUB_SUB_NAME = "publiC";
+    private const string PUB_SUB_NAME = "public";
     
     [Channel("order.orderSubmitted.v1")]
     [PublishOperation(typeof(OrderSubmittedEventV1), Summary = "Published when an order is submitted.")]
