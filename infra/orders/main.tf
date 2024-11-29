@@ -186,7 +186,7 @@ resource "azurerm_container_app" "orders-worker" {
     type = "UserAssigned"
   }
   ingress {
-    external_enabled = false
+    external_enabled = true
     target_port = 8080
     traffic_weight {
       percentage = 100

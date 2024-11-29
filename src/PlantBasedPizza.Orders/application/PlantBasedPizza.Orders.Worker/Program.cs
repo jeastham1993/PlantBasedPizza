@@ -92,7 +92,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapGet("/orders/health", () => "Healthy").AllowAnonymous();
-app.MapHub<OrderNotificationsHub>("/notifications/orders");
+app.MapHub<OrderNotificationsHub>("/notifications/orders")
+    .RequireAuthorization(options => options.RequireRole("user"));
 
 app.MapSubscribeHandler()
     .AllowAnonymous();

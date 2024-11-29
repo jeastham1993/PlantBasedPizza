@@ -11,9 +11,4 @@ public class OrderNotificationsHub(ILogger<OrderNotificationsHub> logger) : Hub
     {
         logger.LogInformation("Client connected");
     }
-
-    public async Task SendMessage(string user, string message)
-    {
-        await Clients.All.SendAsync("ReceiveMessage", user, message);
-    }
 }

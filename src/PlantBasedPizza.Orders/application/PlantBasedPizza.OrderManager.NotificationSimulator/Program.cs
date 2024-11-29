@@ -50,7 +50,7 @@ connection.On<string>("driverAssigned", (orderIdentifier) =>
         
 await connection.StartAsync();
 
-Console.WriteLine("Connectted");
+Console.WriteLine("Connected");
 Console.WriteLine("Press the X key to exit...");
 
 // Keep going until somebody hits 'x'
