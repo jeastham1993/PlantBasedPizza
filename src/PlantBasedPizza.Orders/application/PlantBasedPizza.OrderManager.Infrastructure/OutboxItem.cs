@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 namespace PlantBasedPizza.OrderManager.Infrastructure;
 
 public class OutboxItem
@@ -6,6 +8,7 @@ public class OutboxItem
     {
         ItemId = Guid.NewGuid().ToString();
         EventTime = DateTime.UtcNow;
+        TraceId = Activity.Current?.Id;
     }
     
     public string ItemId { get; set; }
@@ -20,4 +23,6 @@ public class OutboxItem
     public bool Failed { get; set; }
     
     public string? FailureReason { get; set; }
+    
+    public string? TraceId { get; set; }
 }

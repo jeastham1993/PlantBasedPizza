@@ -29,6 +29,8 @@ services:
     environment:
       - DatabaseConnection=mongodb://mongodb:27017
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+      - REDIS_CONNECTION_STRING=cache:6379
+      - CACHE_NAME=delivery
       - Environment=local
       - Auth__Issuer=https://plantbasedpizza.com
       - Auth__Audience=https://plantbasedpizza.com
@@ -62,6 +64,8 @@ services:
     environment:
       - DatabaseConnection=mongodb://mongodb:27017
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+      - REDIS_CONNECTION_STRING=cache:6379
+      - CACHE_NAME=delivery
       - Environment=local
       - DAPR_HOST=host.docker.internal
       - DAPR_GRPC_PORT=5101

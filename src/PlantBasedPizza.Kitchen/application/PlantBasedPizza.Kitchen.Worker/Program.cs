@@ -11,11 +11,10 @@ builder.Configuration
 builder.AddLoggerConfigs();
 
 builder.Services.AddDaprClient();
-
-var serviceName = "KitchenWorker";
+builder.Services.AddSingleton<Idempotency, CachedIdempotencyService>();
 
 builder.Services
-    .AddSharedInfrastructure(builder.Configuration, serviceName)
+    .AddSharedInfrastructure(builder.Configuration, ApplicationDefaults.ServiceName)
     .AddKitchenInfrastructure(builder.Configuration)
     .AddHostedService<OutboxWorker>();
 
@@ -25,6 +24,7 @@ var app = builder.Build();
 
 app.MapSubscribeHandler();
 app.UseCloudEvents();
-app.AddOrderSubmittedProcessing();
+
+app.MapPost("/order-confirmed", EventHandlers.HandleOrderConfirmedEvent);
 
 await app.RunAsync();

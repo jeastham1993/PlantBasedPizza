@@ -179,6 +179,36 @@ this.ScenarioInitialize(scenarioInfo);
             this.ScenarioCleanup();
         }
         
+        [Xunit.SkippableFactAttribute(DisplayName="WhenTheSameEventIsDeliveredMultipleTimesOnlyOneShouldReachTheDatabase")]
+        [Xunit.TraitAttribute("FeatureTitle", "DeliveryFeature")]
+        [Xunit.TraitAttribute("Description", "WhenTheSameEventIsDeliveredMultipleTimesOnlyOneShouldReachTheDatabase")]
+        [Xunit.TraitAttribute("Category", "delivery")]
+        public void WhenTheSameEventIsDeliveredMultipleTimesOnlyOneShouldReachTheDatabase()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "delivery"};
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("WhenTheSameEventIsDeliveredMultipleTimesOnlyOneShouldReachTheDatabase", null, tagsOfScenario, argumentsOfScenario, featureTags);
+#line 23
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            if ((TagHelper.ContainsIgnoreTag(tagsOfScenario) || TagHelper.ContainsIgnoreTag(featureTags)))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+#line 24
+ testRunner.Given("an order is ready for delivery twice", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Given ");
+#line hidden
+#line 25
+ testRunner.Then("it should be awaiting delivery collection once", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
         [System.CodeDom.Compiler.GeneratedCodeAttribute("TechTalk.SpecFlow", "3.9.0.0")]
         [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
         public class FixtureData : System.IDisposable

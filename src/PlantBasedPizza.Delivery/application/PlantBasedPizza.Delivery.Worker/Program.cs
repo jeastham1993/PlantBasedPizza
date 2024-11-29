@@ -12,14 +12,13 @@ builder.AddLoggerConfigs();
 
 builder.Services.AddDaprClient();
 
-var serviceName = "DeliveryWorker";
-
 builder.Services
-    .AddSharedInfrastructure(builder.Configuration, serviceName)
+    .AddSharedInfrastructure(builder.Configuration, ApplicationDefaults.ServiceName)
     .AddDeliveryInfrastructure(builder.Configuration)
     .AddHostedService<OutboxWorker>();
 
 builder.Services.AddSingleton<OrderReadyForDeliveryEventHandler>();
+builder.Services.AddSingleton<Idempotency, CachedIdempotencyService>();
 
 var app = builder.Build();
 

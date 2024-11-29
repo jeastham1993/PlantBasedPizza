@@ -4,6 +4,8 @@ using Microsoft.Extensions.DependencyInjection;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using PlantBasedPizza.Shared.Logging;
+using Saunter;
+using Saunter.AsyncApiSchema.v2;
 
 namespace PlantBasedPizza.Shared
 {
@@ -47,6 +49,42 @@ namespace PlantBasedPizza.Shared
             });
 
             return services;
+        }
+
+        public static IServiceCollection AddAsyncApiDocs(this IServiceCollection services, IConfiguration configuration, IList<Type> eventPublisherTypes, string serviceName)
+        {
+            var generateAsyncApi = configuration["ENABLE_ASYNC_API"] == "Y";
+
+            if (generateAsyncApi)
+            {
+                services.AddAsyncApiSchemaGeneration(options =>
+                {
+                    options.AssemblyMarkerTypes = eventPublisherTypes;
+
+                    options.AsyncApi = new AsyncApiDocument
+                    {
+                        Info = new Info(serviceName, "1.0.0"),
+                    };
+                });   
+            }
+
+            return services;
+        }
+
+        public static WebApplication UseAsyncApi(this WebApplication app)
+        {
+            var generateAsyncApi = app.Configuration["ENABLE_ASYNC_API"] == "Y";
+            
+            app.UseEndpoints(endpoints =>
+            {
+                if (generateAsyncApi)
+                {
+                    endpoints.MapAsyncApiDocuments();
+                    endpoints.MapAsyncApiUi();    
+                }
+            });
+            
+            return app;
         }
         
         public static IApplicationBuilder UseSharedMiddleware(

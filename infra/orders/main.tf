@@ -261,6 +261,18 @@ resource "azurerm_container_app" "orders-worker" {
         name = "CACHE_NAME"
         value = var.cache_name
       }
+      env {
+        name = "Auth__Issuer"
+        value = "https://plantbasedpizza.com"
+      }
+      env {
+        name = "Auth__Audience"
+        value = "https://plantbasedpizza.com"
+      }
+      env {
+        name = "Auth__Key"
+        value = "This is a sample secret key - please don't use in production environment."
+      }
     }
     container {
       name   = "datadog"

@@ -20,6 +20,7 @@
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
       <PackageReference Include="Dapr.AspNetCore" Version="1.14.0" />
+      <PackageReference Include="Saunter" Version="0.13.0" />
     </ItemGroup>
 
     <ItemGroup>

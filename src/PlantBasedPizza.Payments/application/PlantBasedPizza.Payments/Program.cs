@@ -2,7 +2,10 @@ using Grpc.Core;
 using Grpc.Net.Client.Configuration;
 using PlantBasedPizza.Orders.Internal;
 using PlantBasedPizza.Payments;
+using PlantBasedPizza.Payments.Adapters;
 using PlantBasedPizza.Payments.ExternalEvents;
+using PlantBasedPizza.Payments.OrderSubmitted;
+using PlantBasedPizza.Payments.PublicEvents;
 using PlantBasedPizza.Shared;
 using PlantBasedPizza.Shared.Caching;
 using PlantBasedPizza.Shared.Logging;
@@ -32,9 +35,12 @@ builder.Services.AddGrpc();
 
 builder.Services
     .AddSharedInfrastructure(builder.Configuration, "PaymentApi")
+    .AddAsyncApiDocs(builder.Configuration, [typeof(PaymentEventPublisher)], "PaymentApi")
     .AddCaching(builder.Configuration);
 
 builder.Services.AddSingleton<OrderSubmittedEventHandler>();
+builder.Services.AddSingleton<IPaymentEventPublisher, PaymentEventPublisher>();
+builder.Services.AddSingleton<IOrderService, OrderService>();
 
 builder.Services.AddDaprClient();
 
@@ -52,7 +58,10 @@ var defaultMethodConfig = new MethodConfig
     }
 };
 
-builder.Services.AddGrpcClient<Orders.OrdersClient>(o => { o.Address = new Uri(builder.Configuration["Services:OrdersInternal"]); })
+builder.Services.AddGrpcClient<Orders.OrdersClient>(o =>
+    {
+        o.Address = new Uri(builder.Configuration["Services:OrdersInternal"]);
+    })
     .ConfigureChannel((provider, channel) =>
     {
         channel.ServiceConfig = new ServiceConfig { MethodConfigs = { defaultMethodConfig } };
@@ -62,9 +71,13 @@ var app = builder.Build();
 
 app.MapGet("/payments/health", () => "Healthy");
 
+app.UseRouting();
+
 app.MapSubscribeHandler();
 app.UseCloudEvents();
 app.AddEventHandlers();
+
+app.UseAsyncApi();
 
 appLogger.LogInformation("Running!");
 

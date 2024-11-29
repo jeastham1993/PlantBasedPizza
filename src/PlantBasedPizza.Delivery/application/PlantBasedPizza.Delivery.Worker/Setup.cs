@@ -1,7 +1,9 @@
 using Dapr;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using PlantBasedPizza.Deliver.Core.OrderReadyForDelivery;
+using PlantBasedPizza.Events;
 
 namespace PlantBasedPizza.Delivery.Worker;
 
@@ -9,16 +11,7 @@ public static class Setup
 {
     public static WebApplication AddReadyForDeliveryHandler(this WebApplication app)
     {
-        var handler = app.Services.GetRequiredService<OrderReadyForDeliveryEventHandler>();
-
-        app.MapPost("/ready-for-delivery",
-            [Topic("public", "order.readyForDelivery.v1")] async (
-                OrderReadyForDeliveryEventV1 evt) =>
-            {
-                await handler.Handle(evt);
-                
-                return Results.Ok();
-            });
+        app.MapPost("/ready-for-delivery",  EventHandlers.HandleOrderReadyForDeliveryEvent);
 
         return app;
     }

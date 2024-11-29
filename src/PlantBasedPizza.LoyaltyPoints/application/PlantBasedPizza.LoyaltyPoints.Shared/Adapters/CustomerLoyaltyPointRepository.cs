@@ -9,6 +9,7 @@ public class CustomerLoyaltyPointRepository : ICustomerLoyaltyPointsRepository
 {
     private readonly IMongoCollection<CustomerLoyaltyPoints> _loyaltyPoints;
     private readonly DaprClient _daprClient;
+    private const string SOURCE = "loyalty";
 
     public CustomerLoyaltyPointRepository(MongoClient client, DaprClient daprClient)
     {
@@ -47,6 +48,13 @@ public class CustomerLoyaltyPointRepository : ICustomerLoyaltyPointsRepository
             TotalLoyaltyPoints = points.TotalPoints
         };
         
-        await _daprClient.PublishEventAsync("public", $"{evt.EventName}.{evt.EventVersion}", evt);
+        var eventMetadata = new Dictionary<string, string>(2)
+        {
+            { "cloudevent.source", SOURCE },
+            { "cloudevent.type", $"{evt.EventName}.{evt.EventVersion}" },
+            { "cloudevent.id", Guid.NewGuid().ToString() }
+        };
+        
+        await _daprClient.PublishEventAsync("public", $"{evt.EventName}.{evt.EventVersion}", evt, eventMetadata);
     }
 }

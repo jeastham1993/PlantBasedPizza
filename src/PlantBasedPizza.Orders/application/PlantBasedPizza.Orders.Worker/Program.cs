@@ -33,10 +33,8 @@ builder.Services.AddSignalR();
 builder.Services.AddSingleton<IUserIdProvider, UserIdClaimUserProvider>();
 builder.Services.AddSingleton<IUserNotificationService, UserNotificationService>();
 
-var serviceName = "OrdersWorker";
-
 builder.Services
-    .AddSharedInfrastructure(builder.Configuration, serviceName)
+    .AddSharedInfrastructure(builder.Configuration, ApplicationDefaults.ServiceName)
     .AddOrderManagerInfrastructure(builder.Configuration);
 
 builder.Services.AddAuthentication(options =>
@@ -85,7 +83,7 @@ builder.Services.AddSingleton<OrderPreparingEventHandler>();
 builder.Services.AddSingleton<OrderPrepCompleteEventHandler>();
 builder.Services.AddSingleton<OrderQualityCheckedEventHandler>();
 builder.Services.AddSingleton<PaymentSuccessEventHandler>();
-
+builder.Services.AddSingleton<Idempotency, CachedIdempotencyService>();
 builder.Services.AddHostedService<OutboxWorker>();
 
 var app = builder.Build();
@@ -94,12 +92,20 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapGet("/orders/health", () => "Healthy").AllowAnonymous();
-app.MapHub<OrderNotificationsHub>("/notifications/orders").AllowAnonymous();
+app.MapHub<OrderNotificationsHub>("/notifications/orders");
 
 app.MapSubscribeHandler()
     .AllowAnonymous();
 app.UseCloudEvents();
-app.AddEventHandlers();
+
+app.MapPost("/payment-success", EventHandlers.HandlePaymentSuccessfulEvent);
+app.MapPost("/driver-collected", EventHandlers.HandleDriverCollectedOrderEvent);
+app.MapPost("/driver-delivered", EventHandlers.HandleDriverDeliveredOrderEvent);
+app.MapPost("/loyalty-updated", EventHandlers.HandleLoyaltyPointsUpdatedEvent);
+app.MapPost("/order-baked", EventHandlers.HandleOrderBakedEvent);
+app.MapPost("/order-preparing", EventHandlers.HandleOrderPreparingEvent);
+app.MapPost("/order-prep-complete", EventHandlers.HandleOrderPrepCompleteEvent);
+app.MapPost("/order-quality-checked", EventHandlers.HandleOrderQualityCheckedEvent);
 
 appLogger.LogInformation("Running!");
 

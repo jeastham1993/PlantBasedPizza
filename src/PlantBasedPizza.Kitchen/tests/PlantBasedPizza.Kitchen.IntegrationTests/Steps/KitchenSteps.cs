@@ -27,6 +27,18 @@ public class KitchenSteps
         await _kitchenDriver.NewOrderSubmitted(orderId);
     }
 
+    [Given(@"a new order submitted event is raised twice")]
+    public async Task GivenANewOrderSubmittedEventIsRaisedTwice()
+    {
+        var orderId = Guid.NewGuid().ToString();
+
+        _scenarioContext.Add("orderId", orderId);
+        
+        var eventId = Guid.NewGuid().ToString();
+
+        await _kitchenDriver.NewOrderSubmitted(orderId, eventId);
+        await _kitchenDriver.NewOrderSubmitted(orderId, eventId);
+    }
 
     [When(@"order is processed by the kitchen")]
     public async Task WhenOrderOrdIsProcessedByTheKitchen()
@@ -92,6 +104,17 @@ public class KitchenSteps
         var requests = await _kitchenDriver.GetNew();
 
         requests.Exists(p => p.OrderIdentifier == orderId).Should().BeTrue();
+    }
+
+    [Then(@"order should appear as new once")]
+    public async Task ThenOrderShouldAppearAsNewOnce()
+    {
+        var orderId = _scenarioContext.Get<string>("orderId");
+        Activity.Current = _scenarioContext.Get<Activity>("Activity");
+        
+        var requests = await _kitchenDriver.GetNew();
+
+        requests.Count(p => p.OrderIdentifier == orderId).Should().Be(1);
     }
 
     [Then(@"order should appear in the baking queue")]

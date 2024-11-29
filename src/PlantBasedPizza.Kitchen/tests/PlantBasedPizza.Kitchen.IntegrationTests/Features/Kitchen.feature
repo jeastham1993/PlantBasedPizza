@@ -5,9 +5,14 @@ All features related to the kitchen module.
 Scenario: Order appears as new
     Given a new order submitted event is raised
     Then order should appear as new
+    
+@kitchen
+Scenario: Order appears as new multiple times, only should be stored once
+    Given a new order submitted event is raised twice
+    Then order should appear as new once
 
 @kitchen
-Scenario: Order should be moved through the requisite kitchen queues - prparing
+Scenario: Order should be moved through the requisite kitchen queues - preparing
     Given a new order submitted event is raised
     When order is marked as preparing
     Then order should appear in the preparing queue

@@ -373,8 +373,8 @@ services:
   local.payment-api:
     image: payment-api
     container_name: local.payment-api
-    expose:
-      - "8080"
+    ports:
+      - "8095:8080"
     environment:
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
       - REDIS_CONNECTION_STRING=cache:6379

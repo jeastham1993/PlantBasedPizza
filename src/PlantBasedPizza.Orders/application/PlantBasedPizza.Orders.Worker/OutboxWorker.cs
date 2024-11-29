@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Text.Json;
 using MongoDB.Driver;
 using PlantBasedPizza.OrderManager.Core.Entities;
@@ -11,11 +12,13 @@ public class OutboxWorker : BackgroundService
     private readonly IMongoCollection<OutboxItem> _outboxItems;
     private readonly ILogger<OutboxWorker> _logger;
     private readonly IOrderEventPublisher _eventPublisher;
-    
+    private readonly ActivitySource _source;
+
     public OutboxWorker(MongoClient client, ILogger<OutboxWorker> logger, IOrderEventPublisher eventPublisher)
     {
         _logger = logger;
         _eventPublisher = eventPublisher;
+        _source = new ActivitySource(ApplicationDefaults.ServiceName);
         var database = client.GetDatabase("PlantBasedPizza");
         _outboxItems = database.GetCollection<OutboxItem>("orders_outboxitems");
     }
@@ -30,6 +33,9 @@ public class OutboxWorker : BackgroundService
             {
                 try
                 {
+                    using var processingActivity = StartFromOutboxItem(outboxItem);
+                    processingActivity?.Start();
+                    
                     _logger.LogInformation("Processing outbox item: Type: {OutboxItemType}. Data: {OutboxItemData}",
                         outboxItem.EventType, outboxItem.EventData);
 
@@ -86,5 +92,25 @@ public class OutboxWorker : BackgroundService
 
             await Task.Delay(5000, stoppingToken);
         }
+    }
+
+    private Activity? StartFromOutboxItem(OutboxItem outboxItem)
+    {
+        if (!string.IsNullOrEmpty(outboxItem.TraceId))
+        {
+            try
+            {
+                var context = ActivityContext.Parse(outboxItem.TraceId, null);
+                var messageProcessingActivity = _source.StartActivity("process", ActivityKind.Internal, context);
+                
+                return messageProcessingActivity;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Failure parsing tracecontext from outbox item");
+            }
+        }
+
+        return null;
     }
 }

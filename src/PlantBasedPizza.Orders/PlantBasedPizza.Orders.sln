@@ -28,6 +28,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlantBasedPizza.OrderManage
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.OrderManager.NotificationSimulator", "application\PlantBasedPizza.OrderManager.NotificationSimulator\PlantBasedPizza.OrderManager.NotificationSimulator.csproj", "{27D08F36-DCE4-4650-8F30-035129E4557E}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "shared", "shared", "{4333BB97-B550-4CF6-94AE-2ACA5F5DF67F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Shared", "..\shared\PlantBasedPizza.Shared\PlantBasedPizza.Shared.csproj", "{933E9688-2898-487A-8CCA-7CACC34B96BB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -66,6 +70,10 @@ Global
 		{27D08F36-DCE4-4650-8F30-035129E4557E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{27D08F36-DCE4-4650-8F30-035129E4557E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{27D08F36-DCE4-4650-8F30-035129E4557E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{933E9688-2898-487A-8CCA-7CACC34B96BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{933E9688-2898-487A-8CCA-7CACC34B96BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{933E9688-2898-487A-8CCA-7CACC34B96BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{933E9688-2898-487A-8CCA-7CACC34B96BB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -79,6 +87,7 @@ Global
 		{52314261-DF4F-4CF3-AD98-C74C94AE752B} = {68366D5E-93A5-42B9-AA0D-E2FE6C9793B5}
 		{717B4C38-D173-454E-B958-E83FB3574EAA} = {68366D5E-93A5-42B9-AA0D-E2FE6C9793B5}
 		{27D08F36-DCE4-4650-8F30-035129E4557E} = {68366D5E-93A5-42B9-AA0D-E2FE6C9793B5}
+		{933E9688-2898-487A-8CCA-7CACC34B96BB} = {4333BB97-B550-4CF6-94AE-2ACA5F5DF67F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {319921A7-E559-4C05-8DB4-CB6BCF6BF13B}

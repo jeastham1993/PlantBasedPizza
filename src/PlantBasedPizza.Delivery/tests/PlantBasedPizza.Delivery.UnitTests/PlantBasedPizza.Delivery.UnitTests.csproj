@@ -27,6 +27,8 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\application\PlantBasedPizza.Deliver.Core\PlantBasedPizza.Deliver.Core.csproj" />
+      <ProjectReference Include="..\..\application\PlantBasedPizza.Delivery.Api\PlantBasedPizza.Delivery.Api.csproj" />
+      <ProjectReference Include="..\..\application\PlantBasedPizza.Delivery.Worker\PlantBasedPizza.Delivery.Worker.csproj" />
     </ItemGroup>
 
 </Project>

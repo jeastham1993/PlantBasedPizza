@@ -26,24 +26,6 @@ builder.AddLoggerConfigs();
 var appLogger = new SerilogLoggerFactory(logger)
     .CreateLogger<Program>();
 
-var generateAsyncApi = builder.Configuration["Messaging:UseAsyncApi"] == "Y";
-
-if (generateAsyncApi)
-{
-    builder.Services.AddAsyncApiSchemaGeneration(options =>
-    {
-        options.AssemblyMarkerTypes = new[] {typeof(OrderEventPublisher)};
-
-        options.AsyncApi = new AsyncApiDocument
-        {
-            Info = new Info("PlantBasedPizza Orders API", "1.0.0")
-            {
-                Description = "The orders API allows orders to be placed.",
-            },
-        };
-    });   
-}
-
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -68,8 +50,9 @@ builder.Services.AddAuthorization();
 
 var applicationName = "OrdersApi";
 
-builder.Services.AddOrderManagerInfrastructure(builder.Configuration);
-builder.Services.AddSharedInfrastructure(builder.Configuration, applicationName);
+builder.Services.AddOrderManagerInfrastructure(builder.Configuration)
+    .AddSharedInfrastructure(builder.Configuration, applicationName)
+    .AddAsyncApiDocs(builder.Configuration, [typeof(OrderEventPublisher)], "OrdersService");
 
 builder.Services.AddHttpClient();
 
@@ -97,16 +80,8 @@ app.Map("/order/health", async () =>
 });
 
 app.MapControllers();
-
-if (generateAsyncApi)
-{
-    app.UseEndpoints(endpoints =>
-    {
-        endpoints.MapAsyncApiDocuments();
-        endpoints.MapAsyncApiUi();
-    });   
-}
+app.UseAsyncApi();
 
 appLogger.LogInformation("Running!");
 
-app.Run();
+await app.RunAsync();

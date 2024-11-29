@@ -34,18 +34,24 @@ namespace PlantBasedPizza.Delivery.IntegrationTests.Drivers
                 .Build();
         }
 
-        public async Task ANewOrderIsReadyForDelivery(string orderIdentifier)
+        public async Task ANewOrderIsReadyForDelivery(string orderIdentifier, string? eventId = null)
         {
-            await _daprClient.PublishEventAsync("public", "order.readyForDelivery.v1", new OrderReadyForDeliveryEventV1()
-            {
-                OrderIdentifier = orderIdentifier,
-                DeliveryAddressLine1 = "Address Line 1",
-                DeliveryAddressLine2 = "Address Line 2",
-                DeliveryAddressLine3 = "Address Line 3",
-                DeliveryAddressLine4 = "Address Line 4",
-                DeliveryAddressLine5 = "Address Line 5",
-                Postcode = "TL6 7IO",
-            });
+            await _daprClient.PublishEventAsync("public", "order.readyForDelivery.v1",
+                new OrderReadyForDeliveryEventV1()
+                {
+                    OrderIdentifier = orderIdentifier,
+                    DeliveryAddressLine1 = "Address Line 1",
+                    DeliveryAddressLine2 = "Address Line 2",
+                    DeliveryAddressLine3 = "Address Line 3",
+                    DeliveryAddressLine4 = "Address Line 4",
+                    DeliveryAddressLine5 = "Address Line 5",
+                    Postcode = "TL6 7IO",
+                }, new Dictionary<string, string>(2)
+                {
+                    { "cloudevent.source", "kitchen" },
+                    { "cloudevent.type", "kitchen.driverCollectedOrder.v1" },
+                    { "cloudevent.id", eventId ?? Guid.NewGuid().ToString() }
+                });
 
             // Delay to allow for message processing
             await Task.Delay(TimeSpan.FromSeconds(2));
