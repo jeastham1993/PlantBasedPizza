@@ -21,7 +21,7 @@ namespace PlantBasedPizza.Deliver.Core.OrderReadyForDelivery
                 throw new ArgumentNullException(nameof(evt), "Handled event cannot be null");
             }
             
-            _logger.LogInformation("Received new ready for delivery event for order {orderIdentifier}", evt.OrderIdentifier);
+            _logger.LogInformation("Received new ready for delivery event for order {OrderIdentifier}", evt.OrderIdentifier);
 
             var existingDeliveryRequestForOrder =
                 await _deliveryRequestRepository.GetDeliveryStatusForOrder(evt.OrderIdentifier);

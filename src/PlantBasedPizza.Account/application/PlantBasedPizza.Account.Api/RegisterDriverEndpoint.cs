@@ -12,7 +12,7 @@ public class RegisterDriverEndpoint(UserAccountService userAccountService, ILogg
 {
     public override async Task<RegisterResponse?> HandleAsync(
         RegisterUserCommand request,
-        CancellationToken cancellationToken)
+        CancellationToken ct)
     {
         try
         {
@@ -24,7 +24,7 @@ public class RegisterDriverEndpoint(UserAccountService userAccountService, ILogg
         catch (UserExistsException ex)
         {
             logger.LogError(ex, "Failed to register driver");
-            await SendErrorsAsync(400, cancellationToken);
+            await SendErrorsAsync(400, ct);
             return null;
         }
     }

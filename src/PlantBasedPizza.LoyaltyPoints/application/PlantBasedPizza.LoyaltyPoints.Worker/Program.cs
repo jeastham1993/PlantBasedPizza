@@ -21,4 +21,4 @@ app.MapSubscribeHandler();
 app.UseCloudEvents();
 app.AddLoyaltyPointsEventHandler();
 
-app.Run();
+await app.RunAsync();

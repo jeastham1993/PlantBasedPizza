@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using OpenTelemetry.Resources;
-using PlantBasedPizza.Shared;
+
+namespace PlantBasedPizza.Shared;
 
 public static class ResourceBuilderExtensions
 {

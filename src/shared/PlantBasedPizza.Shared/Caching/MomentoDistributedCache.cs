@@ -7,8 +7,8 @@ namespace PlantBasedPizza.Shared.Caching;
 
 public class MomentoDistributedCache : IDistributedCache
 {
-    private CacheClient _cacheClient;
-    private string _cacheName;
+    private readonly CacheClient _cacheClient;
+    private readonly string _cacheName;
 
     public MomentoDistributedCache(IOptions<MomentoCacheConfiguration> optionsAccessor)
     {

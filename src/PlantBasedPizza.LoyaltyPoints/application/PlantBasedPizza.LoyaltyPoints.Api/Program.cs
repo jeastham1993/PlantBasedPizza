@@ -65,4 +65,4 @@ app.MapGet("/loyalty", async (ClaimsPrincipal user) =>
     return Results.Ok(new LoyaltyPointsDto(loyalty));
 }).RequireAuthorization(policyBuilder => policyBuilder.RequireRole("user"));
 
-app.Run();
+await app.RunAsync();

@@ -11,15 +11,11 @@ public class LoginEndpoint(ILogger<LoginEndpoint> logger, UserAccountService use
 {
     public override async Task<LoginResponse?> HandleAsync(
         LoginCommand request,
-        CancellationToken cancellationToken)
+        CancellationToken ct)
     {
         try
         {
-            logger.LogInformation("Attempting to login");
-            
             var loginResponse = await userAccountService.Login(request);
-            
-            logger.LogInformation($"Successfully logged in {loginResponse.AuthToken}");
             
             Response = loginResponse;
             return loginResponse;
@@ -27,7 +23,7 @@ public class LoginEndpoint(ILogger<LoginEndpoint> logger, UserAccountService use
         catch (LoginFailedException ex)
         {
             logger.LogError(ex, "Failed to login");
-            await SendErrorsAsync(400, cancellationToken);
+            await SendErrorsAsync(400, ct);
             return null;
         }
     }

@@ -19,7 +19,7 @@ public class LoyaltyService : Loyalty.LoyaltyBase
 
     public override async Task<GetCustomerLoyaltyPointsReply> GetCustomerLoyaltyPoints(GetCustomerLoyaltyPointsRequest request, ServerCallContext context)
     {
-        _logger.LogInformation("Handling GetCustomerLoyaltyPointsRequest for {customerIdentifier}", request.CustomerIdentifier);
+        _logger.LogInformation("Handling GetCustomerLoyaltyPointsRequest for {CustomerIdentifier}", request.CustomerIdentifier);
 
         var loyaltyPoints = 0M;
 

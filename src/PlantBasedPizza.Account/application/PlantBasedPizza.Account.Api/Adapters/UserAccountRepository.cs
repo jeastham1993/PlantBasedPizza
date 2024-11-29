@@ -53,6 +53,9 @@ public class UserAccountRepository : IUserAccountRepository
         {
             await CreateAccount(UserAccount.Create("admin@plantbasedpizza.com", "AdminAccount!23", AccountType.Admin));
         }
-        catch (UserExistsException){}
+        catch (UserExistsException)
+        {
+            // There is no problem if this fails.
+        }
     }
 }

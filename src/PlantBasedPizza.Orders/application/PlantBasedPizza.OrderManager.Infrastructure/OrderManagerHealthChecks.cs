@@ -44,7 +44,7 @@ public class OrderManagerHealthChecks
 
         try
         {
-            var cancellationTokenSource = new CancellationTokenSource();
+            using var cancellationTokenSource = new CancellationTokenSource();
             cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(3));
             var metadata = new Metadata()
             {

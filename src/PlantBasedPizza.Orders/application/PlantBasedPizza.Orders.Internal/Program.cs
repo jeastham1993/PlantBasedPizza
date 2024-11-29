@@ -38,4 +38,4 @@ app.MapGet("/orders/health", () => "Healthy");
 
 appLogger.LogInformation("Running!");
 
-app.Run();
+await app.RunAsync();

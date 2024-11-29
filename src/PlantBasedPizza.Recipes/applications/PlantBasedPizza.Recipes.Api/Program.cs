@@ -54,4 +54,4 @@ await recipeRepo.SeedRecipes();
 
 app.MapControllers();
 
-app.Run();
+await app.RunAsync();
