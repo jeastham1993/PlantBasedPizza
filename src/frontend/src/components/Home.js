@@ -22,15 +22,23 @@ import recipeService from "../services/recipeService";
 import { ordersApi } from "../axiosConfig";
 import { Add, ShoppingCart } from "@mui/icons-material";
 import Snackbar from "@mui/joy/Snackbar";
+import { NotificationHub } from "./SignalR";
 
 function Home() {
   const [menuItems, setMenuItems] = useState({});
   const [order, setOrder] = useState({ items: [] });
   const [open, setOpen] = React.useState(false);
   const [snackbarOpen, setSnackbarOpen] = React.useState(false);
+  const [snackbarContents, setSnackbarContents] = React.useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const hub = new NotificationHub((message) => {
+    console.log("Handling received message:", message);
+    setSnackbarContents(message);
+    setSnackbarOpen(true);
+  });
 
   const handleSnackbarClose = () => {
+    setSnackbarContents("");
     setSnackbarOpen(false);
   };
 
@@ -106,6 +114,7 @@ function Home() {
       addItemBody
     );
 
+    setSnackbarContents(`${item.recipeIdentifier.toString()} added to order!`);
     setSnackbarOpen(true);
 
     setOrder(addItemResponse.data);
@@ -124,6 +133,7 @@ function Home() {
       CustomerIdentifier: "",
     });
 
+    setSnackbarContents("Order submitted!");
     setSnackbarOpen(true);
 
     setOrder({ items: [] });
@@ -165,7 +175,7 @@ function Home() {
             open={snackbarOpen}
             onClose={handleSnackbarClose}
           >
-            Added successfully!
+            {snackbarContents}
           </Snackbar>
         </Box>
         <Drawer
@@ -205,7 +215,9 @@ function Home() {
                   }}
                 >
                   <div>
-                    <Typography level="title-lg">{item.recipeIdentifier}</Typography>
+                    <Typography level="title-lg">
+                      {item.recipeIdentifier}
+                    </Typography>
                     <Typography level="body-sm">{item.quantity}</Typography>
                   </div>
                 </Card>
@@ -223,7 +235,13 @@ function Home() {
                   <div key={category}>
                     <Grid container spacing={4}>
                       {menuItems[category].map((item) => (
-                        <Grid item key={item.recipeIdentifier} xs={12} sm={6} md={4}>
+                        <Grid
+                          item
+                          key={item.recipeIdentifier}
+                          xs={12}
+                          sm={6}
+                          md={4}
+                        >
                           <Card
                             sx={{
                               maxWidth: "100%",

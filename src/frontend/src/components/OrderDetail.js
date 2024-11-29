@@ -1,20 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import {
-  Box,
-  Container,
-  CssBaseline,
-  Typography,
-  Table,
-} from "@mui/joy";
-import Grid from '@mui/joy/Grid';
-import Sheet from '@mui/joy/Sheet';
+import { Box, Container, CssBaseline, Typography, Table, Snackbar } from "@mui/joy";
+import Grid from "@mui/joy/Grid";
+import Sheet from "@mui/joy/Sheet";
 import { ordersApi } from "../axiosConfig";
 import Moment from "moment";
+import { NotificationHub } from "./SignalR";
 
 function OrderDetail(props) {
   const { orderNumber } = useParams();
   const [order, setOrder] = useState({ items: [], history: [] });
+  const [snackbarOpen, setSnackbarOpen] = React.useState(false);
+  const [snackbarContents, setSnackbarContents] = React.useState("");
+  const hub = new NotificationHub((message) => {
+    console.log("Handling received message:", message);
+    setSnackbarContents(message);
+    setSnackbarOpen(true);
+  });
 
   useEffect(() => {
     // Replace with your actual endpoint
@@ -30,17 +32,23 @@ function OrderDetail(props) {
     fetchData();
   }, []);
 
+  const handleSnackbarClose = () => {
+    setSnackbarContents("");
+    setSnackbarOpen(false);
+  };
+
   return (
-    <Box sx={{ flexGrow: 1 }}>
-      <CssBaseline />
-      <Container sx={{ py: 1 }} maxWidth="xl">
-        <Grid container spacing={1}>
-          <Grid item>
-            <Typography level="h2" gutterBottom>
-              Order: {order.orderNumber}
-            </Typography>
-            <Grid container spacing={2} sx={{ flexGrow: 1 }}>
-              <Grid xs={6}>
+    <div>
+      <Box sx={{ flexGrow: 1 }}>
+        <CssBaseline />
+        <Container sx={{ py: 1 }} maxWidth="xl">
+          <Grid container spacing={1}>
+            <Grid item>
+              <Typography level="h2" gutterBottom>
+                Order: {order.orderNumber}
+              </Typography>
+              <Grid container spacing={2} sx={{ flexGrow: 1 }}>
+                <Grid xs={6}>
                   <Typography level="h3" gutterBottom>
                     Items
                   </Typography>
@@ -62,8 +70,8 @@ function OrderDetail(props) {
                       </tbody>
                     </Table>
                   </Sheet>
-              </Grid>
-              <Grid item xs={6}>
+                </Grid>
+                <Grid item xs={6}>
                   <Typography level="h3" gutterBottom>
                     History
                   </Typography>
@@ -77,9 +85,11 @@ function OrderDetail(props) {
                       </thead>
                       <tbody>
                         {order.history.map((item) => (
-                          <tr key={Moment(item.historyDate).format(
-                            "DD/MM/YYYY HH:mm:ss"
-                          )}>
+                          <tr
+                            key={Moment(item.historyDate).format(
+                              "DD/MM/YYYY HH:mm:ss"
+                            )}
+                          >
                             <td>
                               {Moment(item.historyDate).format(
                                 "DD/MM/YYYY HH:mm:ss"
@@ -91,12 +101,25 @@ function OrderDetail(props) {
                       </tbody>
                     </Table>
                   </Sheet>
+                </Grid>
               </Grid>
             </Grid>
           </Grid>
-        </Grid>
-      </Container>
-    </Box>
+        </Container>
+      </Box>
+      <Box sx={{ width: 500 }}>
+        <Snackbar
+          autoHideDuration={2000}
+          variant="solid"
+          color="success"
+          anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+          open={snackbarOpen}
+          onClose={handleSnackbarClose}
+        >
+          {snackbarContents}
+        </Snackbar>
+      </Box>
+    </div>
   );
 }
 
