@@ -1,0 +1,25 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "required": ["OrderIdentifier", "CustomerIdentifier", "OrderValue"],
+  "properties": {
+    "OrderIdentifier": {
+      "type": "string"
+    },
+    "CustomerIdentifier": {
+      "type": "string"
+    },
+    "OrderValue": {
+      "type": "object",
+      "required": ["Value", "Currency"],
+      "properties": {
+        "Value": {
+          "type": "number"
+        },
+        "Currency": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

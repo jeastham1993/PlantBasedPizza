@@ -81,7 +81,7 @@ namespace PlantBasedPizza.Shared
 
         public static IServiceCollection AddAsyncApiDocs(this IServiceCollection services, IConfiguration configuration, IList<Type> eventPublisherTypes, string serviceName)
         {
-            var generateAsyncApi = configuration["ENABLE_ASYNC_API"] == "Y";
+            var generateAsyncApi = configuration["Messaging:UseAsyncApi"] == "Y";
 
             if (generateAsyncApi)
             {
@@ -101,7 +101,7 @@ namespace PlantBasedPizza.Shared
 
         public static WebApplication UseAsyncApi(this WebApplication app)
         {
-            var generateAsyncApi = app.Configuration["ENABLE_ASYNC_API"] == "Y";
+            var generateAsyncApi = app.Configuration["Messaging:UseAsyncApi"] == "Y";
             
             app.UseEndpoints(endpoints =>
             {

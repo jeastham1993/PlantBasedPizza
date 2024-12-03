@@ -1,0 +1,28 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "required": ["OrderIdentifier", "DeliveryAddressLine1", "DeliveryAddressLine2", "DeliveryAddressLine3", "DeliveryAddressLine4", "DeliveryAddressLine5", "Postcode"],
+  "properties": {
+    "OrderIdentifier": {
+      "type": "string"
+    },
+    "DeliveryAddressLine1": {
+      "type": "string"
+    },
+    "DeliveryAddressLine2": {
+      "type": "string"
+    },
+    "DeliveryAddressLine3": {
+      "type": "string"
+    },
+    "DeliveryAddressLine4": {
+      "type": "string"
+    },
+    "DeliveryAddressLine5": {
+      "type": "string"
+    },
+    "Postcode": {
+      "type": "string"
+    }
+  }
+}
