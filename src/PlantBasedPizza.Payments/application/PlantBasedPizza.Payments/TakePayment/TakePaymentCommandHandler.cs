@@ -1,17 +1,15 @@
 using System.Diagnostics;
 using System.Security.Cryptography;
 using Microsoft.Extensions.Caching.Distributed;
-using PlantBasedPizza.Payments.ExternalEvents;
 using PlantBasedPizza.Payments.PublicEvents;
 
-namespace PlantBasedPizza.Payments.OrderSubmitted;
+namespace PlantBasedPizza.Payments.TakePayment;
 
-public class OrderSubmittedEventHandler(ILogger<OrderSubmittedEventHandler> logger, IPaymentEventPublisher eventPublisher, IOrderService orderService, IDistributedCache cache)
+public class TakePaymentCommandHandler(ILogger<TakePaymentCommandHandler> logger, IPaymentEventPublisher eventPublisher, IDistributedCache cache)
 {
-    
-    public async Task<bool> Handle(OrderSubmittedEventV1 evt)
+    public async Task<bool> Handle(TakePaymentCommand command)
     {
-        var hasOrderBeenProcessed = await cache.GetStringAsync(evt.OrderIdentifier);
+        var hasOrderBeenProcessed = await cache.GetStringAsync(command.OrderIdentifier);
 
         if ((hasOrderBeenProcessed ?? "").Equals("processed"))
         {
@@ -21,8 +19,6 @@ public class OrderSubmittedEventHandler(ILogger<OrderSubmittedEventHandler> logg
 
         try
         {
-            var order = await orderService.GetOrderDetails(evt.OrderIdentifier);
-        
             var randomSecondDelay = RandomNumberGenerator.GetInt32(1, 250);
 
             await Task.Delay(TimeSpan.FromMilliseconds(randomSecondDelay));
@@ -31,24 +27,24 @@ public class OrderSubmittedEventHandler(ILogger<OrderSubmittedEventHandler> logg
 
             var successEvent = new PaymentSuccessfulEventV1()
             {
-                OrderIdentifier = order.OrderIdentifier,
-                Amount = Convert.ToDecimal(order.OrderValue)
+                OrderIdentifier = command.OrderIdentifier,
+                Amount = Convert.ToDecimal(command.PaymentAmount)
             };
             
             await eventPublisher.PublishPaymentSuccessfulEventV1(successEvent);
             
-            await cache.SetStringAsync(evt.OrderIdentifier, "processed");
+            await cache.SetStringAsync(command.OrderIdentifier, "processed");
 
             return true;
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Failure processing payment for order {OrderIdentifier}", evt.OrderIdentifier);
+            logger.LogError(ex, "Failure processing payment for order {OrderIdentifier}", command.OrderIdentifier);
             Activity.Current?.AddException(ex);
             
             await eventPublisher.PublishPaymentFailedEventV1(new PaymentFailedEventV1()
             {
-                OrderIdentifier = evt.OrderIdentifier
+                OrderIdentifier = command.OrderIdentifier
             });
 
             return false;

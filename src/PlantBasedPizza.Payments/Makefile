@@ -18,3 +18,9 @@ integration-test:
 	sleep 5
 	dotnet test tests/PlantBasedPizza.Payments.IntegrationTests
 	docker compose -f docker-compose.yml -f docker-compose-integration.yml down
+
+dapr-api-sidecar:
+	dapr run --app-id payment-api --dapr-http-port 3515 --dapr-grpc-port 40004 --app-port 5070 --resources-path ./components/
+
+local-api:
+	export DAPR_GRPC_PORT=40004;export DAPR_HTTP_PORT=3515;dotnet run --project ./application/PlantBasedPizza.Payments/PlantBasedPizza.Payments.csproj

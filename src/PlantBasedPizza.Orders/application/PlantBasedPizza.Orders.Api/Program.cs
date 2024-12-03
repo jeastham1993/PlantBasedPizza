@@ -1,11 +1,9 @@
-using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Mvc;
 using PlantBasedPizza.OrderManager.Infrastructure;
+using PlantBasedPizza.Orders.Api;
 using PlantBasedPizza.Shared;
+using PlantBasedPizza.Shared.Authentication;
 using PlantBasedPizza.Shared.Logging;
-using Saunter;
-using Saunter.AsyncApiSchema.v2;
 using Serilog;
 using Serilog.Events;
 using Serilog.Extensions.Logging;
@@ -26,27 +24,7 @@ builder.AddLoggerConfigs();
 var appLogger = new SerilogLoggerFactory(logger)
     .CreateLogger<Program>();
 
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(o =>
-{
-    o.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidIssuer = builder.Configuration["Auth:Issuer"],
-        ValidAudience = builder.Configuration["Auth:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey
-            (Encoding.UTF8.GetBytes(builder.Configuration["Auth:Key"])),
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = false,
-        ValidateIssuerSigningKey = true
-    };
-});
-
-builder.Services.AddAuthorization();
+builder.Services.ConfigureAuth(builder.Configuration);
 
 var applicationName = "OrdersApi";
 
@@ -56,30 +34,40 @@ builder.Services.AddOrderManagerInfrastructure(builder.Configuration)
 
 builder.Services.AddHttpClient();
 
-builder.Services.AddControllers();
-
 var app = builder.Build();
 
-app.UseCors(CorsSettings.ALLOW_ALL_POLICY_NAME);
+app.UseCors(CorsSettings.ALLOW_ALL_POLICY_NAME)
+    .UseAuthentication()
+    .UseRouting()
+    .UseAuthorization()
+    .UseSharedMiddleware();
 
-app.UseAuthentication();
-
-app.UseRouting();
-
-app.UseAuthorization();
-
-app.UseSharedMiddleware();
-
-var orderManagerHealthChecks = app.Services.GetRequiredService<OrderManagerHealthChecks>();
-
-app.Map("/order/health", async () =>
+app.Map("/order/health", async ([FromServices] OrderManagerHealthChecks healthChecks) =>
 {
-    var healthCheckResult = await orderManagerHealthChecks.Check();
+    var healthCheckResult = await healthChecks.Check();
     
     return Results.Ok(healthCheckResult);
 });
 
-app.MapControllers();
+app.MapGet("/order", OrderEndpoints.GetForCustomer)
+    .RequireAuthorization(options => options.RequireRole("user"));
+app.MapGet("/order/{orderIdentifier}/detail", OrderEndpoints.Get)
+    .RequireAuthorization(options => options.RequireRole("user"));
+app.MapPost("/order/pickup", OrderEndpoints.CreatePickupOrder)
+    .RequireAuthorization(options => options.RequireRole("user"));
+app.MapPost("/order/deliver", OrderEndpoints.CreateDeliveryOrder)
+    .RequireAuthorization(options => options.RequireRole("user"));
+app.MapPost("/order/{orderIdentifier}/items", OrderEndpoints.AddItemToOrder)
+    .RequireAuthorization(options => options.RequireRole("user"));
+app.MapPost("/order/{orderIdentifier}/submit", OrderEndpoints.SubmitOrder)
+    .RequireAuthorization(options => options.RequireRole("user"));
+app.MapPost("/order/{orderIdentifier}/cancel", OrderEndpoints.CancelOrder)
+    .RequireAuthorization(options => options.RequireRole("user", "staff"));
+app.MapGet("/order/awaiting-collection", OrderEndpoints.GetAwaitingCollection)
+    .RequireAuthorization(options => options.RequireRole("staff"));
+app.MapPost("/order/collected", OrderEndpoints.OrderCollected)
+    .RequireAuthorization(options => options.RequireRole("staff"));
+
 app.UseAsyncApi();
 
 appLogger.LogInformation("Running!");

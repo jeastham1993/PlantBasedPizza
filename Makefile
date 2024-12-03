@@ -63,3 +63,8 @@ deploy-payments:
 
 deploy-recipes:
 	cd infra/recipes;terraform init;terraform apply --var-file dev.tfvars -auto-approve
+
+
+configure-temporal:
+	./temporal-sql-tool --ep ep-shy-resonance-a5b1xfai.us-east-2.aws.neon.tech -p 5432 --db temporal-visibility --plugin postgres12 setup-schema -v 0.0
+	./temporal-sql-tool --ep ep-shy-resonance-a5b1xfai.us-east-2.aws.neon.tech -p 5432 --db temporal-visibility --plugin postgres12 update-schema -d ./schema/postgresql/v12/visibility/versioned

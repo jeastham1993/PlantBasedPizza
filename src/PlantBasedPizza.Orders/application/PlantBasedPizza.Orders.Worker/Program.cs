@@ -1,19 +1,18 @@
-using System.Text;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.IdentityModel.Tokens;
+using PlantBasedPizza.OrderManager.Core.Services;
 using PlantBasedPizza.OrderManager.Infrastructure;
+using PlantBasedPizza.OrderManager.Infrastructure.Notifications;
 using PlantBasedPizza.Orders.Worker;
 using PlantBasedPizza.Orders.Worker.Handlers;
-using PlantBasedPizza.Orders.Worker.Notifications;
 using PlantBasedPizza.Shared;
+using PlantBasedPizza.Shared.Authentication;
 using PlantBasedPizza.Shared.Caching;
 using PlantBasedPizza.Shared.Logging;
 using Serilog;
 using Serilog.Events;
 using Serilog.Extensions.Logging;
 using Serilog.Formatting.Json;
+using Temporalio.Extensions.OpenTelemetry;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddEnvironmentVariables();
@@ -29,52 +28,19 @@ var appLogger = new SerilogLoggerFactory(logger)
     .CreateLogger<Program>();
 
 builder.Services.AddDaprClient();
-builder.Services.AddSignalR();
-builder.Services.AddSingleton<IUserIdProvider, UserIdClaimUserProvider>();
-builder.Services.AddSingleton<IUserNotificationService, UserNotificationService>();
 
 builder.Services
-    .AddSharedInfrastructure(builder.Configuration, ApplicationDefaults.ServiceName)
-    .AddOrderManagerInfrastructure(builder.Configuration);
-
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-}).AddJwtBearer(o =>
-{
-    o.TokenValidationParameters = new TokenValidationParameters
+    .AddSharedInfrastructure(builder.Configuration, ApplicationDefaults.ServiceName, new[]
     {
-        ValidIssuer = builder.Configuration["Auth:Issuer"],
-        ValidAudience = builder.Configuration["Auth:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey
-            (Encoding.UTF8.GetBytes(builder.Configuration["Auth:Key"])),
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = false,
-        ValidateIssuerSigningKey = true
-    };
-    o.Events = new JwtBearerEvents
-    {
-        OnMessageReceived = context =>
-        {
-            // breakpoints never hit...
-            var accessToken = context.Request.Query["access_token"];
-            var path = context.HttpContext.Request.Path;
-            if (!string.IsNullOrWhiteSpace(accessToken) &&
-                path.ToString().Contains("notifications", StringComparison.OrdinalIgnoreCase))
-            {
-                context.Token = accessToken;
-            }
-            return Task.CompletedTask;
-        }
-    };
-});
-
-builder.Services.AddAuthorization();
-
-builder.Services.AddCaching(builder.Configuration);
+        TracingInterceptor.ClientSource.Name,
+        TracingInterceptor.WorkflowsSource.Name,
+        TracingInterceptor.ActivitiesSource.Name
+    })
+    .AddOrderManagerInfrastructure(builder.Configuration)
+    .ConfigureAuth(builder.Configuration)
+    .AddAuthorization()
+    .AddCaching(builder.Configuration)
+    .AddTemporalWorkflows(builder.Configuration);
 
 builder.Services.AddSingleton<DriverCollectedOrderEventHandler>();
 builder.Services.AddSingleton<DriverDeliveredOrderEventHandler>();
@@ -91,15 +57,9 @@ var app = builder.Build();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapGet("/orders/health", () => "Healthy").AllowAnonymous();
 app.MapHub<OrderNotificationsHub>("/notifications/orders")
     .AllowAnonymous();
-    //.RequireAuthorization(options => options.RequireRole("user"));
-
-app.MapSubscribeHandler()
-    .AllowAnonymous();
-app.UseCloudEvents();
-
+app.MapGet("/orders/health", () => "Healthy").AllowAnonymous();
 app.MapPost("/payment-success", EventHandlers.HandlePaymentSuccessfulEvent);
 app.MapPost("/driver-collected", EventHandlers.HandleDriverCollectedOrderEvent);
 app.MapPost("/driver-delivered", EventHandlers.HandleDriverDeliveredOrderEvent);
@@ -108,6 +68,10 @@ app.MapPost("/order-baked", EventHandlers.HandleOrderBakedEvent);
 app.MapPost("/order-preparing", EventHandlers.HandleOrderPreparingEvent);
 app.MapPost("/order-prep-complete", EventHandlers.HandleOrderPrepCompleteEvent);
 app.MapPost("/order-quality-checked", EventHandlers.HandleOrderQualityCheckedEvent);
+
+app.MapSubscribeHandler()
+    .AllowAnonymous();
+app.UseCloudEvents();
 
 appLogger.LogInformation("Running!");
 

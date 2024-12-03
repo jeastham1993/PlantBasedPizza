@@ -1,21 +1,28 @@
 using System.Net;
 using Grpc.Core;
 using Grpc.Net.Client.Configuration;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 using PlantBasedPizza.OrderManager.Core.AddItemToOrder;
+using PlantBasedPizza.OrderManager.Core.CancelOrder;
 using PlantBasedPizza.OrderManager.Core.CollectOrder;
+using PlantBasedPizza.OrderManager.Core.ConfirmOrder;
 using PlantBasedPizza.OrderManager.Core.CreateDeliveryOrder;
 using PlantBasedPizza.OrderManager.Core.CreatePickupOrder;
 using PlantBasedPizza.OrderManager.Core.Entities;
-using PlantBasedPizza.OrderManager.Core.OrderSubmitted;
+using PlantBasedPizza.OrderManager.Core.OrderDelivered;
+using PlantBasedPizza.OrderManager.Core.OrderReadyForDelivery;
 using PlantBasedPizza.OrderManager.Core.Services;
+using PlantBasedPizza.OrderManager.Core.SubmitOrder;
+using PlantBasedPizza.OrderManager.Infrastructure.Notifications;
 using PlantBasedPizza.Shared.Caching;
 using Polly;
 using Polly.Contrib.WaitAndRetry;
 using Polly.Extensions.Http;
+using Temporalio.Extensions.OpenTelemetry;
 
 namespace PlantBasedPizza.OrderManager.Infrastructure;
 
@@ -77,6 +84,14 @@ public static class Setup
         };
 
         services.AddHttpClient<RecipeService>();
+        services
+            .AddTemporalClient(opts =>
+            {
+                opts.TargetHost = configuration["TEMPORAL_ENDPOINT"];
+                opts.Namespace = "default";
+                opts.Interceptors = new[] { new TracingInterceptor() };
+            });
+        services.AddSingleton<IWorkflowEngine, TemporalWorkflowEngine>();
 
         services.AddGrpcClient<Loyalty.LoyaltyClient>(o =>
             {
@@ -88,18 +103,32 @@ public static class Setup
             });
 
         services.AddCaching(configuration);
+        
+        services.Configure<Features>(configuration.GetSection("Features"));
+        services.AddSingleton<IFeatures, ConfigFeatureProvider>();
 
         services.AddSingleton<IOrderRepository, OrderRepository>();
+        services.AddSingleton<IRecipeService, RecipeService>();
+        services.AddSingleton<ILoyaltyPointService, LoyaltyPointService>();
+        services.AddSingleton<IOrderEventPublisher, OrderEventPublisher>();
+        services.AddSingleton<IPaymentService, PaymentService>();
+        
+        services.AddSingleton<OrderManagerHealthChecks>();
+        
         services.AddSingleton<CollectOrderCommandHandler>();
         services.AddSingleton<AddItemToOrderHandler>();
         services.AddSingleton<CreateDeliveryOrderCommandHandler>();
         services.AddSingleton<CreatePickupOrderCommandHandler>();
-        services.AddSingleton<IRecipeService, RecipeService>();
-        services.AddSingleton<ILoyaltyPointService, LoyaltyPointService>();
-        services.AddSingleton<OrderManagerHealthChecks>();
-        services.AddSingleton<IOrderEventPublisher, OrderEventPublisher>();
         services.AddSingleton<SubmitOrderCommandHandler>();
-
+        services.AddSingleton<CancelOrderCommandHandler>();
+        services.AddSingleton<OrderReadyForDeliveryCommandHandler>();
+        services.AddSingleton<ConfirmOrderCommandHandler>();
+        services.AddSingleton<OrderDeliveredEventHandler>();
+        
+        services.AddSignalR();
+        services.AddSingleton<IUserIdProvider, UserIdClaimUserProvider>();
+        services.AddSingleton<IUserNotificationService, UserNotificationService>();
+        
         services.AddHttpClient("retry-http-client")
             .SetHandlerLifetime(TimeSpan.FromMinutes(5))
             .AddPolicyHandler(GetRetryPolicy());

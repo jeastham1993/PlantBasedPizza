@@ -1,7 +1,10 @@
+using System.Text.Json.Serialization;
+
 namespace PlantBasedPizza.Orders.IntegrationTest.ViewModels
 {
     public class Order
     {
+        [JsonPropertyName("orderIdentifier")]
         public string OrderIdentifier { get; set; }
         
         public string OrderNumber { get; set; }
@@ -12,11 +15,15 @@ namespace PlantBasedPizza.Orders.IntegrationTest.ViewModels
 
         public DateTime? OrderCompletedOn { get; set; }
 
+        [JsonPropertyName("items")]
         public List<OrderItem> Items { get; set; }
 
+        [JsonPropertyName("history")]
         public List<OrderHistory> History { get; set; }
 
         public int OrderType { get; set; }
+        
+        [JsonPropertyName("customerIdentifier")]
 
         public string CustomerIdentifier { get; set; }
 

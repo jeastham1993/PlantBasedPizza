@@ -20,7 +20,7 @@ public class UserExtractionMiddleware
             return;
         }
 
-        context.User.Claims.AddUserDetailsToTelemetry();
+        context.User.Claims.ToList().AddUserDetailsToTelemetry();
         await _next(context);
     }
 }

@@ -47,6 +47,12 @@ public class OutboxWorker : BackgroundService
                             await _eventPublisher.PublishOrderCompletedEventV1(orderCompletedIntegrationEvt);
                             outboxItem.Processed = true;
                             break;
+                        case nameof(OrderCompletedIntegrationEventV2):
+                            var orderCompletedIntegrationEvtV2 =
+                                JsonSerializer.Deserialize<OrderCompletedIntegrationEventV2>(outboxItem.EventData);
+                            await _eventPublisher.PublishOrderCompletedEventV2(orderCompletedIntegrationEvtV2);
+                            outboxItem.Processed = true;
+                            break;
                         case nameof(OrderReadyForDeliveryEventV1):
                             var orderReadyForDeliveryEvt =
                                 JsonSerializer.Deserialize<OrderReadyForDeliveryEventV1>(outboxItem.EventData);
@@ -69,6 +75,12 @@ public class OutboxWorker : BackgroundService
                             var submittedEvent =
                                 JsonSerializer.Deserialize<OrderSubmittedEventV1>(outboxItem.EventData);
                             await _eventPublisher.PublishOrderSubmittedEventV1(submittedEvent);
+                            outboxItem.Processed = true;
+                            break;
+                        case nameof(OrderCancelledEventV1):
+                            var cancelledEvent =
+                                JsonSerializer.Deserialize<OrderCancelledEventV1>(outboxItem.EventData);
+                            await _eventPublisher.PublishOrderCancelledEventV1(cancelledEvent);
                             outboxItem.Processed = true;
                             break;
                         default:

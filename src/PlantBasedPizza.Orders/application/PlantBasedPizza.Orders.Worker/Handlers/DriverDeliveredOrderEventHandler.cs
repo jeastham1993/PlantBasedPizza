@@ -1,24 +1,25 @@
-using PlantBasedPizza.OrderManager.Core.Entities;
+using PlantBasedPizza.OrderManager.Core.OrderDelivered;
+using PlantBasedPizza.OrderManager.Core.Services;
 using PlantBasedPizza.Orders.Worker.IntegrationEvents;
 
-namespace PlantBasedPizza.Orders.Worker.Handlers
+namespace PlantBasedPizza.Orders.Worker.Handlers;
+
+public class DriverDeliveredOrderEventHandler(
+    OrderDeliveredEventHandler eventHandler,
+    IFeatures features,
+    IWorkflowEngine workflowEngine)
 {
-    public class DriverDeliveredOrderEventHandler
+    public async Task Handle(DriverDeliveredOrderEventV1 evt)
     {
-        private readonly IOrderRepository _orderRepository;
-
-        public DriverDeliveredOrderEventHandler(IOrderRepository orderRepository)
+        if (features.UseOrchestrator())
         {
-            _orderRepository = orderRepository;
+            await workflowEngine.OrderDelivered(evt.OrderIdentifier);
+            return;
         }
 
-        public async Task Handle(DriverDeliveredOrderEventV1 evt)
+        await eventHandler.Handle(new OrderDeliveredEvent
         {
-            var order = await _orderRepository.Retrieve(evt.OrderIdentifier);
-
-            order.CompleteOrder();
-            
-            await _orderRepository.Update(order).ConfigureAwait(false);
-        }
+            OrderIdentifier = evt.OrderIdentifier
+        });
     }
 }

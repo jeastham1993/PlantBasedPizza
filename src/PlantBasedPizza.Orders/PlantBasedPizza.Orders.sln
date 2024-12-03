@@ -32,6 +32,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "shared", "shared", "{4333BB
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Shared", "..\shared\PlantBasedPizza.Shared\PlantBasedPizza.Shared.csproj", "{933E9688-2898-487A-8CCA-7CACC34B96BB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.IntegrationTest.Helpers", "..\shared\PlantBasedPizza.IntegrationTest.Helpers\PlantBasedPizza.IntegrationTest.Helpers.csproj", "{6B59552B-5895-46CF-8FFA-19F889ECDBED}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -74,6 +76,10 @@ Global
 		{933E9688-2898-487A-8CCA-7CACC34B96BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{933E9688-2898-487A-8CCA-7CACC34B96BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{933E9688-2898-487A-8CCA-7CACC34B96BB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B59552B-5895-46CF-8FFA-19F889ECDBED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B59552B-5895-46CF-8FFA-19F889ECDBED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B59552B-5895-46CF-8FFA-19F889ECDBED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B59552B-5895-46CF-8FFA-19F889ECDBED}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -88,6 +94,7 @@ Global
 		{717B4C38-D173-454E-B958-E83FB3574EAA} = {68366D5E-93A5-42B9-AA0D-E2FE6C9793B5}
 		{27D08F36-DCE4-4650-8F30-035129E4557E} = {68366D5E-93A5-42B9-AA0D-E2FE6C9793B5}
 		{933E9688-2898-487A-8CCA-7CACC34B96BB} = {4333BB97-B550-4CF6-94AE-2ACA5F5DF67F}
+		{6B59552B-5895-46CF-8FFA-19F889ECDBED} = {47BB1BC1-5414-4E4A-9950-C27428007314}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {319921A7-E559-4C05-8DB4-CB6BCF6BF13B}

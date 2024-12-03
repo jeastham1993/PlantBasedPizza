@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using OpenTelemetry.Resources;
@@ -14,7 +15,7 @@ namespace PlantBasedPizza.Shared
         private const string OTEL_DEFAULT_GRPC_ENDPOINT = "http://localhost:4317";
         
         public static IServiceCollection AddSharedInfrastructure(this IServiceCollection services,
-            IConfiguration configuration, string applicationName)
+            IConfiguration configuration, string applicationName, string[]? additionalSources = null)
         {
             services.AddLogging();
             
@@ -25,10 +26,37 @@ namespace PlantBasedPizza.Shared
             
             otel.WithTracing(tracing =>
             {
-                tracing.AddAspNetCoreInstrumentation();
+                tracing.AddAspNetCoreInstrumentation(options =>
+                {
+                    options.Filter = new Func<HttpContext, bool>((httpContext) =>
+                    {
+                        try
+                        {
+                            if (httpContext.Request.Path.Value.Contains("/notifications"))
+                            {
+                                return false;
+                            }
+
+                            return true;
+                        }
+                        catch
+                        {
+                            return true;
+                        }
+                    });
+                });
                 tracing.AddGrpcClientInstrumentation();
                 tracing.AddHttpClientInstrumentation();
                 tracing.AddSource(applicationName);
+
+                if (additionalSources != null)
+                {
+                    foreach (var source in additionalSources)
+                    {
+                        tracing.AddSource(source);
+                    }
+                }
+                
                 tracing.AddOtlpExporter(otlpOptions =>
                 {
                     otlpOptions.Endpoint = new Uri(configuration["OTEL_EXPORTER_OTLP_ENDPOINT"] ?? OTEL_DEFAULT_GRPC_ENDPOINT);

@@ -30,7 +30,7 @@ public class OrdersTestDriver
         _staffHttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", staffToken);
 
         _daprClient = new DaprClientBuilder()
-            .UseGrpcEndpoint("http://localhost:5101")
+            .UseGrpcEndpoint("http://localhost:40003")
             .Build();
     }
 
@@ -66,6 +66,35 @@ public class OrdersTestDriver
         await Task.Delay(TimeSpan.FromSeconds(2));
     }
 
+    public async Task SimulateQualityCheckCompleteEvent(string orderIdentifier, string? eventId = null)
+    {
+        await _daprClient.PublishEventAsync("public", "kitchen.qualityChecked.v1", new OrderQualityCheckedEventV1
+        {
+            OrderIdentifier = orderIdentifier
+        }, new Dictionary<string, string>(1)
+        {
+            { "Cloudevents.id", eventId ?? Guid.NewGuid().ToString() }
+        });
+
+        // Delay to allow for message processing
+        await Task.Delay(TimeSpan.FromSeconds(2));
+    }
+
+    public async Task SimulateOrderDeliveredEvent(string orderIdentifier, string? eventId = null)
+    {
+        await _daprClient.PublishEventAsync("public", "delivery.driverDeliveredOrder.v1",
+            new DriverDeliveredOrderEventV1
+            {
+                OrderIdentifier = orderIdentifier
+            }, new Dictionary<string, string>(1)
+            {
+                { "Cloudevents.id", eventId ?? Guid.NewGuid().ToString() }
+            });
+
+        // Delay to allow for message processing
+        await Task.Delay(TimeSpan.FromSeconds(2));
+    }
+
     public async Task<Order> AddNewDeliveryOrder(string customerIdentifier)
     {
         var response = await _userHttpClient.PostAsync(new Uri($"{TestConstants.DefaultTestUrl}/order/deliver"),
@@ -86,7 +115,7 @@ public class OrdersTestDriver
         return JsonSerializer.Deserialize<Order>(await response.Content.ReadAsStringAsync());
     }
 
-    public async Task<Order> AddNewOrder(string customerIdentifier)
+    public async Task<Order> AddNewPickupOrder(string customerIdentifier)
     {
         await Task.Delay(TimeSpan.FromSeconds(5));
 
@@ -104,10 +133,12 @@ public class OrdersTestDriver
 
     public async Task AddItemToOrder(string orderIdentifier, string recipeIdentifier, int quantity)
     {
-        await Task.Delay(TimeSpan.FromSeconds(5));
+        await Task.Delay(TimeSpan.FromSeconds(1));
+
+        var addItemUrl = $"{TestConstants.DefaultTestUrl}/order/{orderIdentifier}/items";
 
         var response = await _userHttpClient.PostAsync(
-            new Uri($"{TestConstants.DefaultTestUrl}/order/{orderIdentifier}/items"),
+            new Uri(addItemUrl),
             new StringContent(
                 JsonSerializer.Serialize(new AddItemToOrderCommand
                 {
@@ -126,6 +157,21 @@ public class OrdersTestDriver
             new StringContent(string.Empty, Encoding.UTF8, "application/json")).ConfigureAwait(false);
 
         if (!response.IsSuccessStatusCode) throw new Exception($"Request failed: {response.StatusCode}");
+    }
+
+    public async Task CancelOrder(string orderIdentifier)
+    {
+        var response = await _userHttpClient.PostAsync(
+            new Uri($"{TestConstants.DefaultTestUrl}/order/{orderIdentifier}/cancel"),
+            new StringContent(JsonSerializer.Serialize(new
+            {
+                OrderIdentifier = orderIdentifier
+            }), Encoding.UTF8, "application/json")).ConfigureAwait(false);
+
+        if (!response.IsSuccessStatusCode) throw new Exception($"Request failed: {response.StatusCode}");
+
+        // Delay to allow the workflow to run waiting for user to cancel
+        await Task.Delay(TimeSpan.FromSeconds(20));
     }
 
     public async Task CollectOrder(string orderIdentifier)

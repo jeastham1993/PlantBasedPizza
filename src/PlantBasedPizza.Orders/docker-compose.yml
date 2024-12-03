@@ -58,34 +58,74 @@ services:
     networks:
       - dapr
 
-  integration-test-dapr:
-    image: "daprio/daprd:edge"
-    command: [
-      "./daprd",
-      "--app-id",
-      "integration-tests",
-      "--placement-host-address",
-      "placement:50006", # Dapr's placement service can be reach via the docker DNS entry
-      "--dapr-grpc-port",
-      "5101",
-      "--resources-path",
-      "../../components",
-    ]
-    ports:
-      - "5101:5101"
-    volumes:
-      - "../../components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
+  postgresql:
+    container_name: temporal-postgresql
+    environment:
+      POSTGRES_PASSWORD: temporal
+      POSTGRES_USER: temporal
+    image: postgres:latest
     networks:
       - dapr
+    ports:
+      - 5432:5432
+    volumes:
+      - /var/lib/postgresql/data
+
+  temporal:
+    container_name: temporal
+    depends_on:
+      - postgresql
+    environment:
+      - DB=postgres12
+      - DB_PORT=5432
+      - POSTGRES_USER=temporal
+      - POSTGRES_PWD=temporal
+      - POSTGRES_SEEDS=postgresql
+    image: temporalio/auto-setup:1.25.2
+    networks:
+      - dapr
+    ports:
+      - 7233:7233
+
+  temporal-ui:
+    container_name: temporal-ui
+    depends_on:
+      - temporal
+    environment:
+      - TEMPORAL_ADDRESS=temporal:7233
+      - TEMPORAL_CORS_ORIGINS=http://localhost:3000
+    image: temporalio/ui:2.23.0
+    networks:
+      - dapr
+    ports:
+      - 8090:8080
 
   ############################
   # Dapr placement service
   ############################
   placement:
-    image: "daprio/dapr"
-    command: ["./placement", "-port", "50006"]
+    image: "daprio/dapr:1.14.4"
+    command: ["./placement", "-port", "50005"]
+    ports:
+      - "50005:50005"
+      - "8070:58080"
+      - "9090:59090"
+    networks:
+      - dapr
+
+  ############################
+  # Dapr scheduler service
+  ############################
+  scheduler:
+    image: "daprio/dapr:1.14.4"
+    command: ["./scheduler", "--port", "50006", "--etcd-data-dir", "/var/lock"]
     ports:
       - "50006:50006"
+      - "2379:52379"
+      - "8071:58081"
+      - "9091:59091"
+    volumes:
+      - "/var/lock"
     networks:
       - dapr
 

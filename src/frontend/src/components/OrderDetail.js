@@ -1,6 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Box, Container, CssBaseline, Typography, Table, Snackbar } from "@mui/joy";
+import {
+  Box,
+  Container,
+  CssBaseline,
+  Typography,
+  Table,
+  Snackbar,
+  Button,
+} from "@mui/joy";
 import Grid from "@mui/joy/Grid";
 import Sheet from "@mui/joy/Sheet";
 import { ordersApi } from "../axiosConfig";
@@ -13,7 +21,6 @@ function OrderDetail(props) {
   const [snackbarOpen, setSnackbarOpen] = React.useState(false);
   const [snackbarContents, setSnackbarContents] = React.useState("");
   const hub = new NotificationHub((message) => {
-    console.log("Handling received message:", message);
     setSnackbarContents(message);
     setSnackbarOpen(true);
   });
@@ -32,6 +39,14 @@ function OrderDetail(props) {
     fetchData();
   }, []);
 
+  async function cancelOrder(order) {
+    await ordersApi.post(`/${order.orderIdentifier}/cancel`, {
+      orderIdentifier: order.orderIdentifier,
+    });
+    setSnackbarContents('Cancellation requested');
+    setSnackbarOpen(true);
+  }
+
   const handleSnackbarClose = () => {
     setSnackbarContents("");
     setSnackbarOpen(false);
@@ -47,6 +62,13 @@ function OrderDetail(props) {
               <Typography level="h2" gutterBottom>
                 Order: {order.orderNumber}
               </Typography>
+              <Button
+                onClick={() => {
+                  cancelOrder(order);
+                }}
+              >
+                Cancel Order
+              </Button>
               <Grid container spacing={2} sx={{ flexGrow: 1 }}>
                 <Grid xs={6}>
                   <Typography level="h3" gutterBottom>

@@ -13,3 +13,15 @@ variable "dd_api_key" {
 variable "subscription_id" {
   type = string
 }
+
+variable "temporal_db_host_name"{
+  type = string
+}
+
+variable "temporal_db_user_name"{
+  type = string
+}
+
+variable "temporal_db_password"{
+  type = string
+}

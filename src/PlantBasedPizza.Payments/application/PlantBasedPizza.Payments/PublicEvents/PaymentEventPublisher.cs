@@ -7,9 +7,9 @@ namespace PlantBasedPizza.Payments.PublicEvents;
 public class PaymentEventPublisher(DaprClient daprClient) : IPaymentEventPublisher
 {
     private const string SOURCE = "payments";
-    
+
     [Channel(PaymentSuccessfulEventV1.EVENT_NAME)]
-    [PublishOperation(typeof(PaymentSuccessfulEventV1), Summary = "Published when an order is submitted.")]
+    [PublishOperation(typeof(PaymentSuccessfulEventV1), Summary = "Published when a payment is successfully taken.")]
     public async Task PublishPaymentSuccessfulEventV1(PaymentSuccessfulEventV1 evt)
     {
         var eventMetadata = new Dictionary<string, string>(2)
@@ -18,12 +18,12 @@ public class PaymentEventPublisher(DaprClient daprClient) : IPaymentEventPublish
             { "cloudevent.type", $"{evt.EventName}.{evt.EventVersion}" },
             { "cloudevent.id", Guid.NewGuid().ToString() }
         };
-            
-        await daprClient.PublishEventAsync("public", $"{evt.EventName}.{evt.EventVersion}", evt, eventMetadata);
+
+        await daprClient.PublishEventAsync("payments", $"{evt.EventName}.{evt.EventVersion}", evt, eventMetadata);
     }
 
     [Channel(PaymentFailedEventV1.EVENT_NAME)]
-    [PublishOperation(typeof(PaymentFailedEventV1), Summary = "Published when an order is submitted.")]
+    [PublishOperation(typeof(PaymentFailedEventV1), Summary = "Published when a payment fails.")]
     public async Task PublishPaymentFailedEventV1(PaymentFailedEventV1 evt)
     {
         var eventMetadata = new Dictionary<string, string>(2)
@@ -32,7 +32,7 @@ public class PaymentEventPublisher(DaprClient daprClient) : IPaymentEventPublish
             { "cloudevent.type", $"{evt.EventName}.{evt.EventVersion}" },
             { "cloudevent.id", Guid.NewGuid().ToString() }
         };
-            
-        await daprClient.PublishEventAsync("public", $"{evt.EventName}.{evt.EventVersion}", evt, eventMetadata);
+
+        await daprClient.PublishEventAsync("payments", $"{evt.EventName}.{evt.EventVersion}", evt, eventMetadata);
     }
 }

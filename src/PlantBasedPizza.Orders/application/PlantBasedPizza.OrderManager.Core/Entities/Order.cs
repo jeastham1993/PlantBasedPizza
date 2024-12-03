@@ -86,6 +86,9 @@ namespace PlantBasedPizza.OrderManager.Core.Entities
         [JsonPropertyName("orderCompletedOn")]
         public DateTime? OrderCompletedOn { get; private set; }
 
+        [JsonPropertyName("orderCancelledOn")]
+        public DateTime? OrderCancelledOn { get; private set; }
+
         [JsonIgnore]
         public IReadOnlyCollection<OrderItem> Items => _items;
         
@@ -192,6 +195,11 @@ namespace PlantBasedPizza.OrderManager.Core.Entities
 
         public void Confirm(decimal paymentAmount)
         {
+            if (OrderCancelledOn.HasValue)
+            {
+                return;
+            }
+            
             AddHistory($"Payment taken for {paymentAmount}!");
             AddHistory("Order confirmed");
             
@@ -228,6 +236,11 @@ namespace PlantBasedPizza.OrderManager.Core.Entities
             {
                 throw new ArgumentException("Cannot submit an order with no items");
             }
+
+            if (OrderCancelledOn.HasValue)
+            {
+                return;
+            }
             
             OrderSubmittedOn = DateTime.Now;
             
@@ -245,6 +258,24 @@ namespace PlantBasedPizza.OrderManager.Core.Entities
             AddHistory("Order awaiting collection");
         }
 
+        public bool CancelOrder()
+        {
+            if (OrderSubmittedOn.HasValue)
+            {
+                return false;
+            }
+            
+            AddHistory("Order cancelled");
+            OrderCancelledOn = DateTime.Now;
+            
+            addEvent(new OrderCancelledEventV1()
+            {
+                OrderIdentifier = OrderIdentifier
+            });
+
+            return true;
+        }
+
         public void CompleteOrder()
         {
             OrderCompletedOn = DateTime.Now;
@@ -257,6 +288,17 @@ namespace PlantBasedPizza.OrderManager.Core.Entities
                 OrderIdentifier = OrderIdentifier,
                 CustomerIdentifier = CustomerIdentifier,
                 OrderValue = TotalPrice,
+            });
+            
+            addEvent(new OrderCompletedIntegrationEventV2()
+            {
+                OrderIdentifier = OrderIdentifier,
+                CustomerIdentifier = CustomerIdentifier,
+                OrderValue = new OrderValue()
+                {
+                    Value = TotalPrice,
+                    Currency = "GBP"
+                }
             });
         }
         

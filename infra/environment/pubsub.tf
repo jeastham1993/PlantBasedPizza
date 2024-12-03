@@ -36,3 +36,23 @@ resource "azurerm_container_app_environment_dapr_component" "public_pubsub" {
     value = azurerm_user_assigned_identity.public_service_bus_identity.client_id
   }
 }
+
+resource "azurerm_container_app_environment_dapr_component" "payments_pubsub" {
+  name                         = "public"
+  container_app_environment_id = azurerm_container_app_environment.plant_based_pizza_aca_environment.id
+  component_type               = "pubsub.azure.servicebus.queues"
+  version                      = "v1"
+  scopes                       = [
+    "orders",
+    "orders-worker",
+    "payment"
+  ]
+  metadata {
+    name  = "connectionString"
+    value = azurerm_servicebus_namespace.plant_based_pizza_public_service_bus.default_primary_connection_string
+  }
+  metadata {
+    name  = "azureClientId"
+    value = azurerm_user_assigned_identity.public_service_bus_identity.client_id
+  }
+}

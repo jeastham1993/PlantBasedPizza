@@ -28,6 +28,48 @@ services:
     networks:
       - dapr
 
+  postgresql:
+    container_name: temporal-postgresql
+    environment:
+      POSTGRES_PASSWORD: temporal
+      POSTGRES_USER: temporal
+    image: postgres:latest
+    networks:
+      - dapr
+    ports:
+      - 5432:5432
+    volumes:
+      - /var/lib/postgresql/data
+
+  temporal:
+    container_name: temporal
+    depends_on:
+      - postgresql
+    environment:
+      - DB=postgres12
+      - DB_PORT=5432
+      - POSTGRES_USER=temporal
+      - POSTGRES_PWD=temporal
+      - POSTGRES_SEEDS=postgresql
+    image: temporalio/auto-setup:1.25.2
+    networks:
+      - dapr
+    ports:
+      - 7233:7233
+
+  temporal-ui:
+    container_name: temporal-ui
+    depends_on:
+      - temporal
+    environment:
+      - TEMPORAL_ADDRESS=temporal:7233
+      - TEMPORAL_CORS_ORIGINS=http://localhost:3000
+    image: temporalio/ui:2.23.0
+    networks:
+      - dapr
+    ports:
+      - 8090:8080
+
   ############################
   # Dapr placement service
   ############################
@@ -45,6 +87,7 @@ services:
     depends_on:
       - cache
       - placement
+      - temporal
     ports:
       - "50002:50002"
     networks:
@@ -55,6 +98,8 @@ services:
       - Environment=local
       - REDIS_CONNECTION_STRING=cache:6379
       - CACHE_NAME=orders
+      - TEMPORAL_ENDPOINT=temporal:7233
+      - Features__UseOrchestrator=true
       - Services__LoyaltyInternal=http://localhost:5101
       - Services__Recipes=recipes
       - Messaging__UseAsyncApi=Y
@@ -91,8 +136,8 @@ services:
     depends_on:
       - cache
       - placement
-    ports:
-      - "8090:8080"
+    expose:
+      - "8080"
     networks:
       - dapr
     environment:
@@ -136,11 +181,16 @@ services:
     container_name: local.orders-worker
     depends_on:
       - cache
+      - temporal
+    ports:
+      - "5090:8080"
     environment:
       - DatabaseConnection=mongodb://mongodb:27017
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
       - REDIS_CONNECTION_STRING=cache:6379
       - CACHE_NAME=orders
+      - TEMPORAL_ENDPOINT=temporal:7233
+      - Features__UseOrchestrator=true
       - Services__LoyaltyInternal=http://localhost:5101
       - Services__Recipes=recipes
       - Environment=local

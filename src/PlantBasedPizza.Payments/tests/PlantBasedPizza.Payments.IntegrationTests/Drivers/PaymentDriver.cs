@@ -3,7 +3,7 @@ using Grpc.Core;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.Extensions.Options;
-using PlantBasedPizza.Payments.ExternalEvents;
+using PlantBasedPizza.Payments.TakePayment;
 
 namespace PlantBasedPizza.Payments.IntegrationTests.Drivers;
 
@@ -15,16 +15,17 @@ public class PaymentDriver
         public PaymentDriver()
         {
             _daprClient = new DaprClientBuilder()
-                .UseGrpcEndpoint("http://localhost:5101")
+                .UseGrpcEndpoint("http://localhost:40004")
                 .Build();
             _distributedCache = new RedisCache(Options.Create<RedisCacheOptions>(new RedisCacheOptions() { Configuration = "localhost:6379", InstanceName = "payments" }));
         }
 
         public async Task SimulateOrderSubmittedEvent(string orderIdentifier)
         {
-            await _daprClient.PublishEventAsync("public", "order.orderSubmitted.v1", new OrderSubmittedEventV1()
+            await _daprClient.PublishEventAsync("payments", "payments.takepayment.v1", new TakePaymentCommand()
             {
-                OrderIdentifier = orderIdentifier
+                OrderIdentifier = orderIdentifier,
+                PaymentAmount = 100
             });
 
             // Delay to allow for message processing

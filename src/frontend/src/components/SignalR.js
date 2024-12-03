@@ -15,7 +15,7 @@ class NotificationHub {
     // Create the connection
     this.connection = new signalR.HubConnectionBuilder()
       .withUrl(
-        "",
+        "http://localhost:5090/notifications/orders",
         {
           transport: signalR.HttpTransportType.WebSockets,
           skipNegotiation: true,
@@ -71,6 +71,22 @@ class NotificationHub {
       console.log("Order quality checked:", message);
       if (typeof this.alert === "function") {
         this.alert("Wahooo, the quality meets the bar");
+      }
+    });
+
+    // Set up event listeners
+    this.connection.on("orderCancelled", (message) => {
+      console.log("Order cancelled:", message);
+      if (typeof this.alert === "function") {
+        this.alert("Your order has been successfully cancelled");
+      }
+    });
+
+    // Set up event listeners
+    this.connection.on("cancellationFailed", (message) => {
+      console.log("Order quality checked:", message);
+      if (typeof this.alert === "function") {
+        this.alert("Unfortunately, the kitchen has already started your order and it cannot be cancelled");
       }
     });
 

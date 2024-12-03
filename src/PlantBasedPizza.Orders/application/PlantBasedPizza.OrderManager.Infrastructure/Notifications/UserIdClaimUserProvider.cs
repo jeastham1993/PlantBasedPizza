@@ -1,14 +1,13 @@
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Logging;
 using PlantBasedPizza.Shared.Logging;
 
-namespace PlantBasedPizza.Orders.Worker.Notifications;
+namespace PlantBasedPizza.OrderManager.Infrastructure.Notifications;
 
-public class UserIdClaimUserProvider(ILogger<UserIdClaimUserProvider> logger): IUserIdProvider
+public class UserIdClaimUserProvider: IUserIdProvider
 {
     public string? GetUserId(HubConnectionContext connection)
     {
-        logger.LogInformation("Getting user id from connection");
-        
         var accountId = connection.User?.Claims.ExtractAccountId();
         return accountId;
     }

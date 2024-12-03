@@ -10,8 +10,19 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlantBasedPizza.Payments.IntegrationTests", "tests\PlantBasedPizza.Payments.IntegrationTests\PlantBasedPizza.Payments.IntegrationTests.csproj", "{8144FBC7-12D4-4979-BDFA-6057255310F1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "application", "application", "{C157012B-897C-419E-8433-878691B52F7B}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose-integration.yml = docker-compose-integration.yml
+		docker-compose.yml = docker-compose.yml
+		Makefile = Makefile
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PlantBasedPizza.Payments", "application\PlantBasedPizza.Payments\PlantBasedPizza.Payments.csproj", "{A030B14B-595E-47E2-83A8-23A1D187AADC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "components", "components", "{08D6C982-7FF0-4321-AADA-C1FD7D115112}"
+	ProjectSection(SolutionItems) = preProject
+		components\configuration.yaml = components\configuration.yaml
+		components\payments-pubsub.yaml = components\payments-pubsub.yaml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

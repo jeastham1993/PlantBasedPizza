@@ -80,12 +80,16 @@ function Home() {
   }, []);
 
   function getImage(category) {
+    console.log(category);
     switch (category) {
       case "Pizza":
+      case "0":
         return "/pizza-default.jpg";
       case "Sides":
+      case "1":
         return "/fries.jpg";
       case "Drinks":
+      case "2":
         return "/can-default.jpg";
       default:
         return "Other";

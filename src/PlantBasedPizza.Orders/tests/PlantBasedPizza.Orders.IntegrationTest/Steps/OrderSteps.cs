@@ -23,17 +23,23 @@ public class OrderSteps
         Activity.Current = _scenarioContext.Get<Activity>("Activity");
 
         await _driver.SimulateLoyaltyPointsUpdatedEvent(p0, p1);
-
-        await Task.Delay(TimeSpan.FromSeconds(2));
     }
 
-    [Given(@"a new order is created")]
-    public async Task GivenANewOrderIsCreatedWithIdentifierOrd()
+    [Given(@"a new (.*) order is created")]
+    public async Task GivenANewOrderIsCreatedWithIdentifierOrd(string p0)
     {
         Activity.Current = _scenarioContext.Get<Activity>("Activity");
 
-        var order = await _driver.AddNewOrder("james").ConfigureAwait(false);
-        _scenarioContext.Add("orderId", order.OrderIdentifier);
+        if (p0 == "delivery")
+        {
+            var order = await _driver.AddNewDeliveryOrder("james").ConfigureAwait(false);
+            _scenarioContext.Add("orderId", order.OrderIdentifier);
+        }
+        else
+        {
+            var order = await _driver.AddNewPickupOrder("james").ConfigureAwait(false);
+            _scenarioContext.Add("orderId", order.OrderIdentifier);
+        }
     }
 
     [When(@"a (.*) is added to order")]
@@ -53,6 +59,36 @@ public class OrderSteps
         var orderId = _scenarioContext.Get<string>("orderId");
 
         await _driver.SubmitOrder(orderId);
+    }
+
+    [When(@"order is cancelled")]
+    public async Task WhenOrderIsCancelled()
+    {
+        Activity.Current = _scenarioContext.Get<Activity>("Activity");
+
+        var orderId = _scenarioContext.Get<string>("orderId");
+
+        await _driver.CancelOrder(orderId);
+    }
+
+    [When(@"kitchen quality checks the order")]
+    public async Task WhenKitchenQualityChecksTheOrder()
+    {
+        Activity.Current = _scenarioContext.Get<Activity>("Activity");
+
+        var orderId = _scenarioContext.Get<string>("orderId");
+
+        await _driver.SimulateQualityCheckCompleteEvent(orderId);
+    }
+
+    [When(@"order is delivery successfully")]
+    public async Task WhenOrderIsDeliverySuccessfully()
+    {
+        Activity.Current = _scenarioContext.Get<Activity>("Activity");
+
+        var orderId = _scenarioContext.Get<string>("orderId");
+
+        await _driver.SimulateOrderDeliveredEvent(orderId);
     }
 
     [When(@"payment is successful")]
@@ -78,17 +114,27 @@ public class OrderSteps
     }
 
     [Then(@"order should contain a (.*) event")]
-    public async Task ThenOrderOrdShouldContainAOrderQualityCheckedEvent(string p0)
+    public async Task ThenOrderHistoryShouldExistWithDescription(string p0)
     {
-        // Allow async processes to catch up
-        await Task.Delay(TimeSpan.FromSeconds(10));
-
         Activity.Current = _scenarioContext.Get<Activity>("Activity");
         var orderId = _scenarioContext.Get<string>("orderId");
 
         var order = await _driver.GetOrder(orderId).ConfigureAwait(false);
 
-        order.History.Exists(p => p.Description.Contains(p0)).Should().BeTrue();
+        order.History.Exists(p => p.Description.Contains(p0)).Should().BeTrue($"Order {orderId} should contain a {p0} message");
+    }
+
+    [Then(@"order should not contain a (.*) event")]
+    public async Task ThenOrderHistoryShouldNotExist(string p0)
+    {
+        await Task.Delay(TimeSpan.FromSeconds(2));
+        
+        Activity.Current = _scenarioContext.Get<Activity>("Activity");
+        var orderId = _scenarioContext.Get<string>("orderId");
+
+        var order = await _driver.GetOrder(orderId).ConfigureAwait(false);
+
+        order.History.Exists(p => p.Description.Contains(p0)).Should().BeFalse($"Order {orderId} should not contain a {p0} message");
     }
 
     [Then(@"order should be awaiting collection")]
@@ -121,5 +167,12 @@ public class OrderSteps
         var order = await _driver.AddNewDeliveryOrder(p0);
 
         _scenarioContext.Add("orderId", order.OrderIdentifier);
+    }
+
+    [When(@"user does not cancel")]
+    public async Task WhenUserDoesNotCancel()
+    {
+        // The user workflow gives a 10s period for a user to cancel their order, wait for that to pass
+        await Task.Delay(TimeSpan.FromSeconds(15));
     }
 }

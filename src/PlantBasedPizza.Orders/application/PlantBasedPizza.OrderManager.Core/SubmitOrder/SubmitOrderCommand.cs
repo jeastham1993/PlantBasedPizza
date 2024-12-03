@@ -1,4 +1,4 @@
-namespace PlantBasedPizza.OrderManager.Core.OrderSubmitted;
+namespace PlantBasedPizza.OrderManager.Core.SubmitOrder;
 
 public class SubmitOrderCommand
 {

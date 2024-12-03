@@ -3,9 +3,9 @@ using Grpc.Net.Client.Configuration;
 using PlantBasedPizza.Orders.Internal;
 using PlantBasedPizza.Payments;
 using PlantBasedPizza.Payments.Adapters;
-using PlantBasedPizza.Payments.ExternalEvents;
-using PlantBasedPizza.Payments.OrderSubmitted;
 using PlantBasedPizza.Payments.PublicEvents;
+using PlantBasedPizza.Payments.RefundPayment;
+using PlantBasedPizza.Payments.TakePayment;
 using PlantBasedPizza.Shared;
 using PlantBasedPizza.Shared.Caching;
 using PlantBasedPizza.Shared.Logging;
@@ -38,7 +38,8 @@ builder.Services
     .AddAsyncApiDocs(builder.Configuration, [typeof(PaymentEventPublisher)], "PaymentApi")
     .AddCaching(builder.Configuration);
 
-builder.Services.AddSingleton<OrderSubmittedEventHandler>();
+builder.Services.AddSingleton<TakePaymentCommandHandler>();
+builder.Services.AddSingleton<RefundPaymentCommandHandler>();
 builder.Services.AddSingleton<IPaymentEventPublisher, PaymentEventPublisher>();
 builder.Services.AddSingleton<IOrderService, OrderService>();
 

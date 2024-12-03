@@ -1,4 +1,4 @@
-namespace PlantBasedPizza.Orders.Worker.Notifications;
+namespace PlantBasedPizza.OrderManager.Core.Services;
 
 public interface IUserNotificationService
 {
@@ -15,4 +15,8 @@ public interface IUserNotificationService
     Task NotifyOrderDriverAssigned(string customerIdentifier, string orderIdentifier);
     
     Task NotifyReadyForCollection(string customerIdentifier, string orderIdentifier);
+    
+    Task NotifyOrderCancelled(string customerIdentifier, string orderIdentifier);
+    
+    Task NotifyCancellationFailed(string customerIdentifier, string orderIdentifier);
 }

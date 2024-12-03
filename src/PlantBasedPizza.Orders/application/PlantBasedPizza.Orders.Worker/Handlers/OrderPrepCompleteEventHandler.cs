@@ -1,6 +1,6 @@
 using PlantBasedPizza.OrderManager.Core.Entities;
+using PlantBasedPizza.OrderManager.Core.Services;
 using PlantBasedPizza.Orders.Worker.IntegrationEvents;
-using PlantBasedPizza.Orders.Worker.Notifications;
 
 namespace PlantBasedPizza.Orders.Worker.Handlers
 {

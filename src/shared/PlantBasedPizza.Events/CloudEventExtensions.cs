@@ -7,11 +7,6 @@ public static class CloudEventExtensions
 {
     public static string ExtractEventId(this HttpContext httpContext)
     {
-        foreach (var header in httpContext.Request.Headers)
-        {
-            Console.WriteLine($"{header.Key}: {header.Value}");    
-        }
-        
         var cloudEventId = extractValueFromHeader(httpContext, "Cloudevent.id");
         if (!string.IsNullOrEmpty(cloudEventId))
             Activity.Current?.AddTag("messaging.message.id", cloudEventId);

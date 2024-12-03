@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.SignalR;
+using PlantBasedPizza.OrderManager.Core.Services;
 
-namespace PlantBasedPizza.Orders.Worker.Notifications;
+namespace PlantBasedPizza.OrderManager.Infrastructure.Notifications;
 
 public class UserNotificationService(IHubContext<OrderNotificationsHub> hub) : IUserNotificationService
 {
@@ -37,5 +38,15 @@ public class UserNotificationService(IHubContext<OrderNotificationsHub> hub) : I
     public async Task NotifyReadyForCollection(string customerIdentifier, string orderIdentifier)
     {
         await hub.Clients.User(customerIdentifier).SendAsync("readyForCollection", orderIdentifier);
+    }
+
+    public async Task NotifyOrderCancelled(string customerIdentifier, string orderIdentifier)
+    {
+        await hub.Clients.User(customerIdentifier).SendAsync("orderCancelled", orderIdentifier);
+    }
+
+    public async Task NotifyCancellationFailed(string customerIdentifier, string orderIdentifier)
+    {
+        await hub.Clients.User(customerIdentifier).SendAsync("cancellationFailed", orderIdentifier);
     }
 }

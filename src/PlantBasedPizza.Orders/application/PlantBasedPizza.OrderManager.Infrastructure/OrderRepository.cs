@@ -70,6 +70,7 @@ public class OrderRepository : IOrderRepository
 
     public async Task Update(Order order)
     {
+        // TODO: This should be wrapped in a transaction
         var queryBuilder = Builders<Order>.Filter.Eq(ord => ord.OrderIdentifier, order.OrderIdentifier);
             
         await _orders.ReplaceOneAsync(queryBuilder, order);

@@ -8,6 +8,7 @@ public record OrderDto
     
     public OrderDto(Order order)
     {
+        OrderType = order.OrderType;
         CustomerIdentifier = order.CustomerIdentifier;
         OrderIdentifier = order.OrderIdentifier;
         OrderNumber = order.OrderNumber;
@@ -42,6 +43,9 @@ public record OrderDto
             };
         }
     }
+    
+    [JsonPropertyName("orderType")]
+    public OrderType OrderType { get; set; }
     
     [JsonPropertyName("customerIdentifier")]
     public string CustomerIdentifier { get; set; }
