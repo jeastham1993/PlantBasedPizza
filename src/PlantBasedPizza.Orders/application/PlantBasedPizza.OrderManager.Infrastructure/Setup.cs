@@ -22,6 +22,7 @@ using PlantBasedPizza.Shared.Caching;
 using Polly;
 using Polly.Contrib.WaitAndRetry;
 using Polly.Extensions.Http;
+using Temporalio.Client;
 using Temporalio.Extensions.OpenTelemetry;
 
 namespace PlantBasedPizza.OrderManager.Infrastructure;
@@ -84,13 +85,13 @@ public static class Setup
         };
 
         services.AddHttpClient<RecipeService>();
-        services
-            .AddTemporalClient(opts =>
-            {
-                opts.TargetHost = configuration["TEMPORAL_ENDPOINT"];
-                opts.Namespace = "default";
-                opts.Interceptors = new[] { new TracingInterceptor() };
-            });
+        services.AddTemporalClient(options =>
+        {
+            options.TargetHost = configuration["TEMPORAL_ENDPOINT"];
+            options.Tls = (configuration["TEMPORAL_TLS"] ?? "") == "true" ? new TlsOptions() : null;
+            options.Namespace = "default";
+            options.Interceptors = new[] { new TracingInterceptor() };
+        });
         services.AddSingleton<IWorkflowEngine, TemporalWorkflowEngine>();
 
         services.AddGrpcClient<Loyalty.LoyaltyClient>(o =>

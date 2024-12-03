@@ -45,6 +45,14 @@ resource "azurerm_container_app" "orders-api" {
         value = "recipes"
       }
       env {
+        name = "TEMPORAL_ENDPOINT"
+        value = var.temporal_server_endpoint
+      }
+      env {
+        name = "Features__UseOrchestrator"
+        value = "true"
+      }
+      env {
         name = "Messaging__UseAsyncApi"
         value = "Y"
       }
@@ -216,6 +224,18 @@ resource "azurerm_container_app" "orders-worker" {
       env {
         name = "Services__Recipes"
         value = "recipes"
+      }
+      env {
+        name = "TEMPORAL_ENDPOINT"
+        value = var.temporal_server_endpoint
+      }
+      env {
+        name = "TEMPORAL_TLS"
+        value = "true"
+      }
+      env {
+        name = "Features__UseOrchestrator"
+        value = "true"
       }
       env {
         name  = "OTEL_EXPORTER_OTLP_ENDPOINT"

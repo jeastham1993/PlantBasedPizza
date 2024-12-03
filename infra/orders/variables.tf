@@ -37,3 +37,7 @@ variable "db_connection_string" {
 variable "public_service_bus_namespace" {
     type = string
 }
+
+variable "temporal_server_endpoint" {
+    type = string
+}
