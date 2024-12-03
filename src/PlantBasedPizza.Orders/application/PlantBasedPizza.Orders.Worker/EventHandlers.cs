@@ -10,6 +10,7 @@ namespace PlantBasedPizza.Orders.Worker;
 
 public static class EventHandlers
 {
+    // You've still got an event handler for that payments.paymentSuccessful event!
     [Topic("public", "payments.paymentSuccessful.v1")]
     public static async Task<IResult> HandlePaymentSuccessfulEvent(
         [FromServices] PaymentSuccessEventHandler paymentSuccessEventHandler,
@@ -32,6 +33,7 @@ public static class EventHandlers
         catch (Exception ex)
         {
             Activity.Current?.AddException(ex);
+            Activity.Current?.AddTag("messaging.error", true);
 
             return Results.InternalServerError();
         }
@@ -59,6 +61,7 @@ public static class EventHandlers
         catch (Exception ex)
         {
             Activity.Current?.AddException(ex);
+            Activity.Current?.AddTag("messaging.error", true);
 
             return Results.InternalServerError();
         }
@@ -86,6 +89,7 @@ public static class EventHandlers
         catch (Exception ex)
         {
             Activity.Current?.AddException(ex);
+            Activity.Current?.AddTag("messaging.error", true);
 
             return Results.InternalServerError();
         }
@@ -114,6 +118,7 @@ public static class EventHandlers
         catch (Exception ex)
         {
             Activity.Current?.AddException(ex);
+            Activity.Current?.AddTag("messaging.error", true);
 
             return Results.InternalServerError();
         }
@@ -141,6 +146,7 @@ public static class EventHandlers
         catch (Exception ex)
         {
             Activity.Current?.AddException(ex);
+            Activity.Current?.AddTag("messaging.error", true);
 
             return Results.InternalServerError();
         }
@@ -168,6 +174,7 @@ public static class EventHandlers
         catch (Exception ex)
         {
             Activity.Current?.AddException(ex);
+            Activity.Current?.AddTag("messaging.error", true);
 
             return Results.InternalServerError();
         }
@@ -195,6 +202,7 @@ public static class EventHandlers
         catch (Exception ex)
         {
             Activity.Current?.AddException(ex);
+            Activity.Current?.AddTag("messaging.error", true);
 
             return Results.InternalServerError();
         }
@@ -222,6 +230,7 @@ public static class EventHandlers
         catch (Exception ex)
         {
             Activity.Current?.AddException(ex);
+            Activity.Current?.AddTag("messaging.error", true);
 
             return Results.InternalServerError();
         }

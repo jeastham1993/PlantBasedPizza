@@ -17,7 +17,8 @@ public class OrdersTestDriver
     private readonly DaprClient _daprClient;
     private readonly HttpClient _userHttpClient;
     private readonly HttpClient _staffHttpClient;
-
+    private const string DATE_FORMAT = "yyyy-MM-ddTHH:mm:ssZ";
+    
     public OrdersTestDriver()
     {
         var userToken = TestTokenGenerator.GenerateTestTokenForRole("user");
@@ -44,7 +45,10 @@ public class OrdersTestDriver
                 TotalLoyaltyPoints = totalPoints
             }, new Dictionary<string, string>(1)
             {
-                { "Cloudevents.id", eventId ?? Guid.NewGuid().ToString() }
+                { "cloudevent.id", eventId ?? Guid.NewGuid().ToString() },
+                { "cloudevent.type", "loyalty.customerLoyaltyPointsUpdated.v1" },
+                { "cloudevent.source", "loyalty" },
+                { "cloudevent.time", DateTime.UtcNow.ToString(DATE_FORMAT) },
             });
 
         // Delay to allow for message processing
@@ -59,7 +63,10 @@ public class OrdersTestDriver
             Amount = paymentValue
         }, new Dictionary<string, string>(1)
         {
-            { "Cloudevents.id", eventId ?? Guid.NewGuid().ToString() }
+            { "cloudevent.id", eventId ?? Guid.NewGuid().ToString() },
+            { "cloudevent.type", "payments.paymentSuccessful.v1" },
+            { "cloudevent.source", "payments" },
+            { "cloudevent.time", DateTime.UtcNow.ToString(DATE_FORMAT) },
         });
 
         // Delay to allow for message processing
@@ -73,7 +80,10 @@ public class OrdersTestDriver
             OrderIdentifier = orderIdentifier
         }, new Dictionary<string, string>(1)
         {
-            { "Cloudevents.id", eventId ?? Guid.NewGuid().ToString() }
+            { "cloudevent.id", eventId ?? Guid.NewGuid().ToString() },
+            { "cloudevent.type", "kitchen.qualityChecked.v1" },
+            { "cloudevent.source", "kitchen" },
+            { "cloudevent.time", DateTime.UtcNow.ToString(DATE_FORMAT) },
         });
 
         // Delay to allow for message processing
@@ -88,7 +98,10 @@ public class OrdersTestDriver
                 OrderIdentifier = orderIdentifier
             }, new Dictionary<string, string>(1)
             {
-                { "Cloudevents.id", eventId ?? Guid.NewGuid().ToString() }
+                { "cloudevent.id", eventId ?? Guid.NewGuid().ToString() },
+                { "cloudevent.type", "delivery.driverDeliveredOrder.v1" },
+                { "cloudevent.source", "delivery" },
+                { "cloudevent.time", DateTime.UtcNow.ToString(DATE_FORMAT) },
             });
 
         // Delay to allow for message processing

@@ -1,4 +1,7 @@
+using System.Diagnostics;
+using System.Text.Json;
 using Dapr.Client;
+using NJsonSchema;
 using PlantBasedPizza.Events;
 using PlantBasedPizza.OrderManager.Core.Entities;
 using PlantBasedPizza.OrderManager.Core.PublicEvents;
@@ -11,18 +14,23 @@ public class OrderEventPublisher(DaprClient daprClient) : IOrderEventPublisher
 {
     private const string SOURCE = "orders";
     private const string PUB_SUB_NAME = "public";
+    private const string DATE_FORMAT = "yyyy-MM-ddTHH:mm:ssZ";
     
     [Channel("order.orderSubmitted.v1")]
     [PublishOperation(typeof(OrderSubmittedEventV1), Summary = "Published when an order is submitted.")]
     public async Task PublishOrderSubmittedEventV1(OrderSubmittedEventV1 evt)
     {
         var eventType = $"{evt.EventName}.{evt.EventVersion}";
+        var eventId = Guid.NewGuid().ToString();
+        
+        evt.AddToTelemetry(eventId);
         
         var eventMetadata = new Dictionary<string, string>(3)
         {
             { EventConstants.EVENT_SOURCE_HEADER_KEY, SOURCE },
             { EventConstants.EVENT_TYPE_HEADER_KEY, eventType},
-            { EventConstants.EVENT_ID_HEADER_KEY, Guid.NewGuid().ToString() }
+            { EventConstants.EVENT_ID_HEADER_KEY, eventId },
+            { EventConstants.EVENT_TIME_HEADER_KEY, DateTime.UtcNow.ToString(DATE_FORMAT) },
         };
         await daprClient.PublishEventAsync(PUB_SUB_NAME, eventType, evt, eventMetadata);
     }
@@ -33,12 +41,16 @@ public class OrderEventPublisher(DaprClient daprClient) : IOrderEventPublisher
     public async Task PublishOrderCompletedEventV1(OrderCompletedIntegrationEventV1 evt)
     {
         var eventType = $"{evt.EventName}.{evt.EventVersion}";
+        var eventId = Guid.NewGuid().ToString();
+        
+        evt.AddToTelemetry(eventId);
         
         var eventMetadata = new Dictionary<string, string>(3)
         {
             { EventConstants.EVENT_SOURCE_HEADER_KEY, SOURCE },
             { EventConstants.EVENT_TYPE_HEADER_KEY, eventType},
-            { EventConstants.EVENT_ID_HEADER_KEY, Guid.NewGuid().ToString() }
+            { EventConstants.EVENT_ID_HEADER_KEY, eventId },
+            { EventConstants.EVENT_TIME_HEADER_KEY, DateTime.UtcNow.ToString(DATE_FORMAT) },
         };
         await daprClient.PublishEventAsync(PUB_SUB_NAME, eventType, evt, eventMetadata);
     }
@@ -48,12 +60,16 @@ public class OrderEventPublisher(DaprClient daprClient) : IOrderEventPublisher
     public async Task PublishOrderCompletedEventV2(OrderCompletedIntegrationEventV2 evt)
     {
         var eventType = $"{evt.EventName}.{evt.EventVersion}";
+        var eventId = Guid.NewGuid().ToString();
+        
+        evt.AddToTelemetry(eventId);
         
         var eventMetadata = new Dictionary<string, string>(3)
         {
             { EventConstants.EVENT_SOURCE_HEADER_KEY, SOURCE },
             { EventConstants.EVENT_TYPE_HEADER_KEY, eventType},
-            { EventConstants.EVENT_ID_HEADER_KEY, Guid.NewGuid().ToString() }
+            { EventConstants.EVENT_ID_HEADER_KEY, eventId },
+            { EventConstants.EVENT_TIME_HEADER_KEY, DateTime.UtcNow.ToString(DATE_FORMAT) },
         };
         await daprClient.PublishEventAsync(PUB_SUB_NAME, eventType, evt, eventMetadata);
     }
@@ -64,12 +80,16 @@ public class OrderEventPublisher(DaprClient daprClient) : IOrderEventPublisher
     public async Task PublishOrderReadyForDeliveryEventV1(OrderReadyForDeliveryEventV1 evt)
     {
         var eventType = $"{evt.EventName}.{evt.EventVersion}";
+        var eventId = Guid.NewGuid().ToString();
+        
+        evt.AddToTelemetry(eventId);
         
         var eventMetadata = new Dictionary<string, string>(3)
         {
             { EventConstants.EVENT_SOURCE_HEADER_KEY, SOURCE },
             { EventConstants.EVENT_TYPE_HEADER_KEY, eventType},
-            { EventConstants.EVENT_ID_HEADER_KEY, Guid.NewGuid().ToString() }
+            { EventConstants.EVENT_ID_HEADER_KEY, eventId },
+            { EventConstants.EVENT_TIME_HEADER_KEY, DateTime.UtcNow.ToString(DATE_FORMAT) },
         };
         await daprClient.PublishEventAsync(PUB_SUB_NAME, eventType, evt, eventMetadata);
     }
@@ -79,12 +99,16 @@ public class OrderEventPublisher(DaprClient daprClient) : IOrderEventPublisher
     public async Task PublishOrderConfirmedEventV1(OrderConfirmedEventV1 evt)
     {
         var eventType = $"{evt.EventName}.{evt.EventVersion}";
+        var eventId = Guid.NewGuid().ToString();
+        
+        evt.AddToTelemetry(eventId);
         
         var eventMetadata = new Dictionary<string, string>(3)
         {
             { EventConstants.EVENT_SOURCE_HEADER_KEY, SOURCE },
             { EventConstants.EVENT_TYPE_HEADER_KEY, eventType},
-            { EventConstants.EVENT_ID_HEADER_KEY, Guid.NewGuid().ToString() }
+            { EventConstants.EVENT_ID_HEADER_KEY, eventId },
+            { EventConstants.EVENT_TIME_HEADER_KEY, DateTime.UtcNow.ToString(DATE_FORMAT) },
         };
         await daprClient.PublishEventAsync(PUB_SUB_NAME, eventType, evt, eventMetadata);
     }
@@ -94,12 +118,16 @@ public class OrderEventPublisher(DaprClient daprClient) : IOrderEventPublisher
     public async Task PublishOrderCreatedEventV1(OrderCreatedEventV1 evt)
     {
         var eventType = $"{evt.EventName}.{evt.EventVersion}";
+        var eventId = Guid.NewGuid().ToString();
+        
+        evt.AddToTelemetry(eventId);
         
         var eventMetadata = new Dictionary<string, string>(3)
         {
             { EventConstants.EVENT_SOURCE_HEADER_KEY, SOURCE },
             { EventConstants.EVENT_TYPE_HEADER_KEY, eventType},
-            { EventConstants.EVENT_ID_HEADER_KEY, Guid.NewGuid().ToString() }
+            { EventConstants.EVENT_ID_HEADER_KEY, eventId },
+            { EventConstants.EVENT_TIME_HEADER_KEY, DateTime.UtcNow.ToString(DATE_FORMAT) },
         };
         await daprClient.PublishEventAsync(PUB_SUB_NAME, eventType, evt, eventMetadata);
     }
@@ -109,12 +137,16 @@ public class OrderEventPublisher(DaprClient daprClient) : IOrderEventPublisher
     public async Task PublishOrderCancelledEventV1(OrderCancelledEventV1 evt)
     {
         var eventType = $"{evt.EventName}.{evt.EventVersion}";
+        var eventId = Guid.NewGuid().ToString();
+        
+        evt.AddToTelemetry(eventId);
         
         var eventMetadata = new Dictionary<string, string>(3)
         {
             { EventConstants.EVENT_SOURCE_HEADER_KEY, SOURCE },
             { EventConstants.EVENT_TYPE_HEADER_KEY, eventType},
-            { EventConstants.EVENT_ID_HEADER_KEY, Guid.NewGuid().ToString() }
+            { EventConstants.EVENT_ID_HEADER_KEY, eventId },
+            { EventConstants.EVENT_TIME_HEADER_KEY, DateTime.UtcNow.ToString(DATE_FORMAT) },
         };
         await daprClient.PublishEventAsync(PUB_SUB_NAME, eventType, evt, eventMetadata);
     }

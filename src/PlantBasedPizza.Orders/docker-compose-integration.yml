@@ -12,6 +12,7 @@ services:
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
       - Environment=local
       - TEMPORAL_ENDPOINT=temporal:7233
+      - Features__UseOrchestrator=true
       - REDIS_CONNECTION_STRING=cache
       - CACHE_NAME=orders
       - Services__LoyaltyInternal=http://loyalty-gripmock:4770
@@ -58,6 +59,7 @@ services:
       - DatabaseConnection=mongodb://mongodb:27017
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
       - TEMPORAL_ENDPOINT=temporal:7233
+      - Features__UseOrchestrator=true
       - REDIS_CONNECTION_STRING=cache
       - CACHE_NAME=orders
       - Services__LoyaltyInternal=http://loyalty-gripmock:4770
