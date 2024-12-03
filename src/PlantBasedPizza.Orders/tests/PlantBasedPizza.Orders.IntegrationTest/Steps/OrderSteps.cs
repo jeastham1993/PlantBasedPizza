@@ -9,12 +9,14 @@ namespace PlantBasedPizza.Orders.IntegrationTest.Steps;
 public class OrderSteps
 {
     private readonly OrdersTestDriver _driver;
+    private readonly EventDriver _eventDriver;
     private readonly ScenarioContext _scenarioContext;
 
     public OrderSteps(ScenarioContext scenarioContext)
     {
         _scenarioContext = scenarioContext;
         _driver = new OrdersTestDriver();
+        _eventDriver = new EventDriver();
     }
 
     [Given(@"a LoyaltyPointsUpdatedEvent is published for customer (.*), with a points total of (.*)")]
@@ -22,7 +24,7 @@ public class OrderSteps
     {
         Activity.Current = _scenarioContext.Get<Activity>("Activity");
 
-        await _driver.SimulateLoyaltyPointsUpdatedEvent(p0, p1);
+        await _eventDriver.SimulateLoyaltyPointsUpdatedEvent(p0, p1);
     }
 
     [Given(@"a new (.*) order is created")]
@@ -78,7 +80,7 @@ public class OrderSteps
 
         var orderId = _scenarioContext.Get<string>("orderId");
 
-        await _driver.SimulateQualityCheckCompleteEvent(orderId);
+        await _eventDriver.SimulateQualityCheckCompleteEvent(orderId);
     }
 
     [When(@"order is delivery successfully")]
@@ -88,7 +90,7 @@ public class OrderSteps
 
         var orderId = _scenarioContext.Get<string>("orderId");
 
-        await _driver.SimulateOrderDeliveredEvent(orderId);
+        await _eventDriver.SimulateOrderDeliveredEvent(orderId);
     }
 
     [When(@"payment is successful")]
@@ -98,7 +100,7 @@ public class OrderSteps
 
         var orderId = _scenarioContext.Get<string>("orderId");
 
-        await _driver.SimulatePaymentSuccessEvent(orderId, 100);
+        await _eventDriver.SimulatePaymentSuccessEvent(orderId, 100);
     }
 
     [Then(@"order should be marked as (.*)")]
@@ -174,5 +176,25 @@ public class OrderSteps
     {
         // The user workflow gives a 10s period for a user to cancel their order, wait for that to pass
         await Task.Delay(TimeSpan.FromSeconds(15));
+    }
+
+    [Given(@"an invalid payment success event is received")]
+    public async Task GivenAnInvalidPaymentSuccessIsReceived()
+    {
+        var eventId = Guid.NewGuid().ToString();
+        _scenarioContext.Add("eventId", eventId);
+        
+        await _eventDriver.SimulatePaymentSuccessEvent("a random order", 12, eventId);
+    }
+
+    [Then(@"message should arrive in dead letter inbox")]
+    public async Task ThenMessageShouldArriveInDeadLetterInbox()
+    {
+        // Wait for retry policies
+        await Task.Delay(TimeSpan.FromSeconds(3));
+        
+        var eventId = _scenarioContext.Get<string>("eventId");
+
+        await _eventDriver.VerifyEventReachesDeadLetterInbox(eventId);
     }
 }

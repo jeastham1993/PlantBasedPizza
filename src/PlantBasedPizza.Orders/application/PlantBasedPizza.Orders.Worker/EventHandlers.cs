@@ -1,8 +1,10 @@
 using System.Diagnostics;
+using System.Text.Json;
 using Dapr;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 using PlantBasedPizza.Events;
+using PlantBasedPizza.OrderManager.Infrastructure;
 using PlantBasedPizza.Orders.Worker.Handlers;
 using PlantBasedPizza.Orders.Worker.IntegrationEvents;
 
@@ -11,7 +13,9 @@ namespace PlantBasedPizza.Orders.Worker;
 public static class EventHandlers
 {
     // You've still got an event handler for that payments.paymentSuccessful event!
-    [Topic("public", "payments.paymentSuccessful.v1")]
+    [Topic("public",
+        "payments.paymentSuccessful.v1",
+        DeadLetterTopic = "orders.failedMessages")]
     public static async Task<IResult> HandlePaymentSuccessfulEvent(
         [FromServices] PaymentSuccessEventHandler paymentSuccessEventHandler,
         [FromServices] Idempotency idempotency,
@@ -38,10 +42,11 @@ public static class EventHandlers
             return Results.InternalServerError();
         }
     }
-    
-    [Topic("public", "delivery.driverCollectedOrder.v1")]
+
+    [Topic("public", "delivery.driverCollectedOrder.v1",
+        DeadLetterTopic = "orders.failedMessages")]
     public static async Task<IResult> HandleDriverCollectedOrderEvent(
-        [FromServices]DriverCollectedOrderEventHandler driverCollectedOrderEventHandler,
+        [FromServices] DriverCollectedOrderEventHandler driverCollectedOrderEventHandler,
         [FromServices] Idempotency idempotency,
         HttpContext httpContext,
         DriverCollectedOrderEventV1 evt)
@@ -66,10 +71,11 @@ public static class EventHandlers
             return Results.InternalServerError();
         }
     }
-    
-    [Topic("public", "delivery.driverDeliveredOrder.v1")]
+
+    [Topic("public", "delivery.driverDeliveredOrder.v1",
+        DeadLetterTopic = "orders.failedMessages")]
     public static async Task<IResult> HandleDriverDeliveredOrderEvent(
-        [FromServices]DriverDeliveredOrderEventHandler driverDeliveredOrderEventHandler,
+        [FromServices] DriverDeliveredOrderEventHandler driverDeliveredOrderEventHandler,
         [FromServices] Idempotency idempotency,
         HttpContext httpContext,
         DriverDeliveredOrderEventV1 evt)
@@ -94,8 +100,9 @@ public static class EventHandlers
             return Results.InternalServerError();
         }
     }
-    
-    [Topic("public", "loyalty.customerLoyaltyPointsUpdated.v1")]
+
+    [Topic("public", "loyalty.customerLoyaltyPointsUpdated.v1",
+        DeadLetterTopic = "orders.failedMessages")]
     public static async Task<IResult> HandleLoyaltyPointsUpdatedEvent(
         [FromServices] IDistributedCache cache,
         [FromServices] Idempotency idempotency,
@@ -123,8 +130,9 @@ public static class EventHandlers
             return Results.InternalServerError();
         }
     }
-    
-    [Topic("public", "kitchen.orderBaked.v1")]
+
+    [Topic("public", "kitchen.orderBaked.v1",
+        DeadLetterTopic = "orders.failedMessages")]
     public static async Task<IResult> HandleOrderBakedEvent(
         [FromServices] OrderBakedEventHandler orderBakedHandler,
         [FromServices] Idempotency idempotency,
@@ -151,8 +159,9 @@ public static class EventHandlers
             return Results.InternalServerError();
         }
     }
-    
-    [Topic("public", "kitchen.orderPreparing.v1")]
+
+    [Topic("public", "kitchen.orderPreparing.v1",
+        DeadLetterTopic = "orders.failedMessages")]
     public static async Task<IResult> HandleOrderPreparingEvent(
         [FromServices] OrderPreparingEventHandler orderPreparingEventHandler,
         [FromServices] Idempotency idempotency,
@@ -179,8 +188,9 @@ public static class EventHandlers
             return Results.InternalServerError();
         }
     }
-    
-    [Topic("public", "kitchen.orderPrepComplete.v1")]
+
+    [Topic("public", "kitchen.orderPrepComplete.v1",
+        DeadLetterTopic = "orders.failedMessages")]
     public static async Task<IResult> HandleOrderPrepCompleteEvent(
         [FromServices] OrderPrepCompleteEventHandler orderPrepCompleteHandler,
         [FromServices] Idempotency idempotency,
@@ -207,8 +217,9 @@ public static class EventHandlers
             return Results.InternalServerError();
         }
     }
-    
-    [Topic("public", "kitchen.qualityChecked.v1")]
+
+    [Topic("public", "kitchen.qualityChecked.v1",
+        DeadLetterTopic = "orders.failedMessages")]
     public static async Task<IResult> HandleOrderQualityCheckedEvent(
         [FromServices] OrderQualityCheckedEventHandler orderQualityCheckedEventHandler,
         [FromServices] Idempotency idempotency,
@@ -234,5 +245,25 @@ public static class EventHandlers
 
             return Results.InternalServerError();
         }
+    }
+
+    [Topic("public", "orders.failedMessages")]
+    public static async Task<IResult> HandleDeadLetterMessage(
+        [FromServices] ILogger<PaymentSuccessfulEventV1> logger,
+        [FromServices] IDeadLetterRepository deadLetterRepository,
+        HttpContext httpContext,
+        object data)
+    {
+        var eventData = httpContext.ExtractEventData();
+
+        await deadLetterRepository.StoreAsync(new DeadLetterMessage
+        {
+            EventId = eventData.EventId,
+            EventType = eventData.EventType,
+            EventData = JsonSerializer.Serialize(data),
+            TraceParent = eventData.TraceParent
+        });
+
+        return Results.Ok();
     }
 }

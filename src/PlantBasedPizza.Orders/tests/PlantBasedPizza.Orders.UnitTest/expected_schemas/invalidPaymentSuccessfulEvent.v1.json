@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "required": ["OrderId", "TheAmountThatWasTaken"],
+  "properties": {
+    "OrderId": {
+      "type": "string"
+    },
+    "TheAmountThatWasTaken": {
+      "type": "number"
+    }
+  }
+}

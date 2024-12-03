@@ -40,6 +40,13 @@ public static class Setup
 
         services.AddCaching(configuration);
 
+        BsonClassMap.RegisterClassMap<DeadLetterMessage>(map =>
+        {
+            map.AutoMap();
+            map.SetIgnoreExtraElements(true);
+            map.SetIgnoreExtraElementsIsInherited(true);
+        });
+
         BsonClassMap.RegisterClassMap<OutboxItem>(map =>
         {
             map.AutoMap();
@@ -109,6 +116,7 @@ public static class Setup
         services.AddSingleton<IFeatures, ConfigFeatureProvider>();
 
         services.AddSingleton<IOrderRepository, OrderRepository>();
+        services.AddSingleton<IDeadLetterRepository, DeadLetterRepository>();
         services.AddSingleton<IRecipeService, RecipeService>();
         services.AddSingleton<ILoyaltyPointService, LoyaltyPointService>();
         services.AddSingleton<IOrderEventPublisher, OrderEventPublisher>();

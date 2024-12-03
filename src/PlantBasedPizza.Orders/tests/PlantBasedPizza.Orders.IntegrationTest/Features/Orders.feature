@@ -16,7 +16,6 @@ Scenario: Pickup order can be processed
 	And order should contain a Order awaiting collection event
 	And order should contain a Order completed. event
 
-	
 @OrderWorkflow
 Scenario: Delivery order can be processed
     Given a new delivery order is created
@@ -31,7 +30,6 @@ Scenario: Delivery order can be processed
 	And order should contain a Order quality checked event
 	And order should contain a Sending for delivery event
 	And order should contain a Order completed. event
-
 	
 @OrderWorkflow
 Scenario: Pickup order can be submitted and cancelled
@@ -41,3 +39,9 @@ Scenario: Pickup order can be submitted and cancelled
     And order is cancelled
     Then order should not contain a Payment taken event
     And order should not contain a Submitted order. event
+
+@OrderWorkflow
+Scenario: A invalid payment success event is received
+    Given an invalid payment success event is received
+	Then message should arrive in dead letter inbox
+	

@@ -68,6 +68,7 @@ app.MapPost("/order-baked", EventHandlers.HandleOrderBakedEvent);
 app.MapPost("/order-preparing", EventHandlers.HandleOrderPreparingEvent);
 app.MapPost("/order-prep-complete", EventHandlers.HandleOrderPrepCompleteEvent);
 app.MapPost("/order-quality-checked", EventHandlers.HandleOrderQualityCheckedEvent);
+app.MapPost("/event-dead-letter", EventHandlers.HandleDeadLetterMessage);
 
 app.MapSubscribeHandler()
     .AllowAnonymous();

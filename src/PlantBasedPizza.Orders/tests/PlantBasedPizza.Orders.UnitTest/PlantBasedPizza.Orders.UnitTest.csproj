@@ -27,6 +27,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\application\PlantBasedPizza.OrderManager.Core\PlantBasedPizza.OrderManager.Core.csproj" />
+      <ProjectReference Include="..\..\application\PlantBasedPizza.Orders.Worker\PlantBasedPizza.Orders.Worker.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -49,6 +50,12 @@
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
       <None Update="expected_schemas\readyForDelivery.v1.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="expected_schemas\paymentSuccessfulEvent.v1.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="expected_schemas\invalidPaymentSuccessfulEvent.v1.json">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
     </ItemGroup>
