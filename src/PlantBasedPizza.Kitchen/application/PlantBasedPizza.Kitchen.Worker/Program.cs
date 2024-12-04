@@ -26,5 +26,6 @@ app.MapSubscribeHandler();
 app.UseCloudEvents();
 
 app.MapPost("/order-confirmed", EventHandlers.HandleOrderConfirmedEvent);
+app.MapPost("/errors", EventHandlers.HandleDeadLetterMessage);
 
 await app.RunAsync();

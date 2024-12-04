@@ -18,3 +18,9 @@ integration-test:
 	sleep 5
 	dotnet test tests/PlantBasedPizza.Account.IntegrationTests
 	docker compose -f docker-compose-integration.yml down
+
+dapr-api-sidecar:
+	dapr run --app-id account-api --dapr-http-port 3513 --dapr-grpc-port 40002 --app-port 5139 --resources-path ./components/
+
+local-api:
+	export DAPR_GRPC_PORT=40002;export DAPR_HTTP_PORT=3513;dotnet run --project ./application/PlantBasedPizza.Account.Api/PlantBasedPizza.Account.Api.csproj

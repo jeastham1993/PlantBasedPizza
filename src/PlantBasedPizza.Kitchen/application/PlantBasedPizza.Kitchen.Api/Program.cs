@@ -1,5 +1,8 @@
 using System.Text;
+using System.Text.Json;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Tokens;
 using PlantBasedPizza.Kitchen.Api;
 using PlantBasedPizza.Kitchen.Infrastructure;
@@ -16,7 +19,8 @@ var applicationName = "KitchenApi";
 
 builder.Services.AddSharedInfrastructure(builder.Configuration, applicationName)
     .AddKitchenInfrastructure(builder.Configuration)
-    .AddControllers();
+    .AddHealthChecks()
+    .AddMongoDb(builder.Configuration["DatabaseConnection"]);
 
 var generateAsyncApi = builder.Configuration["Messaging:UseAsyncApi"] == "Y";
 
@@ -70,7 +74,10 @@ app.UseAuthorization();
 
 app.UseSharedMiddleware();
 
-app.MapGet("/kitchen/health", () => "Healthy");
+app.MapHealthChecks("/kitchen/health", new HealthCheckOptions
+{
+    ResponseWriter = WriteHealthCheckResponse
+});
 
 const string STAFF_ROLE_NAME = "staff";
 const string ADMIN_ROLE_NAME = "admin";
@@ -102,3 +109,45 @@ app.UseEndpoints(endpoints =>
 });
 
 await app.RunAsync();
+
+static Task WriteHealthCheckResponse(HttpContext context, HealthReport healthReport)
+{
+    context.Response.ContentType = "application/json; charset=utf-8";
+
+    var options = new JsonWriterOptions { Indented = true };
+
+    using var memoryStream = new MemoryStream();
+    using (var jsonWriter = new Utf8JsonWriter(memoryStream, options))
+    {
+        jsonWriter.WriteStartObject();
+        jsonWriter.WriteString("status", healthReport.Status.ToString());
+        jsonWriter.WriteStartObject("results");
+
+        foreach (var healthReportEntry in healthReport.Entries)
+        {
+            jsonWriter.WriteStartObject(healthReportEntry.Key);
+            jsonWriter.WriteString("status",
+                healthReportEntry.Value.Status.ToString());
+            jsonWriter.WriteString("description",
+                healthReportEntry.Value.Description);
+            jsonWriter.WriteStartObject("data");
+
+            foreach (var item in healthReportEntry.Value.Data)
+            {
+                jsonWriter.WritePropertyName(item.Key);
+
+                JsonSerializer.Serialize(jsonWriter, item.Value,
+                    item.Value?.GetType() ?? typeof(object));
+            }
+
+            jsonWriter.WriteEndObject();
+            jsonWriter.WriteEndObject();
+        }
+
+        jsonWriter.WriteEndObject();
+        jsonWriter.WriteEndObject();
+    }
+
+    return context.Response.WriteAsync(
+        Encoding.UTF8.GetString(memoryStream.ToArray()));
+}

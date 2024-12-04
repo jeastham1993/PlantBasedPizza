@@ -1,7 +1,7 @@
 // src/axiosConfig.js
 import axios from "axios";
 
-export const base_url = "http://localhost:5051";
+export const base_url = "https://azure.plantbasedpizza.net";
 
 export const accountApi = axios.create({
   baseURL: `${base_url}/account`,

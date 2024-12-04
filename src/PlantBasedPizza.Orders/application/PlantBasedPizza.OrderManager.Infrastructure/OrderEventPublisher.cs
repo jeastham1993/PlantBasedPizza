@@ -1,7 +1,4 @@
-using System.Diagnostics;
-using System.Text.Json;
 using Dapr.Client;
-using NJsonSchema;
 using PlantBasedPizza.Events;
 using PlantBasedPizza.OrderManager.Core.Entities;
 using PlantBasedPizza.OrderManager.Core.PublicEvents;

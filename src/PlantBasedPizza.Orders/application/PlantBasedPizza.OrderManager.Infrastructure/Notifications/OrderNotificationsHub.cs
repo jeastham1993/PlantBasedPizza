@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.Extensions.Logging;
 
 namespace PlantBasedPizza.OrderManager.Infrastructure.Notifications;
 

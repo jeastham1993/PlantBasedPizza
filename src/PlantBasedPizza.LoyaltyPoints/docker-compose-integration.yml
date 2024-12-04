@@ -1,26 +1,4 @@
-version: "3.7"
 services:
-  mongodb:
-    image: mongo
-    environment:
-      - PUID=1000
-      - PGID=1000
-    ports:
-      - 27017:27017
-
-  jaeger:
-    image: jaegertracing/opentelemetry-all-in-one:latest
-    ports:
-      - 16686:16686
-      - 13133:13133
-      - 4317:4317
-      - 4318:4318
-  
-  cache:
-    image: redis:7.2
-    ports:
-      - "6379:6379"
-
   local.loyalty-api:
     image: loyalty-api
     container_name: local.loyalty-api
@@ -49,10 +27,10 @@ services:
         "--dapr-grpc-port",
         "5101",
         "--resources-path",
-        "../../components",
+        "./components",
       ]
     volumes:
-      - "../../components/:/components"
+      - "./components/:/components"
     depends_on:
       - "local.loyalty-api"
 
@@ -83,12 +61,12 @@ services:
         "--dapr-grpc-port",
         "5101",
         "--resources-path",
-        "../../components",
+        "./components",
         "--app-protocol",
         "grpc",
       ]
     volumes:
-      - "../../components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
+      - "./components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
     depends_on:
       - "local.loyalty-internal-api"
 
@@ -117,10 +95,10 @@ services:
         "--dapr-grpc-port",
         "5101",
         "--resources-path",
-        "../../components",
+        "./components",
       ]
     volumes:
-      - "../../components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
+      - "./components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
     depends_on:
       - "local.loyalty-worker"
     network_mode: "service:local.loyalty-worker"
@@ -136,19 +114,9 @@ services:
       "--dapr-grpc-port",
       "5101",
       "--resources-path",
-      "../../components",
+      "./components",
     ]
     ports:
       - "5101:5101"
     volumes:
-      - "../../components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
-
-
-  ############################
-  # Dapr placement service
-  ############################
-  placement:
-    image: "daprio/dapr"
-    command: ["./placement", "-port", "50006"]
-    ports:
-      - "50006:50006"
+      - "./components/:/components"

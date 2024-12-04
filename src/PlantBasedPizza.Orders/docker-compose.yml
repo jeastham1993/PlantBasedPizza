@@ -47,17 +47,6 @@ services:
     networks:
       - dapr
 
-  payment-gripmock:
-    image: tkpd/gripmock:latest
-    ports:
-      - "8083:4770"
-      - "8084:4771"
-    volumes:
-      - ./mocks/grpc-mocks:/proto
-    command: --stub=/proto/stubs /proto/payment.proto
-    networks:
-      - dapr
-
   postgresql:
     container_name: temporal-postgresql
     environment:

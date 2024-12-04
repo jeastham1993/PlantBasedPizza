@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AspNetCore.HealthChecks.MongoDb" Version="8.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="7.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.0" />
@@ -20,18 +21,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="PlantBasedPizza.LoyaltyPoints.Internal\PlantBasedPizza.LoyaltyPoints.Internal\Protos\greet.proto">
-      <Link>PlantBasedPizza.LoyaltyPoints.Internal\PlantBasedPizza.Api.Internal\Protos\greet.proto</Link>
-    </None>
     <None Update="PlantBasedPizza.LoyaltyPoints.Internal\PlantBasedPizza.LoyaltyPoints.Internal\Dockerfile">
       <Link>PlantBasedPizza.LoyaltyPoints.Internal\PlantBasedPizza.Api.Internal\Dockerfile</Link>
     </None>
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="PlantBasedPizza.LoyaltyPoints.Internal\PlantBasedPizza.LoyaltyPoints.Internal\Services\GreeterService.cs">
-      <Link>PlantBasedPizza.LoyaltyPoints.Internal\PlantBasedPizza.Api.Internal\Services\GreeterService.cs</Link>
-    </Compile>
     <Compile Update="PlantBasedPizza.LoyaltyPoints.Internal\PlantBasedPizza.LoyaltyPoints.Internal\Program.cs">
       <Link>PlantBasedPizza.LoyaltyPoints.Internal\PlantBasedPizza.Api.Internal\Program.cs</Link>
     </Compile>

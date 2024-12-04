@@ -70,6 +70,7 @@ namespace PlantBasedPizza.Kitchen.Infrastructure
             services.AddSingleton<IRecipeService, RecipeService>();
             services.AddSingleton<IOrderService, OrderService>();
             services.AddSingleton<IKitchenRequestRepository, KitchenRequestRepository>();
+            services.AddSingleton<IDeadLetterRepository, DeadLetterRepository>();
             services.AddSingleton<IKitchenEventPublisher, KitchenEventPublisher>();
 
             return services;

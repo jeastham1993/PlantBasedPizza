@@ -26,3 +26,15 @@ integration-test:
 	sleep 5
 	dotnet test tests/PlantBasedPizza.LoyaltyPoints.IntegrationTest
 	docker compose -f docker-compose-integration.yml down
+
+dapr-api-sidecar:
+	dapr run --app-id order-api --dapr-http-port 3513 --dapr-grpc-port 40002 --app-port 5271 --resources-path ./components/
+
+local-api:
+	export DAPR_GRPC_PORT=40002;export DAPR_HTTP_PORT=3513;dotnet run --project ./application/PlantBasedPizza.LoyaltyPoints.Api/PlantBasedPizza.LoyaltyPoints.Api.csproj
+
+dapr-worker-sidecar:
+	dapr run --app-id order-worker --dapr-http-port 3514 --dapr-grpc-port 40003 --app-port 5072 --resources-path ./components/
+
+local-worker:
+	export DAPR_GRPC_PORT=40003;export DAPR_HTTP_PORT=3514;dotnet run --project application/PlantBasedPizza.LoyaltyPoints.Worker/PlantBasedPizza.LoyaltyPoints.Worker.csproj

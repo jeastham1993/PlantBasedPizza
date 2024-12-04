@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Dapr.Client;
 using MongoDB.Driver;
+using PlantBasedPizza.Events;
 using PlantBasedPizza.LoyaltyPoints.Shared.Core;
 
 namespace PlantBasedPizza.LoyaltyPoints.Shared.Adapters;
@@ -10,6 +11,8 @@ public class CustomerLoyaltyPointRepository : ICustomerLoyaltyPointsRepository
     private readonly IMongoCollection<CustomerLoyaltyPoints> _loyaltyPoints;
     private readonly DaprClient _daprClient;
     private const string SOURCE = "loyalty";
+    private const string PUB_SUB_NAME = "public";
+    private const string DATE_FORMAT = "yyyy-MM-ddTHH:mm:ssZ";
 
     public CustomerLoyaltyPointRepository(MongoClient client, DaprClient daprClient)
     {
@@ -48,13 +51,19 @@ public class CustomerLoyaltyPointRepository : ICustomerLoyaltyPointsRepository
             TotalLoyaltyPoints = points.TotalPoints
         };
         
-        var eventMetadata = new Dictionary<string, string>(2)
+        var eventType = $"{evt.EventName}.{evt.EventVersion}";
+        var eventId = Guid.NewGuid().ToString();
+        
+        evt.AddToTelemetry(eventId);
+        
+        var eventMetadata = new Dictionary<string, string>(3)
         {
-            { "cloudevent.source", SOURCE },
-            { "cloudevent.type", $"{evt.EventName}.{evt.EventVersion}" },
-            { "cloudevent.id", Guid.NewGuid().ToString() }
+            { EventConstants.EVENT_SOURCE_HEADER_KEY, SOURCE },
+            { EventConstants.EVENT_TYPE_HEADER_KEY, eventType},
+            { EventConstants.EVENT_ID_HEADER_KEY, eventId },
+            { EventConstants.EVENT_TIME_HEADER_KEY, DateTime.UtcNow.ToString(DATE_FORMAT) },
         };
         
-        await _daprClient.PublishEventAsync("public", $"{evt.EventName}.{evt.EventVersion}", evt, eventMetadata);
+        await _daprClient.PublishEventAsync(PUB_SUB_NAME, eventType, evt, eventMetadata);
     }
 }

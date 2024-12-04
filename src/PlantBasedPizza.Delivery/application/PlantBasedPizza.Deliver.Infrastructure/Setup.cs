@@ -47,6 +47,7 @@ namespace PlantBasedPizza.Deliver.Infrastructure
             
             services.AddSingleton<IDeliveryRequestRepository, DeliveryRequestRepository>();
             services.AddSingleton<IDeliveryEventPublisher, DeliveryEventPublisher>();
+            services.AddSingleton<IDeadLetterRepository, DeadLetterRepository>();
             services.AddSingleton<OrderReadyForDeliveryEventHandler>();
             services.AddSingleton<AssignDriverRequestHandler>();
             services.AddSingleton<MarkOrderDeliveredRequestHandler>();

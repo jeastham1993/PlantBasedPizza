@@ -38,7 +38,7 @@ resource "azurerm_container_app_environment_dapr_component" "public_pubsub" {
 }
 
 resource "azurerm_container_app_environment_dapr_component" "payments_pubsub" {
-  name                         = "public"
+  name                         = "payments"
   container_app_environment_id = azurerm_container_app_environment.plant_based_pizza_aca_environment.id
   component_type               = "pubsub.azure.servicebus.queues"
   version                      = "v1"

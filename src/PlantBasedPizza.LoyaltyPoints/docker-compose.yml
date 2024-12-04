@@ -16,3 +16,33 @@ services:
       - 13133:13133
       - 4317:4317
       - 4318:4318
+
+  cache:
+    image: redis:7.2
+    ports:
+      - "6379:6379"
+
+  ############################
+  # Dapr placement service
+  ############################
+  placement:
+    image: "daprio/dapr:1.14.4"
+    command: ["./placement", "-port", "50005"]
+    ports:
+      - "50005:50005"
+      - "8070:58080"
+      - "9090:59090"
+
+  ############################
+  # Dapr scheduler service
+  ############################
+  scheduler:
+    image: "daprio/dapr:1.14.4"
+    command: ["./scheduler", "--port", "50006", "--etcd-data-dir", "/var/lock"]
+    ports:
+      - "50006:50006"
+      - "2379:52379"
+      - "8071:58081"
+      - "9091:59091"
+    volumes:
+      - "/var/lock"

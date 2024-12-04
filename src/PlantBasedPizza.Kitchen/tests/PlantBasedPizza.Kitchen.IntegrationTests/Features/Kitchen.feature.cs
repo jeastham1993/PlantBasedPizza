@@ -140,16 +140,16 @@ this.ScenarioInitialize(scenarioInfo);
             this.ScenarioCleanup();
         }
         
-        [Xunit.SkippableFactAttribute(DisplayName="Order should be moved through the requisite kitchen queues - prparing")]
+        [Xunit.SkippableFactAttribute(DisplayName="Order should be moved through the requisite kitchen queues - preparing")]
         [Xunit.TraitAttribute("FeatureTitle", "KitchenFeature")]
-        [Xunit.TraitAttribute("Description", "Order should be moved through the requisite kitchen queues - prparing")]
+        [Xunit.TraitAttribute("Description", "Order should be moved through the requisite kitchen queues - preparing")]
         [Xunit.TraitAttribute("Category", "kitchen")]
-        public void OrderShouldBeMovedThroughTheRequisiteKitchenQueues_Prparing()
+        public void OrderShouldBeMovedThroughTheRequisiteKitchenQueues_Preparing()
         {
             string[] tagsOfScenario = new string[] {
                     "kitchen"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
-            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Order should be moved through the requisite kitchen queues - prparing", null, tagsOfScenario, argumentsOfScenario, featureTags);
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("Order should be moved through the requisite kitchen queues - preparing", null, tagsOfScenario, argumentsOfScenario, featureTags);
 #line 15
 this.ScenarioInitialize(scenarioInfo);
 #line hidden

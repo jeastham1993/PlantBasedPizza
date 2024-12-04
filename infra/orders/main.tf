@@ -49,6 +49,10 @@ resource "azurerm_container_app" "orders-api" {
         value = var.temporal_server_endpoint
       }
       env {
+        name = "TEMPORAL_TLS"
+        value = "true"
+      }
+      env {
         name = "Features__UseOrchestrator"
         value = "true"
       }

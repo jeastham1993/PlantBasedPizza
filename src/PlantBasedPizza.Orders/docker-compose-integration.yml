@@ -40,10 +40,10 @@ services:
         "--dapr-grpc-port",
         "5101",
         "--resources-path",
-        "../../components",
+        "./components",
       ]
     volumes:
-      - "../../components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
+      - "./components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
     depends_on:
       - "local.order-api"
     network_mode: "service:local.order-api"
@@ -87,10 +87,10 @@ services:
         "--dapr-grpc-port",
         "5101",
         "--resources-path",
-        "../../components",
+        "./components",
       ]
     volumes:
-      - "../../components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
+      - "./components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
     depends_on:
       - "local.orders-worker"
     network_mode: "service:local.orders-worker"
@@ -128,12 +128,12 @@ services:
       "--dapr-grpc-port",
       "5101",
       "--resources-path",
-      "../../components",
+      "./components",
       "--app-protocol",
       "grpc",
     ]
     volumes:
-      - "../../components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
+      - "./components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
     depends_on:
       - "local.order-internal"
     network_mode: "service:local.order-internal"

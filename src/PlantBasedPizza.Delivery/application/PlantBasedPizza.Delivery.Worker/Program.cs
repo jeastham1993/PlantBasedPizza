@@ -24,7 +24,9 @@ var app = builder.Build();
 
 app.MapSubscribeHandler();
 app.UseCloudEvents();
-app.AddReadyForDeliveryHandler();
+
+app.MapPost("/ready-for-delivery",  EventHandlers.HandleOrderReadyForDeliveryEvent);
+app.MapPost("/errors", EventHandlers.HandleDeadLetterMessage);
 
 app.MapGet("/deliver/health", () => "Healthy");
 

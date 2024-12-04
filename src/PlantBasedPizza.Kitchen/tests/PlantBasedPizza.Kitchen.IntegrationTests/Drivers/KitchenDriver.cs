@@ -21,7 +21,7 @@ public class KitchenDriver
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", staffToken);
 
         _daprClient = new DaprClientBuilder()
-            .UseGrpcEndpoint("http://localhost:5101")
+            .UseGrpcEndpoint("http://localhost:40003")
             .Build();
     }
 

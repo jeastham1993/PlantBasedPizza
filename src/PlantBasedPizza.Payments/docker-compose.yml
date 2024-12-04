@@ -32,12 +32,12 @@ services:
       "--dapr-grpc-port",
       "5101",
       "--resources-path",
-      "../../components",
+      "./components",
     ]
     ports:
       - "5101:5101"
     volumes:
-      - "../../components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument
+      - "./components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument
 
   ############################
   # Dapr placement service

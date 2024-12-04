@@ -11,7 +11,7 @@ public static class Setup
 {
     public static WebApplication AddReadyForDeliveryHandler(this WebApplication app)
     {
-        app.MapPost("/ready-for-delivery",  EventHandlers.HandleOrderReadyForDeliveryEvent);
+        
 
         return app;
     }

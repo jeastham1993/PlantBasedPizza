@@ -1,27 +1,4 @@
 services:
-
-  cache:
-    image: redis:7.2
-    expose:
-      - "6379"
-
-  mongodb:
-    image: mongo
-    container_name: delivery-mongodb
-    environment:
-      - PUID=1000
-      - PGID=1000
-    ports:
-      - 27017:27017
-
-  jaeger:
-    image: jaegertracing/opentelemetry-all-in-one:latest
-    ports:
-      - 16686:16686
-      - 13133:13133
-      - 4317:4317
-      - 4318:4318
-
   local.delivery-api:
     image: delivery-api
     ports:
@@ -51,10 +28,10 @@ services:
         "--dapr-grpc-port",
         "5101",
         "--resources-path",
-        "../../components",
+        "./components",
       ]
     volumes:
-      - "../../components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
+      - "./components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
     depends_on:
       - "local.delivery-api"
     network_mode: "service:local.delivery-api"
@@ -83,10 +60,10 @@ services:
         "--dapr-grpc-port",
         "5101",
         "--resources-path",
-        "../../components",
+        "./components",
       ]
     volumes:
-      - "../../components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
+      - "./components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
     depends_on:
       - "local.delivery-worker"
     network_mode: "service:local.delivery-worker"
@@ -103,19 +80,9 @@ services:
       "--dapr-grpc-port",
       "5101",
       "--resources-path",
-      "../../components",
+      "./components",
     ]
     ports:
       - "5101:5101"
     volumes:
-      - "../../components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument
-
-
-  ############################
-  # Dapr placement service
-  ############################
-  placement:
-    image: "daprio/dapr"
-    command: ["./placement", "-port", "50006"]
-    ports:
-      - "50006:50006"
+      - "./components/:/components"

@@ -122,8 +122,6 @@ public static class Setup
         services.AddSingleton<IOrderEventPublisher, OrderEventPublisher>();
         services.AddSingleton<IPaymentService, PaymentService>();
         
-        services.AddSingleton<OrderManagerHealthChecks>();
-        
         services.AddSingleton<CollectOrderCommandHandler>();
         services.AddSingleton<AddItemToOrderHandler>();
         services.AddSingleton<CreateDeliveryOrderCommandHandler>();

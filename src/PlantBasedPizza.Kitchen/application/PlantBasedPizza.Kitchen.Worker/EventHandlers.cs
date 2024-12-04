@@ -1,8 +1,10 @@
 using System.Diagnostics;
+using System.Text.Json;
 using Dapr;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PlantBasedPizza.Events;
+using PlantBasedPizza.Kitchen.Infrastructure;
 using PlantBasedPizza.Kitchen.Worker.Handlers;
 using PlantBasedPizza.Kitchen.Worker.IntegrationEvents;
 
@@ -10,7 +12,8 @@ namespace PlantBasedPizza.Kitchen.Worker;
 
 public static class EventHandlers
 {
-    [Topic("public", "order.orderConfirmed.v1")]
+    [Topic("public", "order.orderConfirmed.v1",
+        DeadLetterTopic = "kitchen.failedMessages")]
     public static async Task<IResult> HandleOrderConfirmedEvent([FromServices] OrderConfirmedEventHandler handler,
         [FromServices] Idempotency idempotency,
         HttpContext httpContext,
@@ -37,5 +40,24 @@ public static class EventHandlers
             
             return Results.InternalServerError();
         }
+    }
+
+    [Topic("public", "kitchen.failedMessages")]
+    public static async Task<IResult> HandleDeadLetterMessage(
+        [FromServices] IDeadLetterRepository deadLetterRepository,
+        HttpContext httpContext,
+        object data)
+    {
+        var eventData = httpContext.ExtractEventData();
+
+        await deadLetterRepository.StoreAsync(new DeadLetterMessage
+        {
+            EventId = eventData.EventId,
+            EventType = eventData.EventType,
+            EventData = JsonSerializer.Serialize(data),
+            TraceParent = eventData.TraceParent
+        });
+
+        return Results.Ok();
     }
 }

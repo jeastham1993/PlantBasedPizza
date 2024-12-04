@@ -1,55 +1,5 @@
 version: "3.7"
 services:
-
-  mongodb:
-    image: mongo
-    environment:
-      - PUID=1000
-      - PGID=1000
-    expose:
-      - 27017
-
-  jaeger:
-    image: jaegertracing/opentelemetry-all-in-one:latest
-    expose:
-      - 16686
-      - 13133
-      - 4317
-      - 4318
-  
-  cache:
-    image: redis:7.2
-    ports:
-      - "6379:6379"
-
-  wiremock:
-    image: wiremock/wiremock:latest
-    expose:
-      - 8080
-    volumes:
-      - ./mocks/recipe-api:/home/wiremock
-
-  wiremock-recipes-dapr:
-    image: "daprio/daprd:edge"
-    command: [
-        "./daprd",
-        "--app-id",
-        "recipes",
-        "--app-port",
-        "8080",
-        "--placement-host-address",
-        "placement:50006", # Dapr's placement service can be reach via the docker DNS entry
-        "--dapr-grpc-port",
-        "5101",
-        "--resources-path",
-        "../../components",
-      ]
-    volumes:
-      - "../../components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
-    depends_on:
-      - "wiremock"
-    network_mode: "service:wiremock"
-
   local.kitchen-api:
     image: kitchen-api
     ports:
@@ -79,10 +29,10 @@ services:
         "--dapr-grpc-port",
         "5101",
         "--resources-path",
-        "../../components",
+        "./components",
       ]
     volumes:
-      - "../../components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
+      - "./components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
     depends_on:
       - "local.kitchen-api"
     network_mode: "service:local.kitchen-api"
@@ -112,10 +62,10 @@ services:
         "--dapr-grpc-port",
         "5101",
         "--resources-path",
-        "../../components",
+        "./components",
       ]
     volumes:
-      - "../../components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
+      - "./components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
     depends_on:
       - "local.kitchen-worker"
     network_mode: "service:local.kitchen-worker"
@@ -131,19 +81,9 @@ services:
       "--dapr-grpc-port",
       "5101",
       "--resources-path",
-      "../../components",
+      "./components",
     ]
     ports:
       - "5101:5101"
     volumes:
-      - "../../components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
-
-
-  ############################
-  # Dapr placement service
-  ############################
-  placement:
-    image: "daprio/dapr"
-    command: ["./placement", "-port", "50006"]
-    ports:
-      - "50006:50006"
+      - "./components/:/components"

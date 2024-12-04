@@ -85,6 +85,11 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Kitchen.IntegrationTests", "src\PlantBasedPizza.Kitchen\tests\PlantBasedPizza.Kitchen.IntegrationTests\PlantBasedPizza.Kitchen.IntegrationTests.csproj", "{184912BC-A27E-4D27-9779-8214B456DB07}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PlantBasedPizza.Recipes", "PlantBasedPizza.Recipes", "{76F8B68A-876A-4C54-AC6C-B3EFC23AC427}"
+	ProjectSection(SolutionItems) = preProject
+		src\PlantBasedPizza.Recipes\docker-compose-integration.yml = src\PlantBasedPizza.Recipes\docker-compose-integration.yml
+		src\PlantBasedPizza.Recipes\docker-compose.yml = src\PlantBasedPizza.Recipes\docker-compose.yml
+		src\PlantBasedPizza.Recipes\Makefile = src\PlantBasedPizza.Recipes\Makefile
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Kitchen.Api", "src\PlantBasedPizza.Kitchen\application\PlantBasedPizza.Kitchen.Api\PlantBasedPizza.Kitchen.Api.csproj", "{E60F1A20-9235-498E-904E-07224AD0ECFF}"
 EndProject
