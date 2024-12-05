@@ -1,0 +1,41 @@
+{
+    "id": "driverCollectedOrderEventV1",
+    "allOf": [
+        {
+            "id": "integrationEvent",
+            "type": "object",
+            "x-abstract": true,
+            "additionalProperties": false,
+            "x-parser-schema-id": "integrationEvent"
+        },
+        {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "eventName": {
+                    "type": "string",
+                    "x-parser-schema-id": "<anonymous-schema-2>"
+                },
+                "eventVersion": {
+                    "type": "string",
+                    "x-parser-schema-id": "<anonymous-schema-3>"
+                },
+                "source": {
+                    "type": "string",
+                    "format": "uri",
+                    "x-parser-schema-id": "<anonymous-schema-4>"
+                },
+                "driverName": {
+                    "type": "string",
+                    "x-parser-schema-id": "<anonymous-schema-5>"
+                },
+                "orderIdentifier": {
+                    "type": "string",
+                    "x-parser-schema-id": "<anonymous-schema-6>"
+                }
+            },
+            "x-parser-schema-id": "<anonymous-schema-1>"
+        }
+    ],
+    "x-parser-schema-id": "driverCollectedOrderEventV1"
+}

@@ -1,0 +1,519 @@
+asyncapi: 3.0.0
+info:
+  title: OrdersService
+  version: 1.0.0
+defaultContentType: application/json
+channels:
+  order.orderSubmitted.v1:
+    address: order.orderSubmitted.v1
+    messages:
+      OrderSubmittedEventV1.message:
+        $ref: '#/components/messages/orderSubmittedEventV1'
+  order.orderCompleted.v1:
+    address: order.orderCompleted.v1
+    messages:
+      OrderCompletedIntegrationEventV1.message:
+        $ref: '#/components/messages/orderCompletedIntegrationEventV1'
+  order.orderCompleted.v2:
+    address: order.orderCompleted.v2
+    messages:
+      OrderCompletedIntegrationEventV2.message:
+        $ref: '#/components/messages/orderCompletedIntegrationEventV2'
+  order.readyForDelivery.v1:
+    address: order.readyForDelivery.v1
+    messages:
+      OrderReadyForDeliveryEventV1.message:
+        $ref: '#/components/messages/orderReadyForDeliveryEventV1'
+  order.orderConfirmed.v1:
+    address: order.orderConfirmed.v1
+    messages:
+      OrderConfirmedEventV1.message:
+        $ref: '#/components/messages/orderConfirmedEventV1'
+  order.orderCreated.v1:
+    address: order.orderCreated.v1
+    messages:
+      OrderCreatedEventV1.message:
+        $ref: '#/components/messages/orderCreatedEventV1'
+  order.orderCancelled.v1:
+    address: order.orderCancelled.v1
+    messages:
+      OrderCancelledEventV1.message:
+        $ref: '#/components/messages/orderCancelledEventV1'
+  delivery.driverCollectedOrder.v1:
+    address: delivery.driverCollectedOrder.v1
+    messages:
+      DriverCollectedOrderEventV1.message:
+        $ref: '#/components/messages/driverCollectedOrderEventV1'
+  delivery.driverDeliveredOrder.v1:
+    address: delivery.driverDeliveredOrder.v1
+    messages:
+      DriverDeliveredOrderEventV1.message:
+        $ref: '#/components/messages/driverDeliveredOrderEventV1'
+  kitchen.orderBaked.v1:
+    address: kitchen.orderBaked.v1
+    messages:
+      OrderBakedEventV1.message:
+        $ref: '#/components/messages/orderBakedEventV1'
+  kitchen.orderPreparing.v1:
+    address: kitchen.orderPreparing.v1
+    messages:
+      OrderPreparingEventV1.message:
+        $ref: '#/components/messages/orderPreparingEventV1'
+  kitchen.orderPrepComplete.v1:
+    address: kitchen.orderPrepComplete.v1
+    messages:
+      OrderPrepCompleteEventV1.message:
+        $ref: '#/components/messages/orderPrepCompleteEventV1'
+  kitchen.qualityChecked.v1:
+    address: kitchen.qualityChecked.v1
+    messages:
+      OrderQualityCheckedEventV1.message:
+        $ref: '#/components/messages/orderQualityCheckedEventV1'
+  payments.paymentSuccessful:
+    address: payments.paymentSuccessful
+    messages:
+      PaymentSuccessfulEventV1.message:
+        $ref: '#/components/messages/paymentSuccessfulEventV1'
+operations:
+  OrderSubmittedEventV1:
+    action: send
+    channel:
+      $ref: '#/channels/order.orderSubmitted.v1'
+    summary: Published when an order is submitted.
+    messages:
+      - $ref: >-
+          #/channels/order.orderSubmitted.v1/messages/OrderSubmittedEventV1.message
+  OrderCompletedIntegrationEventV1:
+    action: send
+    channel:
+      $ref: '#/channels/order.orderCompleted.v1'
+    summary: Published when an order is completed.
+    messages:
+      - $ref: >-
+          #/channels/order.orderCompleted.v1/messages/OrderCompletedIntegrationEventV1.message
+  OrderCompletedIntegrationEventV2:
+    action: send
+    channel:
+      $ref: '#/channels/order.orderCompleted.v2'
+    summary: Published when an order is completed.
+    messages:
+      - $ref: >-
+          #/channels/order.orderCompleted.v2/messages/OrderCompletedIntegrationEventV2.message
+  OrderReadyForDeliveryEventV1:
+    action: send
+    channel:
+      $ref: '#/channels/order.readyForDelivery.v1'
+    summary: Published when a delivery order is ready for delivery.
+    messages:
+      - $ref: >-
+          #/channels/order.readyForDelivery.v1/messages/OrderReadyForDeliveryEventV1.message
+  OrderConfirmedEventV1:
+    action: send
+    channel:
+      $ref: '#/channels/order.orderConfirmed.v1'
+    summary: Published when an order is fully confirmed.
+    messages:
+      - $ref: >-
+          #/channels/order.orderConfirmed.v1/messages/OrderConfirmedEventV1.message
+  OrderCreatedEventV1:
+    action: send
+    channel:
+      $ref: '#/channels/order.orderCreated.v1'
+    summary: Published when an order is first created.
+    messages:
+      - $ref: '#/channels/order.orderCreated.v1/messages/OrderCreatedEventV1.message'
+  OrderCancelledEventV1:
+    action: send
+    channel:
+      $ref: '#/channels/order.orderCancelled.v1'
+    summary: Published if an order is cancelled.
+    messages:
+      - $ref: >-
+          #/channels/order.orderCancelled.v1/messages/OrderCancelledEventV1.message
+  DriverCollectedOrderEventV1:
+    action: receive
+    channel:
+      $ref: '#/channels/delivery.driverCollectedOrder.v1'
+    summary: ''
+    messages:
+      - $ref: >-
+          #/channels/delivery.driverCollectedOrder.v1/messages/DriverCollectedOrderEventV1.message
+  DriverDeliveredOrderEventV1:
+    action: receive
+    channel:
+      $ref: '#/channels/delivery.driverDeliveredOrder.v1'
+    summary: ''
+    messages:
+      - $ref: >-
+          #/channels/delivery.driverDeliveredOrder.v1/messages/DriverDeliveredOrderEventV1.message
+  OrderBakedEventV1:
+    action: receive
+    channel:
+      $ref: '#/channels/kitchen.orderBaked.v1'
+    summary: ''
+    messages:
+      - $ref: '#/channels/kitchen.orderBaked.v1/messages/OrderBakedEventV1.message'
+  OrderPreparingEventV1:
+    action: receive
+    channel:
+      $ref: '#/channels/kitchen.orderPreparing.v1'
+    summary: ''
+    messages:
+      - $ref: >-
+          #/channels/kitchen.orderPreparing.v1/messages/OrderPreparingEventV1.message
+  OrderPrepCompleteEventV1:
+    action: receive
+    channel:
+      $ref: '#/channels/kitchen.orderPrepComplete.v1'
+    summary: ''
+    messages:
+      - $ref: >-
+          #/channels/kitchen.orderPrepComplete.v1/messages/OrderPrepCompleteEventV1.message
+  OrderQualityCheckedEventV1:
+    action: receive
+    channel:
+      $ref: '#/channels/kitchen.qualityChecked.v1'
+    summary: ''
+    messages:
+      - $ref: >-
+          #/channels/kitchen.qualityChecked.v1/messages/OrderQualityCheckedEventV1.message
+  PaymentSuccessfulEventV1:
+    action: receive
+    channel:
+      $ref: '#/channels/payments.paymentSuccessful'
+    summary: ''
+    messages:
+      - $ref: >-
+          #/channels/payments.paymentSuccessful/messages/PaymentSuccessfulEventV1.message
+components:
+  schemas:
+    orderSubmittedEventV1:
+      id: orderSubmittedEventV1
+      allOf:
+        - $ref: '#/components/schemas/integrationEvent'
+        - type: object
+          additionalProperties: false
+          properties:
+            eventName:
+              type: string
+            eventVersion:
+              type: string
+            source:
+              type: string
+              format: uri
+            orderIdentifier:
+              type: string
+    integrationEvent:
+      id: integrationEvent
+      type: object
+      x-abstract: true
+      additionalProperties: false
+    orderCompletedIntegrationEventV1:
+      id: orderCompletedIntegrationEventV1
+      allOf:
+        - $ref: '#/components/schemas/integrationEvent'
+        - type: object
+          additionalProperties: false
+          properties:
+            eventName:
+              type: string
+            eventVersion:
+              type: string
+            source:
+              type: string
+              format: uri
+            orderIdentifier:
+              type: string
+            customerIdentifier:
+              type: string
+            orderValue:
+              type: number
+              format: decimal
+    orderCompletedIntegrationEventV2:
+      id: orderCompletedIntegrationEventV2
+      allOf:
+        - $ref: '#/components/schemas/integrationEvent'
+        - type: object
+          additionalProperties: false
+          properties:
+            eventName:
+              type: string
+            eventVersion:
+              type: string
+            source:
+              type: string
+              format: uri
+            orderIdentifier:
+              type: string
+            customerIdentifier:
+              type: string
+            orderValue:
+              $ref: '#/components/schemas/orderValue'
+    orderValue:
+      id: orderValue
+      type: object
+      additionalProperties: false
+      properties:
+        value:
+          type: number
+          format: decimal
+        currency:
+          type: string
+    orderReadyForDeliveryEventV1:
+      id: orderReadyForDeliveryEventV1
+      allOf:
+        - $ref: '#/components/schemas/integrationEvent'
+        - type: object
+          additionalProperties: false
+          properties:
+            eventName:
+              type: string
+            eventVersion:
+              type: string
+            source:
+              type: string
+              format: uri
+            orderIdentifier:
+              type: string
+            deliveryAddressLine1:
+              type: string
+            deliveryAddressLine2:
+              type: string
+            deliveryAddressLine3:
+              type: string
+            deliveryAddressLine4:
+              type: string
+            deliveryAddressLine5:
+              type: string
+            postcode:
+              type: string
+    orderConfirmedEventV1:
+      id: orderConfirmedEventV1
+      allOf:
+        - $ref: '#/components/schemas/integrationEvent'
+        - type: object
+          additionalProperties: false
+          properties:
+            eventName:
+              type: string
+            eventVersion:
+              type: string
+            source:
+              type: string
+              format: uri
+            orderIdentifier:
+              type: string
+    orderCreatedEventV1:
+      id: orderCreatedEventV1
+      allOf:
+        - $ref: '#/components/schemas/integrationEvent'
+        - type: object
+          additionalProperties: false
+          properties:
+            eventName:
+              type: string
+            eventVersion:
+              type: string
+            source:
+              type: string
+              format: uri
+            orderIdentifier:
+              type: string
+    orderCancelledEventV1:
+      id: orderCancelledEventV1
+      allOf:
+        - $ref: '#/components/schemas/integrationEvent'
+        - type: object
+          additionalProperties: false
+          properties:
+            eventName:
+              type: string
+            eventVersion:
+              type: string
+            source:
+              type: string
+              format: uri
+            orderIdentifier:
+              type: string
+    driverCollectedOrderEventV1:
+      id: driverCollectedOrderEventV1
+      allOf:
+        - $ref: '#/components/schemas/integrationEvent'
+        - type: object
+          additionalProperties: false
+          properties:
+            eventName:
+              type: string
+            eventVersion:
+              type: string
+            source:
+              type: string
+              format: uri
+            driverName:
+              type: string
+            orderIdentifier:
+              type: string
+    driverDeliveredOrderEventV1:
+      id: driverDeliveredOrderEventV1
+      allOf:
+        - $ref: '#/components/schemas/integrationEvent'
+        - type: object
+          additionalProperties: false
+          properties:
+            eventName:
+              type: string
+            eventVersion:
+              type: string
+            source:
+              type: string
+              format: uri
+            orderIdentifier:
+              type: string
+    orderBakedEventV1:
+      id: orderBakedEventV1
+      allOf:
+        - $ref: '#/components/schemas/integrationEvent'
+        - type: object
+          additionalProperties: false
+          properties:
+            eventName:
+              type: string
+            eventVersion:
+              type: string
+            source:
+              type: string
+              format: uri
+            orderIdentifier:
+              type: string
+            kitchenIdentifier:
+              type: string
+    orderPreparingEventV1:
+      id: orderPreparingEventV1
+      allOf:
+        - $ref: '#/components/schemas/integrationEvent'
+        - type: object
+          additionalProperties: false
+          properties:
+            eventName:
+              type: string
+            eventVersion:
+              type: string
+            source:
+              type: string
+              format: uri
+            orderIdentifier:
+              type: string
+            kitchenIdentifier:
+              type: string
+    orderPrepCompleteEventV1:
+      id: orderPrepCompleteEventV1
+      allOf:
+        - $ref: '#/components/schemas/integrationEvent'
+        - type: object
+          additionalProperties: false
+          properties:
+            eventName:
+              type: string
+            eventVersion:
+              type: string
+            source:
+              type: string
+              format: uri
+            orderIdentifier:
+              type: string
+            kitchenIdentifier:
+              type: string
+    orderQualityCheckedEventV1:
+      id: orderQualityCheckedEventV1
+      allOf:
+        - $ref: '#/components/schemas/integrationEvent'
+        - type: object
+          additionalProperties: false
+          properties:
+            eventName:
+              type: string
+            eventVersion:
+              type: string
+            source:
+              type: string
+              format: uri
+            orderIdentifier:
+              type: string
+            kitchenIdentifier:
+              type: string
+    paymentSuccessfulEventV1:
+      id: paymentSuccessfulEventV1
+      allOf:
+        - $ref: '#/components/schemas/integrationEvent'
+        - type: object
+          additionalProperties: false
+          properties:
+            eventName:
+              type: string
+            eventVersion:
+              type: string
+            source:
+              type: string
+              format: uri
+            orderIdentifier:
+              type: string
+            amount:
+              type: number
+              format: decimal
+  messages:
+    orderSubmittedEventV1:
+      payload:
+        $ref: '#/components/schemas/orderSubmittedEventV1'
+      name: orderSubmittedEventV1
+    orderCompletedIntegrationEventV1:
+      payload:
+        $ref: '#/components/schemas/orderCompletedIntegrationEventV1'
+      name: orderCompletedIntegrationEventV1
+    orderCompletedIntegrationEventV2:
+      payload:
+        $ref: '#/components/schemas/orderCompletedIntegrationEventV2'
+      name: orderCompletedIntegrationEventV2
+    orderReadyForDeliveryEventV1:
+      payload:
+        $ref: '#/components/schemas/orderReadyForDeliveryEventV1'
+      name: orderReadyForDeliveryEventV1
+    orderConfirmedEventV1:
+      payload:
+        $ref: '#/components/schemas/orderConfirmedEventV1'
+      name: orderConfirmedEventV1
+    orderCreatedEventV1:
+      payload:
+        $ref: '#/components/schemas/orderCreatedEventV1'
+      name: orderCreatedEventV1
+    orderCancelledEventV1:
+      payload:
+        $ref: '#/components/schemas/orderCancelledEventV1'
+      name: orderCancelledEventV1
+    driverCollectedOrderEventV1:
+      payload:
+        $ref: '#/components/schemas/driverCollectedOrderEventV1'
+      name: driverCollectedOrderEventV1
+    driverDeliveredOrderEventV1:
+      payload:
+        $ref: '#/components/schemas/driverDeliveredOrderEventV1'
+      name: driverDeliveredOrderEventV1
+    orderBakedEventV1:
+      payload:
+        $ref: '#/components/schemas/orderBakedEventV1'
+      name: orderBakedEventV1
+    orderPreparingEventV1:
+      payload:
+        $ref: '#/components/schemas/orderPreparingEventV1'
+      name: orderPreparingEventV1
+    orderPrepCompleteEventV1:
+      payload:
+        $ref: '#/components/schemas/orderPrepCompleteEventV1'
+      name: orderPrepCompleteEventV1
+    orderQualityCheckedEventV1:
+      payload:
+        $ref: '#/components/schemas/orderQualityCheckedEventV1'
+      name: orderQualityCheckedEventV1
+    paymentSuccessfulEventV1:
+      payload:
+        $ref: '#/components/schemas/paymentSuccessfulEventV1'
+      name: paymentSuccessfulEventV1

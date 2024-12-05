@@ -1,0 +1,37 @@
+{
+    "id": "paymentFailedEventV1",
+    "allOf": [
+        {
+            "id": "integrationEvent",
+            "type": "object",
+            "x-abstract": true,
+            "additionalProperties": false,
+            "x-parser-schema-id": "integrationEvent"
+        },
+        {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "eventName": {
+                    "type": "string",
+                    "x-parser-schema-id": "<anonymous-schema-20>"
+                },
+                "eventVersion": {
+                    "type": "string",
+                    "x-parser-schema-id": "<anonymous-schema-21>"
+                },
+                "source": {
+                    "type": "string",
+                    "format": "uri",
+                    "x-parser-schema-id": "<anonymous-schema-22>"
+                },
+                "orderIdentifier": {
+                    "type": "string",
+                    "x-parser-schema-id": "<anonymous-schema-23>"
+                }
+            },
+            "x-parser-schema-id": "<anonymous-schema-19>"
+        }
+    ],
+    "x-parser-schema-id": "paymentFailedEventV1"
+}

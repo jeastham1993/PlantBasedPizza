@@ -184,7 +184,7 @@ public class OrderSteps
         var eventId = Guid.NewGuid().ToString();
         _scenarioContext.Add("eventId", eventId);
         
-        await _eventDriver.SimulatePaymentSuccessEvent("a random order", 12, eventId);
+        await _eventDriver.SimulateInvalidPaymentSuccessEvent();
     }
 
     [Then(@"message should arrive in dead letter inbox")]

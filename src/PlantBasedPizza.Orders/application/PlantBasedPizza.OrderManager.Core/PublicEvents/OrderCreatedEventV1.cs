@@ -16,6 +16,8 @@ public class OrderCreatedEventV1 : IntegrationEvent
     public override Uri Source => new Uri("https://orders.plantbasedpizza");
 
     public string OrderIdentifier { get; set; } = "";
+    
+    public decimal OrderValue { get; set; }
 
     public override string AsString()
     {

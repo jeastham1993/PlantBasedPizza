@@ -6,6 +6,8 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using PlantBasedPizza.OrderManager.Infrastructure;
 using PlantBasedPizza.OrderManager.Infrastructure.HealthChecks;
 using PlantBasedPizza.Orders.Api;
+using PlantBasedPizza.Orders.Worker.Handlers;
+using PlantBasedPizza.Orders.Worker.IntegrationEvents;
 using PlantBasedPizza.Shared;
 using PlantBasedPizza.Shared.Authentication;
 using PlantBasedPizza.Shared.Logging;
@@ -35,7 +37,17 @@ var applicationName = "OrdersApi";
 
 builder.Services.AddOrderManagerInfrastructure(builder.Configuration)
     .AddSharedInfrastructure(builder.Configuration, applicationName)
-    .AddAsyncApiDocs(builder.Configuration, [typeof(OrderEventPublisher)], "OrdersService");
+    .AddAsyncApiDocs(builder.Configuration, 
+        [typeof(OrderEventPublisher),
+            typeof(DriverDeliveredOrderEventHandler),
+            typeof(DriverCollectedOrderEventHandler),
+            typeof(OrderBakedEventHandler),
+            typeof(OrderPreparingEventHandler),
+            typeof(OrderPrepCompleteEventHandler),
+            typeof(OrderQualityCheckedEventHandler),
+            typeof(PaymentSuccessEventHandler),
+        ]
+        , "OrdersService");
 
 builder.Services.AddHttpClient()
     .AddHealthChecks()

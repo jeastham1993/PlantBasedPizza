@@ -58,6 +58,9 @@
       <None Update="expected_schemas\invalidPaymentSuccessfulEvent.v1.json">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
+      <None Update="expected_schemas\orderCreated.v2.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>

@@ -1,6 +1,7 @@
 using PlantBasedPizza.OrderManager.Core.Entities;
 using PlantBasedPizza.OrderManager.Core.Services;
 using PlantBasedPizza.Orders.Worker.IntegrationEvents;
+using Saunter.Attributes;
 
 namespace PlantBasedPizza.Orders.Worker.Handlers
 {
@@ -17,6 +18,8 @@ namespace PlantBasedPizza.Orders.Worker.Handlers
             _userNotificationService = userNotificationService;
         }
         
+        [Channel("kitchen.orderPreparing.v1")]
+        [PublishOperation(typeof(OrderPreparingEventV1), OperationId = nameof(OrderPreparingEventV1))]
         public async Task Handle(OrderPreparingEventV1 evt)
         {
             _logger.LogInformation($"[ORDER-MANAGER] Handling order preparing event");

@@ -14,7 +14,7 @@ public class DeliveryEventPublisher(DaprClient daprClient) : IDeliveryEventPubli
     private const string DATE_FORMAT = "yyyy-MM-ddTHH:mm:ssZ";
     
     [Channel("delivery.driverCollectedOrder.v1")]
-    [PublishOperation(typeof(DriverCollectedOrderEventV1), Summary = "Published when a driver collects an order.")]
+    [SubscribeOperation(typeof(DriverCollectedOrderEventV1), OperationId = nameof(DriverCollectedOrderEventV1), Summary = "Published when a driver collects an order.")]
     public async Task PublishDriverOrderCollectedEventV1(DriverCollectedOrderEventV1 evt)
     {
         var eventType = $"{evt.EventName}.{evt.EventVersion}";
@@ -34,7 +34,7 @@ public class DeliveryEventPublisher(DaprClient daprClient) : IDeliveryEventPubli
     }
 
     [Channel("delivery.driverDeliveredOrder.v1")]
-    [PublishOperation(typeof(DriverDeliveredOrderEventV1), Summary = "Published when a driver delivers an order.")]
+    [SubscribeOperation(typeof(DriverDeliveredOrderEventV1), OperationId = nameof(DriverDeliveredOrderEventV1), Summary = "Published when a driver delivers an order.")]
     public async Task PublishDriverDeliveredOrderEventV1(DriverDeliveredOrderEventV1 evt)
     {
         var eventType = $"{evt.EventName}.{evt.EventVersion}";

@@ -6,6 +6,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Tokens;
 using PlantBasedPizza.Kitchen.Api;
 using PlantBasedPizza.Kitchen.Infrastructure;
+using PlantBasedPizza.Kitchen.Worker.Handlers;
 using PlantBasedPizza.Shared;
 using PlantBasedPizza.Shared.Logging;
 using Saunter;
@@ -22,23 +23,8 @@ builder.Services.AddSharedInfrastructure(builder.Configuration, applicationName)
     .AddHealthChecks()
     .AddMongoDb(builder.Configuration["DatabaseConnection"]);
 
-var generateAsyncApi = builder.Configuration["Messaging:UseAsyncApi"] == "Y";
-
-if (generateAsyncApi)
-{
-    builder.Services.AddAsyncApiSchemaGeneration(options =>
-    {
-        options.AssemblyMarkerTypes = new[] {typeof(KitchenEventPublisher)};
-
-        options.AsyncApi = new AsyncApiDocument
-        {
-            Info = new Info("PlantBasedPizza Delivery API", "1.0.0")
-            {
-                Description = "The kitchen API manages orders as they are being cooked.",
-            },
-        };
-    });   
-}
+builder.Services.AddAsyncApiDocs(builder.Configuration,
+    [typeof(KitchenEventPublisher), typeof(OrderConfirmedEventHandler)], "KitchenService");
 
 builder.Services.AddAuthentication(options =>
 {
@@ -99,14 +85,7 @@ app.MapGet("/kitchen/quality-check", Endpoints.GetAwaitingQualityCheck)
 app.MapPut("/kitchen/{orderIdentifier}/quality-check", Endpoints.MarkQualityChecked)
     .RequireAuthorization(options => options.RequireRole(STAFF_ROLE_NAME, ADMIN_ROLE_NAME));
 
-app.UseEndpoints(endpoints =>
-{
-    if (generateAsyncApi)
-    {
-        endpoints.MapAsyncApiDocuments();
-        endpoints.MapAsyncApiUi();
-    }
-});
+app.UseAsyncApi();
 
 await app.RunAsync();
 

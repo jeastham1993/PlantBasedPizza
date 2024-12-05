@@ -16,6 +16,7 @@
   <ItemGroup>
     <ProjectReference Include="..\PlantBasedPizza.OrderManager.Core\PlantBasedPizza.OrderManager.Core.csproj" />
     <ProjectReference Include="..\PlantBasedPizza.OrderManager.Infrastructure\PlantBasedPizza.OrderManager.Infrastructure.csproj" />
+    <ProjectReference Include="..\PlantBasedPizza.Orders.Worker\PlantBasedPizza.Orders.Worker.csproj" />
   </ItemGroup>
 
 </Project>

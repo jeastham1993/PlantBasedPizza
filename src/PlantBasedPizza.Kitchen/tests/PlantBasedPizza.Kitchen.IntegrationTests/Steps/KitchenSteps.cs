@@ -36,8 +36,8 @@ public class KitchenSteps
         
         var eventId = Guid.NewGuid().ToString();
 
-        await _kitchenDriver.NewOrderSubmitted(orderId, eventId);
-        await _kitchenDriver.NewOrderSubmitted(orderId, eventId);
+        await _kitchenDriver.NewOrderSubmitted(orderId, Guid.NewGuid().ToString());
+        await _kitchenDriver.NewOrderSubmitted(orderId, Guid.NewGuid().ToString());
     }
 
     [When(@"order is processed by the kitchen")]

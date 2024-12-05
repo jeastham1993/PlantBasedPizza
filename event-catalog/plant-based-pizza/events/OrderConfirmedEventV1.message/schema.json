@@ -1,0 +1,37 @@
+{
+    "id": "orderConfirmedEventV1",
+    "allOf": [
+        {
+            "id": "integrationEvent",
+            "type": "object",
+            "x-abstract": true,
+            "additionalProperties": false,
+            "x-parser-schema-id": "integrationEvent"
+        },
+        {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "eventName": {
+                    "type": "string",
+                    "x-parser-schema-id": "<anonymous-schema-26>"
+                },
+                "eventVersion": {
+                    "type": "string",
+                    "x-parser-schema-id": "<anonymous-schema-27>"
+                },
+                "source": {
+                    "type": "string",
+                    "format": "uri",
+                    "x-parser-schema-id": "<anonymous-schema-28>"
+                },
+                "orderIdentifier": {
+                    "type": "string",
+                    "x-parser-schema-id": "<anonymous-schema-29>"
+                }
+            },
+            "x-parser-schema-id": "<anonymous-schema-25>"
+        }
+    ],
+    "x-parser-schema-id": "orderConfirmedEventV1"
+}

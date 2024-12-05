@@ -1,0 +1,119 @@
+asyncapi: 3.0.0
+info:
+  title: DeliveryService
+  version: 1.0.0
+defaultContentType: application/json
+channels:
+  delivery.driverCollectedOrder.v1:
+    address: delivery.driverCollectedOrder.v1
+    messages:
+      DriverCollectedOrderEventV1.message:
+        $ref: '#/components/messages/driverCollectedOrderEventV1'
+  delivery.driverDeliveredOrder.v1:
+    address: delivery.driverDeliveredOrder.v1
+    messages:
+      DriverDeliveredOrderEventV1.message:
+        $ref: '#/components/messages/driverDeliveredOrderEventV1'
+  order.readyForDelivery.v1:
+    address: order.readyForDelivery.v1
+    messages:
+      OrderReadyForDeliveryEventV1.message:
+        $ref: '#/components/messages/orderReadyForDeliveryEventV1'
+operations:
+  DriverCollectedOrderEventV1:
+    action: send
+    channel:
+      $ref: '#/channels/delivery.driverCollectedOrder.v1'
+    summary: Published when a driver collects an order.
+    messages:
+      - $ref: >-
+          #/channels/delivery.driverCollectedOrder.v1/messages/DriverCollectedOrderEventV1.message
+  DriverDeliveredOrderEventV1:
+    action: send
+    channel:
+      $ref: '#/channels/delivery.driverDeliveredOrder.v1'
+    summary: Published when a driver delivers an order.
+    messages:
+      - $ref: >-
+          #/channels/delivery.driverDeliveredOrder.v1/messages/DriverDeliveredOrderEventV1.message
+  OrderReadyForDeliveryEventV1:
+    action: receive
+    channel:
+      $ref: '#/channels/order.readyForDelivery.v1'
+    summary: ''
+    messages:
+      - $ref: >-
+          #/channels/order.readyForDelivery.v1/messages/OrderReadyForDeliveryEventV1.message
+components:
+  schemas:
+    driverCollectedOrderEventV1:
+      id: driverCollectedOrderEventV1
+      allOf:
+        - $ref: '#/components/schemas/integrationEvent'
+        - type: object
+          additionalProperties: false
+          properties:
+            eventName:
+              type: string
+            eventVersion:
+              type: string
+            source:
+              type: string
+              format: uri
+            driverName:
+              type: string
+            orderIdentifier:
+              type: string
+    integrationEvent:
+      id: integrationEvent
+      type: object
+      x-abstract: true
+      additionalProperties: false
+    driverDeliveredOrderEventV1:
+      id: driverDeliveredOrderEventV1
+      allOf:
+        - $ref: '#/components/schemas/integrationEvent'
+        - type: object
+          additionalProperties: false
+          properties:
+            eventName:
+              type: string
+            eventVersion:
+              type: string
+            source:
+              type: string
+              format: uri
+            orderIdentifier:
+              type: string
+    orderReadyForDeliveryEventV1:
+      id: orderReadyForDeliveryEventV1
+      type: object
+      additionalProperties: false
+      properties:
+        orderIdentifier:
+          type: string
+        deliveryAddressLine1:
+          type: string
+        deliveryAddressLine2:
+          type: string
+        deliveryAddressLine3:
+          type: string
+        deliveryAddressLine4:
+          type: string
+        deliveryAddressLine5:
+          type: string
+        postcode:
+          type: string
+  messages:
+    driverCollectedOrderEventV1:
+      payload:
+        $ref: '#/components/schemas/driverCollectedOrderEventV1'
+      name: driverCollectedOrderEventV1
+    driverDeliveredOrderEventV1:
+      payload:
+        $ref: '#/components/schemas/driverDeliveredOrderEventV1'
+      name: driverDeliveredOrderEventV1
+    orderReadyForDeliveryEventV1:
+      payload:
+        $ref: '#/components/schemas/orderReadyForDeliveryEventV1'
+      name: orderReadyForDeliveryEventV1

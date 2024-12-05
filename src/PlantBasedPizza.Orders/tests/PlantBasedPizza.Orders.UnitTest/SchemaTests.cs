@@ -2,6 +2,7 @@ using FluentAssertions;
 using NJsonSchema;
 using NJsonSchema.Validation;
 using PlantBasedPizza.OrderManager.Core.Entities;
+using PlantBasedPizza.OrderManager.Core.PublicEvents;
 using PlantBasedPizza.OrderManager.Core.SubmitOrder;
 
 namespace PlantBasedPizza.Orders.UnitTest;
@@ -18,6 +19,19 @@ public class SchemaTests
 
         var eventJson = evt!.AsString();
         var expectedSchema = await JsonSchema.FromJsonAsync(await File.ReadAllTextAsync("./expected_schemas/orderCreated.v1.json"));
+        var validationResults = expectedSchema.Validate(eventJson);
+        validationResults.Count.Should().Be(0, "Should match expected schema");
+    }
+    [Fact]
+    public async Task WhenOrderCreated_V2SchemaShouldMatchDefinition()
+    {
+        var order = Order.Create(OrderType.Pickup, "testuser");
+
+        var evt = order.Events.FirstOrDefault(evt => evt.EventName == "order.orderCreated" && evt.EventVersion == "v2");
+        evt.Should().NotBeNull("Should contain order created event");
+
+        var eventJson = evt!.AsString();
+        var expectedSchema = await JsonSchema.FromJsonAsync(await File.ReadAllTextAsync("./expected_schemas/orderCreated.v2.json"));
         var validationResults = expectedSchema.Validate(eventJson);
         validationResults.Count.Should().Be(0, "Should match expected schema");
     }

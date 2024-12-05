@@ -1,8 +1,10 @@
 using Microsoft.Extensions.Logging;
 using PlantBasedPizza.Deliver.Core.Entities;
+using Saunter.Attributes;
 
 namespace PlantBasedPizza.Deliver.Core.OrderReadyForDelivery
 {
+    [AsyncApi]
     public class OrderReadyForDeliveryEventHandler
     {
         private readonly IDeliveryRequestRepository _deliveryRequestRepository;
@@ -14,6 +16,8 @@ namespace PlantBasedPizza.Deliver.Core.OrderReadyForDelivery
             _logger = logger;
         }
         
+        [Channel("order.readyForDelivery.v1")]
+        [PublishOperation(typeof(OrderReadyForDeliveryEventV1), OperationId = nameof(OrderReadyForDeliveryEventV1))]
         public async Task Handle(OrderReadyForDeliveryEventV1 evt)
         {
             if (evt == null)

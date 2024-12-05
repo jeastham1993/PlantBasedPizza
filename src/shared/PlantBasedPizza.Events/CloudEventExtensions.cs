@@ -28,12 +28,12 @@ public static class CloudEventExtensions
         {
             var publishTime = DateTime.Parse(cloudEventTime);
 
-            var interval = DateTime.UtcNow - publishTime;
+            var messageAge = DateTime.UtcNow - publishTime;
 
             Activity.Current?.AddTag("messaging.message.publish_time",
                 publishTime.ToString(CultureInfo.InvariantCulture));
-            Activity.Current?.AddTag("messaging.message.in_flight_time",
-                interval.TotalMilliseconds.ToString(CultureInfo.InvariantCulture));
+            Activity.Current?.AddTag("messaging.message.age",
+                messageAge.TotalMilliseconds.ToString(CultureInfo.InvariantCulture));
         }
 
         Activity.Current?.AddTag("messaging.operation.type", "process");
@@ -65,12 +65,12 @@ public static class CloudEventExtensions
         {
             var publishTime = DateTime.Parse(cloudEventTime);
 
-            var interval = DateTime.UtcNow - publishTime;
+            var messageAge = DateTime.UtcNow - publishTime;
 
             Activity.Current?.AddTag("messaging.message.publish_time",
                 publishTime.ToString(CultureInfo.InvariantCulture));
-            Activity.Current?.AddTag("messaging.message.in_flight_time",
-                interval.TotalMilliseconds.ToString(CultureInfo.InvariantCulture));
+            Activity.Current?.AddTag("messaging.message.age",
+                messageAge.TotalMilliseconds.ToString(CultureInfo.InvariantCulture));
         }
         
         var traceParent = extractValueFromHeader(httpContext, "traceparent") ?? "";

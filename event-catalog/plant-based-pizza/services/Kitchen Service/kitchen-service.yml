@@ -1,0 +1,203 @@
+asyncapi: 3.0.0
+info:
+  title: KitchenService
+  version: 1.0.0
+defaultContentType: application/json
+channels:
+  kitchen.orderConfirmed.v1:
+    address: kitchen.orderConfirmed.v1
+    messages:
+      KitchenConfirmedOrderEventV1.message:
+        $ref: '#/components/messages/kitchenConfirmedOrderEventV1'
+  kitchen.orderBaked.v1:
+    address: kitchen.orderBaked.v1
+    messages:
+      OrderBakedEventV1.message:
+        $ref: '#/components/messages/orderBakedEventV1'
+  kitchen.orderPreparing.v1:
+    address: kitchen.orderPreparing.v1
+    messages:
+      OrderPreparingEventV1.message:
+        $ref: '#/components/messages/orderPreparingEventV1'
+  kitchen.orderPrepComplete.v1:
+    address: kitchen.orderPrepComplete.v1
+    messages:
+      OrderPrepCompleteEventV1.message:
+        payload:
+          $ref: '#/components/schemas/orderPreparingEventV1'
+  kitchen.qualityChecked.v1:
+    address: kitchen.qualityChecked.v1
+    messages:
+      OrderQualityCheckedEventV1.message:
+        $ref: '#/components/messages/orderQualityCheckedEventV1'
+  order.orderConfirmed.v1:
+    address: order.orderConfirmed.v1
+    messages:
+      OrderConfirmedEventV1.message:
+        $ref: '#/components/messages/orderConfirmedEventV1'
+operations:
+  KitchenConfirmedOrderEventV1:
+    action: send
+    channel:
+      $ref: '#/channels/kitchen.orderConfirmed.v1'
+    summary: Published when the kitchen confirms an order.
+    messages:
+      - $ref: >-
+          #/channels/kitchen.orderConfirmed.v1/messages/KitchenConfirmedOrderEventV1.message
+  OrderBakedEventV1:
+    action: send
+    channel:
+      $ref: '#/channels/kitchen.orderBaked.v1'
+    summary: Published when the kitchen finishes baking an order.
+    messages:
+      - $ref: '#/channels/kitchen.orderBaked.v1/messages/OrderBakedEventV1.message'
+  OrderPreparingEventV1:
+    action: send
+    channel:
+      $ref: '#/channels/kitchen.orderPreparing.v1'
+    summary: Published when the kitchen starts preparing an order.
+    messages:
+      - $ref: >-
+          #/channels/kitchen.orderPreparing.v1/messages/OrderPreparingEventV1.message
+  OrderPrepCompleteEventV1:
+    action: send
+    channel:
+      $ref: '#/channels/kitchen.orderPrepComplete.v1'
+    summary: Published when the kitchen finishes preparing an order.
+    messages:
+      - $ref: >-
+          #/channels/kitchen.orderPrepComplete.v1/messages/OrderPrepCompleteEventV1.message
+  OrderQualityCheckedEventV1:
+    action: send
+    channel:
+      $ref: '#/channels/kitchen.qualityChecked.v1'
+    summary: >-
+      Published when the kitchen quality checks an order, this indicates it is
+      ready.
+    messages:
+      - $ref: >-
+          #/channels/kitchen.qualityChecked.v1/messages/OrderQualityCheckedEventV1.message
+  OrderConfirmedEventV1:
+    action: receive
+    channel:
+      $ref: '#/channels/order.orderConfirmed.v1'
+    summary: ''
+    messages:
+      - $ref: >-
+          #/channels/order.orderConfirmed.v1/messages/OrderConfirmedEventV1.message
+components:
+  schemas:
+    kitchenConfirmedOrderEventV1:
+      id: kitchenConfirmedOrderEventV1
+      allOf:
+        - $ref: '#/components/schemas/integrationEvent'
+        - type: object
+          additionalProperties: false
+          properties:
+            eventName:
+              type: string
+            eventVersion:
+              type: string
+            source:
+              type: string
+              format: uri
+            orderIdentifier:
+              type: string
+            kitchenIdentifier:
+              type: string
+    integrationEvent:
+      id: integrationEvent
+      type: object
+      x-abstract: true
+      additionalProperties: false
+    orderBakedEventV1:
+      id: orderBakedEventV1
+      allOf:
+        - $ref: '#/components/schemas/integrationEvent'
+        - type: object
+          additionalProperties: false
+          properties:
+            eventName:
+              type: string
+            eventVersion:
+              type: string
+            source:
+              type: string
+              format: uri
+            orderIdentifier:
+              type: string
+            kitchenIdentifier:
+              type: string
+    orderPreparingEventV1:
+      id: orderPreparingEventV1
+      allOf:
+        - $ref: '#/components/schemas/integrationEvent'
+        - type: object
+          additionalProperties: false
+          properties:
+            eventName:
+              type: string
+            eventVersion:
+              type: string
+            source:
+              type: string
+              format: uri
+            orderIdentifier:
+              type: string
+            kitchenIdentifier:
+              type: string
+    orderQualityCheckedEventV1:
+      id: orderQualityCheckedEventV1
+      allOf:
+        - $ref: '#/components/schemas/integrationEvent'
+        - type: object
+          additionalProperties: false
+          properties:
+            eventName:
+              type: string
+            eventVersion:
+              type: string
+            source:
+              type: string
+              format: uri
+            orderIdentifier:
+              type: string
+            kitchenIdentifier:
+              type: string
+    orderConfirmedEventV1:
+      id: orderConfirmedEventV1
+      allOf:
+        - $ref: '#/components/schemas/integrationEvent'
+        - type: object
+          additionalProperties: false
+          properties:
+            eventName:
+              type: string
+            eventVersion:
+              type: string
+            source:
+              type: string
+              format: uri
+            orderIdentifier:
+              type: string
+  messages:
+    kitchenConfirmedOrderEventV1:
+      payload:
+        $ref: '#/components/schemas/kitchenConfirmedOrderEventV1'
+      name: kitchenConfirmedOrderEventV1
+    orderBakedEventV1:
+      payload:
+        $ref: '#/components/schemas/orderBakedEventV1'
+      name: orderBakedEventV1
+    orderPreparingEventV1:
+      payload:
+        $ref: '#/components/schemas/orderPreparingEventV1'
+      name: orderPreparingEventV1
+    orderQualityCheckedEventV1:
+      payload:
+        $ref: '#/components/schemas/orderQualityCheckedEventV1'
+      name: orderQualityCheckedEventV1
+    orderConfirmedEventV1:
+      payload:
+        $ref: '#/components/schemas/orderConfirmedEventV1'
+      name: orderConfirmedEventV1

@@ -15,7 +15,7 @@ class NotificationHub {
     // Create the connection
     this.connection = new signalR.HubConnectionBuilder()
       .withUrl(
-        "https://orders-worker.wonderfulforest-17ef98b4.westeurope.azurecontainerapps.io/notifications/orders",
+        "http://localhost:5090/notifications/orders",
         {
           transport: signalR.HttpTransportType.WebSockets,
           skipNegotiation: true,

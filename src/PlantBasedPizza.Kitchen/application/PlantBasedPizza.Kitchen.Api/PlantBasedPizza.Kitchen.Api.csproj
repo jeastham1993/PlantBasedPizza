@@ -24,6 +24,7 @@
     <ItemGroup>
       <ProjectReference Include="..\PlantBasedPizza.Kitchen.Core\PlantBasedPizza.Kitchen.Core.csproj" />
       <ProjectReference Include="..\PlantBasedPizza.Kitchen.Infrastructure\PlantBasedPizza.Kitchen.Infrastructure.csproj" />
+      <ProjectReference Include="..\PlantBasedPizza.Kitchen.Worker\PlantBasedPizza.Kitchen.Worker.csproj" />
     </ItemGroup>
 
 </Project>

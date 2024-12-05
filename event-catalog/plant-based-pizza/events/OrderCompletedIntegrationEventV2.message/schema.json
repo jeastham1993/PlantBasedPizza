@@ -1,0 +1,58 @@
+{
+    "id": "orderCompletedIntegrationEventV2",
+    "allOf": [
+        {
+            "id": "integrationEvent",
+            "type": "object",
+            "x-abstract": true,
+            "additionalProperties": false,
+            "x-parser-schema-id": "integrationEvent"
+        },
+        {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "eventName": {
+                    "type": "string",
+                    "x-parser-schema-id": "<anonymous-schema-14>"
+                },
+                "eventVersion": {
+                    "type": "string",
+                    "x-parser-schema-id": "<anonymous-schema-15>"
+                },
+                "source": {
+                    "type": "string",
+                    "format": "uri",
+                    "x-parser-schema-id": "<anonymous-schema-16>"
+                },
+                "orderIdentifier": {
+                    "type": "string",
+                    "x-parser-schema-id": "<anonymous-schema-17>"
+                },
+                "customerIdentifier": {
+                    "type": "string",
+                    "x-parser-schema-id": "<anonymous-schema-18>"
+                },
+                "orderValue": {
+                    "id": "orderValue",
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "value": {
+                            "type": "number",
+                            "format": "decimal",
+                            "x-parser-schema-id": "<anonymous-schema-19>"
+                        },
+                        "currency": {
+                            "type": "string",
+                            "x-parser-schema-id": "<anonymous-schema-20>"
+                        }
+                    },
+                    "x-parser-schema-id": "orderValue"
+                }
+            },
+            "x-parser-schema-id": "<anonymous-schema-13>"
+        }
+    ],
+    "x-parser-schema-id": "orderCompletedIntegrationEventV2"
+}

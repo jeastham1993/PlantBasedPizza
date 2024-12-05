@@ -58,13 +58,31 @@ public class EventDriver
 
     public async Task SimulatePaymentSuccessEvent(string orderIdentifier, decimal paymentValue, string? eventId = null)
     {
-        await _daprClient.PublishEventAsync("public", "payments.paymentSuccessful.v1", new PaymentSuccessfulEventV1
+        await _daprClient.PublishEventAsync("payments", "payments.paymentSuccessful.v1", new PaymentSuccessfulEventV1
         {
             OrderIdentifier = orderIdentifier,
             Amount = paymentValue
         }, new Dictionary<string, string>(1)
         {
             { "cloudevent.id", eventId ?? Guid.NewGuid().ToString() },
+            { "cloudevent.type", "payments.paymentSuccessful.v1" },
+            { "cloudevent.source", "payments" },
+            { "cloudevent.time", DateTime.UtcNow.ToString(DATE_FORMAT) },
+        });
+
+        // Delay to allow for message processing
+        await Task.Delay(TimeSpan.FromSeconds(2));
+    }
+
+    public async Task SimulateInvalidPaymentSuccessEvent()
+    {
+        await _daprClient.PublishEventAsync("payments", "payments.paymentSuccessful.v1", new InvalidPaymentSuccessEvent
+        {
+            OrderId = "twetwt",
+            Money = 12.99M
+        }, new Dictionary<string, string>(1)
+        {
+            { "cloudevent.id", Guid.NewGuid().ToString() },
             { "cloudevent.type", "payments.paymentSuccessful.v1" },
             { "cloudevent.source", "payments" },
             { "cloudevent.time", DateTime.UtcNow.ToString(DATE_FORMAT) },
@@ -117,4 +135,11 @@ public class EventDriver
         
         return specificMessage;
     }
+}
+
+record InvalidPaymentSuccessEvent
+{
+    public string OrderId { get; set; }
+    
+    public decimal Money { get; set; }
 }

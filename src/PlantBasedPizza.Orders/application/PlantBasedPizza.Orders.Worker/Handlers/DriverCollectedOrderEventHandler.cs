@@ -1,6 +1,7 @@
 using PlantBasedPizza.OrderManager.Core.Entities;
 using PlantBasedPizza.OrderManager.Core.Services;
 using PlantBasedPizza.Orders.Worker.IntegrationEvents;
+using Saunter.Attributes;
 
 namespace PlantBasedPizza.Orders.Worker.Handlers
 {
@@ -15,6 +16,8 @@ namespace PlantBasedPizza.Orders.Worker.Handlers
             _userNotificationService = userNotificationService;
         }
         
+        [Channel("delivery.driverCollectedOrder.v1")]
+        [PublishOperation(typeof(DriverCollectedOrderEventV1), OperationId = nameof(DriverCollectedOrderEventV1))]
         public async Task Handle(DriverCollectedOrderEventV1 evt)
         {
             var order = await _orderRepository.Retrieve(evt.OrderIdentifier);

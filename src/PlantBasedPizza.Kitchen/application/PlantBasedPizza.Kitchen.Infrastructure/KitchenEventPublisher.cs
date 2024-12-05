@@ -14,7 +14,7 @@ public class KitchenEventPublisher(DaprClient daprClient) : IKitchenEventPublish
     private const string DATE_FORMAT = "yyyy-MM-ddTHH:mm:ssZ";
 
     [Channel("kitchen.orderConfirmed.v1")]
-    [PublishOperation(typeof(KitchenConfirmedOrderEventV1), Summary = "Published when the kitchen confirms an order.")]
+    [SubscribeOperation(typeof(KitchenConfirmedOrderEventV1), OperationId = nameof(KitchenConfirmedOrderEventV1), Summary = "Published when the kitchen confirms an order.")]
     public async Task PublishKitchenConfirmedOrderEventV1(KitchenConfirmedOrderEventV1 evt)
     {
         var eventType = $"{evt.EventName}.{evt.EventVersion}";
@@ -34,7 +34,7 @@ public class KitchenEventPublisher(DaprClient daprClient) : IKitchenEventPublish
     }
 
     [Channel("kitchen.orderBaked.v1")]
-    [PublishOperation(typeof(OrderBakedEventV1), Summary = "Published when the kitchen finishes baking an order.")]
+    [SubscribeOperation(typeof(OrderBakedEventV1), OperationId = nameof(OrderBakedEventV1), Summary = "Published when the kitchen finishes baking an order.")]
     public async Task PublishOrderBakedEventV1(OrderBakedEventV1 evt)
     {
         var eventType = $"{evt.EventName}.{evt.EventVersion}";
@@ -54,7 +54,7 @@ public class KitchenEventPublisher(DaprClient daprClient) : IKitchenEventPublish
     }
 
     [Channel("kitchen.orderPreparing.v1")]
-    [PublishOperation(typeof(OrderPreparingEventV1), Summary = "Published when the kitchen starts preparing an order.")]
+    [SubscribeOperation(typeof(OrderPreparingEventV1), OperationId = nameof(OrderPreparingEventV1), Summary = "Published when the kitchen starts preparing an order.")]
     public async Task PublishOrderPreparingEventV1(OrderPreparingEventV1 evt)
     {
         var eventType = $"{evt.EventName}.{evt.EventVersion}";
@@ -74,7 +74,7 @@ public class KitchenEventPublisher(DaprClient daprClient) : IKitchenEventPublish
     }
 
     [Channel("kitchen.orderPrepComplete.v1")]
-    [PublishOperation(typeof(OrderPreparingEventV1), Summary = "Published when the kitchen finishes preparing an order.")]
+    [SubscribeOperation(typeof(OrderPreparingEventV1), OperationId = nameof(OrderPrepCompleteEventV1), Summary = "Published when the kitchen finishes preparing an order.")]
     public async Task PublishOrderPrepCompleteEventV1(OrderPrepCompleteEventV1 evt)
     {
         var eventType = $"{evt.EventName}.{evt.EventVersion}";
@@ -94,7 +94,7 @@ public class KitchenEventPublisher(DaprClient daprClient) : IKitchenEventPublish
     }
 
     [Channel("kitchen.qualityChecked.v1")]
-    [PublishOperation(typeof(OrderQualityCheckedEventV1), Summary = "Published when the kitchen quality checks an order, this indicates it is ready.")]
+    [SubscribeOperation(typeof(OrderQualityCheckedEventV1), OperationId = nameof(OrderQualityCheckedEventV1), Summary = "Published when the kitchen quality checks an order, this indicates it is ready.")]
     public async Task PublishOrderQualityCheckedEventV1(OrderQualityCheckedEventV1 evt)
     {
         var eventType = $"{evt.EventName}.{evt.EventVersion}";

@@ -1,0 +1,36 @@
+{
+    "id": "orderReadyForDeliveryEventV1",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "orderIdentifier": {
+            "type": "string",
+            "x-parser-schema-id": "<anonymous-schema-12>"
+        },
+        "deliveryAddressLine1": {
+            "type": "string",
+            "x-parser-schema-id": "<anonymous-schema-13>"
+        },
+        "deliveryAddressLine2": {
+            "type": "string",
+            "x-parser-schema-id": "<anonymous-schema-14>"
+        },
+        "deliveryAddressLine3": {
+            "type": "string",
+            "x-parser-schema-id": "<anonymous-schema-15>"
+        },
+        "deliveryAddressLine4": {
+            "type": "string",
+            "x-parser-schema-id": "<anonymous-schema-16>"
+        },
+        "deliveryAddressLine5": {
+            "type": "string",
+            "x-parser-schema-id": "<anonymous-schema-17>"
+        },
+        "postcode": {
+            "type": "string",
+            "x-parser-schema-id": "<anonymous-schema-18>"
+        }
+    },
+    "x-parser-schema-id": "orderReadyForDeliveryEventV1"
+}

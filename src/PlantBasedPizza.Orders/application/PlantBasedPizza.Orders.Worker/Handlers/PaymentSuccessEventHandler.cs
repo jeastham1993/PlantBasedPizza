@@ -3,6 +3,7 @@ using PlantBasedPizza.OrderManager.Core.Entities;
 using PlantBasedPizza.OrderManager.Core.Services;
 using PlantBasedPizza.OrderManager.Infrastructure;
 using PlantBasedPizza.Orders.Worker.IntegrationEvents;
+using Saunter.Attributes;
 
 namespace PlantBasedPizza.Orders.Worker.Handlers;
 
@@ -22,6 +23,8 @@ public class PaymentSuccessEventHandler
         _features = features;
     }
 
+    [Channel("payments.paymentSuccessful")]
+    [PublishOperation(typeof(PaymentSuccessfulEventV1), OperationId = nameof(PaymentSuccessfulEventV1))]
     public async Task Handle(PaymentSuccessfulEventV1 evt)
     {
         var order = await _orderRepository.Retrieve(evt.OrderIdentifier);

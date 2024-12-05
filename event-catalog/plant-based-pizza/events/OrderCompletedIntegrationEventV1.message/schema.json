@@ -1,0 +1,46 @@
+{
+    "id": "orderCompletedIntegrationEventV1",
+    "allOf": [
+        {
+            "id": "integrationEvent",
+            "type": "object",
+            "x-abstract": true,
+            "additionalProperties": false,
+            "x-parser-schema-id": "integrationEvent"
+        },
+        {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "eventName": {
+                    "type": "string",
+                    "x-parser-schema-id": "<anonymous-schema-7>"
+                },
+                "eventVersion": {
+                    "type": "string",
+                    "x-parser-schema-id": "<anonymous-schema-8>"
+                },
+                "source": {
+                    "type": "string",
+                    "format": "uri",
+                    "x-parser-schema-id": "<anonymous-schema-9>"
+                },
+                "orderIdentifier": {
+                    "type": "string",
+                    "x-parser-schema-id": "<anonymous-schema-10>"
+                },
+                "customerIdentifier": {
+                    "type": "string",
+                    "x-parser-schema-id": "<anonymous-schema-11>"
+                },
+                "orderValue": {
+                    "type": "number",
+                    "format": "decimal",
+                    "x-parser-schema-id": "<anonymous-schema-12>"
+                }
+            },
+            "x-parser-schema-id": "<anonymous-schema-6>"
+        }
+    ],
+    "x-parser-schema-id": "orderCompletedIntegrationEventV1"
+}

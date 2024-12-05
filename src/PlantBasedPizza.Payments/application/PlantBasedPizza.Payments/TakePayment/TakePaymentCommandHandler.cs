@@ -2,11 +2,14 @@ using System.Diagnostics;
 using System.Security.Cryptography;
 using Microsoft.Extensions.Caching.Distributed;
 using PlantBasedPizza.Payments.PublicEvents;
+using Saunter.Attributes;
 
 namespace PlantBasedPizza.Payments.TakePayment;
 
 public class TakePaymentCommandHandler(ILogger<TakePaymentCommandHandler> logger, IPaymentEventPublisher eventPublisher, IDistributedCache cache)
 {
+    [Channel("payments.takepayment.v1")]
+    [PublishOperation(typeof(TakePaymentCommand), OperationId = nameof(TakePaymentCommand))]
     public async Task<bool> Handle(TakePaymentCommand command)
     {
         var hasOrderBeenProcessed = await cache.GetStringAsync(command.OrderIdentifier);

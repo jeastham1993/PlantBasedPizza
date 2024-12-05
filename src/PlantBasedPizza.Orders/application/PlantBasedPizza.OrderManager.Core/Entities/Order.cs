@@ -60,6 +60,12 @@ namespace PlantBasedPizza.OrderManager.Core.Entities
             order._events.Add(new OrderCreatedEventV1()
             {
                 OrderIdentifier = orderIdentifier,
+                OrderValue = 0
+            });
+            
+            order._events.Add(new OrderCreatedEventV2()
+            {
+                OrderId = orderIdentifier,
             });
 
             return order;

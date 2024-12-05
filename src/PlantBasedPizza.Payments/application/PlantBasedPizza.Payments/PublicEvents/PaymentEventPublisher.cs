@@ -11,7 +11,7 @@ public class PaymentEventPublisher(DaprClient daprClient) : IPaymentEventPublish
     private const string DATE_FORMAT = "yyyy-MM-ddTHH:mm:ssZ";
 
     [Channel(PaymentSuccessfulEventV1.EVENT_NAME)]
-    [PublishOperation(typeof(PaymentSuccessfulEventV1), Summary = "Published when a payment is successfully taken.")]
+    [SubscribeOperation(typeof(PaymentSuccessfulEventV1), OperationId = nameof(PaymentSuccessfulEventV1), Summary = "Published when a payment is successfully taken.")]
     public async Task PublishPaymentSuccessfulEventV1(PaymentSuccessfulEventV1 evt)
     {
         var eventType = $"{evt.EventName}.{evt.EventVersion}";
@@ -31,7 +31,7 @@ public class PaymentEventPublisher(DaprClient daprClient) : IPaymentEventPublish
     }
 
     [Channel(PaymentFailedEventV1.EVENT_NAME)]
-    [PublishOperation(typeof(PaymentFailedEventV1), Summary = "Published when a payment fails.")]
+    [SubscribeOperation(typeof(PaymentFailedEventV1), OperationId = nameof(PaymentFailedEventV1), Summary = "Published when a payment fails.")]
     public async Task PublishPaymentFailedEventV1(PaymentFailedEventV1 evt)
     {
         var eventType = $"{evt.EventName}.{evt.EventVersion}";

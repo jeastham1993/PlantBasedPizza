@@ -27,6 +27,8 @@ public class KitchenDriver
 
     public async Task NewOrderSubmitted(string orderIdentifier, string? eventId = null)
     {
+        await Task.Delay(TimeSpan.FromSeconds(2));
+        
         await _daprClient.PublishEventAsync("public", "order.orderConfirmed.v1", new OrderSubmittedEventV1
         {
             OrderIdentifier = orderIdentifier,

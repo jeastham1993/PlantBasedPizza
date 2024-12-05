@@ -1,0 +1,155 @@
+asyncapi: 3.0.0
+info:
+  title: PaymentApi
+  version: 1.0.0
+defaultContentType: application/json
+channels:
+  payments.takepayment.v1:
+    address: payments.takepayment.v1
+    messages:
+      TakePaymentCommand.message:
+        $ref: '#/components/messages/takePaymentCommand'
+  payments.refundpayment.v1:
+    address: payments.refundpayment.v1
+    messages:
+      RefundPaymentCommand.message:
+        $ref: '#/components/messages/refundPaymentCommand'
+  payments.paymentSuccessful:
+    address: payments.paymentSuccessful
+    messages:
+      PaymentSuccessfulEventV1.message:
+        $ref: '#/components/messages/paymentSuccessfulEventV1'
+  payments.paymentFailed:
+    address: payments.paymentFailed
+    messages:
+      PaymentFailedEventV1.message:
+        $ref: '#/components/messages/paymentFailedEventV1'
+operations:
+  TakePaymentCommand:
+    action: receive
+    channel:
+      $ref: '#/channels/payments.takepayment.v1'
+    summary: ''
+    messages:
+      - $ref: '#/channels/payments.takepayment.v1/messages/TakePaymentCommand.message'
+  RefundPaymentCommand:
+    action: receive
+    channel:
+      $ref: '#/channels/payments.refundpayment.v1'
+    summary: ''
+    messages:
+      - $ref: >-
+          #/channels/payments.refundpayment.v1/messages/RefundPaymentCommand.message
+  PaymentSuccessfulEventV1:
+    action: send
+    channel:
+      $ref: '#/channels/payments.paymentSuccessful'
+    summary: Published when a payment is successfully taken.
+    messages:
+      - $ref: >-
+          #/channels/payments.paymentSuccessful/messages/PaymentSuccessfulEventV1.message
+  PaymentFailedEventV1:
+    action: send
+    channel:
+      $ref: '#/channels/payments.paymentFailed'
+    summary: Published when a payment fails.
+    messages:
+      - $ref: >-
+          #/channels/payments.paymentFailed/messages/PaymentFailedEventV1.message
+components:
+  schemas:
+    takePaymentCommand:
+      id: takePaymentCommand
+      allOf:
+        - $ref: '#/components/schemas/integrationEvent'
+        - type: object
+          additionalProperties: false
+          properties:
+            eventName:
+              type: string
+            eventVersion:
+              type: string
+            source:
+              type: string
+              format: uri
+            orderIdentifier:
+              type: string
+            paymentAmount:
+              type: number
+              format: decimal
+    integrationEvent:
+      id: integrationEvent
+      type: object
+      x-abstract: true
+      additionalProperties: false
+    refundPaymentCommand:
+      id: refundPaymentCommand
+      allOf:
+        - $ref: '#/components/schemas/integrationEvent'
+        - type: object
+          additionalProperties: false
+          properties:
+            eventName:
+              type: string
+            eventVersion:
+              type: string
+            source:
+              type: string
+              format: uri
+            orderIdentifier:
+              type: string
+            paymentAmount:
+              type: number
+              format: decimal
+    paymentSuccessfulEventV1:
+      id: paymentSuccessfulEventV1
+      allOf:
+        - $ref: '#/components/schemas/integrationEvent'
+        - type: object
+          additionalProperties: false
+          properties:
+            eventName:
+              type: string
+            eventVersion:
+              type: string
+            source:
+              type: string
+              format: uri
+            orderIdentifier:
+              type: string
+            amount:
+              type: number
+              format: decimal
+    paymentFailedEventV1:
+      id: paymentFailedEventV1
+      allOf:
+        - $ref: '#/components/schemas/integrationEvent'
+        - type: object
+          additionalProperties: false
+          properties:
+            eventName:
+              type: string
+            eventVersion:
+              type: string
+            source:
+              type: string
+              format: uri
+            orderIdentifier:
+              type: string
+  messages:
+    takePaymentCommand:
+      payload:
+        $ref: '#/components/schemas/takePaymentCommand'
+      name: takePaymentCommand
+    refundPaymentCommand:
+      payload:
+        $ref: '#/components/schemas/refundPaymentCommand'
+      name: refundPaymentCommand
+    paymentSuccessfulEventV1:
+      payload:
+        $ref: '#/components/schemas/paymentSuccessfulEventV1'
+      name: paymentSuccessfulEventV1
+    paymentFailedEventV1:
+      payload:
+        $ref: '#/components/schemas/paymentFailedEventV1'
+      name: paymentFailedEventV1

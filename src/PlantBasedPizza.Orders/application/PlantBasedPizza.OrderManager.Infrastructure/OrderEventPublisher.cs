@@ -14,7 +14,7 @@ public class OrderEventPublisher(DaprClient daprClient) : IOrderEventPublisher
     private const string DATE_FORMAT = "yyyy-MM-ddTHH:mm:ssZ";
     
     [Channel("order.orderSubmitted.v1")]
-    [PublishOperation(typeof(OrderSubmittedEventV1), Summary = "Published when an order is submitted.")]
+    [SubscribeOperation(typeof(OrderSubmittedEventV1), OperationId = nameof(OrderSubmittedEventV1), Summary = "Published when an order is submitted.")]
     public async Task PublishOrderSubmittedEventV1(OrderSubmittedEventV1 evt)
     {
         var eventType = $"{evt.EventName}.{evt.EventVersion}";
@@ -33,7 +33,7 @@ public class OrderEventPublisher(DaprClient daprClient) : IOrderEventPublisher
     }
 
     [Channel("order.orderCompleted.v1")]
-    [PublishOperation(typeof(OrderCompletedIntegrationEventV1), Summary = "Published when an order is completed.")]
+    [SubscribeOperation(typeof(OrderCompletedIntegrationEventV1), OperationId = nameof(OrderCompletedIntegrationEventV1), Summary = "Published when an order is completed.")]
     [Obsolete("Consumers should migrate to version 2 of the event")]
     public async Task PublishOrderCompletedEventV1(OrderCompletedIntegrationEventV1 evt)
     {
@@ -53,7 +53,7 @@ public class OrderEventPublisher(DaprClient daprClient) : IOrderEventPublisher
     }
 
     [Channel("order.orderCompleted.v2")]
-    [PublishOperation(typeof(OrderCompletedIntegrationEventV2), Summary = "Published when an order is completed.")]
+    [SubscribeOperation(typeof(OrderCompletedIntegrationEventV2), OperationId = nameof(OrderCompletedIntegrationEventV2), Summary = "Published when an order is completed.")]
     public async Task PublishOrderCompletedEventV2(OrderCompletedIntegrationEventV2 evt)
     {
         var eventType = $"{evt.EventName}.{evt.EventVersion}";
@@ -72,7 +72,8 @@ public class OrderEventPublisher(DaprClient daprClient) : IOrderEventPublisher
     }
 
     [Channel("order.readyForDelivery.v1")]
-    [PublishOperation(typeof(OrderReadyForDeliveryEventV1),
+    [SubscribeOperation(typeof(OrderReadyForDeliveryEventV1),
+        OperationId = nameof(OrderReadyForDeliveryEventV1),
         Summary = "Published when a delivery order is ready for delivery.")]
     public async Task PublishOrderReadyForDeliveryEventV1(OrderReadyForDeliveryEventV1 evt)
     {
@@ -92,7 +93,7 @@ public class OrderEventPublisher(DaprClient daprClient) : IOrderEventPublisher
     }
 
     [Channel("order.orderConfirmed.v1")]
-    [PublishOperation(typeof(OrderConfirmedEventV1), Summary = "Published when an order is fully confirmed.")]
+    [SubscribeOperation(typeof(OrderConfirmedEventV1), OperationId = nameof(OrderConfirmedEventV1), Summary = "Published when an order is fully confirmed.")]
     public async Task PublishOrderConfirmedEventV1(OrderConfirmedEventV1 evt)
     {
         var eventType = $"{evt.EventName}.{evt.EventVersion}";
@@ -111,7 +112,7 @@ public class OrderEventPublisher(DaprClient daprClient) : IOrderEventPublisher
     }
 
     [Channel("order.orderCreated.v1")]
-    [PublishOperation(typeof(OrderCreatedEventV1), Summary = "Published when an order is first created.")]
+    [SubscribeOperation(typeof(OrderCreatedEventV1), OperationId = nameof(OrderCreatedEventV1), Summary = "Published when an order is first created.")]
     public async Task PublishOrderCreatedEventV1(OrderCreatedEventV1 evt)
     {
         var eventType = $"{evt.EventName}.{evt.EventVersion}";
@@ -130,7 +131,7 @@ public class OrderEventPublisher(DaprClient daprClient) : IOrderEventPublisher
     }
 
     [Channel("order.orderCancelled.v1")]
-    [PublishOperation(typeof(OrderCreatedEventV1), Summary = "Published if an order is cancelled.")]
+    [SubscribeOperation(typeof(OrderCancelledEventV1), OperationId = nameof(OrderCancelledEventV1), Summary = "Published if an order is cancelled.")]
     public async Task PublishOrderCancelledEventV1(OrderCancelledEventV1 evt)
     {
         var eventType = $"{evt.EventName}.{evt.EventVersion}";

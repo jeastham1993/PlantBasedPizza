@@ -2,11 +2,14 @@ using System.Diagnostics;
 using System.Security.Cryptography;
 using Microsoft.Extensions.Caching.Distributed;
 using PlantBasedPizza.Payments.TakePayment;
+using Saunter.Attributes;
 
 namespace PlantBasedPizza.Payments.RefundPayment;
 
-public class RefundPaymentCommandHandler(ILogger<TakePaymentCommandHandler> logger, IDistributedCache cache)
+public class RefundPaymentCommandHandler(ILogger<RefundPaymentCommandHandler> logger, IDistributedCache cache)
 {
+    [Channel("payments.refundpayment.v1")]
+    [PublishOperation(typeof(RefundPaymentCommand), OperationId = nameof(RefundPaymentCommand))]
     public async Task<bool> Handle(RefundPaymentCommand command)
     {
         var hasOrderBeenProcessed = await cache.GetStringAsync($"Refunded_{command.OrderIdentifier}");

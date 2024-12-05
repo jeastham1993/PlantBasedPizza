@@ -12,8 +12,7 @@ namespace PlantBasedPizza.Orders.Worker;
 
 public static class EventHandlers
 {
-    // You've still got an event handler for that payments.paymentSuccessful event!
-    [Topic("public",
+    [Topic("payments",
         "payments.paymentSuccessful.v1",
         DeadLetterTopic = "orders.failedMessages")]
     public static async Task<IResult> HandlePaymentSuccessfulEvent(
