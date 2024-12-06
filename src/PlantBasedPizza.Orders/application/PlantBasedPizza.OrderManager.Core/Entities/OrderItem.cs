@@ -14,7 +14,7 @@ namespace PlantBasedPizza.OrderManager.Core.Entities
         internal OrderItem(string recipeIdentifier, string itemName, int quantity, decimal price)
         {
             RecipeIdentifier = recipeIdentifier;
-            ItemName = itemName;
+            ItemName = recipeIdentifier;
             Quantity = quantity;
             Price = price;
         }
