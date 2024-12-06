@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Builder;
+using PlantBasedPizza.Kitchen.Core.OrderConfirmed;
 using PlantBasedPizza.Kitchen.Infrastructure;
 using PlantBasedPizza.Kitchen.Worker;
-using PlantBasedPizza.Kitchen.Worker.Handlers;
 using PlantBasedPizza.Shared;
 using PlantBasedPizza.Shared.Logging;
 

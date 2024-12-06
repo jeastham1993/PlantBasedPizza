@@ -1,11 +1,8 @@
-using Microsoft.Extensions.Options;
 using PlantBasedPizza.OrderManager.Core.Entities;
 using PlantBasedPizza.OrderManager.Core.Services;
-using PlantBasedPizza.OrderManager.Infrastructure;
-using PlantBasedPizza.Orders.Worker.IntegrationEvents;
 using Saunter.Attributes;
 
-namespace PlantBasedPizza.Orders.Worker.Handlers;
+namespace PlantBasedPizza.OrderManager.Core.PaymentSuccess;
 
 public class PaymentSuccessEventHandler
 {

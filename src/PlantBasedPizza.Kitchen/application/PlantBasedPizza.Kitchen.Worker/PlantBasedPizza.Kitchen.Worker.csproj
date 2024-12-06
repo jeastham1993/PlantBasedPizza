@@ -19,4 +19,9 @@
       <ProjectReference Include="..\PlantBasedPizza.Kitchen.Core\PlantBasedPizza.Kitchen.Core.csproj" />
       <ProjectReference Include="..\PlantBasedPizza.Kitchen.Infrastructure\PlantBasedPizza.Kitchen.Infrastructure.csproj" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Handlers\" />
+      <Folder Include="IntegrationEvents\" />
+    </ItemGroup>
 </Project>

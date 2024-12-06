@@ -16,7 +16,6 @@ public class SubmitOrderCommandHandler(IOrderRepository orderRepository)
 
         await orderRepository.Update(order);
 
-
         return new OrderDto(order);
     }
 }

@@ -4,8 +4,14 @@ using Dapr;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 using PlantBasedPizza.Events;
+using PlantBasedPizza.OrderManager.Core.DriverCollectedOrder;
+using PlantBasedPizza.OrderManager.Core.DriverDeliveredOrder;
+using PlantBasedPizza.OrderManager.Core.OrderBaked;
+using PlantBasedPizza.OrderManager.Core.OrderPreparing;
+using PlantBasedPizza.OrderManager.Core.OrderPrepComplete;
+using PlantBasedPizza.OrderManager.Core.OrderQualityChecked;
+using PlantBasedPizza.OrderManager.Core.PaymentSuccess;
 using PlantBasedPizza.OrderManager.Infrastructure;
-using PlantBasedPizza.Orders.Worker.Handlers;
 using PlantBasedPizza.Orders.Worker.IntegrationEvents;
 
 namespace PlantBasedPizza.Orders.Worker;

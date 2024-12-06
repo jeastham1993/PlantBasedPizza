@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
 using PlantBasedPizza.Events;
 
-namespace PlantBasedPizza.Orders.Worker.IntegrationEvents;
+namespace PlantBasedPizza.OrderManager.Core.PaymentSuccess;
 
 public class PaymentSuccessfulEventV1 : IntegrationEvent
 {

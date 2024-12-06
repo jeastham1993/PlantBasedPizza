@@ -109,7 +109,8 @@ public static class OrderEndpoints
     public static async Task<IResult> SubmitOrder(HttpContext httpContext, string orderIdentifier,
         [FromServices] SubmitOrderCommandHandler handler,
         [FromServices] IFeatures features,
-        [FromServices] IWorkflowEngine workflowEngine)
+        [FromServices] IWorkflowEngine workflowEngine, 
+        [FromServices] IPaymentService paymentService)
     {
         try
         {
@@ -126,6 +127,8 @@ public static class OrderEndpoints
                 OrderIdentifier = orderIdentifier,
                 CustomerIdentifier = accountId
             });
+
+            await paymentService.TakePayment(result.OrderIdentifier, result.TotalPrice);
 
             return Results.Created($"/order/{result?.OrderIdentifier}/detail", result);
         }

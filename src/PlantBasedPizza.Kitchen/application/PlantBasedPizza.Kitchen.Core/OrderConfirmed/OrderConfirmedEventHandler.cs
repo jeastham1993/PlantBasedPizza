@@ -3,11 +3,10 @@ using PlantBasedPizza.Kitchen.Core.Adapters;
 using PlantBasedPizza.Kitchen.Core.Entities;
 using PlantBasedPizza.Kitchen.Core.PublicEvents;
 using PlantBasedPizza.Kitchen.Core.Services;
-using PlantBasedPizza.Kitchen.Worker.IntegrationEvents;
 using PlantBasedPizza.Shared.Guards;
 using Saunter.Attributes;
 
-namespace PlantBasedPizza.Kitchen.Worker.Handlers
+namespace PlantBasedPizza.Kitchen.Core.OrderConfirmed
 {
     public class OrderConfirmedEventHandler(
         IKitchenRequestRepository kitchenRequestRepository,

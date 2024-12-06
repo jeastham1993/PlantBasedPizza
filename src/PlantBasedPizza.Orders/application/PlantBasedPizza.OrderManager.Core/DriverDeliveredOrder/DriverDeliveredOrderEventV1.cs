@@ -1,6 +1,6 @@
 using PlantBasedPizza.Events;
 
-namespace PlantBasedPizza.Orders.Worker.IntegrationEvents;
+namespace PlantBasedPizza.OrderManager.Core.DriverDeliveredOrder;
 
 public class DriverDeliveredOrderEventV1 : IntegrationEvent
 {

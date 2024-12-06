@@ -1,10 +1,10 @@
 using PlantBasedPizza.Events;
 
-namespace PlantBasedPizza.Orders.Worker.IntegrationEvents;
+namespace PlantBasedPizza.OrderManager.Core.OrderPreparing;
 
-public class OrderPrepCompleteEventV1 : IntegrationEvent
+public class OrderPreparingEventV1 : IntegrationEvent
 {
-    public override string EventName => "kitchen.orderPrepComplete";
+    public override string EventName => "kitchen.orderPreparing";
     public override string EventVersion => "v1";
     public override Uri Source => new Uri("https://kitchen.plantbasedpizza");
 

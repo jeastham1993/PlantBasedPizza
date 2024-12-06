@@ -4,9 +4,8 @@ using Dapr;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PlantBasedPizza.Events;
+using PlantBasedPizza.Kitchen.Core.OrderConfirmed;
 using PlantBasedPizza.Kitchen.Infrastructure;
-using PlantBasedPizza.Kitchen.Worker.Handlers;
-using PlantBasedPizza.Kitchen.Worker.IntegrationEvents;
 
 namespace PlantBasedPizza.Kitchen.Worker;
 

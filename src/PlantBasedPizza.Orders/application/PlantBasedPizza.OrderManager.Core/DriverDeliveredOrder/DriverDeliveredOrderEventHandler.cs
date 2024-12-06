@@ -1,9 +1,8 @@
 using PlantBasedPizza.OrderManager.Core.OrderDelivered;
 using PlantBasedPizza.OrderManager.Core.Services;
-using PlantBasedPizza.Orders.Worker.IntegrationEvents;
 using Saunter.Attributes;
 
-namespace PlantBasedPizza.Orders.Worker.Handlers;
+namespace PlantBasedPizza.OrderManager.Core.DriverDeliveredOrder;
 
 public class DriverDeliveredOrderEventHandler(
     OrderDeliveredEventHandler eventHandler,

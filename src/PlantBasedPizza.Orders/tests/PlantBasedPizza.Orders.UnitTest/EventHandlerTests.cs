@@ -6,9 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using NJsonSchema;
 using PlantBasedPizza.OrderManager.Core.Entities;
+using PlantBasedPizza.OrderManager.Core.PaymentSuccess;
 using PlantBasedPizza.OrderManager.Core.Services;
 using PlantBasedPizza.Orders.Worker;
-using PlantBasedPizza.Orders.Worker.Handlers;
 using PlantBasedPizza.Orders.Worker.IntegrationEvents;
 
 namespace PlantBasedPizza.Orders.UnitTest;
