@@ -20,6 +20,8 @@ public class OrderCompletedIntegrationEventV2 : IntegrationEvent
     public string CustomerIdentifier { get; set; } = "";
     
     public OrderValue OrderValue { get; set; }
+    
+    public Dictionary<string, int> OrderItems { get; set; } 
 
     public override string AsString()
     {

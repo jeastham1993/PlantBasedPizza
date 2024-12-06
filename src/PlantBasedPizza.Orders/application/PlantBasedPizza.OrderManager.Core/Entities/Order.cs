@@ -304,7 +304,8 @@ namespace PlantBasedPizza.OrderManager.Core.Entities
                 {
                     Value = TotalPrice,
                     Currency = "GBP"
-                }
+                },
+                OrderItems = Items.ToDictionary(i => i.ItemName, i => i.Quantity),
             });
         }
         
