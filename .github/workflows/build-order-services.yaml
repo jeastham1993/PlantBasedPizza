@@ -3,7 +3,7 @@ name: Order Services CICD
 on:
     push:
       branches:
-        - feat/dapr
+        - azure
       paths:
         - .github/workflows/build-and-push-base.yaml
         - .github/workflows/build-order-services.yaml
@@ -17,7 +17,7 @@ permissions:
 
 jobs:
   static-analysis:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/static-analysis.yaml@feat/dapr
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/static-analysis.yaml@azure
     with:
       service-name: orders
       directory: ./src/PlantBasedPizza.Orders/
@@ -25,7 +25,7 @@ jobs:
       dd_api_key: ${{secrets.ACA_DD_API_KEY}}
       dd_app_key: ${{secrets.ACA_DD_APP_KEY}}
   build-and-push:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-and-push-base.yaml@feat/dapr
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-and-push-base.yaml@azure
     needs: static-analysis
     with:
       application-root-folder: ./src/PlantBasedPizza.Orders/
