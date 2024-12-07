@@ -15,9 +15,9 @@
 
     <ItemGroup>
         <PackageReference Include="Dapr.Client" Version="1.14.0" />
-        <PackageReference Include="Google.Protobuf" Version="3.28.3" />
+        <PackageReference Include="Google.Protobuf" Version="3.29.1" />
         <PackageReference Include="Grpc.Net.Client" Version="2.67.0" />
-        <PackageReference Include="Grpc.Tools" Version="2.67.0">
+        <PackageReference Include="Grpc.Tools" Version="2.68.1">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
@@ -30,7 +30,7 @@
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="FluentAssertions" Version="6.12.2" />
+        <PackageReference Include="FluentAssertions" Version="7.0.0" />
     </ItemGroup>
     
     <ItemGroup>

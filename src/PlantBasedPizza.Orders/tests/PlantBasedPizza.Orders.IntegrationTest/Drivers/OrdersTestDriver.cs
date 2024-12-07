@@ -65,6 +65,42 @@ public class OrdersTestDriver
         return JsonSerializer.Deserialize<Order>(await response.Content.ReadAsStringAsync());
     }
 
+    public async Task<Order> AddNewDeliveryOrderForStaff(string customerIdentifier)
+    {
+        var response = await _staffHttpClient.PostAsync(new Uri($"{TestConstants.DefaultTestUrl}/order/deliver"),
+            new StringContent(
+                JsonSerializer.Serialize(new CreateDeliveryOrder
+                {
+                    CustomerIdentifier = customerIdentifier,
+                    AddressLine1 = "My test address",
+                    AddressLine2 = string.Empty,
+                    AddressLine3 = string.Empty,
+                    AddressLine4 = string.Empty,
+                    AddressLine5 = string.Empty,
+                    Postcode = "TYi9PO"
+                }), Encoding.UTF8, "application/json")).ConfigureAwait(false);
+
+        if (!response.IsSuccessStatusCode) throw new Exception($"Request failed: {response.StatusCode}");
+
+        return JsonSerializer.Deserialize<Order>(await response.Content.ReadAsStringAsync());
+    }
+
+    public async Task<Order> AddNewPickupOrderForStaff(string customerIdentifier)
+    {
+        await Task.Delay(TimeSpan.FromSeconds(5));
+
+        var response = await _staffHttpClient.PostAsync(new Uri($"{TestConstants.DefaultTestUrl}/order/pickup"),
+            new StringContent(
+                JsonSerializer.Serialize(new CreatePickupOrderCommand
+                {
+                    CustomerIdentifier = customerIdentifier
+                }), Encoding.UTF8, "application/json")).ConfigureAwait(false);
+
+        if (!response.IsSuccessStatusCode) throw new Exception($"Request failed: {response.StatusCode}");
+
+        return JsonSerializer.Deserialize<Order>(await response.Content.ReadAsStringAsync());
+    }
+
     public async Task AddItemToOrder(string orderIdentifier, string recipeIdentifier, int quantity)
     {
         await Task.Delay(TimeSpan.FromSeconds(1));

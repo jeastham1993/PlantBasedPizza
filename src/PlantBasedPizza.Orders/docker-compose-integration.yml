@@ -2,9 +2,6 @@ services:
   local.order-api:
     image: order-api
     container_name: "local.order-api"
-    depends_on:
-      - cache
-      - placement
     ports:
       - "5004:8080"
     environment:
@@ -53,8 +50,6 @@ services:
     container_name: local.orders-worker
     ports:
       - "5005:8080"
-    depends_on:
-      - cache
     environment:
       - DatabaseConnection=mongodb://mongodb:27017
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
@@ -98,8 +93,6 @@ services:
   local.order-internal:
     image: order-internal
     container_name: local.order-internal
-    depends_on:
-      - cache
     environment:
       - DatabaseConnection=mongodb://mongodb:27017
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
@@ -137,3 +130,6 @@ services:
     depends_on:
       - "local.order-internal"
     network_mode: "service:local.order-internal"
+
+networks:
+  dapr: null

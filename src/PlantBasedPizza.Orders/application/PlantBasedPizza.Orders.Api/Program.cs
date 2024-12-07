@@ -74,24 +74,27 @@ app.MapHealthChecks("/order/health", new HealthCheckOptions
     ResponseWriter = WriteHealthCheckResponse
 });
 
+string[] AllowAllRoles = new[] { "user", "staff", "admin" };
+string[] AllowStaffRoles = new[] { "admin", "staff" };
+
 app.MapGet("/order", OrderEndpoints.GetForCustomer)
-    .RequireAuthorization(options => options.RequireRole("user"));
+    .RequireAuthorization(options => options.RequireRole(AllowAllRoles));
 app.MapGet("/order/{orderIdentifier}/detail", OrderEndpoints.Get)
-    .RequireAuthorization(options => options.RequireRole("user"));
+    .RequireAuthorization(options => options.RequireRole(AllowAllRoles));
 app.MapPost("/order/pickup", OrderEndpoints.CreatePickupOrder)
-    .RequireAuthorization(options => options.RequireRole("user"));
+    .RequireAuthorization(options => options.RequireRole(AllowAllRoles));
 app.MapPost("/order/deliver", OrderEndpoints.CreateDeliveryOrder)
-    .RequireAuthorization(options => options.RequireRole("user"));
+    .RequireAuthorization(options => options.RequireRole(AllowAllRoles));
 app.MapPost("/order/{orderIdentifier}/items", OrderEndpoints.AddItemToOrder)
-    .RequireAuthorization(options => options.RequireRole("user"));
+    .RequireAuthorization(options => options.RequireRole(AllowAllRoles));
 app.MapPost("/order/{orderIdentifier}/submit", OrderEndpoints.SubmitOrder)
-    .RequireAuthorization(options => options.RequireRole("user"));
+    .RequireAuthorization(options => options.RequireRole(AllowAllRoles));
 app.MapPost("/order/{orderIdentifier}/cancel", OrderEndpoints.CancelOrder)
-    .RequireAuthorization(options => options.RequireRole("user", "staff"));
+    .RequireAuthorization(options => options.RequireRole(AllowAllRoles));
 app.MapGet("/order/awaiting-collection", OrderEndpoints.GetAwaitingCollection)
-    .RequireAuthorization(options => options.RequireRole("staff"));
+    .RequireAuthorization(options => options.RequireRole(AllowStaffRoles));
 app.MapPost("/order/collected", OrderEndpoints.OrderCollected)
-    .RequireAuthorization(options => options.RequireRole("staff"));
+    .RequireAuthorization(options => options.RequireRole(AllowStaffRoles));
 
 app.UseAsyncApi();
 

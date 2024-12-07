@@ -2,6 +2,20 @@ Feature: Orders
 	OrdersFeature
 	
 @OrderWorkflow
+Scenario: Pickup order can be processed for a staff member
+	Given a new pickup order is created for a staff member
+	When a marg is added to order
+	And order is submitted
+	And user does not cancel 
+	And payment is successful
+	And kitchen quality checks the order
+	And order is collected
+	Then order should contain a Payment taken event
+	And order should contain a Submitted order. event
+	And order should contain a Order quality checked event
+	And order should contain a Order awaiting collection event
+	And order should contain a Order completed. event
+
 Scenario: Pickup order can be processed
     Given a new pickup order is created
     When a marg is added to order

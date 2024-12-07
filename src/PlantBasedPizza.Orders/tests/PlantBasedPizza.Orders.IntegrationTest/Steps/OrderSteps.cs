@@ -44,6 +44,23 @@ public class OrderSteps
         }
     }
 
+    [Given(@"a new (.*) order is created for a staff member")]
+    public async Task GivenANewPickupOrderIsCreatedForAStaffMember(string p0)
+    {
+        Activity.Current = _scenarioContext.Get<Activity>("Activity");
+
+        if (p0 == "delivery")
+        {
+            var order = await _driver.AddNewDeliveryOrderForStaff("james").ConfigureAwait(false);
+            _scenarioContext.Add("orderId", order.OrderIdentifier);
+        }
+        else
+        {
+            var order = await _driver.AddNewPickupOrderForStaff("james").ConfigureAwait(false);
+            _scenarioContext.Add("orderId", order.OrderIdentifier);
+        }
+    }
+
     [When(@"a (.*) is added to order")]
     public async Task WhenAnItemIsAdded(string p0)
     {
