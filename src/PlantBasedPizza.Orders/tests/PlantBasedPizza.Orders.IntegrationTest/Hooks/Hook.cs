@@ -1,7 +1,9 @@
 using System.Diagnostics;
+using MongoDB.Bson.Serialization;
 using OpenTelemetry;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using PlantBasedPizza.OrderManager.Infrastructure;
 using TechTalk.SpecFlow;
 
 namespace PlantBasedPizza.Orders.IntegrationTest.Hooks;
@@ -35,6 +37,13 @@ public static class Hook
 
         TracerProvider = traceConfig.Build();
         Source = new ActivitySource(SERVICE_NAME);
+
+        BsonClassMap.RegisterClassMap<DeadLetterMessage>(map =>
+        {
+            map.AutoMap();
+            map.SetIgnoreExtraElements(true);
+            map.SetIgnoreExtraElementsIsInherited(true);
+        });
     }
 
     [BeforeScenario]

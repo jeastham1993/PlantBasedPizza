@@ -11,16 +11,30 @@ namespace PlantBasedPizza.Kitchen.Worker;
 
 public static class EventHandlers
 {
-    [Topic("public", "order.orderConfirmed.v1",
+    private const string OrderConfirmedEventName = "order.orderConfirmed.v1";
+    private const string FailedMessagesEventName = "kitchen.failedMessages";
+    
+    [Topic("public", OrderConfirmedEventName,
         DeadLetterTopic = "kitchen.failedMessages")]
     public static async Task<IResult> HandleOrderConfirmedEvent([FromServices] OrderConfirmedEventHandler handler,
         [FromServices] Idempotency idempotency,
+        [FromServices] IConfiguration configuration,
         HttpContext httpContext,
         OrderConfirmedEventV1 evt)
     {
         try
         {
             var eventId = httpContext.ExtractEventId();
+        
+            using var processActivity = Activity.Current?.Source.StartActivityWithProcessSemanticConventions(new SemanticConventions(
+                EventType.PUBLIC,
+                OrderConfirmedEventName,
+                eventId,
+                "dapr",
+                "public",
+                configuration["ApplicationConfig:ApplicationName"] ?? "",
+                evt.OrderIdentifier
+            ));
 
             if (await idempotency.HasEventBeenProcessedWithId(eventId))
             {
@@ -41,13 +55,23 @@ public static class EventHandlers
         }
     }
 
-    [Topic("public", "kitchen.failedMessages")]
+    [Topic("public", FailedMessagesEventName)]
     public static async Task<IResult> HandleDeadLetterMessage(
         [FromServices] IDeadLetterRepository deadLetterRepository,
+        [FromServices] IConfiguration configuration,
         HttpContext httpContext,
         object data)
     {
         var eventData = httpContext.ExtractEventData();
+        
+        using var processActivity = Activity.Current?.Source.StartActivityWithProcessSemanticConventions(new SemanticConventions(
+            EventType.PUBLIC,
+            FailedMessagesEventName,
+            eventData.EventId,
+            "dapr",
+            "public",
+            configuration["ApplicationConfig:ApplicationName"] ?? ""
+        ));
 
         await deadLetterRepository.StoreAsync(new DeadLetterMessage
         {

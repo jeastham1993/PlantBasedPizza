@@ -11,18 +11,32 @@ namespace PlantBasedPizza.Payments;
 
 public static class EventHandlers
 {
+    private const string TakePaymentCommandName = "payments.takepayment.v1";
+    private const string RefundPaymentCommandName = "payments.refundpayment.v1";
+    
     public static WebApplication AddEventHandlers(this WebApplication app)
     {
         app.MapPost("/take-payment",
-            [Topic("payments", "payments.takepayment.v1")]
-            async ([FromServices] TakePaymentCommandHandler handler, IDistributedCache cache, HttpContext ctx,
+            [Topic("payments", TakePaymentCommandName)]
+            async ([FromServices] TakePaymentCommandHandler handler, [FromServices] IConfiguration configuration, IDistributedCache cache, HttpContext ctx,
                 TakePaymentCommand command) =>
             {
                 try
                 {
-                    var cloudEventId = ctx.ExtractEventId();
+                    var eventId = ctx.ExtractEventId();
+
+                    using var processActivity = Activity.Current?.Source.StartActivityWithProcessSemanticConventions(
+                        new SemanticConventions(
+                            EventType.PUBLIC,
+                            TakePaymentCommandName,
+                            eventId,
+                            "dapr",
+                            "public",
+                            configuration["ApplicationConfig:ApplicationName"] ?? "",
+                            command.OrderIdentifier
+                        ));
                 
-                    var cachedEvent = await cache.GetStringAsync($"events_{cloudEventId}");
+                    var cachedEvent = await cache.GetStringAsync($"events_{eventId}");
 
                     if (cachedEvent != null)
                     {
@@ -37,7 +51,7 @@ public static class EventHandlers
                         return Results.InternalServerError();
                     }
 
-                    await cache.SetStringAsync($"events_{cloudEventId}", "processed", new DistributedCacheEntryOptions()
+                    await cache.SetStringAsync($"events_{eventId}", "processed", new DistributedCacheEntryOptions()
                     {
                         AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5),
                     });
@@ -53,15 +67,26 @@ public static class EventHandlers
             });
         
         app.MapPost("/refund-payment",
-            [Topic("payments", "payments.refundpayment.v1")]
-            async ([FromServices] RefundPaymentCommandHandler handler, IDistributedCache cache, HttpContext ctx,
+            [Topic("payments", RefundPaymentCommandName)]
+            async ([FromServices] RefundPaymentCommandHandler handler, [FromServices] IConfiguration configuration, IDistributedCache cache, HttpContext ctx,
                 RefundPaymentCommand command) =>
             {
                 try
                 {
-                    var cloudEventId = ctx.ExtractEventId();
+                    var eventId = ctx.ExtractEventId();
+
+                    using var processActivity = Activity.Current?.Source.StartActivityWithProcessSemanticConventions(
+                        new SemanticConventions(
+                            EventType.PUBLIC,
+                            RefundPaymentCommandName,
+                            eventId,
+                            "dapr",
+                            "public",
+                            configuration["ApplicationConfig:ApplicationName"] ?? "",
+                            command.OrderIdentifier
+                        ));
                 
-                    var cachedEvent = await cache.GetStringAsync($"events_{cloudEventId}");
+                    var cachedEvent = await cache.GetStringAsync($"events_{eventId}");
 
                     if (cachedEvent != null)
                     {
@@ -76,7 +101,7 @@ public static class EventHandlers
                         return Results.InternalServerError();
                     }
 
-                    await cache.SetStringAsync($"events_{cloudEventId}", "processed", new DistributedCacheEntryOptions()
+                    await cache.SetStringAsync($"events_{eventId}", "processed", new DistributedCacheEntryOptions()
                     {
                         AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5),
                     });

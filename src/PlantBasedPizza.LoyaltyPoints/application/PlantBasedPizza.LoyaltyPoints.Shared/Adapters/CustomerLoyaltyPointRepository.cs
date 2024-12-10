@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Dapr.Client;
+using Microsoft.Extensions.Configuration;
 using MongoDB.Driver;
 using PlantBasedPizza.Events;
 using PlantBasedPizza.LoyaltyPoints.Shared.Core;
@@ -10,13 +11,15 @@ public class CustomerLoyaltyPointRepository : ICustomerLoyaltyPointsRepository
 {
     private readonly IMongoCollection<CustomerLoyaltyPoints> _loyaltyPoints;
     private readonly DaprClient _daprClient;
+    private readonly IConfiguration configuration;
     private const string SOURCE = "loyalty";
     private const string PUB_SUB_NAME = "public";
     private const string DATE_FORMAT = "yyyy-MM-ddTHH:mm:ssZ";
 
-    public CustomerLoyaltyPointRepository(MongoClient client, DaprClient daprClient)
+    public CustomerLoyaltyPointRepository(MongoClient client, DaprClient daprClient, IConfiguration configuration)
     {
         _daprClient = daprClient;
+        this.configuration = configuration;
         var database = client.GetDatabase("LoyaltyPoints");
         _loyaltyPoints = database.GetCollection<CustomerLoyaltyPoints>("loyalty");
     }
@@ -53,8 +56,15 @@ public class CustomerLoyaltyPointRepository : ICustomerLoyaltyPointsRepository
         
         var eventType = $"{evt.EventName}.{evt.EventVersion}";
         var eventId = Guid.NewGuid().ToString();
-        
-        evt.AddToTelemetry(eventId);
+
+        using var activity = Activity.Current?.Source.StartActivityWithSemanticConventions(new SemanticConventions(
+            EventType.PUBLIC,
+            eventType,
+            eventId,
+            "dapr",
+            "public",
+            configuration["ApplicationConfig:ApplicationName"] ?? ""
+        ));
         
         var eventMetadata = new Dictionary<string, string>(3)
         {

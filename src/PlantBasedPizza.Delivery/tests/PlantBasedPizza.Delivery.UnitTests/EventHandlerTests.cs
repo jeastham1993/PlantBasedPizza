@@ -1,5 +1,6 @@
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
 using PlantBasedPizza.Deliver.Core.Entities;
@@ -25,6 +26,7 @@ public class EventHandlerTests
         var eventHandlerResult = await EventHandlers.HandleOrderReadyForDeliveryEvent(
             orderReadyForDeliveryHandler,
             idempotency,
+            new Mock<IConfiguration>().Object,
             generateDefaultHttpContext(Guid.NewGuid().ToString()),
             new OrderReadyForDeliveryEventV1()
             {
@@ -50,6 +52,7 @@ public class EventHandlerTests
         var eventHandlerResult = await EventHandlers.HandleOrderReadyForDeliveryEvent(
             orderReadyForDeliveryHandler,
             idempotency,
+            new Mock<IConfiguration>().Object,
             new DefaultHttpContext(),
             new OrderReadyForDeliveryEventV1()
             {
@@ -76,6 +79,7 @@ public class EventHandlerTests
         var firstHandlerResult = await EventHandlers.HandleOrderReadyForDeliveryEvent(
             orderReadyForDeliveryHandler,
             idempotency,
+            new Mock<IConfiguration>().Object,
             generateDefaultHttpContext(eventId),
             new OrderReadyForDeliveryEventV1()
             {
@@ -85,6 +89,7 @@ public class EventHandlerTests
         var secondHandlerResult = await EventHandlers.HandleOrderReadyForDeliveryEvent(
             orderReadyForDeliveryHandler,
             idempotency,
+            new Mock<IConfiguration>().Object,
             generateDefaultHttpContext(eventId),
             new OrderReadyForDeliveryEventV1()
             {

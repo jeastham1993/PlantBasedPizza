@@ -29,7 +29,7 @@ push:
 unit-test:
 	dotnet test tests/PlantBasedPizza.Orders.UnitTest
 
-integration-test-infra:
+start-integration-test:
 	docker compose -f docker-compose.yml -f docker-compose-integration.yml up -d
 
 integration-test: start-integration-test

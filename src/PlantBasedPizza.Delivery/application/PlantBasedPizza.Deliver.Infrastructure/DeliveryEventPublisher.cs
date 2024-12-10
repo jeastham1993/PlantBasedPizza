@@ -1,4 +1,6 @@
+using System.Diagnostics;
 using Dapr.Client;
+using Microsoft.Extensions.Configuration;
 using PlantBasedPizza.Deliver.Core.Entities;
 using PlantBasedPizza.Deliver.Core.PublicEvents;
 using PlantBasedPizza.Events;
@@ -7,7 +9,7 @@ using Saunter.Attributes;
 namespace PlantBasedPizza.Deliver.Infrastructure;
 
 [AsyncApi]
-public class DeliveryEventPublisher(DaprClient daprClient) : IDeliveryEventPublisher
+public class DeliveryEventPublisher(DaprClient daprClient, IConfiguration configuration) : IDeliveryEventPublisher
 {
     private const string SOURCE = "delivery";
     private const string PUB_SUB_NAME = "public";
@@ -19,8 +21,16 @@ public class DeliveryEventPublisher(DaprClient daprClient) : IDeliveryEventPubli
     {
         var eventType = $"{evt.EventName}.{evt.EventVersion}";
         var eventId = Guid.NewGuid().ToString();
-        
-        evt.AddToTelemetry(eventId);
+
+        using var activity = Activity.Current?.Source.StartActivityWithSemanticConventions(new SemanticConventions(
+            EventType.PUBLIC,
+            eventType,
+            eventId,
+            "dapr",
+            "public",
+            configuration["ApplicationConfig:ApplicationName"] ?? "",
+            evt.OrderIdentifier
+        ));
         
         var eventMetadata = new Dictionary<string, string>(3)
         {
@@ -39,8 +49,16 @@ public class DeliveryEventPublisher(DaprClient daprClient) : IDeliveryEventPubli
     {
         var eventType = $"{evt.EventName}.{evt.EventVersion}";
         var eventId = Guid.NewGuid().ToString();
-        
-        evt.AddToTelemetry(eventId);
+
+        using var activity = Activity.Current?.Source.StartActivityWithSemanticConventions(new SemanticConventions(
+            EventType.PUBLIC,
+            eventType,
+            eventId,
+            "dapr",
+            "public",
+            configuration["ApplicationConfig:ApplicationName"] ?? "",
+            evt.OrderIdentifier
+        ));
         
         var eventMetadata = new Dictionary<string, string>(3)
         {

@@ -1,4 +1,6 @@
+using System.Diagnostics;
 using Dapr.Client;
+using Microsoft.Extensions.Configuration;
 using PlantBasedPizza.Events;
 using PlantBasedPizza.Kitchen.Core.Entities;
 using PlantBasedPizza.Kitchen.Core.PublicEvents;
@@ -7,7 +9,7 @@ using Saunter.Attributes;
 namespace PlantBasedPizza.Kitchen.Infrastructure;
 
 [AsyncApi]
-public class KitchenEventPublisher(DaprClient daprClient) : IKitchenEventPublisher
+public class KitchenEventPublisher(DaprClient daprClient, IConfiguration configuration) : IKitchenEventPublisher
 {
     private const string SOURCE = "kitchen";
     private const string PUB_SUB_NAME = "public";
@@ -19,8 +21,16 @@ public class KitchenEventPublisher(DaprClient daprClient) : IKitchenEventPublish
     {
         var eventType = $"{evt.EventName}.{evt.EventVersion}";
         var eventId = Guid.NewGuid().ToString();
-        
-        evt.AddToTelemetry(eventId);
+
+        using var activity = Activity.Current?.Source.StartActivityWithSemanticConventions(new SemanticConventions(
+            EventType.PUBLIC,
+            eventType,
+            eventId,
+            "dapr",
+            "public",
+            configuration["ApplicationConfig:ApplicationName"] ?? "",
+            evt.OrderIdentifier
+        ));
         
         var eventMetadata = new Dictionary<string, string>(3)
         {
@@ -39,8 +49,16 @@ public class KitchenEventPublisher(DaprClient daprClient) : IKitchenEventPublish
     {
         var eventType = $"{evt.EventName}.{evt.EventVersion}";
         var eventId = Guid.NewGuid().ToString();
-        
-        evt.AddToTelemetry(eventId);
+
+        using var activity = Activity.Current?.Source.StartActivityWithSemanticConventions(new SemanticConventions(
+            EventType.PUBLIC,
+            eventType,
+            eventId,
+            "dapr",
+            "public",
+            configuration["ApplicationConfig:ApplicationName"] ?? "",
+            evt.OrderIdentifier
+        ));
         
         var eventMetadata = new Dictionary<string, string>(3)
         {
@@ -59,8 +77,16 @@ public class KitchenEventPublisher(DaprClient daprClient) : IKitchenEventPublish
     {
         var eventType = $"{evt.EventName}.{evt.EventVersion}";
         var eventId = Guid.NewGuid().ToString();
-        
-        evt.AddToTelemetry(eventId);
+
+        using var activity = Activity.Current?.Source.StartActivityWithSemanticConventions(new SemanticConventions(
+            EventType.PUBLIC,
+            eventType,
+            eventId,
+            "dapr",
+            "public",
+            configuration["ApplicationConfig:ApplicationName"] ?? "",
+            evt.OrderIdentifier
+        ));
         
         var eventMetadata = new Dictionary<string, string>(3)
         {
@@ -79,8 +105,16 @@ public class KitchenEventPublisher(DaprClient daprClient) : IKitchenEventPublish
     {
         var eventType = $"{evt.EventName}.{evt.EventVersion}";
         var eventId = Guid.NewGuid().ToString();
-        
-        evt.AddToTelemetry(eventId);
+
+        using var activity = Activity.Current?.Source.StartActivityWithSemanticConventions(new SemanticConventions(
+            EventType.PUBLIC,
+            eventType,
+            eventId,
+            "dapr",
+            "public",
+            configuration["ApplicationConfig:ApplicationName"] ?? "",
+            evt.OrderIdentifier
+        ));
         
         var eventMetadata = new Dictionary<string, string>(3)
         {
@@ -99,8 +133,16 @@ public class KitchenEventPublisher(DaprClient daprClient) : IKitchenEventPublish
     {
         var eventType = $"{evt.EventName}.{evt.EventVersion}";
         var eventId = Guid.NewGuid().ToString();
-        
-        evt.AddToTelemetry(eventId);
+
+        using var activity = Activity.Current?.Source.StartActivityWithSemanticConventions(new SemanticConventions(
+            EventType.PUBLIC,
+            eventType,
+            eventId,
+            "dapr",
+            "public",
+            configuration["ApplicationConfig:ApplicationName"] ?? "",
+            evt.OrderIdentifier
+        ));
         
         var eventMetadata = new Dictionary<string, string>(3)
         {

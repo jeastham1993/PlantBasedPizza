@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Dapr.Client;
 using PlantBasedPizza.Events;
 using Saunter.Attributes;
@@ -5,7 +6,7 @@ using Saunter.Attributes;
 namespace PlantBasedPizza.Payments.PublicEvents;
 
 [AsyncApi]
-public class PaymentEventPublisher(DaprClient daprClient) : IPaymentEventPublisher
+public class PaymentEventPublisher(DaprClient daprClient, IConfiguration configuration) : IPaymentEventPublisher
 {
     private const string SOURCE = "payments";
     private const string DATE_FORMAT = "yyyy-MM-ddTHH:mm:ssZ";
@@ -16,8 +17,16 @@ public class PaymentEventPublisher(DaprClient daprClient) : IPaymentEventPublish
     {
         var eventType = $"{evt.EventName}.{evt.EventVersion}";
         var eventId = Guid.NewGuid().ToString();
-        
-        evt.AddToTelemetry(eventId);
+
+        using var activity = Activity.Current?.Source.StartActivityWithSemanticConventions(new SemanticConventions(
+            EventType.PUBLIC,
+            eventType,
+            eventId,
+            "dapr",
+            "public",
+            configuration["ApplicationConfig:ApplicationName"] ?? "",
+            evt.OrderIdentifier
+        ));
         
         var eventMetadata = new Dictionary<string, string>(3)
         {
@@ -36,8 +45,16 @@ public class PaymentEventPublisher(DaprClient daprClient) : IPaymentEventPublish
     {
         var eventType = $"{evt.EventName}.{evt.EventVersion}";
         var eventId = Guid.NewGuid().ToString();
-        
-        evt.AddToTelemetry(eventId);
+
+        using var activity = Activity.Current?.Source.StartActivityWithSemanticConventions(new SemanticConventions(
+            EventType.PUBLIC,
+            eventType,
+            eventId,
+            "dapr",
+            "public",
+            configuration["ApplicationConfig:ApplicationName"] ?? "",
+            evt.OrderIdentifier
+        ));
         
         var eventMetadata = new Dictionary<string, string>(3)
         {

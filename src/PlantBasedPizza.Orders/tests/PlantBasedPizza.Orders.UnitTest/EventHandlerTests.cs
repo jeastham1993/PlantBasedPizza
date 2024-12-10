@@ -3,6 +3,7 @@ using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Moq;
 using NJsonSchema;
 using PlantBasedPizza.OrderManager.Core.Entities;
@@ -49,6 +50,7 @@ public class EventHandlerTests
         await EventHandlers.HandlePaymentSuccessfulEvent(
             paymentSuccessEventHandler,
             idempotency.Object,
+            new Mock<IConfiguration>().Object,
             new DefaultHttpContext(),
             paymentSuccessEvent
         );
@@ -80,6 +82,7 @@ public class EventHandlerTests
         var handlerResult = await EventHandlers.HandlePaymentSuccessfulEvent(
             paymentSuccessEventHandler,
             idempotency.Object,
+            new Mock<IConfiguration>().Object,
             new DefaultHttpContext(),
             paymentSuccessEvent
         );

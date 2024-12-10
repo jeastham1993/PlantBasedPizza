@@ -1,5 +1,5 @@
+using System.Diagnostics;
 using Dapr;
-using Google.Api;
 using Microsoft.AspNetCore.Mvc;
 using PlantBasedPizza.Events;
 using PlantBasedPizza.LoyaltyPoints.Shared.Core;
@@ -8,17 +8,29 @@ namespace PlantBasedPizza.LoyaltyPoints.Worker;
 
 public static class Setup
 {
+    private const string OrderCompletedEventName = "order.orderCompleted.v1";
+    
     public static WebApplication AddLoyaltyPointsEventHandler(this WebApplication app)
     {
-        
         app.MapPost("/order-completed-event",
-            [Topic("public", "order.orderCompleted.v1")]
+            [Topic("public", OrderCompletedEventName)]
             async (
                 [FromServices] AddLoyaltyPointsCommandHandler handler,
+                [FromServices] IConfiguration configuration,
                 HttpContext context,
                 OrderCompletedEvent evt) =>
             {
                 var eventId = context.ExtractEventId();
+        
+                using var processActivity = Activity.Current?.Source.StartActivityWithProcessSemanticConventions(new SemanticConventions(
+                    EventType.PUBLIC,
+                    OrderCompletedEventName,
+                    eventId,
+                    "dapr",
+                    "public",
+                    configuration["ApplicationConfig:ApplicationName"] ?? "",
+                    evt.OrderIdentifier
+                ));
                 
                 await handler.Handle(new AddLoyaltyPointsCommand
                 {

@@ -37,10 +37,10 @@ services:
         "--dapr-grpc-port",
         "5101",
         "--resources-path",
-        "./components",
+        "../../components",
       ]
     volumes:
-      - "./components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
+      - "../../components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
     depends_on:
       - "local.order-api"
     network_mode: "service:local.order-api"
@@ -50,6 +50,7 @@ services:
     container_name: local.orders-worker
     ports:
       - "5005:8080"
+      - "40003:5101"
     environment:
       - DatabaseConnection=mongodb://mongodb:27017
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
@@ -82,10 +83,10 @@ services:
         "--dapr-grpc-port",
         "5101",
         "--resources-path",
-        "./components",
+        "../../components",
       ]
     volumes:
-      - "./components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
+      - "../../components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
     depends_on:
       - "local.orders-worker"
     network_mode: "service:local.orders-worker"
@@ -121,12 +122,12 @@ services:
       "--dapr-grpc-port",
       "5101",
       "--resources-path",
-      "./components",
+      "../../components",
       "--app-protocol",
       "grpc",
     ]
     volumes:
-      - "./components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
+      - "../../components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
     depends_on:
       - "local.order-internal"
     network_mode: "service:local.order-internal"

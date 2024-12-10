@@ -18,18 +18,40 @@ namespace PlantBasedPizza.Orders.Worker;
 
 public static class EventHandlers
 {
+    private const string PaymentSuccessfulEventName = "payments.paymentSuccessful.v1";
+    private const string DriverCollectedOrderEventName = "delivery.driverCollectedOrder.v1";
+    private const string DriverDeliveredOrderEventName = "delivery.driverDeliveredOrder.v1";
+    private const string LoyaltyPointsUpdatedEventName = "loyalty.customerLoyaltyPointsUpdated.v1";
+    private const string OrderBakedEventName = "kitchen.orderBaked.v1";
+    private const string OrderPreparingEventName = "kitchen.orderPreparing.v1";
+    private const string OrderPrepCompleteEventName = "kitchen.orderPrepComplete.v1";
+    private const string OrderQualityCheckedEventName = "kitchen.qualityChecked.v1";
+    private const string FailedMessagesEventName = "orders.failedMessages";
+
     [Topic("payments",
-        "payments.paymentSuccessful.v1",
-        DeadLetterTopic = "orders.failedMessages")]
+        PaymentSuccessfulEventName,
+        DeadLetterTopic = FailedMessagesEventName)]
     public static async Task<IResult> HandlePaymentSuccessfulEvent(
         [FromServices] PaymentSuccessEventHandler paymentSuccessEventHandler,
         [FromServices] Idempotency idempotency,
+        [FromServices] IConfiguration configuration,
         HttpContext httpContext,
         PaymentSuccessfulEventV1 evt)
     {
         try
         {
             var eventId = httpContext.ExtractEventId();
+
+            using var processActivity = Activity.Current?.Source.StartActivityWithProcessSemanticConventions(
+                new SemanticConventions(
+                    EventType.PUBLIC,
+                    PaymentSuccessfulEventName,
+                    eventId,
+                    "dapr",
+                    "public",
+                    configuration["ApplicationConfig:ApplicationName"] ?? "",
+                    evt.OrderIdentifier
+                ));
 
             if (await idempotency.HasEventBeenProcessedWithId(eventId)) return Results.Ok();
 
@@ -48,17 +70,29 @@ public static class EventHandlers
         }
     }
 
-    [Topic("public", "delivery.driverCollectedOrder.v1",
-        DeadLetterTopic = "orders.failedMessages")]
+    [Topic("public", DriverCollectedOrderEventName,
+        DeadLetterTopic = FailedMessagesEventName)]
     public static async Task<IResult> HandleDriverCollectedOrderEvent(
         [FromServices] DriverCollectedOrderEventHandler driverCollectedOrderEventHandler,
         [FromServices] Idempotency idempotency,
+        [FromServices] IConfiguration configuration,
         HttpContext httpContext,
         DriverCollectedOrderEventV1 evt)
     {
         try
         {
             var eventId = httpContext.ExtractEventId();
+
+            using var processActivity = Activity.Current?.Source.StartActivityWithProcessSemanticConventions(
+                new SemanticConventions(
+                    EventType.PUBLIC,
+                    DriverCollectedOrderEventName,
+                    eventId,
+                    "dapr",
+                    "public",
+                    configuration["ApplicationConfig:ApplicationName"] ?? "",
+                    evt.OrderIdentifier
+                ));
 
             if (await idempotency.HasEventBeenProcessedWithId(eventId)) return Results.Ok();
 
@@ -77,17 +111,29 @@ public static class EventHandlers
         }
     }
 
-    [Topic("public", "delivery.driverDeliveredOrder.v1",
-        DeadLetterTopic = "orders.failedMessages")]
+    [Topic("public", DriverDeliveredOrderEventName,
+        DeadLetterTopic = FailedMessagesEventName)]
     public static async Task<IResult> HandleDriverDeliveredOrderEvent(
         [FromServices] DriverDeliveredOrderEventHandler driverDeliveredOrderEventHandler,
         [FromServices] Idempotency idempotency,
+        [FromServices] IConfiguration configuration,
         HttpContext httpContext,
         DriverDeliveredOrderEventV1 evt)
     {
         try
         {
             var eventId = httpContext.ExtractEventId();
+
+            using var processActivity = Activity.Current?.Source.StartActivityWithProcessSemanticConventions(
+                new SemanticConventions(
+                    EventType.PUBLIC,
+                    DriverDeliveredOrderEventName,
+                    eventId,
+                    "dapr",
+                    "public",
+                    configuration["ApplicationConfig:ApplicationName"] ?? "",
+                    evt.OrderIdentifier
+                ));
 
             if (await idempotency.HasEventBeenProcessedWithId(eventId)) return Results.Ok();
 
@@ -106,17 +152,28 @@ public static class EventHandlers
         }
     }
 
-    [Topic("public", "loyalty.customerLoyaltyPointsUpdated.v1",
-        DeadLetterTopic = "orders.failedMessages")]
+    [Topic("public", LoyaltyPointsUpdatedEventName,
+        DeadLetterTopic = FailedMessagesEventName)]
     public static async Task<IResult> HandleLoyaltyPointsUpdatedEvent(
         [FromServices] IDistributedCache cache,
         [FromServices] Idempotency idempotency,
+        [FromServices] IConfiguration configuration,
         HttpContext httpContext,
         CustomerLoyaltyPointsUpdatedEvent evt)
     {
         try
         {
             var eventId = httpContext.ExtractEventId();
+
+            using var processActivity = Activity.Current?.Source.StartActivityWithProcessSemanticConventions(
+                new SemanticConventions(
+                    EventType.PUBLIC,
+                    LoyaltyPointsUpdatedEventName,
+                    eventId,
+                    "dapr",
+                    "public",
+                    configuration["ApplicationConfig:ApplicationName"] ?? ""
+                ));
 
             if (await idempotency.HasEventBeenProcessedWithId(eventId)) return Results.Ok();
 
@@ -136,17 +193,29 @@ public static class EventHandlers
         }
     }
 
-    [Topic("public", "kitchen.orderBaked.v1",
-        DeadLetterTopic = "orders.failedMessages")]
+    [Topic("public", OrderBakedEventName,
+        DeadLetterTopic = FailedMessagesEventName)]
     public static async Task<IResult> HandleOrderBakedEvent(
         [FromServices] OrderBakedEventHandler orderBakedHandler,
         [FromServices] Idempotency idempotency,
+        [FromServices] IConfiguration configuration,
         HttpContext httpContext,
         OrderBakedEventV1 evt)
     {
         try
         {
             var eventId = httpContext.ExtractEventId();
+
+            using var processActivity = Activity.Current?.Source.StartActivityWithProcessSemanticConventions(
+                new SemanticConventions(
+                    EventType.PUBLIC,
+                    OrderBakedEventName,
+                    eventId,
+                    "dapr",
+                    "public",
+                    configuration["ApplicationConfig:ApplicationName"] ?? "",
+                    evt.OrderIdentifier
+                ));
 
             if (await idempotency.HasEventBeenProcessedWithId(eventId)) return Results.Ok();
 
@@ -165,17 +234,29 @@ public static class EventHandlers
         }
     }
 
-    [Topic("public", "kitchen.orderPreparing.v1",
-        DeadLetterTopic = "orders.failedMessages")]
+    [Topic("public", OrderPreparingEventName,
+        DeadLetterTopic = FailedMessagesEventName)]
     public static async Task<IResult> HandleOrderPreparingEvent(
         [FromServices] OrderPreparingEventHandler orderPreparingEventHandler,
         [FromServices] Idempotency idempotency,
+        [FromServices] IConfiguration configuration,
         HttpContext httpContext,
         OrderPreparingEventV1 evt)
     {
         try
         {
             var eventId = httpContext.ExtractEventId();
+
+            using var processActivity = Activity.Current?.Source.StartActivityWithProcessSemanticConventions(
+                new SemanticConventions(
+                    EventType.PUBLIC,
+                    OrderPreparingEventName,
+                    eventId,
+                    "dapr",
+                    "public",
+                    configuration["ApplicationConfig:ApplicationName"] ?? "",
+                    evt.OrderIdentifier
+                ));
 
             if (await idempotency.HasEventBeenProcessedWithId(eventId)) return Results.Ok();
 
@@ -194,17 +275,29 @@ public static class EventHandlers
         }
     }
 
-    [Topic("public", "kitchen.orderPrepComplete.v1",
-        DeadLetterTopic = "orders.failedMessages")]
+    [Topic("public", OrderPrepCompleteEventName,
+        DeadLetterTopic = FailedMessagesEventName)]
     public static async Task<IResult> HandleOrderPrepCompleteEvent(
         [FromServices] OrderPrepCompleteEventHandler orderPrepCompleteHandler,
         [FromServices] Idempotency idempotency,
+        [FromServices] IConfiguration configuration,
         HttpContext httpContext,
         OrderPrepCompleteEventV1 evt)
     {
         try
         {
             var eventId = httpContext.ExtractEventId();
+
+            using var processActivity = Activity.Current?.Source.StartActivityWithProcessSemanticConventions(
+                new SemanticConventions(
+                    EventType.PUBLIC,
+                    OrderPrepCompleteEventName,
+                    eventId,
+                    "dapr",
+                    "public",
+                    configuration["ApplicationConfig:ApplicationName"] ?? "",
+                    evt.OrderIdentifier
+                ));
 
             if (await idempotency.HasEventBeenProcessedWithId(eventId)) return Results.Ok();
 
@@ -223,17 +316,29 @@ public static class EventHandlers
         }
     }
 
-    [Topic("public", "kitchen.qualityChecked.v1",
-        DeadLetterTopic = "orders.failedMessages")]
+    [Topic("public", OrderQualityCheckedEventName,
+        DeadLetterTopic = FailedMessagesEventName)]
     public static async Task<IResult> HandleOrderQualityCheckedEvent(
         [FromServices] OrderQualityCheckedEventHandler orderQualityCheckedEventHandler,
         [FromServices] Idempotency idempotency,
+        [FromServices] IConfiguration configuration,
         HttpContext httpContext,
         OrderQualityCheckedEventV1 evt)
     {
         try
         {
             var eventId = httpContext.ExtractEventId();
+
+            using var processActivity = Activity.Current?.Source.StartActivityWithProcessSemanticConventions(
+                new SemanticConventions(
+                    EventType.PUBLIC,
+                    OrderQualityCheckedEventName,
+                    eventId,
+                    "dapr",
+                    "public",
+                    configuration["ApplicationConfig:ApplicationName"] ?? "",
+                    evt.OrderIdentifier
+                ));
 
             if (await idempotency.HasEventBeenProcessedWithId(eventId)) return Results.Ok();
 
@@ -252,7 +357,7 @@ public static class EventHandlers
         }
     }
 
-    [Topic("public", "orders.failedMessages")]
+    [Topic("public", FailedMessagesEventName)]
     public static async Task<IResult> HandleDeadLetterMessage(
         [FromServices] ILogger<PaymentSuccessfulEventV1> logger,
         [FromServices] IDeadLetterRepository deadLetterRepository,

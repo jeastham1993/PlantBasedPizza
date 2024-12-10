@@ -29,13 +29,6 @@ public class EventDriver
         _daprClient = new DaprClientBuilder()
             .UseGrpcEndpoint("http://localhost:40003")
             .Build();
-
-        BsonClassMap.RegisterClassMap<DeadLetterMessage>(map =>
-        {
-            map.AutoMap();
-            map.SetIgnoreExtraElements(true);
-            map.SetIgnoreExtraElementsIsInherited(true);
-        });
         _deadLetterRepository = new DeadLetterRepository(new MongoClient(TestConstants.DefaultMongoDbConnection));
     }
 
