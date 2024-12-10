@@ -37,7 +37,3 @@ variable "db_connection_string" {
 variable "public_service_bus_namespace" {
     type = string
 }
-
-variable "public_service_bus_connection_string" {
-  type = string
-}

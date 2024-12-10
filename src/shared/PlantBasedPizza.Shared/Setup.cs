@@ -21,11 +21,15 @@ namespace PlantBasedPizza.Shared
             
             var otel = services.AddOpenTelemetry();
             otel.ConfigureResource(resource => resource
-                .AddDefaultOtelTags(configuration)
                 .AddService(serviceName: applicationName));
             
             otel.WithTracing(tracing =>
             {
+                tracing.ConfigureResource(configure =>
+                {
+                    configure.AddDefaultOtelTags(configuration);
+                });
+                
                 tracing.AddAspNetCoreInstrumentation(options =>
                 {
                     options.Filter = new Func<HttpContext, bool>((httpContext) =>
