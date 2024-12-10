@@ -37,6 +37,42 @@ resource "azurerm_container_app" "recipes-api" {
         value = var.env
       }
       env {
+        name = "DOMAIN"
+        value = "recipes"
+      }
+      env {
+        name = "ApplicationConfig__TeamName"
+        value = "recipes"
+      }
+      env {
+        name = "ApplicationConfig__ApplicationName"
+        value = "recipes-api"
+      }
+      env {
+        name = "ApplicationConfig__Environment"
+        value = var.env
+      }
+      env {
+        name = "ApplicationConfig__Version"
+        value = var.app_version
+      }
+      env {
+        name = "ApplicationConfig__DeployedAt"
+        value = var.app_version
+      }
+      env {
+        name = "ApplicationConfig__MemoryMb"
+        value = "500"
+      }
+      env {
+        name = "ApplicationConfig__CpuCount"
+        value = "0.25"
+      }
+      env {
+        name = "ApplicationConfig__CloudRegion"
+        value = "europe-west2"
+      }
+      env {
         name = "Auth__Issuer"
         value = "https://plantbasedpizza.com"
       }

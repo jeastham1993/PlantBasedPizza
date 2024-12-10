@@ -61,6 +61,10 @@ resource "azurerm_container_app" "account" {
         value = "http://localhost:4317"
       }
       env {
+        name = "DOMAIN"
+        value = "accounts"
+      }
+      env {
         name = "ApplicationConfig__TeamName"
         value = "accounts"
       }

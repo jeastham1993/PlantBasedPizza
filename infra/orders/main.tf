@@ -77,6 +77,10 @@ resource "azurerm_container_app" "orders-api" {
         value = "http://localhost:4317"
       }
       env {
+        name = "DOMAIN"
+        value = "orders"
+      }
+      env {
         name = "ApplicationConfig__TeamName"
         value = "orders"
       }
@@ -246,6 +250,10 @@ resource "azurerm_container_app" "orders-worker" {
         value = "http://localhost:4317"
       }
       env {
+        name = "DOMAIN"
+        value = "orders"
+      }
+      env {
         name = "ApplicationConfig__TeamName"
         value = "orders"
       }
@@ -413,6 +421,10 @@ resource "azurerm_container_app" "orders-internal" {
       env {
         name  = "OTEL_EXPORTER_OTLP_ENDPOINT"
         value = "http://localhost:4317"
+      }
+      env {
+        name = "DOMAIN"
+        value = "orders"
       }
       env {
         name = "ApplicationConfig__TeamName"

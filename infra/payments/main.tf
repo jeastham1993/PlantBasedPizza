@@ -33,6 +33,42 @@ resource "azurerm_container_app" "payment-api" {
         value = var.env
       }
       env {
+        name = "DOMAIN"
+        value = "payments"
+      }
+      env {
+        name = "ApplicationConfig__TeamName"
+        value = "payments"
+      }
+      env {
+        name = "ApplicationConfig__ApplicationName"
+        value = "payments-api"
+      }
+      env {
+        name = "ApplicationConfig__Environment"
+        value = var.env
+      }
+      env {
+        name = "ApplicationConfig__Version"
+        value = var.app_version
+      }
+      env {
+        name = "ApplicationConfig__DeployedAt"
+        value = var.app_version
+      }
+      env {
+        name = "ApplicationConfig__MemoryMb"
+        value = "500"
+      }
+      env {
+        name = "ApplicationConfig__CpuCount"
+        value = "0.25"
+      }
+      env {
+        name = "ApplicationConfig__CloudRegion"
+        value = "europe-west2"
+      }
+      env {
         name = "MOMENTO_API_KEY"
         value = var.momento_api_key
       }
