@@ -11,7 +11,7 @@ public class RefundPaymentCommand : IntegrationEvent
     public override Uri Source => new Uri("https://orders.plantbasedpizza");
     
     [JsonPropertyName("OrderIdentifier")]
-    public string OrderIdentifier { get; set; }
+    public string? OrderIdentifier { get; set; }
     
     [JsonPropertyName("PaymentAmount")]
     public decimal PaymentAmount { get; set; }

@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using System.Security.Cryptography;
 using Microsoft.Extensions.Caching.Distributed;
-using PlantBasedPizza.Payments.TakePayment;
 using Saunter.Attributes;
 
 namespace PlantBasedPizza.Payments.RefundPayment;
