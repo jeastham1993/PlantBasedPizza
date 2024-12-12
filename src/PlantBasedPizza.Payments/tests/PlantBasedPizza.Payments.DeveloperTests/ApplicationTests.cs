@@ -25,13 +25,13 @@ public class ApplicationTests
         var cachedPayment = await memoryCache.GetStringAsync("ORD123");
         cachedPayment.Should().Be("processed");
         
-        var httpSpan = exportedItems.First(span => span.DisplayName == "POST /take-payment");
-        httpSpan.Tags.FirstOrDefault(tag => tag.Key == "orderIdentifier").Value.Should().Be("ORD123").Should()
+        var messagingSpan = exportedItems.First(span => span.DisplayName == "process payments.takepayment.v1");
+        messagingSpan.Tags.FirstOrDefault(tag => tag.Key == "orderIdentifier").Value.Should().Be("ORD123").Should()
             .NotBeNull("The order identifier should be added to telemetry");
-        httpSpan.Tags.FirstOrDefault(tag => tag.Key == "paymentAmount").Value.Should().Be("100.00").Should()
+        messagingSpan.Tags.FirstOrDefault(tag => tag.Key == "paymentAmount").Value.Should().Be("100.00").Should()
             .NotBeNull("The payment amount should be added to telemetry");
         
-        exportedItems.FirstOrDefault(activity => activity.DisplayName == $"publish payments.paymentSuccessful.v1").Should().NotBeNull();
+        exportedItems.Find(activity => activity.DisplayName == $"publish payments.paymentSuccessful.v1").Should().NotBeNull();
     }
     
     [Fact]
@@ -49,13 +49,13 @@ public class ApplicationTests
 
         publisher.SuccessEvents.Count.Should().Be(1);
         
-        exportedItems.Count(span => span.DisplayName == "POST /take-payment").Should().Be(2, "Payment request is received twice");
+        exportedItems.Count(span => span.DisplayName == "process payments.takepayment.v1").Should().Be(2, "Payment request is received twice");
         
-        var httpSpan = exportedItems.First(span => span.DisplayName == "POST /take-payment");
+        var httpSpan = exportedItems.First(span => span.DisplayName == "process payments.takepayment.v1");
         httpSpan.Tags.FirstOrDefault(tag => tag.Key == "orderIdentifier").Value.Should().Be("ORD123").Should()
             .NotBeNull("The order identifier should be added to the traces");
         
-        var secondHttpSpan = exportedItems.Last(span => span.DisplayName == "POST /take-payment");
+        var secondHttpSpan = exportedItems.Last(span => span.DisplayName == "process payments.takepayment.v1");
         secondHttpSpan.Tags.FirstOrDefault(tag => tag.Key == "payment-processed").Value.Should().Be("true");
     }
     
@@ -76,13 +76,13 @@ public class ApplicationTests
 
         publisher.SuccessEvents.Count.Should().Be(1);
         
-        exportedItems.Count(span => span.DisplayName == "POST /take-payment").Should().Be(2, "Payment request is received twice");
+        exportedItems.Count(span => span.DisplayName == "process payments.takepayment.v1").Should().Be(2, "Payment request is received twice");
         
-        var httpSpan = exportedItems.First(span => span.DisplayName == "POST /take-payment");
+        var httpSpan = exportedItems.First(span => span.DisplayName == "process payments.takepayment.v1");
         httpSpan.Tags.FirstOrDefault(tag => tag.Key == "orderIdentifier").Value.Should().Be("ORD123").Should()
             .NotBeNull("The order identifier should be added to the traces");
         
-        var secondHttpSpan = exportedItems.Last(span => span.DisplayName == "POST /take-payment");
+        var secondHttpSpan = exportedItems.Last(span => span.DisplayName == "process payments.takepayment.v1");
         secondHttpSpan.Tags.FirstOrDefault(tag => tag.Key == "events.idempotent").Value.Should().Be("true");
     }
     
@@ -103,9 +103,9 @@ public class ApplicationTests
         publisher.SuccessEvents.Count.Should().Be(0);
         publisher.FailedEvents.Count.Should().Be(1);
         
-        exportedItems.Count(span => span.DisplayName == "POST /take-payment").Should().Be(1, "Payment request is received twice");
+        exportedItems.Count(span => span.DisplayName == "process payments.takepayment.v1").Should().Be(1, "Payment request is received twice");
         
-        var httpSpan = exportedItems.First(span => span.DisplayName == "POST /take-payment");
+        var httpSpan = exportedItems.First(span => span.DisplayName == "process payments.takepayment.v1");
         httpSpan.Tags.FirstOrDefault(tag => tag.Key == "orderIdentifier").Value.Should().Be("ORD123").Should()
             .NotBeNull("The order identifier should be added to the traces");
     }
@@ -126,9 +126,9 @@ public class ApplicationTests
         publisher.SuccessEvents.Count.Should().Be(0);
         publisher.FailedEvents.Count.Should().Be(0);
         
-        exportedItems.Count(span => span.DisplayName == "POST /take-payment").Should().Be(1);
+        exportedItems.Count(span => span.DisplayName == "process payments.takepayment.v1").Should().Be(1);
         
-        var httpSpan = exportedItems.First(span => span.DisplayName == "POST /take-payment");
+        var httpSpan = exportedItems.First(span => span.DisplayName == "process payments.takepayment.v1");
         
         httpSpan.Tags.FirstOrDefault(tag => tag.Key == "orderIdentifier").Value.Should().Be("null").Should()
             .NotBeNull("The order identifier should be added to telemetry");
@@ -152,9 +152,9 @@ public class ApplicationTests
         publisher.SuccessEvents.Count.Should().Be(0);
         publisher.FailedEvents.Count.Should().Be(1);
         
-        exportedItems.Count(span => span.DisplayName == "POST /take-payment").Should().Be(1);
+        exportedItems.Count(span => span.DisplayName == "process payments.takepayment.v1").Should().Be(1);
         
-        var httpSpan = exportedItems.First(span => span.DisplayName == "POST /take-payment");
+        var httpSpan = exportedItems.First(span => span.DisplayName == "process payments.takepayment.v1");
         
         httpSpan.Tags.FirstOrDefault(tag => tag.Key == "orderIdentifier").Value.Should().Be("ORD123").Should()
             .NotBeNull("The order identifier should be added to telemetry");

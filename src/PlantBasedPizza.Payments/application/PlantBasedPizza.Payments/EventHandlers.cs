@@ -8,8 +8,6 @@ using PlantBasedPizza.Payments.TakePayment;
 
 namespace PlantBasedPizza.Payments;
 
-public class EventHandlerLogger { }
-
 public static class EventHandlers
 {
     private const string TakePaymentCommandName = "payments.takepayment.v1";
