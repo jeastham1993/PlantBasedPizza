@@ -1,51 +1,42 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>net9.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-
         <IsPackable>false</IsPackable>
-        <IsTestProject>true</IsTestProject>
+        <RootNamespace>PlantBasedPizza.Payments.InMemoryTests</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
-        <Protobuf Include="Protos\payment.proto" GrpcServices="Client" />
-    </ItemGroup>
-
-    <ItemGroup>
         <PackageReference Include="Dapr.Client" Version="1.14.0" />
-        <PackageReference Include="Google.Protobuf" Version="3.29.1" />
+        <PackageReference Include="Google.Protobuf" Version="3.28.3" />
         <PackageReference Include="Grpc.Net.Client" Version="2.67.0" />
-        <PackageReference Include="Grpc.Tools" Version="2.68.1">
-          <PrivateAssets>all</PrivateAssets>
-          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        <PackageReference Include="Grpc.Tools" Version="2.67.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
         <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.0" />
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
+        <PackageReference Include="OpenTelemetry.Exporter.InMemory" Version="1.10.0" />
         <PackageReference Include="SpecFlow.Plus.LivingDocPlugin" Version="3.9.57" />
         <PackageReference Include="SpecFlow.xUnit" Version="3.9.74" />
-        <PackageReference Include="WireMock.Net" Version="1.6.9" />
+        <PackageReference Include="WireMock.Net" Version="1.6.7" />
         <PackageReference Include="xunit" Version="2.9.2" />
         <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="FluentAssertions" Version="7.0.0" />
+        <PackageReference Include="FluentAssertions" Version="6.12.2" />
     </ItemGroup>
-    
+
     <ItemGroup>
-        <Compile Update="Features\Payments.feature.cs">
-            <DependentUpon>LoyaltyPoints.feature</DependentUpon>
-            <AutoGen>true</AutoGen>
-            <DesignTime>true</DesignTime>
-            <Visible>true</Visible>
-        </Compile>
+        <Using Include="Xunit"/>
     </ItemGroup>
-    
+
     <ItemGroup>
-      <ProjectReference Include="..\..\..\shared\PlantBasedPizza.Events\PlantBasedPizza.Events.csproj" />
-      <ProjectReference Include="..\..\application\PlantBasedPizza.Payments\PlantBasedPizza.Payments.csproj" />
+        <ProjectReference Include="..\..\..\shared\PlantBasedPizza.Events\PlantBasedPizza.Events.csproj" />
+        <ProjectReference Include="..\..\application\PlantBasedPizza.Payments\PlantBasedPizza.Payments.csproj" />
     </ItemGroup>
 
 </Project>

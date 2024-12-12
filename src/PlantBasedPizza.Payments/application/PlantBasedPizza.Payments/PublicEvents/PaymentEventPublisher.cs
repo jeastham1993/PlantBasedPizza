@@ -17,8 +17,6 @@ public class PaymentEventPublisher(DaprClient daprClient) : IPaymentEventPublish
         var eventType = $"{evt.EventName}.{evt.EventVersion}";
         var eventId = Guid.NewGuid().ToString();
         
-        evt.AddToTelemetry(eventId);
-        
         var eventMetadata = new Dictionary<string, string>(3)
         {
             { EventConstants.EVENT_SOURCE_HEADER_KEY, SOURCE },
@@ -28,6 +26,8 @@ public class PaymentEventPublisher(DaprClient daprClient) : IPaymentEventPublish
         };
         
         await daprClient.PublishEventAsync("payments", eventType, evt, eventMetadata);
+        
+        evt.AddToTelemetry(eventId);
     }
 
     [Channel(PaymentFailedEventV1.EVENT_NAME)]

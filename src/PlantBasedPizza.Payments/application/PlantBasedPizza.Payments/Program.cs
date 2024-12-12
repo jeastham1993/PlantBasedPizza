@@ -2,7 +2,6 @@ using Grpc.Core;
 using Grpc.Net.Client.Configuration;
 using PlantBasedPizza.Orders.Internal;
 using PlantBasedPizza.Payments;
-using PlantBasedPizza.Payments.Adapters;
 using PlantBasedPizza.Payments.PublicEvents;
 using PlantBasedPizza.Payments.RefundPayment;
 using PlantBasedPizza.Payments.TakePayment;
@@ -41,7 +40,6 @@ builder.Services
 builder.Services.AddSingleton<TakePaymentCommandHandler>();
 builder.Services.AddSingleton<RefundPaymentCommandHandler>();
 builder.Services.AddSingleton<IPaymentEventPublisher, PaymentEventPublisher>();
-builder.Services.AddSingleton<IOrderService, OrderService>();
 
 builder.Services.AddDaprClient();
 
@@ -83,3 +81,5 @@ app.UseAsyncApi();
 appLogger.LogInformation("Running!");
 
 await app.RunAsync();
+
+public partial class Program {}

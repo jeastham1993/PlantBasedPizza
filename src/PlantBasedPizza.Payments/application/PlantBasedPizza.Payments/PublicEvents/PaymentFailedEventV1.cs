@@ -15,5 +15,5 @@ public class PaymentFailedEventV1 : IntegrationEvent
     
     public override Uri Source => new("https://payments.plantbasedpizza.com");
     
-    public string OrderIdentifier { get; init; }
+    public string? OrderIdentifier { get; init; }
 }
