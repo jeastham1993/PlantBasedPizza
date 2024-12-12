@@ -11,7 +11,7 @@ push:
 	docker push plantpowerjames/plant-based-pizza-payment-api:${IMAGE_TAG}
 
 unit-test:
-	dotnet test tests/PlantBasedPizza.Payments.UnitTests
+	dotnet test tests/PlantBasedPizza.Payments.DeveloperTests
 
 integration-test:
 	docker compose -f docker-compose.yml -f docker-compose-integration.yml up -d

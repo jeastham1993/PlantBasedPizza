@@ -12,6 +12,19 @@ public class TakePaymentCommandHandler(ILogger<TakePaymentCommandHandler> logger
     [PublishOperation(typeof(TakePaymentCommand), OperationId = nameof(TakePaymentCommand))]
     public async Task<bool> Handle(TakePaymentCommand command)
     {
+        var verificationResult = command.Verify();
+
+        if (!verificationResult.IsSuccess)
+        {
+            if (verificationResult.ShouldNotify)
+                await eventPublisher.PublishPaymentFailedEventV1(new PaymentFailedEventV1()
+                {
+                    OrderIdentifier = command.OrderIdentifier
+                });    
+
+            return false;
+        }
+        
         var hasOrderBeenProcessed = await cache.GetStringAsync(command.OrderIdentifier);
 
         if ((hasOrderBeenProcessed ?? "").Equals("processed"))
@@ -27,6 +40,8 @@ public class TakePaymentCommandHandler(ILogger<TakePaymentCommandHandler> logger
             await Task.Delay(TimeSpan.FromMilliseconds(randomSecondDelay));
         
             logger.LogInformation("Publishing Payment Success Event");
+            
+            using var publishingSpan = Activity.Current?.Source.StartActivity("publish payments.paymentSuccessful.v1");
 
             var successEvent = new PaymentSuccessfulEventV1()
             {
@@ -35,6 +50,8 @@ public class TakePaymentCommandHandler(ILogger<TakePaymentCommandHandler> logger
             };
             
             await eventPublisher.PublishPaymentSuccessfulEventV1(successEvent);
+            
+            publishingSpan?.Stop();
             
             await cache.SetStringAsync(command.OrderIdentifier, "processed");
 

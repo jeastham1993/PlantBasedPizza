@@ -1,13 +1,14 @@
 using System.Diagnostics;
 using Dapr;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.TagHelpers;
 using Microsoft.Extensions.Caching.Distributed;
 using PlantBasedPizza.Events;
 using PlantBasedPizza.Payments.RefundPayment;
 using PlantBasedPizza.Payments.TakePayment;
 
 namespace PlantBasedPizza.Payments;
+
+public class EventHandlerLogger { }
 
 public static class EventHandlers
 {
@@ -37,18 +38,22 @@ public static class EventHandlers
                         ));
                 
                     var cachedEvent = await cache.GetStringAsync($"events_{eventId}");
+                    processActivity?.AddTag("orderIdentifier", command.OrderIdentifier ?? "null");
+                    processActivity?.AddTag("paymentAmount", command.PaymentAmount.ToString("n2"));
+
+                    var cloudEventId = ctx.ExtractEventId();
 
                     if (cachedEvent != null)
                     {
                         Activity.Current?.AddTag("events.idempotent", "true");
                         return Results.Ok();
                     }
-                
+
                     var result = await handler.Handle(command);
 
                     if (!result)
                     {
-                        return Results.InternalServerError();
+                        return Results.BadRequest();
                     }
 
                     await cache.SetStringAsync($"events_{eventId}", "processed", new DistributedCacheEntryOptions()
@@ -58,10 +63,16 @@ public static class EventHandlers
 
                     return Results.Ok();
                 }
-                catch (Exception ex)
+                catch (ArgumentNullException ex)
                 {
                     Activity.Current?.AddException(ex);
                     
+                    return Results.BadRequest();
+                }
+                catch (Exception ex)
+                {
+                    Activity.Current?.AddException(ex);
+
                     return Results.InternalServerError();
                 }
             });

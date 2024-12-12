@@ -3,7 +3,7 @@ resource "azurerm_resource_group" "plant_based_pizza_rg" {
   location = "West Europe"
   tags = {
     source = "terraform"
-    env = var.env
+    env    = var.env
   }
 }
 
@@ -15,7 +15,7 @@ resource "azurerm_log_analytics_workspace" "plant_based_pizza_log_analytics" {
   retention_in_days   = 30
   tags = {
     source = "terraform"
-    env = var.env
+    env    = var.env
   }
 }
 
@@ -24,10 +24,10 @@ resource "azurerm_container_app_environment" "plant_based_pizza_aca_environment"
   location                   = azurerm_resource_group.plant_based_pizza_rg.location
   resource_group_name        = azurerm_resource_group.plant_based_pizza_rg.name
   log_analytics_workspace_id = azurerm_log_analytics_workspace.plant_based_pizza_log_analytics.id
-  
+
   tags = {
     source = "terraform"
-    env = var.env
+    env    = var.env
   }
 }
 
@@ -38,4 +38,20 @@ resource "azurerm_container_app_environment_storage" "nginx_configuration_storag
   share_name                   = azurerm_storage_share.nginx_config_share.name
   access_key                   = azurerm_storage_account.nginx_config.primary_access_key
   access_mode                  = "ReadOnly"
+}
+
+module "payments_test_environment" {
+  source          = "../module/environment"
+  env             = "payments-test"
+  dd_api_key      = var.dd_api_key
+  dd_site         = var.dd_site
+  subscription_id = var.subscription_id
+}
+
+module "delivery_test_environment" {
+  source          = "../module/environment"
+  env             = "delivery-test"
+  dd_api_key      = var.dd_api_key
+  dd_site         = var.dd_site
+  subscription_id = var.subscription_id
 }

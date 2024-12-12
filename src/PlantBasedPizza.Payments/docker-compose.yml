@@ -12,15 +12,6 @@ services:
     ports:
       - "6379:6379"
 
-  orders-gripmock:
-    image: tkpd/gripmock:latest
-    ports:
-      - "8083:4770"
-      - "8084:4771"
-    volumes:
-      - ./mocks/grpc-mocks:/proto
-    command: --stub=/proto/stubs /proto/orders.proto
-
   integration-test-dapr:
     image: "daprio/daprd:edge"
     command: [
