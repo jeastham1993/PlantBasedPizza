@@ -12,7 +12,7 @@ tag-images:
 
 push:
 	docker push plantpowerjames/plant-based-pizza-payment-api:${IMAGE_TAG}
-	docker push payment-event-harness plantpowerjames/plant-based-pizza-payment-event-harness:${IMAGE_TAG}
+	docker push plantpowerjames/plant-based-pizza-payment-event-harness:${IMAGE_TAG}
 
 unit-test:
 	dotnet test tests/PlantBasedPizza.Payments.DeveloperTests
