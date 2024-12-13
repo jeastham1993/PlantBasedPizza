@@ -25,7 +25,8 @@ resource "azurerm_container_app_environment_dapr_component" "public_pubsub" {
     "delivery",
     "delivery-worker",
     "recipes",
-    "payment"
+    "payment",
+    "payment-test-harness"
   ]
   metadata {
     name  = "connectionString"
@@ -45,7 +46,8 @@ resource "azurerm_container_app_environment_dapr_component" "payments_pubsub" {
   scopes                       = [
     "orders",
     "orders-worker",
-    "payment"
+    "payment",
+    "payment-test-harness"
   ]
   metadata {
     name  = "connectionString"
