@@ -1,8 +1,8 @@
 ﻿FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build-env
 WORKDIR /App
 
-# Copy everything
-COPY . ./
+COPY ./shared ./shared
+COPY ./PlantBasedPizza.Payments ./PlantBasedPizza.Payments
 # Restore as distinct layers
 RUN dotnet restore PlantBasedPizza.Payments/application/PlantBasedPizza.Payments/PlantBasedPizza.Payments.csproj
 # Build and publish a release

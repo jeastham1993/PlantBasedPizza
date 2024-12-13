@@ -2,7 +2,8 @@
 WORKDIR /App
 
 # Copy everything
-COPY . ./
+COPY ./shared ./shared
+COPY ./PlantBasedPizza.Payments ./PlantBasedPizza.Payments
 # Restore as distinct layers
 RUN dotnet restore PlantBasedPizza.Payments/tests/PlantBasedPizza.Payments.TestEventHarness/PlantBasedPizza.Payments.TestEventHarness.csproj
 # Build and publish a release
