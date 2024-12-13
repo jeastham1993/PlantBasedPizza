@@ -38,3 +38,40 @@ services:
     depends_on:
       - "payment-api"
     network_mode: "service:payment-api"
+  
+  event-test-harness:
+    build:
+      context: .
+      dockerfile: ./tests/PlantBasedPizza.Payments.TestEventHarness/Dockerfile
+    ports:
+      - "8081:8080"
+    environment:
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+      - Environment=local
+      - ApplicationConfig__TeamName=payments
+      - ApplicationConfig__ApplicationName=payment-api
+      - ApplicationConfig__Environment=local
+      - ApplicationConfig__Version=local
+      - DAPR_HOST=host.docker.internal
+      - DAPR_GRPC_PORT=5101
+
+  event-test-harness-dapr:
+    image: "daprio/daprd:edge"
+    command: [
+      "./daprd",
+      "--app-id",
+      "event-test-harness",
+      "--app-port",
+      "8080",
+      "--placement-host-address",
+      "placement:50006", # Dapr's placement service can be reach via the docker DNS entry
+      "--dapr-grpc-port",
+      "5101",
+      "--resources-path",
+      "../../components",
+    ]
+    volumes:
+      - "../../components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
+    depends_on:
+      - "event-test-harness"
+    network_mode: "service:event-test-harness"

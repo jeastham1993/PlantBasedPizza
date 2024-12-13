@@ -1,14 +1,18 @@
 build:
 	docker build -f application/PlantBasedPizza.Payments/Dockerfile-x86 -t payment-api ../
+	docker build -f tests/PlantBasedPizza.Payments.TestEventHarness/Dockerfile -t payment-event-harness ../
 
 build-arm:
 	docker build -f application/PlantBasedPizza.Payments/Dockerfile -t payment-api ../
+	docker build -f tests/PlantBasedPizza.Payments.TestEventHarness/Dockerfile -t payment-event-harness ../
 
 tag-images:
 	docker tag payment-api plantpowerjames/plant-based-pizza-payment-api:${IMAGE_TAG}
+	docker tag payment-event-harness plantpowerjames/plant-based-pizza-payment-event-harness:${IMAGE_TAG}
 
 push:
 	docker push plantpowerjames/plant-based-pizza-payment-api:${IMAGE_TAG}
+	docker push payment-event-harness plantpowerjames/plant-based-pizza-payment-event-harness:${IMAGE_TAG}
 
 unit-test:
 	dotnet test tests/PlantBasedPizza.Payments.DeveloperTests

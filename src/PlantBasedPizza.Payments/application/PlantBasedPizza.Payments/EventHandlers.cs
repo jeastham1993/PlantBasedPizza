@@ -28,7 +28,7 @@ public static class EventHandlers
                         new SemanticConventions(
                             EventType.PUBLIC,
                             TakePaymentCommandName,
-                            eventId,
+                            eventId ?? "",
                             "dapr",
                             "public",
                             configuration["ApplicationConfig:ApplicationName"] ?? "",
@@ -36,10 +36,9 @@ public static class EventHandlers
                         ));
                 
                     var cachedEvent = await cache.GetStringAsync($"events_{eventId}");
+                    
                     processActivity?.AddTag("orderIdentifier", command.OrderIdentifier ?? "null");
                     processActivity?.AddTag("paymentAmount", command.PaymentAmount.ToString("n2"));
-
-                    var cloudEventId = ctx.ExtractEventId();
 
                     if (cachedEvent != null)
                     {

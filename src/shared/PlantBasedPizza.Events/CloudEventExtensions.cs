@@ -26,9 +26,9 @@ public static class CloudEventExtensions
 {
     public static string ExtractEventId(this HttpContext httpContext)
     {
-        var cloudEventId = extractValueFromHeader(httpContext, EventConstants.EVENT_ID_HEADER_KEY);
+        var cloudEventId = ExtractValueFromHeader(httpContext, EventConstants.EVENT_ID_HEADER_KEY);
 
-        var cloudEventTime = extractValueFromHeader(httpContext, EventConstants.EVENT_TIME_HEADER_KEY);
+        var cloudEventTime = ExtractValueFromHeader(httpContext, EventConstants.EVENT_TIME_HEADER_KEY);
         if (!string.IsNullOrEmpty(cloudEventTime))
         {
             var publishTime = DateTime.Parse(cloudEventTime);
@@ -43,16 +43,17 @@ public static class CloudEventExtensions
 
         Activity.Current?.AddTag("messaging.operation.type", "process");
 
-        return cloudEventId;
+        // Generate a random EventId if not provided.
+        return cloudEventId ?? Guid.NewGuid().ToString();
     }
 
     public static EventData ExtractEventData(this HttpContext httpContext)
     {
-        var cloudEventId = extractValueFromHeader(httpContext, EventConstants.EVENT_ID_HEADER_KEY);
+        var cloudEventId = ExtractValueFromHeader(httpContext, EventConstants.EVENT_ID_HEADER_KEY);
         if (!string.IsNullOrEmpty(cloudEventId))
             Activity.Current?.AddTag("messaging.message.id", cloudEventId);
 
-        var cloudEventType = extractValueFromHeader(httpContext, EventConstants.EVENT_TYPE_HEADER_KEY);
+        var cloudEventType = ExtractValueFromHeader(httpContext, EventConstants.EVENT_TYPE_HEADER_KEY);
 
         if (!string.IsNullOrEmpty(cloudEventType))
         {
@@ -65,7 +66,7 @@ public static class CloudEventExtensions
             }
         }
 
-        var cloudEventTime = extractValueFromHeader(httpContext, EventConstants.EVENT_TIME_HEADER_KEY);
+        var cloudEventTime = ExtractValueFromHeader(httpContext, EventConstants.EVENT_TIME_HEADER_KEY);
         if (!string.IsNullOrEmpty(cloudEventTime))
         {
             var publishTime = DateTime.Parse(cloudEventTime);
@@ -78,20 +79,20 @@ public static class CloudEventExtensions
                 messageAge.TotalMilliseconds.ToString(CultureInfo.InvariantCulture));
         }
         
-        var traceParent = extractValueFromHeader(httpContext, "traceparent") ?? "";
+        var traceParent = ExtractValueFromHeader(httpContext, "traceparent") ?? "";
 
         Activity.Current?.AddTag("messaging.operation.type", "process");
 
         return new EventData(cloudEventId, cloudEventType, traceParent);
     }
 
-    private static string extractValueFromHeader(HttpContext httpContext, string headerName)
+    private static string? ExtractValueFromHeader(HttpContext httpContext, string headerName)
     {
         var headerValue =
             httpContext.Request.Headers.FirstOrDefault(
                 h => h.Key.Equals(headerName, StringComparison.OrdinalIgnoreCase));
         var cloudEventIdValue = headerValue.Value.FirstOrDefault();
-        if (!headerValue.Value.Any() || string.IsNullOrEmpty(cloudEventIdValue)) return "";
+        if (!headerValue.Value.Any() || string.IsNullOrEmpty(cloudEventIdValue)) return null;
 
         return cloudEventIdValue;
     }

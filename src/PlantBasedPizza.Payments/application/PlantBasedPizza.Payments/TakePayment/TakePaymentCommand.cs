@@ -15,7 +15,7 @@ public class TakePaymentCommand : IntegrationEvent
     [JsonPropertyName("OrderIdentifier")]
     public string? OrderIdentifier { get; set; }
     
-    [JsonPropertyName("TakePayment")]
+    [JsonPropertyName("PaymentAmount")]
     public decimal PaymentAmount { get; set; }
 
     public override string AsString()

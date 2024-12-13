@@ -16,11 +16,12 @@
         </PackageReference>
         <PackageReference Include="Dapr.AspNetCore" Version="1.14.0" />
         <PackageReference Include="Saunter" Version="0.13.0" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <ProjectReference Include="..\..\..\shared\PlantBasedPizza.Events\PlantBasedPizza.Events.csproj" />
-        <ProjectReference Include="..\..\..\shared\PlantBasedPizza.Shared\PlantBasedPizza.Shared.csproj" />
+        <PackageReference Include="OpenTelemetry" Version="1.10.0" />
+        <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" Version="1.10.0" />
+        <PackageReference Include="OpenTelemetry.Extensions.Hosting" Version="1.10.0" />
+        <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" Version="1.9.0" />
+        <PackageReference Include="OpenTelemetry.Instrumentation.Http" Version="1.10.0" />
+        <PackageReference Include="OpenTelemetry.Instrumentation.GrpcNetClient" Version="1.7.0-beta.1" />
     </ItemGroup>
 
 </Project>
