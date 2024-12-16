@@ -30,6 +30,7 @@ jobs:
     secrets:
       dd_api_key: ${{secrets.ACA_DD_API_KEY}}
       dd_app_key: ${{secrets.ACA_DD_APP_KEY}}
+
   build-and-push:
     uses: jeastham1993/PlantBasedPizza/.github/workflows/build-and-push-base.yaml@azure
     needs: static-analysis
@@ -39,6 +40,36 @@ jobs:
       DOCKERHUB_USERNAME: ${{secrets.DOCKERHUB_USERNAME}}
       DOCKERHUB_TOKEN: ${{secrets.DOCKERHUB_TOKEN}}
       DD_API_KEY: ${{secrets.ACA_DD_API_KEY}}
+
+  start-test-apps:
+    runs-on: ubuntu-latest
+    needs: deploy-test
+    defaults:
+      run:
+        working-directory: ./src/PlantBasedPizza.Payments
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "9"
+      - name: Configure Datadog Test Visibility
+        uses: datadog/test-visibility-github-action@v2
+        with:
+          languages: dotnet
+          api_key: ${{ secrets.DD_API_KEY }}
+          site: datadoghq.com # Change if your site is not US1
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.PAYMENTS_AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Startup test container apps
+        env:
+          RUN_MODE: start
+        run: dotnet run --project tests/PlantBasedPizza.Payments.Management/PlantBasedPizza.Payments.Management.csproj
+
   deploy-test:
     runs-on: ubuntu-latest
     needs: build-and-push
@@ -89,6 +120,7 @@ jobs:
               -var db_connection_string="${DB_CONNECTION_STRING}" \
               -var public_service_bus_namespace="plant-based-pizza-public-payments-test" \
               -auto-approve
+
   run-integration-tests:
     runs-on: ubuntu-latest
     needs: deploy-test
@@ -128,6 +160,10 @@ jobs:
         env:
           RUN_MODE: start
         run: dotnet run --project tests/PlantBasedPizza.Payments.Management/PlantBasedPizza.Payments.Management.csproj
+      - name: Run integration tests
+        env:
+          TEST_HARNESS_ENDPOINT: ${{env.PAYMENT_TEST_HARNESS_ENDPOINT}}
+        run: make developer-test
       - name: Stop test container apps
         env:
           RUN_MODE: stop
