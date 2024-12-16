@@ -3,7 +3,7 @@ name: Build & Push Base Workflow
 on:
   workflow_call:
     inputs:
-      application-root-folder:
+      infrastructure-root-folder:
         type: string
         required: true
       tf-state-backend-key:
@@ -40,7 +40,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ${{inputs.application-root-folder}}
+        working-directory: ${{inputs.infrastructure-root-folder}}
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
