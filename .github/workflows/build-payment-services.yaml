@@ -1,15 +1,15 @@
 name: Payment API CICD
 
 on:
-    push:
-      branches:
-        - azure
-      paths:
-        - .github/workflows/build-and-push-base.yaml
-        - .github/workflows/build-payment-services.yaml
-        - src/PlantBasedPizza.Payments/**
-        - src/shared/**
-    workflow_dispatch:
+  push:
+    branches:
+      - azure
+    paths:
+      - .github/workflows/build-and-push-base.yaml
+      - .github/workflows/build-payment-services.yaml
+      - src/PlantBasedPizza.Payments/**
+      - src/shared/**
+  workflow_dispatch:
 
 permissions:
   id-token: write
@@ -33,3 +33,87 @@ jobs:
       DOCKERHUB_USERNAME: ${{secrets.DOCKERHUB_USERNAME}}
       DOCKERHUB_TOKEN: ${{secrets.DOCKERHUB_TOKEN}}
       DD_API_KEY: ${{secrets.ACA_DD_API_KEY}}
+  deploy-test:
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    defaults:
+      run:
+        working-directory: ./infra/payments
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.PAYMENTS_AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Azure CLI script
+        uses: azure/cli@v2
+        with:
+          azcliversion: latest
+          inlineScript: |
+            az account show
+      - name: Terraform Init
+        id: init
+        run: terraform init -backend-config="key=payments-test.tfstate" -backend-config="use_oidc=true"
+      - name: Declare some variables
+        shell: bash
+        run: |
+          echo "IMAGE_TAG=$(git rev-parse --short "$GITHUB_SHA")" >> "$GITHUB_ENV"
+      - name: Terraform apply
+        id: apply
+        env:
+          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          DD_API_KEY: ${{ secrets.DD_API_KEY }}
+          MOMENTO_API_KEY: ${{ secrets.MOMENTO_API_KEY }}
+          DB_CONNECTION_STRING: ${{ secrets.DB_CONNECTION_STRING }}
+        run: |
+          terraform apply -var subscription_id="${AZURE_SUBSCRIPTION_ID}" \
+              -var resource_group_name="plant-based-pizza-payments-test" \
+              -var env="payments-test" \
+              -var app_version="${IMAGE_TAG}" \
+              -var dd_api_key="${DD_API_KEY}" \
+              -var dd_site="datadoghq.eu" \
+              -var momento_api_key="${MOMENTO_API_KEY}" \
+              -var db_connection_string="${DB_CONNECTION_STRING}" \
+              -var public_service_bus_namespace="plant-based-pizza-public-payments-test" \
+              -auto-approve
+  run-integration-tests:
+    runs-on: ubuntu-latest
+    needs: deploy-test
+    defaults:
+      run:
+        working-directory: ./src/PlantBasedPizza.Payments
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.PAYMENTS_AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Azure CLI script
+        uses: azure/cli@v2
+        with:
+          azcliversion: latest
+          inlineScript: |
+            az account show
+      - name: Declare some variables
+        shell: bash
+        run: |
+          echo "IMAGE_TAG=$(git rev-parse --short "$GITHUB_SHA")" >> "$GITHUB_ENV"
+      - name: Startup test container apps
+        env:
+          RUN_MODE: start
+        run: dotnet run --project tests/PlantBasedPizza.Payments.Management/PlantBasedPizza.Payments.Management.csproj
+      - name: Stop test container apps
+        env:
+          RUN_MODE: stop
+        run: dotnet run --project tests/PlantBasedPizza.Payments.Management/PlantBasedPizza.Payments.Management.csproj
