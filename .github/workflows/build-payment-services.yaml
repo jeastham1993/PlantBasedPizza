@@ -15,6 +15,12 @@ permissions:
   id-token: write
   contents: read
 
+env:
+  ARM_CLIENT_ID: ${{ secrets.PAYMENTS_AZURE_CLIENT_ID }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+  ARM_USE_AZUREAD: true
+
 jobs:
   static-analysis:
     uses: jeastham1993/PlantBasedPizza/.github/workflows/static-analysis.yaml@azure
