@@ -22,6 +22,18 @@ variable "dd_api_key" {
     type = string
 }
 
+variable "momento_api_key" {
+  type = string
+}
+
+variable "cache_name" {
+  type = string
+}
+
 variable "db_connection_string" {
+    type = string
+}
+
+variable "public_service_bus_namespace" {
     type = string
 }
