@@ -43,6 +43,7 @@ jobs:
       resource-group-name: plant-based-pizza-dev
       env: dev
       public-service-bus-namespace: plant-based-pizza-public-dev
+      additional-arguments: " -var temporal_server_endpoint=\"temporal.wonderfulforest-17ef98b4.westeurope.azurecontainerapps.io:443\" "
     secrets:
       AZURE_CLIENT_ID: ${{secrets.DEV_AZURE_CLIENT_ID}}
       AZURE_TENANT_ID: ${{secrets.AZURE_TENANT_ID}}

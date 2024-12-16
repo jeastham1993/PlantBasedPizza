@@ -18,6 +18,9 @@ on:
       public-service-bus-namespace:
         type: string
         required: true
+      additional-arguments:
+        type: string
+        default: ""
     secrets:
       AZURE_CLIENT_ID:
         description: "The Azure client"
@@ -83,4 +86,4 @@ jobs:
               -var momento_api_key="${MOMENTO_API_KEY}" \
               -var db_connection_string="${DB_CONNECTION_STRING}" \
               -var public_service_bus_namespace="${{inputs.public-service-bus-namespace}}" \
-              -auto-approve
+              ${{inputs.additional-arguments}}-auto-approve
