@@ -98,6 +98,15 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "9"
+      - name: Configure Datadog Test Visibility
+        uses: datadog/test-visibility-github-action@v2
+        with:
+          languages: dotnet
+          api_key: ${{ secrets.DD_API_KEY }}
+          site: datadoghq.com # Change if your site is not US1
       - name: Azure login
         uses: azure/login@v2
         with:
