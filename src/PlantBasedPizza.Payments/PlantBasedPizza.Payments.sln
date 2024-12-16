@@ -32,6 +32,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Payments.De
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Payments.TestEventHarness", "tests\PlantBasedPizza.Payments.TestEventHarness\PlantBasedPizza.Payments.TestEventHarness.csproj", "{B4F53302-C237-41F7-8C23-70F2F040AFE3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Payments.Management", "tests\PlantBasedPizza.Payments.Management\PlantBasedPizza.Payments.Management.csproj", "{201601E5-0BD5-4248-999C-477A1FED4966}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -62,6 +64,10 @@ Global
 		{B4F53302-C237-41F7-8C23-70F2F040AFE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B4F53302-C237-41F7-8C23-70F2F040AFE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B4F53302-C237-41F7-8C23-70F2F040AFE3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{201601E5-0BD5-4248-999C-477A1FED4966}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{201601E5-0BD5-4248-999C-477A1FED4966}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{201601E5-0BD5-4248-999C-477A1FED4966}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{201601E5-0BD5-4248-999C-477A1FED4966}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -73,6 +79,7 @@ Global
 		{304407A0-7950-40C7-B4E1-DE2394ED6560} = {997C7D02-1427-44A8-B88D-585C08A4EA4C}
 		{B051FAC2-9BE2-4735-A130-C718EADD6EA2} = {83413885-5F3F-43A7-93E8-10421D3D4BD4}
 		{B4F53302-C237-41F7-8C23-70F2F040AFE3} = {83413885-5F3F-43A7-93E8-10421D3D4BD4}
+		{201601E5-0BD5-4248-999C-477A1FED4966} = {83413885-5F3F-43A7-93E8-10421D3D4BD4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7D56F0E7-4ABE-4B97-AACD-7814EAAE4DC9}
