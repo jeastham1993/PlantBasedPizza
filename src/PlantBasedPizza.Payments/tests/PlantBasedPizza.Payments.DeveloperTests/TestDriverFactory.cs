@@ -7,7 +7,7 @@ public static class TestDriverFactory
 {
     public static ITestDriver LoadTestDriver(InMemoryEventPublisher eventPublisher, MemoryDistributedCache cache)
     {
-        if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("INTEGRATION_TEST")))
+        if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable("TEST_HARNESS_ENDPOINT")))
         {
             return new IntegrationTestDriver();
         }

@@ -43,7 +43,7 @@ jobs:
 
   start-test-apps:
     runs-on: ubuntu-latest
-    needs: deploy-test
+    needs: build-and-push
     defaults:
       run:
         working-directory: ./src/PlantBasedPizza.Payments
@@ -72,7 +72,7 @@ jobs:
 
   deploy-test:
     runs-on: ubuntu-latest
-    needs: build-and-push
+    needs: start-test-apps
     defaults:
       run:
         working-directory: ./infra/payments
@@ -156,10 +156,6 @@ jobs:
         shell: bash
         run: |
           echo "IMAGE_TAG=$(git rev-parse --short "$GITHUB_SHA")" >> "$GITHUB_ENV"
-      - name: Startup test container apps
-        env:
-          RUN_MODE: start
-        run: dotnet run --project tests/PlantBasedPizza.Payments.Management/PlantBasedPizza.Payments.Management.csproj
       - name: Run integration tests
         env:
           TEST_HARNESS_ENDPOINT: ${{env.PAYMENT_TEST_HARNESS_ENDPOINT}}

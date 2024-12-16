@@ -17,6 +17,9 @@ push:
 unit-test:
 	dotnet test tests/PlantBasedPizza.Payments.DeveloperTests
 
+developer-test:
+	dotnet test tests/PlantBasedPizza.Payments.DeveloperTests
+
 integration-test:
 	docker compose -f docker-compose.yml -f docker-compose-integration.yml up -d
 	sleep 5
