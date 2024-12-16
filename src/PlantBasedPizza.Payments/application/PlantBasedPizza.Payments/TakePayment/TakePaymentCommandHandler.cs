@@ -10,19 +10,22 @@ public class TakePaymentCommandHandler(ILogger<TakePaymentCommandHandler> logger
 {
     [Channel("payments.takepayment.v1")]
     [PublishOperation(typeof(TakePaymentCommand), OperationId = nameof(TakePaymentCommand))]
-    public async Task<bool> Handle(TakePaymentCommand command)
+    public async Task<TakePaymentResponse> Handle(TakePaymentCommand command)
     {
         var verificationResult = command.Verify();
 
         if (!verificationResult.IsSuccess)
         {
             if (verificationResult.ShouldNotify)
+            {
                 await eventPublisher.PublishPaymentFailedEventV1(new PaymentFailedEventV1()
                 {
                     OrderIdentifier = command.OrderIdentifier
-                });    
+                });
+                return new TakePaymentResponse(TakePaymentStatus.PAYMENT_FAILED);
+            }
 
-            return false;
+            return new TakePaymentResponse(TakePaymentStatus.PAYMENT_FAILED);
         }
         
         var hasOrderBeenProcessed = await cache.GetStringAsync(command.OrderIdentifier);
@@ -30,7 +33,7 @@ public class TakePaymentCommandHandler(ILogger<TakePaymentCommandHandler> logger
         if ((hasOrderBeenProcessed ?? "").Equals("processed"))
         {
             Activity.Current?.AddTag("payment-processed", "true");
-            return true;
+            return new TakePaymentResponse(TakePaymentStatus.OK);
         }
 
         try
@@ -55,7 +58,7 @@ public class TakePaymentCommandHandler(ILogger<TakePaymentCommandHandler> logger
             
             await cache.SetStringAsync(command.OrderIdentifier, "processed");
 
-            return true;
+            return new TakePaymentResponse(TakePaymentStatus.OK);
         }
         catch (Exception ex)
         {
@@ -67,7 +70,7 @@ public class TakePaymentCommandHandler(ILogger<TakePaymentCommandHandler> logger
                 OrderIdentifier = command.OrderIdentifier
             });
 
-            return false;
+            return new TakePaymentResponse(TakePaymentStatus.UNEXPECTED_ERROR);
         }
     }
 }

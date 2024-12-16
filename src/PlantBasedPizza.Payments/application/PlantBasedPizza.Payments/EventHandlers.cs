@@ -47,8 +47,10 @@ public static class EventHandlers
                     }
 
                     var result = await handler.Handle(command);
+                    processActivity?.AddTag("paymentStatus", result.Status.ToString());
 
-                    if (!result)
+                    // Only return a bad request if there is an unknown error, this will force Dapr to retry.
+                    if (result.Status == TakePaymentStatus.UNEXPECTED_ERROR)
                     {
                         return Results.BadRequest();
                     }

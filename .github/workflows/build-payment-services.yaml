@@ -53,12 +53,6 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: "9"
-      - name: Configure Datadog Test Visibility
-        uses: datadog/test-visibility-github-action@v2
-        with:
-          languages: dotnet
-          api_key: ${{ secrets.DD_API_KEY }}
-          site: datadoghq.com # Change if your site is not US1
       - name: Azure login
         uses: azure/login@v2
         with:
@@ -101,7 +95,7 @@ jobs:
         uses: datadog/test-visibility-github-action@v2
         with:
           languages: dotnet
-          api_key: ${{ secrets.DD_API_KEY }}
+          api_key: ${{ secrets.ACA_DD_API_KEY }}
           site: datadoghq.com # Change if your site is not US1
       - name: Azure login
         uses: azure/login@v2
@@ -122,3 +116,18 @@ jobs:
         env:
           RUN_MODE: stop
         run: dotnet run --project tests/PlantBasedPizza.Payments.Management/PlantBasedPizza.Payments.Management.csproj
+
+  deploy-dev:
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/tf-deploy-base.yaml@azure
+    needs: build-and-push
+    with:
+      infrastructure-root-folder: "./infra/payments"
+      tf-state-backend-key: payments.tfstate
+      resource-group-name: plant-based-pizza-dev
+      env: dev
+      public-service-bus-namespace: plant-based-pizza-public-dev
+    secrets:
+      AZURE_CLIENT_ID: ${{secrets.DEV_AZURE_CLIENT_ID}}
+      AZURE_TENANT_ID: ${{secrets.AZURE_TENANT_ID}}
+      AZURE_SUBSCRIPTION_ID: ${{secrets.AZURE_SUBSCRIPTION_ID}}
+      DD_API_KEY: ${{secrets.ACA_DD_API_KEY}}
