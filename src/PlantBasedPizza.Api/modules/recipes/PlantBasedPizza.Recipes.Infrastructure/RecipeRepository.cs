@@ -9,7 +9,7 @@ public class RecipeRepository : IRecipeRepository
 
     public RecipeRepository(MongoClient client)
     {
-        var database = client.GetDatabase("PlantBasedPizza");
+        var database = client.GetDatabase("PlantBasedPizza_Monolith");
         this._recipes = database.GetCollection<Recipe>("recipes");
     }
     

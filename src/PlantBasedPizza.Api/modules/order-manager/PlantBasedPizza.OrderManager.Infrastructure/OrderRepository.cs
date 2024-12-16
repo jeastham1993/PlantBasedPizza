@@ -10,7 +10,7 @@ public class OrderRepository : IOrderRepository
 
     public OrderRepository(MongoClient client)
     {
-        var database = client.GetDatabase("PlantBasedPizza");
+        var database = client.GetDatabase("PlantBasedPizza_Monolith");
         this._orders = database.GetCollection<Order>("orders");
     }
 
