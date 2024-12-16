@@ -12,6 +12,6 @@ resource "azurerm_role_assignment" "azure_service_bus_sender" {
 
 resource "azurerm_role_assignment" "azure_service_bus_receiver" {
   scope                = azurerm_servicebus_namespace.plant_based_pizza_public_service_bus.id
-  role_definition_name = "Azure Service Bus Data Sender"
+  role_definition_name = "Azure Service Bus Data Receiver"
   principal_id         = azurerm_user_assigned_identity.public_service_bus_identity.principal_id
 }
