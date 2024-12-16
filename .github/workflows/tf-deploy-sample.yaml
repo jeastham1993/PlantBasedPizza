@@ -58,6 +58,3 @@ jobs:
                 -var db_connection_string="${DB_CONNECTION_STRING}" \
                 -var public_service_bus_namespace="plant-based-pizza-public-payments-test" \
                 -auto-approve
-
-
-        
