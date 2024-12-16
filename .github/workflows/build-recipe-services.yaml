@@ -10,6 +10,7 @@ on:
       - .github/workflows/build-recipe-services.yaml
       - src/PlantBasedPizza.Recipes/**
       - src/shared/**
+      - infra/recipes/**
   workflow_dispatch:
 
 permissions:

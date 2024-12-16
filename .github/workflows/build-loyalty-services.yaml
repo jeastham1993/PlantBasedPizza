@@ -9,6 +9,7 @@ on:
         - .github/workflows/build-loyalty-services.yaml
         - src/PlantBasedPizza.LoyaltyPoints/**
         - src/shared/**
+        - infra/loyalty/**
     workflow_dispatch:
 
 permissions:

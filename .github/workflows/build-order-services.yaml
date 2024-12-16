@@ -9,6 +9,7 @@ on:
         - .github/workflows/build-order-services.yaml
         - src/PlantBasedPizza.Orders/**
         - src/shared/**
+        - infra/orders/**
     workflow_dispatch:
 
 permissions:

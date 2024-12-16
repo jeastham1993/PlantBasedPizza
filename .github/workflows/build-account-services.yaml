@@ -9,6 +9,7 @@ on:
       - .github/workflows/build-account-services.yaml
       - src/PlantBasedPizza.Account/**
       - src/shared/**
+      - infra/account/**
   workflow_dispatch:
 
 permissions:

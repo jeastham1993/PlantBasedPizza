@@ -9,6 +9,7 @@ on:
         - .github/workflows/build-kitchen-services.yaml
         - src/PlantBasedPizza.Kitchen/**
         - src/shared/**
+        - infra/kitchen/**
     workflow_dispatch:
 
 permissions:

@@ -9,6 +9,7 @@ on:
       - .github/workflows/build-payment-services.yaml
       - src/PlantBasedPizza.Payments/**
       - src/shared/**
+      - infra/payments/**
   workflow_dispatch:
 
 permissions:
