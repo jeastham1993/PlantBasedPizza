@@ -48,7 +48,7 @@ jobs:
       - name: Terraform apply
         id: apply
         run: |
-            terraform apply -var subscription_id="${AZURE_SUBSCRIPTION_ID}" \
+            terraform apply -var subscription_id="${ARM_SUBSCRIPTION_ID}" \
                 -var resource_group_name="plant-based-pizza-payments-test" \
                 -var env="payments-test" \
                 -var app_version="8c33328" \
