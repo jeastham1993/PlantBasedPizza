@@ -33,3 +33,18 @@ jobs:
       DOCKERHUB_USERNAME: ${{secrets.DOCKERHUB_USERNAME}}
       DOCKERHUB_TOKEN: ${{secrets.DOCKERHUB_TOKEN}}
       DD_API_KEY: ${{secrets.ACA_DD_API_KEY}}
+
+  deploy-dev:
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/tf-deploy-base.yaml@azure
+    needs: build-and-push
+    with:
+      infrastructure-root-folder: "./infra/orders"
+      tf-state-backend-key: orders.tfstate
+      resource-group-name: plant-based-pizza-dev
+      env: dev
+      public-service-bus-namespace: plant-based-pizza-public-dev
+    secrets:
+      AZURE_CLIENT_ID: ${{secrets.DEV_AZURE_CLIENT_ID}}
+      AZURE_TENANT_ID: ${{secrets.AZURE_TENANT_ID}}
+      AZURE_SUBSCRIPTION_ID: ${{secrets.AZURE_SUBSCRIPTION_ID}}
+      DD_API_KEY: ${{secrets.ACA_DD_API_KEY}}
