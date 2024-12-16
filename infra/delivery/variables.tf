@@ -28,6 +28,7 @@ variable "momento_api_key" {
 
 variable "cache_name" {
   type = string
+  default = "plantbasedpizza.delivery"
 }
 
 variable "db_connection_string" {

@@ -55,3 +55,43 @@ module "delivery_test_environment" {
   dd_site         = var.dd_site
   subscription_id = var.subscription_id
 }
+
+module "account_test_environment" {
+  source          = "../module/environment"
+  env             = "account-test"
+  dd_api_key      = var.dd_api_key
+  dd_site         = var.dd_site
+  subscription_id = var.subscription_id
+}
+
+module "kitchen_test_environment" {
+  source          = "../module/environment"
+  env             = "kitchen-test"
+  dd_api_key      = var.dd_api_key
+  dd_site         = var.dd_site
+  subscription_id = var.subscription_id
+}
+
+module "loyalty_test_environment" {
+  source          = "../module/environment"
+  env             = "loyalty-test"
+  dd_api_key      = var.dd_api_key
+  dd_site         = var.dd_site
+  subscription_id = var.subscription_id
+}
+
+module "orders_test_environment" {
+  source          = "../module/environment"
+  env             = "orders-test"
+  dd_api_key      = var.dd_api_key
+  dd_site         = var.dd_site
+  subscription_id = var.subscription_id
+}
+
+module "recipes_test_environment" {
+  source          = "../module/environment"
+  env             = "recipes-test"
+  dd_api_key      = var.dd_api_key
+  dd_site         = var.dd_site
+  subscription_id = var.subscription_id
+}
