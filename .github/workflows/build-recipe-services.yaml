@@ -39,7 +39,7 @@ jobs:
     uses: jeastham1993/PlantBasedPizza/.github/workflows/tf-deploy-base.yaml@azure
     needs: build-and-push
     with:
-      infrastructure-root-folder: "./infra/accrecipesount"
+      infrastructure-root-folder: "./infra/recipes"
       tf-state-backend-key: recipes.tfstate
       resource-group-name: plant-based-pizza-dev
       env: dev
