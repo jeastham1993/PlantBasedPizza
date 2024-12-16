@@ -1,0 +1,80 @@
+name: Build & Push Base Workflow
+
+on:
+  workflow_call:
+    inputs:
+      application-root-folder:
+        type: string
+        required: true
+      tf-state-backend-key:
+        type: string
+        required: true
+      resource-group-name:
+        type: string
+        required: true
+      env:
+        type: string
+        required: true
+      public-service-bus-namespace:
+        type: string
+        required: true
+    secrets:
+      AZURE_CLIENT_ID:
+        description: "The Azure client"
+        required: true
+      AZURE_TENANT_ID:
+        description: "The Azure Tenant Id"
+        required: true
+      AZURE_SUBSCRIPTION_ID:
+        description: "The Azure Subscription Id"
+        required: true
+      DD_API_KEY:
+        required: true
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  tf-deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{inputs.application-root-folder}}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      - name: Terraform Init
+        id: init
+        run: terraform init -backend-config="key=${{inputs.tf-state-backend-key}}" -backend-config="use_oidc=true"
+      - name: Declare some variables
+        shell: bash
+        run: |
+          echo "IMAGE_TAG=$(git rev-parse --short "$GITHUB_SHA")" >> "$GITHUB_ENV"
+      - name: Terraform apply
+        id: apply
+        env:
+          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          DD_API_KEY: ${{ secrets.DD_API_KEY }}
+          MOMENTO_API_KEY: ${{ secrets.MOMENTO_API_KEY }}
+          DB_CONNECTION_STRING: ${{ secrets.DB_CONNECTION_STRING }}
+        run: |
+          terraform apply -var subscription_id="${AZURE_SUBSCRIPTION_ID}" \
+              -var resource_group_name="${{inputs.resource-group-name}}" \
+              -var env="${{inputs.env}}" \
+              -var app_version="${IMAGE_TAG}" \
+              -var dd_api_key="${DD_API_KEY}" \
+              -var dd_site="datadoghq.eu" \
+              -var momento_api_key="${MOMENTO_API_KEY}" \
+              -var db_connection_string="${DB_CONNECTION_STRING}" \
+              -var public_service_bus_namespace="${{inputs.public-service-bus-namespace}}" \
+              -auto-approve
