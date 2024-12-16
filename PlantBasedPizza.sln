@@ -39,6 +39,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "applications", "applications", "{3A26A029-7C47-4975-AA1F-52384C345FCD}"
 	ProjectSection(SolutionItems) = preProject
 		docker-compose.yml = docker-compose.yml
+		src\PlantBasedPizza.Api\application\PlantBasedPizza.Api\Dockerfile = src\PlantBasedPizza.Api\application\PlantBasedPizza.Api\Dockerfile
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Api", "src\PlantBasedPizza.Api\application\PlantBasedPizza.Api\PlantBasedPizza.Api.csproj", "{77042AE0-1337-4133-9073-A7C33EBD3DCC}"
