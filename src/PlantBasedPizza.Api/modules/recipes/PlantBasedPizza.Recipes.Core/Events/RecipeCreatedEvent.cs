@@ -4,7 +4,7 @@ using PlantBasedPizza.Shared.Events;
 
 namespace PlantBasedPizza.Recipes.Core.Events
 {
-    public class RecipeCreatedEvent : IDomainEvent
+    internal class RecipeCreatedEvent : IDomainEvent
     {
         public RecipeCreatedEvent(Recipe recipe, string correlationId)
         {

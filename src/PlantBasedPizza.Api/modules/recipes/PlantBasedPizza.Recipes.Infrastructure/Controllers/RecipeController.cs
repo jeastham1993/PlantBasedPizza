@@ -6,7 +6,7 @@ using PlantBasedPizza.Shared.Logging;
 namespace PlantBasedPizza.Recipes.Infrastructure.Controllers
 {
     [Route("recipes")]
-    public class RecipeController : ControllerBase
+    internal class RecipeController : ControllerBase
     {
         private readonly IRecipeRepository _recipeRepository;
         private readonly IObservabilityService _observability;

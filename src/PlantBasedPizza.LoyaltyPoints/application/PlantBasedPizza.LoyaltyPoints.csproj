@@ -17,4 +17,33 @@
     <ProjectReference Include="..\..\shared\PlantBasedPizza.Shared\PlantBasedPizza.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="PlantBasedPizza.LoyaltyPoints.Api\bin\Debug\net8.0\appsettings.Development.json" />
+    <_ContentIncludedByDefault Remove="PlantBasedPizza.LoyaltyPoints.Api\bin\Debug\net8.0\appsettings.json" />
+    <_ContentIncludedByDefault Remove="PlantBasedPizza.LoyaltyPoints.Api\bin\Debug\net8.0\PlantBasedPizza.LoyaltyPoints.deps.json" />
+    <_ContentIncludedByDefault Remove="PlantBasedPizza.LoyaltyPoints.Api\bin\Debug\net8.0\PlantBasedPizza.LoyaltyPoints.runtimeconfig.json" />
+    <_ContentIncludedByDefault Remove="PlantBasedPizza.LoyaltyPoints.Api\bin\Debug\net8.0\PlantBasedPizza.LoyaltyPoints.staticwebassets.endpoints.json" />
+    <_ContentIncludedByDefault Remove="PlantBasedPizza.LoyaltyPoints.Api\bin\Debug\net9.0\appsettings.Development.json" />
+    <_ContentIncludedByDefault Remove="PlantBasedPizza.LoyaltyPoints.Api\bin\Debug\net9.0\appsettings.json" />
+    <_ContentIncludedByDefault Remove="PlantBasedPizza.LoyaltyPoints.Api\bin\Debug\net9.0\PlantBasedPizza.LoyaltyPoints.deps.json" />
+    <_ContentIncludedByDefault Remove="PlantBasedPizza.LoyaltyPoints.Api\bin\Debug\net9.0\PlantBasedPizza.LoyaltyPoints.runtimeconfig.json" />
+    <_ContentIncludedByDefault Remove="PlantBasedPizza.LoyaltyPoints.Api\bin\Debug\net9.0\PlantBasedPizza.LoyaltyPoints.staticwebassets.endpoints.json" />
+    <_ContentIncludedByDefault Remove="PlantBasedPizza.LoyaltyPoints.Api\obj\Debug\net8.0\PlantBasedPizza.LoyaltyPoints.sourcelink.json" />
+    <_ContentIncludedByDefault Remove="PlantBasedPizza.LoyaltyPoints.Api\obj\Debug\net8.0\staticwebassets.build.endpoints.json" />
+    <_ContentIncludedByDefault Remove="PlantBasedPizza.LoyaltyPoints.Api\obj\Debug\net8.0\staticwebassets.build.json" />
+    <_ContentIncludedByDefault Remove="PlantBasedPizza.LoyaltyPoints.Api\obj\Debug\net9.0\PlantBasedPizza.LoyaltyPoints.sourcelink.json" />
+    <_ContentIncludedByDefault Remove="PlantBasedPizza.LoyaltyPoints.Api\obj\Debug\net9.0\staticwebassets.build.endpoints.json" />
+    <_ContentIncludedByDefault Remove="PlantBasedPizza.LoyaltyPoints.Api\obj\Debug\net9.0\staticwebassets.build.json" />
+    <_ContentIncludedByDefault Remove="PlantBasedPizza.LoyaltyPoints.Api\obj\PlantBasedPizza.LoyaltyPoints.csproj.nuget.dgspec.json" />
+    <_ContentIncludedByDefault Remove="PlantBasedPizza.LoyaltyPoints.Api\obj\project.assets.json" />
+    <_ContentIncludedByDefault Remove="PlantBasedPizza.LoyaltyPoints.Api\obj\project.packagespec.json" />
+    <_ContentIncludedByDefault Remove="PlantBasedPizza.LoyaltyPoints.Shared\bin\Debug\net8.0\PlantBasedPizza.LoyaltyPoints.Shared.deps.json" />
+    <_ContentIncludedByDefault Remove="PlantBasedPizza.LoyaltyPoints.Shared\bin\Debug\net9.0\PlantBasedPizza.LoyaltyPoints.Shared.deps.json" />
+    <_ContentIncludedByDefault Remove="PlantBasedPizza.LoyaltyPoints.Shared\obj\Debug\net8.0\PlantBasedPizza.LoyaltyPoints.Shared.sourcelink.json" />
+    <_ContentIncludedByDefault Remove="PlantBasedPizza.LoyaltyPoints.Shared\obj\Debug\net9.0\PlantBasedPizza.LoyaltyPoints.Shared.sourcelink.json" />
+    <_ContentIncludedByDefault Remove="PlantBasedPizza.LoyaltyPoints.Shared\obj\PlantBasedPizza.LoyaltyPoints.Shared.csproj.nuget.dgspec.json" />
+    <_ContentIncludedByDefault Remove="PlantBasedPizza.LoyaltyPoints.Shared\obj\project.assets.json" />
+    <_ContentIncludedByDefault Remove="PlantBasedPizza.LoyaltyPoints.Shared\obj\project.packagespec.json" />
+  </ItemGroup>
+
 </Project>

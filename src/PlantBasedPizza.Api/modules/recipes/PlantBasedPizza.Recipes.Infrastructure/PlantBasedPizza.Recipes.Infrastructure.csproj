@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\PlantBasedPizza.Recipes.Core\PlantBasedPizza.Recipes.Core.csproj" />
+    <ProjectReference Include="..\PlantBasedPizza.Recipes.DataTransfer\PlantBasedPizza.Recipes.DataTransfer.csproj" />
   </ItemGroup>
 
   <ItemGroup>

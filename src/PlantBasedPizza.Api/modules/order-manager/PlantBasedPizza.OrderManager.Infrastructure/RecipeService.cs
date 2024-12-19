@@ -1,21 +1,21 @@
 using PlantBasedPizza.OrderManager.Core.Services;
-using PlantBasedPizza.Recipes.Core.Entities;
+using PlantBasedPizza.Recipes.DataTransfer;
 using Recipe = PlantBasedPizza.OrderManager.Core.ViewModels.Recipe;
 
 namespace PlantBasedPizza.OrderManager.Infrastructure
 {
     public class RecipeService : IRecipeService
     {
-        private readonly IRecipeRepository _recipes;
+        private readonly RecipeDataTransferService _recipes;
 
-        public RecipeService(IRecipeRepository recipes)
+        public RecipeService(RecipeDataTransferService recipes)
         {
             _recipes = recipes;
         }
 
         public async Task<Recipe> GetRecipe(string recipeIdentifier)
         {
-            var recipe = await this._recipes.Retrieve(recipeIdentifier);
+            var recipe = await this._recipes.GetRecipeAsync(recipeIdentifier);
 
             return new Recipe()
             {

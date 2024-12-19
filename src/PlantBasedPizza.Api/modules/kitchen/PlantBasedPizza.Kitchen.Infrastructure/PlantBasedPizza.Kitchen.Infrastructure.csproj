@@ -9,8 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\order-manager\PlantBasedPizza.OrderManager.Core\PlantBasedPizza.OrderManager.Core.csproj" />
-    <ProjectReference Include="..\..\recipes\PlantBasedPizza.Recipes.Core\PlantBasedPizza.Recipes.Core.csproj" />
+    <ProjectReference Include="..\..\order-manager\PlantBasedPizza.OrderManager.DataTransfer\PlantBasedPizza.OrderManager.DataTransfer.csproj" />
+    <ProjectReference Include="..\..\recipes\PlantBasedPizza.Recipes.DataTransfer\PlantBasedPizza.Recipes.DataTransfer.csproj" />
     <ProjectReference Include="..\PlantBasedPizza.Kitchen.Core\PlantBasedPizza.Kitchen.Core.csproj" />
   </ItemGroup>
 

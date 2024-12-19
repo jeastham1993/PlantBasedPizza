@@ -3,7 +3,7 @@ using PlantBasedPizza.Recipes.Core.Entities;
 
 namespace PlantBasedPizza.Recipes.Infrastructure;
 
-public class RecipeRepository : IRecipeRepository
+internal class RecipeRepository : IRecipeRepository
 {
     private readonly IMongoCollection<Recipe> _recipes;
 

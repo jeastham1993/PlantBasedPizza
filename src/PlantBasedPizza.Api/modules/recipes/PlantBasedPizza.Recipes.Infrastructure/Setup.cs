@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PlantBasedPizza.Recipes.Core.Entities;
+using PlantBasedPizza.Recipes.DataTransfer;
 
 namespace PlantBasedPizza.Recipes.Infrastructure
 {
@@ -25,7 +26,8 @@ namespace PlantBasedPizza.Recipes.Infrastructure
                 map.SetIgnoreExtraElements(true);
                 map.SetIgnoreExtraElementsIsInherited(true);
             });
-            
+
+            services.AddSingleton<RecipeDataTransferService>();
             services.AddSingleton<IRecipeRepository, RecipeRepository>();
 
             return services;

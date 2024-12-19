@@ -24,11 +24,15 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\PlantBasedPizza.LoyaltyPoints\application\PlantBasedPizza.LoyaltyPoints.csproj" />
+    <ProjectReference Include="..\..\application\PlantBasedPizza.Api\PlantBasedPizza.Api.csproj" />
     <ProjectReference Include="..\..\modules\deliver\PlantBasedPizza.Deliver.Core\PlantBasedPizza.Deliver.Core.csproj" />
+    <ProjectReference Include="..\..\modules\deliver\PlantBasedPizza.Deliver.Infrastructure\PlantBasedPizza.Deliver.Infrastructure.csproj" />
     <ProjectReference Include="..\..\modules\kitchen\PlantBasedPizza.Kitchen.Core\PlantBasedPizza.Kitchen.Core.csproj" />
+    <ProjectReference Include="..\..\modules\kitchen\PlantBasedPizza.Kitchen.Infrastructure\PlantBasedPizza.Kitchen.Infrastructure.csproj" />
     <ProjectReference Include="..\..\modules\order-manager\PlantBasedPizza.OrderManager.Core\PlantBasedPizza.OrderManager.Core.csproj" />
+    <ProjectReference Include="..\..\modules\order-manager\PlantBasedPizza.OrderManager.Infrastructure\PlantBasedPizza.OrderManager.Infrastructure.csproj" />
     <ProjectReference Include="..\..\modules\recipes\PlantBasedPizza.Recipes.Core\PlantBasedPizza.Recipes.Core.csproj" />
+    <ProjectReference Include="..\..\modules\recipes\PlantBasedPizza.Recipes.Infrastructure\PlantBasedPizza.Recipes.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

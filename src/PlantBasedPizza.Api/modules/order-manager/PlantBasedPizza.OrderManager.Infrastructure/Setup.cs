@@ -8,6 +8,7 @@ using PlantBasedPizza.OrderManager.Core.CreatePickupOrder;
 using PlantBasedPizza.OrderManager.Core.Entities;
 using PlantBasedPizza.OrderManager.Core.Handlers;
 using PlantBasedPizza.OrderManager.Core.Services;
+using PlantBasedPizza.OrderManager.DataTransfer;
 using PlantBasedPizza.Shared.Events;
 
 namespace PlantBasedPizza.OrderManager.Infrastructure
@@ -42,6 +43,7 @@ namespace PlantBasedPizza.OrderManager.Infrastructure
                 map.SetIgnoreExtraElementsIsInherited(true);
             });
             
+            services.AddSingleton<OrderManagerDataTransferService>();
             services.AddSingleton<IOrderRepository, OrderRepository>();
             services.AddSingleton<CollectOrderCommandHandler>();
             services.AddSingleton<AddItemToOrderHandler>();
