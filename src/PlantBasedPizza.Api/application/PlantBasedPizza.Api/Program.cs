@@ -3,9 +3,7 @@ using MongoDB.Driver;
 
 using PlantBasedPizza.Deliver.Infrastructure;
 using PlantBasedPizza.Kitchen.Infrastructure;
-using PlantBasedPizza.OrderManager.Core.Entities;
 using PlantBasedPizza.OrderManager.Infrastructure;
-using PlantBasedPizza.Recipes.Core.Entities;
 using PlantBasedPizza.Recipes.Infrastructure;
 using PlantBasedPizza.Shared;
 using PlantBasedPizza.Shared.Events;
@@ -15,7 +13,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder
     .Configuration
     .AddEnvironmentVariables();
-builder.Services.AddAWSLambdaHosting(LambdaEventSource.HttpApi);
 
 var client = new MongoClient(builder.Configuration["DatabaseConnection"]);
 
@@ -34,8 +31,6 @@ var app = builder.Build();
 
 DomainEvents.Container = app.Services;
 
-Amazon.Lambda.Core.SnapshotRestore.RegisterBeforeSnapshot(async () => await Snapstart.BeforeRestore(app.Services));
-
 var httpClient = app.Services.GetRequiredService<IHttpClientFactory>().CreateClient();
 
 app.Map("/health", async () =>
@@ -44,18 +39,11 @@ app.Map("/health", async () =>
     {
         var res = await httpClient.GetAsync($"{app.Configuration["Services:Loyalty"]}/loyalty/health");
 
-        if (!res.IsSuccessStatusCode)
-        {
-            return Results.Problem("Loyalty points service inactive");
-        }
-
         Activity.Current?.AddTag("loyalty.healthy", res.IsSuccessStatusCode);
     }
     catch (Exception)
     {
         Activity.Current?.AddTag("loyalty.healthy", false);
-        
-        return Results.Problem("Loyalty points service inactive");
     }
     
     return Results.Ok("OK");
@@ -91,32 +79,3 @@ app.Use(async (context, next) =>
 app.MapControllers();
 
 app.Run();
-
-static class Snapstart
-{
-    public static async ValueTask BeforeRestore(IServiceProvider services)
-    {
-        var orderRepository = services.GetRequiredService<IOrderRepository>();
-        var recipeRepository = services.GetRequiredService<IRecipeRepository>();
-        var logger = services.GetRequiredService<ILogger<Program>>();
-
-        for (var x = 0; x < 30; x++)
-        {
-            try
-            {
-                logger.LogInformation($"Before Restore: {x}");
-                
-                await orderRepository.Retrieve("test");
-                await recipeRepository.List();
-                
-                logger.LogInformation($"After Warming: {x}");
-            }
-            catch (Exception)
-            {
-                // Empty exception block is ok, this code is meant to JIT handlers and not return meaningful results
-            }
-        }
-        
-        logger.LogInformation("Before restore complete");
-    }
-}

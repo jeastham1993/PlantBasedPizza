@@ -70,6 +70,22 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Recipes.Dat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.OrderManager.DataTransfer", "src\PlantBasedPizza.Api\modules\order-manager\PlantBasedPizza.OrderManager.DataTransfer\PlantBasedPizza.OrderManager.DataTransfer.csproj", "{2630CB86-018A-4EE6-9EF7-5E81551AD6C0}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "infra", "infra", "{E036394A-EB67-4FC8-9C66-3385053F69E9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "aws", "aws", "{B6E7DB2D-5CF0-4C43-B515-77A38E9FA1D5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "azure", "azure", "{32AD6217-49BB-4387-B0CB-46BDABA54449}"
+	ProjectSection(SolutionItems) = preProject
+		azure\variables.tf = azure\variables.tf
+		azure\data.tf = azure\data.tf
+		azure\identity.tf = azure\identity.tf
+		azure\main.tf = azure\main.tf
+		azure\provider.tf = azure\provider.tf
+		azure\pubsub.tf = azure\pubsub.tf
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AwsInfrastructure", "aws\src\AwsInfrastructure\AwsInfrastructure.csproj", "{87FEC115-921F-4604-9555-81E2F25629DD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -104,6 +120,9 @@ Global
 		{58F2C75A-FC62-430C-BB64-974FDD005C90} = {A58FCAD4-DD5B-4B39-B5C7-A1123CFEE5DD}
 		{11DD1F7E-D007-4ABA-9EB7-115957C76AAD} = {58236992-81BC-446A-814B-95D5D101A705}
 		{2630CB86-018A-4EE6-9EF7-5E81551AD6C0} = {4F6B9B90-B516-4E61-860E-6B2F3F90B2B6}
+		{B6E7DB2D-5CF0-4C43-B515-77A38E9FA1D5} = {E036394A-EB67-4FC8-9C66-3385053F69E9}
+		{32AD6217-49BB-4387-B0CB-46BDABA54449} = {E036394A-EB67-4FC8-9C66-3385053F69E9}
+		{87FEC115-921F-4604-9555-81E2F25629DD} = {B6E7DB2D-5CF0-4C43-B515-77A38E9FA1D5}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{179E35BF-4F04-4660-8F82-413DA572E7F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -178,5 +197,9 @@ Global
 		{2630CB86-018A-4EE6-9EF7-5E81551AD6C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2630CB86-018A-4EE6-9EF7-5E81551AD6C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2630CB86-018A-4EE6-9EF7-5E81551AD6C0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{87FEC115-921F-4604-9555-81E2F25629DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87FEC115-921F-4604-9555-81E2F25629DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87FEC115-921F-4604-9555-81E2F25629DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{87FEC115-921F-4604-9555-81E2F25629DD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
