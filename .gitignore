@@ -439,3 +439,5 @@ sftp-config.json
 .vscode/
 
 **/cdk.out/*
+
+**/Pulumi.*
