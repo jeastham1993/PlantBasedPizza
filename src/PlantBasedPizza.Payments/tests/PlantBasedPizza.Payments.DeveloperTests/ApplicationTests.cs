@@ -36,7 +36,7 @@ public class ApplicationTests
         var orderIdentifier = Guid.NewGuid().ToString();
         await driver.TakePaymentWithValidBody(orderIdentifier, 100);
         await driver.TakePaymentWithValidBody(orderIdentifier, 100);
-    
+
         var successEventsReceived = await driver.VerifySuccessEventReceivedFor(new VerificationOptions(orderIdentifier));
         
         successEventsReceived.Should().Be(1);

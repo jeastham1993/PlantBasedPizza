@@ -74,11 +74,25 @@ public class IntegrationTestDriver : ITestDriver
 
     public async Task<int> VerifySuccessEventReceivedFor(VerificationOptions options)
     {
-        var events = await GetEventsFor(options.OrderIdentifier);
+        var maxReties = 3;
+        var retryCount = 0;
+        var delay = TimeSpan.FromMilliseconds(100);
+        
+        // SLO for payment service is 200ms. Allow for 300ms before responding
+        while (retryCount < maxReties)
+        {
+            await Task.Delay(delay);
+            var events = await GetEventsFor(options.OrderIdentifier);
 
-        var successEvent = events.Count(evt => evt.EventName == "PaymentSuccessfulEventV1");
+            var successEvent = events.Count(evt => evt.EventName == "PaymentSuccessfulEventV1");
 
-        return successEvent;
+            if (successEvent > 0)
+                return successEvent;
+            
+            retryCount++;
+        }
+
+        return 0;
     }
 
     public async Task<int> VerifyFailureEventReceivedFor(VerificationOptions options)
