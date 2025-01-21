@@ -44,7 +44,7 @@ jobs:
       tf-state-backend-key: account.tfstate
       resource-group-name: plant-based-pizza-dev
       env: dev
-      public-service-bus-namespace: plant-based-pizza-public-dev
+      public-service-bus-namespace: plant-based-pizza-pub-dev
     secrets:
       AZURE_CLIENT_ID: ${{secrets.DEV_AZURE_CLIENT_ID}}
       AZURE_TENANT_ID: ${{secrets.AZURE_TENANT_ID}}
