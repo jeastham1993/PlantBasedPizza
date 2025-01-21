@@ -9,7 +9,7 @@ terraform {
   }
   backend "azurerm" {
       resource_group_name  = "terraform-state"
-      storage_account_name = "jeasthamterraformstate"
+      storage_account_name = "plantbasedpizzatfstate"
       container_name       = "plantbasedpizza"
       key                  = "loyalty.tfstate"
   }
