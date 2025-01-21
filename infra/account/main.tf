@@ -37,8 +37,8 @@ resource "azurerm_container_app" "account" {
       cpu    = 0.25
       memory = "0.5Gi"
       env {
-        name        = "DatabaseConnection"
-        secret_name = "database-connection"
+        name  = "DatabaseConnection"
+        value = var.db_connection_string
       }
       env {
         name  = "Environment"
@@ -61,39 +61,39 @@ resource "azurerm_container_app" "account" {
         value = "http://localhost:4317"
       }
       env {
-        name = "DOMAIN"
+        name  = "DOMAIN"
         value = "accounts"
       }
       env {
-        name = "ApplicationConfig__TeamName"
+        name  = "ApplicationConfig__TeamName"
         value = "accounts"
       }
       env {
-        name = "ApplicationConfig__ApplicationName"
+        name  = "ApplicationConfig__ApplicationName"
         value = "account-api"
       }
       env {
-        name = "ApplicationConfig__Environment"
+        name  = "ApplicationConfig__Environment"
         value = var.env
       }
       env {
-        name = "ApplicationConfig__Version"
+        name  = "ApplicationConfig__Version"
         value = var.app_version
       }
       env {
-        name = "ApplicationConfig__DeployedAt"
+        name  = "ApplicationConfig__DeployedAt"
         value = var.app_version
       }
       env {
-        name = "ApplicationConfig__MemoryMb"
+        name  = "ApplicationConfig__MemoryMb"
         value = "500"
       }
       env {
-        name = "ApplicationConfig__CpuCount"
+        name  = "ApplicationConfig__CpuCount"
         value = "0.25"
       }
       env {
-        name = "ApplicationConfig__CloudRegion"
+        name  = "ApplicationConfig__CloudRegion"
         value = "europe-west2"
       }
     }
@@ -124,11 +124,11 @@ resource "azurerm_container_app" "account" {
         value = "account"
       }
       env {
-        name = "DD_LOGS_ENABLED"
+        name  = "DD_LOGS_ENABLED"
         value = "true"
       }
       env {
-        name = "DD_LOGS_INJECTION"
+        name  = "DD_LOGS_INJECTION"
         value = "true"
       }
       env {
