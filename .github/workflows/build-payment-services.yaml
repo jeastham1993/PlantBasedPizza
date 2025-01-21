@@ -50,7 +50,7 @@ jobs:
       tf-state-backend-key: payments-test.tfstate
       resource-group-name: plant-based-pizza-payments-test
       env: payments-test
-      public-service-bus-namespace: plant-based-pizza-public-payments-test
+      public-service-bus-namespace: plant-based-pizza-pub-payments-test
     secrets:
       AZURE_CLIENT_ID: ${{secrets.PAYMENTS_AZURE_CLIENT_ID}}
       AZURE_TENANT_ID: ${{secrets.AZURE_TENANT_ID}}
