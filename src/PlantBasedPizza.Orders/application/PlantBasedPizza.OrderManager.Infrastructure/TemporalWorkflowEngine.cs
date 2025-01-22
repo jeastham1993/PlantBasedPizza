@@ -38,6 +38,12 @@ public class TemporalWorkflowEngine(ITemporalClient client, IOrderRepository ord
         await handle.SignalAsync<OrderProcessingWorkflow>(wf => wf.CancelOrder(cancellationReason));
     }
 
+    public async Task ConfirmKitchenReceipt(string orderIdentifier)
+    {
+        var handle = client.GetWorkflowHandle(generateWorkflowIdFor(orderIdentifier));
+        await handle.SignalAsync<OrderProcessingWorkflow>(wf => wf.KitchenConfirmedOrder());
+    }
+
     public async Task OrderReadyForDelivery(string orderIdentifier)
     {
         var handle = client.GetWorkflowHandle(generateWorkflowIdFor(orderIdentifier));
@@ -56,5 +62,8 @@ public class TemporalWorkflowEngine(ITemporalClient client, IOrderRepository ord
         await handle.SignalAsync<OrderProcessingWorkflow>(wf => wf.OrderDelivered());
     }
 
-    private static string generateWorkflowIdFor(string orderIdentifier) => $"OrderProcessing_{orderIdentifier}";
+    private static string generateWorkflowIdFor(string orderIdentifier)
+    {
+        return $"OrderProcessing_{orderIdentifier}";
+    }
 }

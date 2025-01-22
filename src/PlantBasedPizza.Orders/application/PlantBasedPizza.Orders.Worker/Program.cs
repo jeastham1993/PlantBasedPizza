@@ -70,6 +70,7 @@ app.MapPost("/payment-success", EventHandlers.HandlePaymentSuccessfulEvent);
 app.MapPost("/driver-collected", EventHandlers.HandleDriverCollectedOrderEvent);
 app.MapPost("/driver-delivered", EventHandlers.HandleDriverDeliveredOrderEvent);
 app.MapPost("/loyalty-updated", EventHandlers.HandleLoyaltyPointsUpdatedEvent);
+app.MapPost("/kitchen-confirmed", EventHandlers.HandleKitchenOrderConfirmedEvent);
 app.MapPost("/order-baked", EventHandlers.HandleOrderBakedEvent);
 app.MapPost("/order-preparing", EventHandlers.HandleOrderPreparingEvent);
 app.MapPost("/order-prep-complete", EventHandlers.HandleOrderPrepCompleteEvent);

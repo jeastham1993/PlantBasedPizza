@@ -10,6 +10,8 @@ public interface IWorkflowEngine
 
     Task CancelOrder(string orderIdentifier, string cancellationReason);
 
+    Task ConfirmKitchenReceipt(string orderIdentifier);
+
     Task OrderReadyForDelivery(string orderIdentifier);
 
     Task OrderCollected(string orderIdentifier);

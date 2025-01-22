@@ -6,6 +6,7 @@ using Microsoft.Extensions.Caching.Distributed;
 using PlantBasedPizza.Events;
 using PlantBasedPizza.OrderManager.Core.DriverCollectedOrder;
 using PlantBasedPizza.OrderManager.Core.DriverDeliveredOrder;
+using PlantBasedPizza.OrderManager.Core.KitchenConfirmedOrder;
 using PlantBasedPizza.OrderManager.Core.OrderBaked;
 using PlantBasedPizza.OrderManager.Core.OrderPreparing;
 using PlantBasedPizza.OrderManager.Core.OrderPrepComplete;
@@ -22,6 +23,7 @@ public static class EventHandlers
     private const string DriverCollectedOrderEventName = "delivery.driverCollectedOrder.v1";
     private const string DriverDeliveredOrderEventName = "delivery.driverDeliveredOrder.v1";
     private const string LoyaltyPointsUpdatedEventName = "loyalty.customerLoyaltyPointsUpdated.v1";
+    private const string KitchenOrderConfirmedEventName = "kitchen.orderConfirmed.v1";
     private const string OrderBakedEventName = "kitchen.orderBaked.v1";
     private const string OrderPreparingEventName = "kitchen.orderPreparing.v1";
     private const string OrderPrepCompleteEventName = "kitchen.orderPrepComplete.v1";
@@ -179,6 +181,47 @@ public static class EventHandlers
 
             await cache.SetStringAsync(evt.CustomerIdentifier.ToUpper(),
                 evt.TotalLoyaltyPoints.ToString("n0"));
+
+            await idempotency.ProcessedSuccessfully(eventId);
+
+            return Results.Ok();
+        }
+        catch (Exception ex)
+        {
+            Activity.Current?.AddException(ex);
+            Activity.Current?.AddTag("messaging.error", true);
+
+            return Results.InternalServerError();
+        }
+    }
+    
+    [Topic("public", KitchenOrderConfirmedEventName,
+        DeadLetterTopic = FailedMessagesEventName)]
+    public static async Task<IResult> HandleKitchenOrderConfirmedEvent(
+        [FromServices] KitchenConfirmedOrderEventHandler kitchenConfirmedEventHandler,
+        [FromServices] Idempotency idempotency,
+        [FromServices] IConfiguration configuration,
+        HttpContext httpContext,
+        KitchenConfirmedOrderEventV1 evt)
+    {
+        try
+        {
+            var eventId = httpContext.ExtractEventId();
+
+            using var processActivity = Activity.Current?.Source.StartActivityWithProcessSemanticConventions(
+                new SemanticConventions(
+                    EventType.PUBLIC,
+                    OrderBakedEventName,
+                    eventId,
+                    "dapr",
+                    "public",
+                    configuration["ApplicationConfig:ApplicationName"] ?? "",
+                    evt.OrderIdentifier
+                ));
+
+            if (await idempotency.HasEventBeenProcessedWithId(eventId)) return Results.Ok();
+
+            await kitchenConfirmedEventHandler.Handle(evt);
 
             await idempotency.ProcessedSuccessfully(eventId);
 

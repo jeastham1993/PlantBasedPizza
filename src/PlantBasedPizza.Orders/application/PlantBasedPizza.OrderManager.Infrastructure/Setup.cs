@@ -13,6 +13,7 @@ using PlantBasedPizza.OrderManager.Core.ConfirmOrder;
 using PlantBasedPizza.OrderManager.Core.CreateDeliveryOrder;
 using PlantBasedPizza.OrderManager.Core.CreatePickupOrder;
 using PlantBasedPizza.OrderManager.Core.Entities;
+using PlantBasedPizza.OrderManager.Core.KitchenConfirmedOrder;
 using PlantBasedPizza.OrderManager.Core.OrderDelivered;
 using PlantBasedPizza.OrderManager.Core.OrderReadyForDelivery;
 using PlantBasedPizza.OrderManager.Core.Services;
@@ -131,6 +132,7 @@ public static class Setup
         services.AddSingleton<OrderReadyForDeliveryCommandHandler>();
         services.AddSingleton<ConfirmOrderCommandHandler>();
         services.AddSingleton<OrderDeliveredEventHandler>();
+        services.AddSingleton<KitchenConfirmedOrderEventHandler>();
         
         services.AddSignalR();
         services.AddSingleton<IUserIdProvider, UserIdClaimUserProvider>();

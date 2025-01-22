@@ -22,6 +22,7 @@ public class OrderProcessingWorkflow : IOrderWorkflow
     private bool _orderPaidFor;
     private decimal _paymentAmount;
     private bool _orderCancelled;
+    private bool _kitchenConfirmed;
     private bool _kitchenCompletedOrder;
     private bool _orderCollected;
     private bool _orderDelivered;
@@ -54,6 +55,8 @@ public class OrderProcessingWorkflow : IOrderWorkflow
 
         _currentStatus = OrderStatus.Confirmed;
 
+        await WaitForKitchenConfirmation();
+
         await WaitForKitchen();
 
         if (order.OrderType == OrderType.Delivery)
@@ -71,6 +74,12 @@ public class OrderProcessingWorkflow : IOrderWorkflow
     {
         _orderPaidFor = true;
         _paymentAmount = paymentAmount;
+    }
+
+    [WorkflowSignal]
+    public async Task KitchenConfirmedOrder()
+    {
+        _kitchenConfirmed = true;
     }
 
     [WorkflowSignal]
@@ -140,6 +149,30 @@ public class OrderProcessingWorkflow : IOrderWorkflow
     public async Task WaitForPotentialCancellation()
     {
         await Workflow.DelayAsync(TimeSpan.FromSeconds(10));
+    }
+
+    public async Task WaitForKitchenConfirmation()
+    {
+        var maxRetries = 3;
+
+        while (!_kitchenConfirmed && maxRetries > 0)
+        {
+            await Workflow.DelayAsync(TimeSpan.FromSeconds(10));
+            maxRetries--;
+        }
+
+        if (!_kitchenConfirmed)
+        {
+            await ConfirmOrder();
+
+            maxRetries = 3;
+
+            while (!_kitchenConfirmed && maxRetries > 0)
+            {
+                await Workflow.DelayAsync(TimeSpan.FromSeconds(5));
+                maxRetries--;
+            }
+        }
     }
 
     public async Task WaitForKitchen()
@@ -214,10 +247,7 @@ public class OrderProcessingWorkflow : IOrderWorkflow
             }
         }
 
-        if (!_orderPaidFor)
-        {
-            await CancelOrder("Order cancelled due to payment failure.");
-        }
+        if (!_orderPaidFor) await CancelOrder("Order cancelled due to payment failure.");
     }
 
     public async Task ConfirmOrder()

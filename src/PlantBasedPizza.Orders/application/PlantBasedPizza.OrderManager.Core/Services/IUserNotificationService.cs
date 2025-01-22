@@ -4,6 +4,8 @@ public interface IUserNotificationService
 {
     Task NotifyPaymentSuccess(string customerIdentifier, string orderIdentifier);
     
+    Task NotifyKitchenReceipt(string customerIdentifier, string orderIdentifier);
+    
     Task NotifyOrderPreparing(string customerIdentifier, string orderIdentifier);
     
     Task NotifyOrderPrepComplete(string customerIdentifier, string orderIdentifier);

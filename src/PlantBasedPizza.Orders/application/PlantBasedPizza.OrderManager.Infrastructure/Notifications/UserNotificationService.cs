@@ -10,6 +10,11 @@ public class UserNotificationService(IHubContext<OrderNotificationsHub> hub) : I
         await hub.Clients.User(customerIdentifier).SendAsync("paymentSuccess", orderIdentifier);
     }
 
+    public async Task NotifyKitchenReceipt(string customerIdentifier, string orderIdentifier)
+    {
+        await hub.Clients.User(customerIdentifier).SendAsync("kitchenConfirmedReceipt", orderIdentifier);
+    }
+
     public async Task NotifyOrderPreparing(string customerIdentifier, string orderIdentifier)
     {
         await hub.Clients.User(customerIdentifier).SendAsync("preparing", orderIdentifier);
