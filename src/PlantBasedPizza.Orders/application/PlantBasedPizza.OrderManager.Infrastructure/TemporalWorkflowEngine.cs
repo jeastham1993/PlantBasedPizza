@@ -32,10 +32,10 @@ public class TemporalWorkflowEngine(ITemporalClient client, IOrderRepository ord
         await handle.SignalAsync<OrderProcessingWorkflow>(wf => wf.ReceivePaymentFor(paymentAmount));
     }
 
-    public async Task CancelOrder(string orderIdentifier)
+    public async Task CancelOrder(string orderIdentifier, string cancellationReason)
     {
         var handle = client.GetWorkflowHandle(generateWorkflowIdFor(orderIdentifier));
-        await handle.SignalAsync<OrderProcessingWorkflow>(wf => wf.CancelOrder());
+        await handle.SignalAsync<OrderProcessingWorkflow>(wf => wf.CancelOrder(cancellationReason));
     }
 
     public async Task OrderReadyForDelivery(string orderIdentifier)

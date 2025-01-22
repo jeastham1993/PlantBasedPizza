@@ -9,7 +9,7 @@ public class CancelOrderCommandHandler(IOrderRepository orderRepository, IUserNo
     {
         var order = await orderRepository.Retrieve(command.OrderIdentifier);
 
-        var cancelResult = order.CancelOrder();
+        var cancelResult = order.CancelOrder(command.CancellationReason ?? "");
 
         if (!cancelResult)
         {

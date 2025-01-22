@@ -6,7 +6,7 @@ public interface IOrderWorkflow
 
     Task SubmitOrder();
     
-    Task CancelOrder();
+    Task CancelOrder(string cancellationReason);
 
     Task TakePayment();
 

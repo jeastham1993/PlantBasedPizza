@@ -151,7 +151,7 @@ public static class OrderEndpoints
         {
             if (features.UseOrchestrator())
             {
-                await workflowEngine.CancelOrder(command.OrderIdentifier);
+                await workflowEngine.CancelOrder(command.OrderIdentifier, command.CancellationReason ?? "Manual cancellation");
                 return Results.Ok();
             }
 

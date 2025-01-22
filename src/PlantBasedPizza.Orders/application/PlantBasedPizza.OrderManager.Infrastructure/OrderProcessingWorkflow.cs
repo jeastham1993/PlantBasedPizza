@@ -74,11 +74,11 @@ public class OrderProcessingWorkflow : IOrderWorkflow
     }
 
     [WorkflowSignal]
-    public async Task CancelOrder()
+    public async Task CancelOrder(string cancellationReason)
     {
         _orderCancelled = true;
         await Workflow.ExecuteActivityAsync(
-            (OrderActivities act) => act.CancelOrder(_currentOrder!.OrderIdentifier),
+            (OrderActivities act) => act.CancelOrder(_currentOrder!.OrderIdentifier, cancellationReason),
             new ActivityOptions
             {
                 ScheduleToCloseTimeout = TimeSpan.FromSeconds(30), RetryPolicy = new RetryPolicy
@@ -192,7 +192,7 @@ public class OrderProcessingWorkflow : IOrderWorkflow
             paymentRetries--;
         }
 
-        if (_orderPaidFor)
+        if (!_orderPaidFor)
         {
             await Workflow.ExecuteActivityAsync(
                 (OrderActivities act) => act.TakePayment(_currentOrder!),
@@ -216,7 +216,7 @@ public class OrderProcessingWorkflow : IOrderWorkflow
 
         if (!_orderPaidFor)
         {
-            _orderCancelled = true;
+            await CancelOrder("Order cancelled due to payment failure.");
         }
     }
 

@@ -8,7 +8,7 @@ public interface IWorkflowEngine
 
     Task ConfirmPayment(string orderIdentifier, decimal paymentAmount);
 
-    Task CancelOrder(string orderIdentifier);
+    Task CancelOrder(string orderIdentifier, string cancellationReason);
 
     Task OrderReadyForDelivery(string orderIdentifier);
 

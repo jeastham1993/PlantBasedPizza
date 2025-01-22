@@ -264,14 +264,14 @@ namespace PlantBasedPizza.OrderManager.Core.Entities
             AddHistory("Order awaiting collection");
         }
 
-        public bool CancelOrder()
+        public bool CancelOrder(string cancellationReason)
         {
             if (OrderSubmittedOn.HasValue)
             {
                 return false;
             }
             
-            AddHistory("Order cancelled");
+            AddHistory($"Order cancelled. Reason: '{cancellationReason}");
             OrderCancelledOn = DateTime.Now;
             
             addEvent(new OrderCancelledEventV1()
