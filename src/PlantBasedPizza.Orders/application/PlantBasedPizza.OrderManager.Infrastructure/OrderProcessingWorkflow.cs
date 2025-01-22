@@ -15,7 +15,7 @@ public enum OrderStatus
 }
 
 [Workflow]
-public class OrderProcessingWorkflow(ILogger<OrderProcessingWorkflow> logger) : IOrderWorkflow
+public class OrderProcessingWorkflow : IOrderWorkflow
 {
     private OrderDto? _currentOrder;
     private OrderStatus _currentStatus = OrderStatus.Pending;
@@ -173,7 +173,6 @@ public class OrderProcessingWorkflow(ILogger<OrderProcessingWorkflow> logger) : 
 
     public async Task TakePayment()
     {
-        logger.LogInformation("Attempting to take payment");
         await Workflow.ExecuteActivityAsync(
             (OrderActivities act) => act.TakePayment(_currentOrder!),
             new ActivityOptions
@@ -195,7 +194,6 @@ public class OrderProcessingWorkflow(ILogger<OrderProcessingWorkflow> logger) : 
 
         if (_orderPaidFor)
         {
-            logger.LogInformation("Payment failed, retrying payment");
             await Workflow.ExecuteActivityAsync(
                 (OrderActivities act) => act.TakePayment(_currentOrder!),
                 new ActivityOptions
@@ -218,7 +216,6 @@ public class OrderProcessingWorkflow(ILogger<OrderProcessingWorkflow> logger) : 
 
         if (!_orderPaidFor)
         {
-            logger.LogInformation("Payment not processed, cancelling order");
             _orderCancelled = true;
         }
     }
