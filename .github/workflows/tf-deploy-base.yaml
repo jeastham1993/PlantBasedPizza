@@ -33,6 +33,10 @@ on:
         required: true
       DD_API_KEY:
         required: true
+      DB_CONNECTION_STRING:
+        required: true
+      MOMENTO_API_KEY:
+        required: true
 
 env:
   ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
