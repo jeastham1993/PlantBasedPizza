@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using PlantBasedPizza.OrderManager.Core.Entities;
 using PlantBasedPizza.OrderManager.Core.Services;
 using Temporalio.Common;
@@ -14,7 +15,7 @@ public enum OrderStatus
 }
 
 [Workflow]
-public class OrderProcessingWorkflow : IOrderWorkflow
+public class OrderProcessingWorkflow(ILogger<OrderProcessingWorkflow> logger) : IOrderWorkflow
 {
     private OrderDto? _currentOrder;
     private OrderStatus _currentStatus = OrderStatus.Pending;
@@ -59,7 +60,7 @@ public class OrderProcessingWorkflow : IOrderWorkflow
             await WaitForDelivery();
         else
             await WaitForCollection();
-        
+
         _currentStatus = OrderStatus.Completed;
 
         return _currentStatus;
@@ -172,6 +173,7 @@ public class OrderProcessingWorkflow : IOrderWorkflow
 
     public async Task TakePayment()
     {
+        logger.LogInformation("Attempting to take payment");
         await Workflow.ExecuteActivityAsync(
             (OrderActivities act) => act.TakePayment(_currentOrder!),
             new ActivityOptions
@@ -183,7 +185,42 @@ public class OrderProcessingWorkflow : IOrderWorkflow
                 }
             });
 
-        while (!_orderPaidFor) await Workflow.DelayAsync(TimeSpan.FromSeconds(2));
+        var paymentRetries = 3;
+
+        while (!_orderPaidFor && paymentRetries > 0)
+        {
+            await Workflow.DelayAsync(TimeSpan.FromSeconds(2));
+            paymentRetries--;
+        }
+
+        if (_orderPaidFor)
+        {
+            logger.LogInformation("Payment failed, retrying payment");
+            await Workflow.ExecuteActivityAsync(
+                (OrderActivities act) => act.TakePayment(_currentOrder!),
+                new ActivityOptions
+                {
+                    ScheduleToCloseTimeout = TimeSpan.FromMinutes(2), RetryPolicy = new RetryPolicy
+                    {
+                        MaximumAttempts = 3,
+                        BackoffCoefficient = 2
+                    }
+                });
+
+            paymentRetries = 3;
+
+            while (!_orderPaidFor && paymentRetries > 0)
+            {
+                await Workflow.DelayAsync(TimeSpan.FromSeconds(2));
+                paymentRetries--;
+            }
+        }
+
+        if (!_orderPaidFor)
+        {
+            logger.LogInformation("Payment not processed, cancelling order");
+            _orderCancelled = true;
+        }
     }
 
     public async Task ConfirmOrder()
