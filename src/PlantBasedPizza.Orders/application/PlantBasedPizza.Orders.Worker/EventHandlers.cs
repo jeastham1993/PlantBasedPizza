@@ -28,7 +28,7 @@ public static class EventHandlers
     private const string OrderQualityCheckedEventName = "kitchen.qualityChecked.v1";
     private const string FailedMessagesEventName = "orders.failedMessages";
 
-    [Topic("payments",
+    [Topic("public",
         PaymentSuccessfulEventName,
         DeadLetterTopic = FailedMessagesEventName)]
     public static async Task<IResult> HandlePaymentSuccessfulEvent(
