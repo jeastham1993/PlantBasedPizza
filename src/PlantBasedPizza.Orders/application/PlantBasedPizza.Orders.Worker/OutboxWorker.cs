@@ -71,6 +71,12 @@ public class OutboxWorker : BackgroundService
                             await _eventPublisher.PublishOrderCreatedEventV1(orderCreatedEvent);
                             outboxItem.Processed = true;
                             break;
+                        case nameof(OrderCreatedEventV2):
+                            var orderCreatedV2Event =
+                                JsonSerializer.Deserialize<OrderCreatedEventV2>(outboxItem.EventData);
+                            await _eventPublisher.PublishOrderCreatedEventV2(orderCreatedEvent);
+                            outboxItem.Processed = true;
+                            break;
                         case nameof(OrderSubmittedEventV1):
                             var submittedEvent =
                                 JsonSerializer.Deserialize<OrderSubmittedEventV1>(outboxItem.EventData);

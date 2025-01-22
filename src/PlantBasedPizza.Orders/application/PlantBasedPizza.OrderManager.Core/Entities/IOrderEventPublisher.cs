@@ -16,5 +16,7 @@ public interface IOrderEventPublisher
 
     Task PublishOrderCreatedEventV1(OrderCreatedEventV1 evt);
 
+    Task PublishOrderCreatedEventV2(OrderCreatedEventV2 evt);
+
     Task PublishOrderCancelledEventV1(OrderCancelledEventV1 evt);
 }

@@ -212,4 +212,29 @@ public class OrderEventPublisher(DaprClient daprClient, IConfiguration configura
         };
         await daprClient.PublishEventAsync(PUB_SUB_NAME, eventType, evt, eventMetadata);
     }
+
+    public async Task PublishOrderCreatedEventV2(OrderCreatedEventV2 evt)
+    {
+        var eventType = $"{evt.EventName}.{evt.EventVersion}";
+        var eventId = Guid.NewGuid().ToString();
+
+        using var activity = Activity.Current?.Source.StartActivityWithSemanticConventions(new SemanticConventions(
+            EventType.PUBLIC,
+            eventType,
+            eventId,
+            "dapr",
+            "public",
+            configuration["ApplicationConfig:ApplicationName"] ?? "",
+            evt.OrderId
+        ));
+
+        var eventMetadata = new Dictionary<string, string>(3)
+        {
+            { EventConstants.EVENT_SOURCE_HEADER_KEY, SOURCE },
+            { EventConstants.EVENT_TYPE_HEADER_KEY, eventType },
+            { EventConstants.EVENT_ID_HEADER_KEY, eventId },
+            { EventConstants.EVENT_TIME_HEADER_KEY, DateTime.UtcNow.ToString(DATE_FORMAT) }
+        };
+        await daprClient.PublishEventAsync(PUB_SUB_NAME, eventType, evt, eventMetadata);
+    }
 }
