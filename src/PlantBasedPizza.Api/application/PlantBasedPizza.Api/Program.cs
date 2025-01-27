@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using Dapr.Client;
 using MongoDB.Driver;
-
 using PlantBasedPizza.Deliver.Infrastructure;
 using PlantBasedPizza.Kitchen.Infrastructure;
 using PlantBasedPizza.OrderManager.Infrastructure;
@@ -25,6 +24,7 @@ builder.Services.AddKitchenInfrastructure(builder.Configuration);
 builder.Services.AddDeliveryModuleInfrastructure(builder.Configuration);
 builder.Services.AddSharedInfrastructure(builder.Configuration, "PlantBasedPizza");
 builder.Services.AddHttpClient();
+builder.Services.AddHostedService<OutboxWorker>();
 
 builder.Services.AddControllers();
 
@@ -46,7 +46,7 @@ app.Map("/health", async () =>
     {
         Activity.Current?.AddTag("loyalty.healthy", false);
     }
-    
+
     return Results.Ok("OK");
 });
 

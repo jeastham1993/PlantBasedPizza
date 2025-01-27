@@ -1,11 +1,13 @@
 using System;
 using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 using PlantBasedPizza.Shared.Events;
 using PlantBasedPizza.Shared.Logging;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace PlantBasedPizza.Events
 {
-    public class OrderCompletedEvent : IDomainEvent
+    public class OrderCompletedEvent : IntegrationEvent, IDomainEvent
     {
         private readonly string _eventId;
 
@@ -28,8 +30,13 @@ namespace PlantBasedPizza.Events
         [JsonPropertyName("orderValue")]
         public decimal OrderValue { get; set; }
         
-        public string EventName => "order-manager.order-completed";
-        public string EventVersion => "v1";
+        public override string EventName => "orders.order-completed";
+        public override string EventVersion => "v1";
+        public override Uri Source => new Uri("https://monolith.plantbasedpizza");
+        public override string AsString()
+        {
+            return JsonSerializer.Serialize(this);
+        }
 
         public string EventId => this._eventId;
 

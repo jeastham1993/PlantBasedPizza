@@ -10,6 +10,8 @@ public class Order
 {
     private const decimal DefaultDeliveryPrice = 3.50M;
 
+    [JsonIgnore] private List<IntegrationEvent> _events = new();
+
     [JsonProperty("items")] private List<OrderItem> _items;
 
     [JsonProperty("history")] private List<OrderHistory> _history;
@@ -70,6 +72,8 @@ public class Order
     [JsonProperty] public DateTime? OrderCompletedOn { get; private set; }
 
     [JsonIgnore] public IReadOnlyCollection<OrderItem> Items => _items;
+    
+    [JsonIgnore] public IReadOnlyCollection<IntegrationEvent> Events => _events;
 
     public IReadOnlyCollection<OrderHistory> History()
     {
@@ -179,9 +183,12 @@ public class Order
 
         AddHistory($"Order completed.");
 
-        DomainEvents.Raise(new OrderCompletedEvent(CustomerIdentifier, OrderIdentifier, TotalPrice)
+        var evt = new OrderCompletedEvent(CustomerIdentifier, OrderIdentifier, TotalPrice)
         {
             CorrelationId = correlationId
-        });
+        };
+
+        DomainEvents.Raise(evt).GetAwaiter().GetResult();
+        _events.Add(evt);
     }
 }

@@ -8,22 +8,35 @@ public class OrderRepository : IOrderRepository
 {
     private readonly IMongoCollection<Order> _orders;
 
+    private readonly IMongoCollection<OutboxItem> _outboxItems;
+
     public OrderRepository(MongoClient client)
     {
         var database = client.GetDatabase("PlantBasedPizza_Monolith");
-        this._orders = database.GetCollection<Order>("orders");
+        _orders = database.GetCollection<Order>("orders");
+        _outboxItems = database.GetCollection<OutboxItem>("orders_outboxitems");
     }
 
     public async Task Add(Order order)
     {
-        await this._orders.InsertOneAsync(order).ConfigureAwait(false);
+        await _orders.InsertOneAsync(order).ConfigureAwait(false);
+        
+        foreach (var evt in order.Events)
+        {
+            await _outboxItems.InsertOneAsync(new OutboxItem()
+            {
+                EventData = evt.AsString(),
+                EventType = evt.GetType().Name,
+                Processed = false
+            });
+        }
     }
 
     public async Task<Order> Retrieve(string orderIdentifier)
     {
         var queryBuilder = Builders<Order>.Filter.Eq(p => p.OrderIdentifier, orderIdentifier);
 
-        var order = await this._orders.Find(queryBuilder).FirstOrDefaultAsync().ConfigureAwait(false);
+        var order = await _orders.Find(queryBuilder).FirstOrDefaultAsync().ConfigureAwait(false);
 
         if (order == null)
         {
@@ -38,7 +51,7 @@ public class OrderRepository : IOrderRepository
     {
         var queryBuilder = Builders<Order>.Filter.Eq(p => p.OrderType, OrderType.Pickup);
 
-        var order = await this._orders.Find(p => p.OrderType == OrderType.Pickup && p.AwaitingCollection).ToListAsync();
+        var order = await _orders.Find(p => p.OrderType == OrderType.Pickup && p.AwaitingCollection).ToListAsync();
 
         return order;
     }
@@ -47,6 +60,6 @@ public class OrderRepository : IOrderRepository
     {
         var queryBuilder = Builders<Order>.Filter.Eq(ord => ord.OrderIdentifier, order.OrderIdentifier);
 
-        await this._orders.ReplaceOneAsync(queryBuilder, order);
+        await _orders.ReplaceOneAsync(queryBuilder, order);
     }
 }
