@@ -4,6 +4,7 @@ on:
     push:
       branches:
         - microservices-module-1
+        - monolith
       paths:
         - src/**
     workflow_dispatch:
