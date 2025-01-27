@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Dapr.AspNetCore" Version="1.14.0" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="7.2.0" />
   </ItemGroup>
@@ -44,6 +45,10 @@
     <_ContentIncludedByDefault Remove="PlantBasedPizza.LoyaltyPoints.Shared\obj\PlantBasedPizza.LoyaltyPoints.Shared.csproj.nuget.dgspec.json" />
     <_ContentIncludedByDefault Remove="PlantBasedPizza.LoyaltyPoints.Shared\obj\project.assets.json" />
     <_ContentIncludedByDefault Remove="PlantBasedPizza.LoyaltyPoints.Shared\obj\project.packagespec.json" />
+    <_ContentIncludedByDefault Remove="PlantBasedPizza.LoyaltyPoints.Worker\obj\PlantBasedPizza.LoyaltyPoints.Worker.csproj.nuget.dgspec.json" />
+    <_ContentIncludedByDefault Remove="PlantBasedPizza.LoyaltyPoints.Worker\obj\project.assets.json" />
+    <_ContentIncludedByDefault Remove="PlantBasedPizza.LoyaltyPoints.Internal\obj\PlantBasedPizza.LoyaltyPoints.Internal.csproj.nuget.dgspec.json" />
+    <_ContentIncludedByDefault Remove="PlantBasedPizza.LoyaltyPoints.Internal\obj\project.assets.json" />
   </ItemGroup>
 
 </Project>

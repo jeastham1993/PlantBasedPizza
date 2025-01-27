@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Dapr.Client;
 using MongoDB.Driver;
 
 using PlantBasedPizza.Deliver.Infrastructure;
@@ -31,13 +32,13 @@ var app = builder.Build();
 
 DomainEvents.Container = app.Services;
 
-var httpClient = app.Services.GetRequiredService<IHttpClientFactory>().CreateClient();
+var httpClient = DaprClient.CreateInvokeHttpClient();
 
 app.Map("/health", async () =>
 {
     try
     {
-        var res = await httpClient.GetAsync($"{app.Configuration["Services:Loyalty"]}/loyalty/health");
+        var res = await httpClient.GetAsync($"http://loyalty/health");
 
         Activity.Current?.AddTag("loyalty.healthy", res.IsSuccessStatusCode);
     }

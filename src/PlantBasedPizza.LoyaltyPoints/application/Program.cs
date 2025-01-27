@@ -26,6 +26,7 @@ BsonClassMap.RegisterClassMap<CustomerLoyaltyPoints>(map =>
 });
 
 builder.Services.AddSharedInfrastructure(builder.Configuration, "LoyaltyPoints");
+builder.Services.AddDaprClient();
 
 var app = builder.Build();
 
@@ -33,7 +34,7 @@ var addLoyaltyPointsHandler = app.Services.GetRequiredService<AddLoyaltyPointsCo
 var spendLoyaltyPointsHandler = app.Services.GetRequiredService<SpendLoyaltyPointsCommandHandler>();
 var loyaltyRepo = app.Services.GetRequiredService<ICustomerLoyaltyPointsRepository>();
 
-app.MapGet("/loyalty/health", () => "");
+app.MapGet("/health", () => "");
 
 app.MapPost("/loyalty", async ([FromBody] AddLoyaltyPointsCommand command) =>
 {
@@ -63,4 +64,6 @@ app.MapGet("/loyalty/{customerIdentifier}", async (string customerIdentifier) =>
     return Results.Ok(new LoyaltyPointsDTO(loyalty));
 });
 
-app.Run();
+Console.WriteLine("running!");
+
+await app.RunAsync();

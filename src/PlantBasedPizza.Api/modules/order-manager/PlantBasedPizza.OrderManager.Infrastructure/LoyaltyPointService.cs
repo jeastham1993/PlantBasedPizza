@@ -1,6 +1,7 @@
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using Dapr.Client;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using PlantBasedPizza.OrderManager.Core.Services;
@@ -13,9 +14,9 @@ public class LoyaltyPointService : ILoyaltyPointService
     private readonly IConfiguration _configuration;
     private readonly ILogger<LoyaltyPointService> _logger;
 
-    public LoyaltyPointService(HttpClient httpClient, IConfiguration configuration, ILogger<LoyaltyPointService> logger)
+    public LoyaltyPointService(IConfiguration configuration, ILogger<LoyaltyPointService> logger)
     {
-        _httpClient = httpClient;
+        _httpClient = DaprClient.CreateInvokeHttpClient();
         _configuration = configuration;
         _logger = logger;
     }
@@ -24,7 +25,7 @@ public class LoyaltyPointService : ILoyaltyPointService
     {
         try
         {
-            var createLoyaltyPointsResult = await this._httpClient.PostAsync($"{_configuration["Services:Loyalty"]}/loyalty",
+            var createLoyaltyPointsResult = await this._httpClient.PostAsync($"http://loyalty/loyalty",
                 new StringContent(JsonSerializer.Serialize(new CreateLoyaltyPointRequest(customerId, orderIdentifier, orderValue)), Encoding.UTF8, new MediaTypeHeaderValue("application/json")));
 
             if (!createLoyaltyPointsResult.IsSuccessStatusCode)
