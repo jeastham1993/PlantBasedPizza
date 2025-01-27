@@ -4,219 +4,184 @@ using PlantBasedPizza.Shared.Events;
 using PlantBasedPizza.Shared.Guards;
 using PlantBasedPizza.Shared.Logging;
 
-namespace PlantBasedPizza.OrderManager.Core.Entities
+namespace PlantBasedPizza.OrderManager.Core.Entities;
+
+public class Order
 {
-    public class Order
+    private const decimal DefaultDeliveryPrice = 3.50M;
+
+    [JsonProperty("items")] private List<OrderItem> _items;
+
+    [JsonProperty("history")] private List<OrderHistory> _history;
+
+    [JsonConstructor]
+    internal Order(string? orderNumber = null)
     {
-        private const decimal DefaultDeliveryPrice = 3.50M;
+        if (string.IsNullOrEmpty(orderNumber)) orderNumber = Guid.NewGuid().ToString();
 
-        [JsonProperty("items")]
-        private List<OrderItem> _items;
-        
-        [JsonProperty("history")]
-        private List<OrderHistory> _history;
-        
-        [JsonConstructor]
-        internal Order(string? orderNumber = null)
+        OrderIdentifier = "";
+        CustomerIdentifier = "";
+        OrderNumber = orderNumber;
+        _items = new List<OrderItem>();
+        _history = new List<OrderHistory>();
+    }
+
+    public static Order Create(string orderIdentifier, OrderType type, string customerIdentifier,
+        DeliveryDetails? deliveryDetails = null, string correlationId = "")
+    {
+        Guard.AgainstNullOrEmpty(customerIdentifier, nameof(customerIdentifier));
+        Guard.AgainstNullOrEmpty(orderIdentifier, nameof(orderIdentifier));
+
+        if (type == OrderType.Delivery && deliveryDetails == null)
+            throw new ArgumentException("If order type is delivery a delivery address must be specified",
+                nameof(deliveryDetails));
+
+        ApplicationLogger.Info($"Creating a new order with type {type}");
+
+        var order = new Order()
         {
-            if (string.IsNullOrEmpty(orderNumber))
-            {
-                orderNumber = Guid.NewGuid().ToString();
-            }
+            OrderType = type,
+            OrderIdentifier = orderIdentifier,
+            CustomerIdentifier = customerIdentifier,
+            OrderDate = DateTime.Now,
+            DeliveryDetails = deliveryDetails
+        };
 
-            this.OrderIdentifier = "";
-            this.CustomerIdentifier = "";
-            this.OrderNumber = orderNumber;
-            this._items = new List<OrderItem>();
-            this._history = new List<OrderHistory>();
+        order.AddHistory("Order created");
+
+        DomainEvents.Raise(new OrderCreatedEvent(orderIdentifier)
+        {
+            CorrelationId = correlationId
+        });
+
+        return order;
+    }
+
+    [JsonProperty] public string OrderIdentifier { get; private set; }
+
+    [JsonProperty] public string OrderNumber { get; private set; }
+
+    [JsonProperty] public DateTime OrderDate { get; private set; }
+
+    [JsonProperty] public bool AwaitingCollection { get; private set; }
+
+    [JsonProperty] public DateTime? OrderSubmittedOn { get; private set; }
+
+    [JsonProperty] public DateTime? OrderCompletedOn { get; private set; }
+
+    [JsonIgnore] public IReadOnlyCollection<OrderItem> Items => _items;
+
+    public IReadOnlyCollection<OrderHistory> History()
+    {
+        return _history.OrderBy(p => p.HistoryDate).ToList();
+    }
+
+    [JsonProperty] public OrderType OrderType { get; private set; }
+
+    [JsonProperty] public string CustomerIdentifier { get; private set; }
+
+    [JsonProperty] public decimal TotalPrice { get; private set; }
+
+    [JsonProperty] public DeliveryDetails? DeliveryDetails { get; private set; }
+
+    public void AddOrderItem(string recipeIdentifier, string itemName, int quantity, decimal price)
+    {
+        if (OrderSubmittedOn.HasValue)
+        {
+            ApplicationLogger.Warn(
+                "Attempting to add an order item to an order that has already been submitted, skipping");
+            return;
         }
 
-        public static Order Create(string orderIdentifier, OrderType type, string customerIdentifier, DeliveryDetails? deliveryDetails = null, string correlationId = "")
+        if (_items == null) _items = new List<OrderItem>(1);
+
+        var existingItem = _items.Find(p =>
+            p.RecipeIdentifier.Equals(recipeIdentifier, StringComparison.OrdinalIgnoreCase));
+
+        if (existingItem != null)
         {
-            Guard.AgainstNullOrEmpty(customerIdentifier, nameof(customerIdentifier));
-            Guard.AgainstNullOrEmpty(orderIdentifier, nameof(orderIdentifier));
-            
-            if (type == OrderType.Delivery && deliveryDetails == null)
-            {
-                throw new ArgumentException("If order type is delivery a delivery address must be specified",
-                    nameof(deliveryDetails));
-            }
-            
-            ApplicationLogger.Info($"Creating a new order with type {type}");
-
-            var order = new Order()
-            {
-                OrderType = type,
-                OrderIdentifier = orderIdentifier,
-                CustomerIdentifier = customerIdentifier,
-                OrderDate = DateTime.Now,
-                DeliveryDetails = deliveryDetails
-            };
-
-            order.AddHistory("Order created");
-
-            DomainEvents.Raise(new OrderCreatedEvent(orderIdentifier)
-            {
-                CorrelationId = correlationId
-            });
-
-            return order;
+            quantity += existingItem.Quantity;
+            _items.Remove(existingItem);
         }
 
-        [JsonProperty]
-        public string OrderIdentifier { get; private set; }
-        
-        [JsonProperty]
-        public string OrderNumber { get; private set; }
+        AddHistory($"Added {quantity} {itemName} to order.");
 
-        [JsonProperty]
-        public DateTime OrderDate { get; private set; }
-        
-        [JsonProperty]
-        public bool AwaitingCollection { get; private set; }
+        _items.Add(new OrderItem(recipeIdentifier, itemName, quantity, price));
 
-        [JsonProperty]
-        public DateTime? OrderSubmittedOn { get; private set; }
+        Recalculate();
+    }
 
-        [JsonProperty]
-        public DateTime? OrderCompletedOn { get; private set; }
+    public void RemoveOrderItem(string recipeIdentifier, int quantity)
+    {
+        if (OrderSubmittedOn.HasValue) return;
 
-        [JsonIgnore]
-        public IReadOnlyCollection<OrderItem> Items => this._items;
-        
-        public IReadOnlyCollection<OrderHistory> History()
+        var existingItem = _items.Find(p =>
+            p.RecipeIdentifier.Equals(recipeIdentifier, StringComparison.OrdinalIgnoreCase));
+
+        if (existingItem == null) return;
+
+        AddHistory($"Removing {quantity} {existingItem.ItemName} from order.");
+
+        _items.Remove(existingItem);
+
+        if (existingItem.Quantity - quantity <= 0)
         {
-            return this._history.OrderBy(p => p.HistoryDate).ToList();
+            Recalculate();
+
+            return;
         }
 
-        [JsonProperty]
-        public OrderType OrderType { get; private set; }
+        _items.Add(new OrderItem(recipeIdentifier, existingItem.ItemName, existingItem.Quantity - quantity,
+            existingItem.Price));
 
-        [JsonProperty]
-        public string CustomerIdentifier { get; private set; }
+        Recalculate();
+    }
 
-        [JsonProperty]
-        public decimal TotalPrice { get; private set; }
+    public void AddHistory(string description)
+    {
+        if (_history == null) _history = new List<OrderHistory>(1);
 
-        [JsonProperty]
-        public DeliveryDetails? DeliveryDetails { get; private set; }
+        _history.Add(new OrderHistory(description, DateTime.Now));
+    }
 
-        public void AddOrderItem(string recipeIdentifier, string itemName, int quantity, decimal price)
+    public void Recalculate()
+    {
+        TotalPrice = _items.Sum(p => p.Quantity * p.Price);
+
+        if (OrderType == OrderType.Delivery) TotalPrice += DefaultDeliveryPrice;
+    }
+
+    public void SubmitOrder(string correlationId = "")
+    {
+        if (!_items.Any()) throw new ArgumentException("Cannot submit an order with no items");
+
+        OrderSubmittedOn = DateTime.Now;
+
+        AddHistory($"Submitted order.");
+
+        DomainEvents.Raise(new OrderSubmittedEvent(OrderIdentifier)
         {
-            if (this.OrderSubmittedOn.HasValue)
-            {
-                ApplicationLogger.Warn("Attempting to add an order item to an order that has already been submitted, skipping");
-                return;
-            }
-            
-            if (this._items == null)
-            {
-                this._items = new List<OrderItem>(1);
-            }
-            
-            var existingItem = this._items.Find(p =>
-                p.RecipeIdentifier.Equals(recipeIdentifier, StringComparison.OrdinalIgnoreCase));
+            CorrelationId = correlationId
+        }).Wait();
+    }
 
-            if (existingItem != null)
-            {
-                quantity += existingItem.Quantity;
-                this._items.Remove(existingItem);
-            }
-            
-            this.AddHistory($"Added {quantity} {itemName} to order.");
+    public void IsAwaitingCollection(string correlationId = "")
+    {
+        AwaitingCollection = true;
 
-            this._items.Add(new OrderItem(recipeIdentifier, itemName, quantity, price));
+        AddHistory("Order awaiting collection");
+    }
 
-            this.Recalculate();
-        }
+    public void CompleteOrder(string correlationId = "")
+    {
+        OrderCompletedOn = DateTime.Now;
+        AwaitingCollection = false;
 
-        public void RemoveOrderItem(string recipeIdentifier, int quantity)
+        AddHistory($"Order completed.");
+
+        DomainEvents.Raise(new OrderCompletedEvent(CustomerIdentifier, OrderIdentifier, TotalPrice)
         {
-            if (this.OrderSubmittedOn.HasValue)
-            {
-                return;
-            }
-
-            var existingItem = this._items.Find(p =>
-                p.RecipeIdentifier.Equals(recipeIdentifier, StringComparison.OrdinalIgnoreCase));
-
-            if (existingItem == null)
-            {
-                return;
-            }
-            
-            this.AddHistory($"Removing {quantity} {existingItem.ItemName} from order.");
-
-            this._items.Remove(existingItem);
-
-            if (existingItem.Quantity - quantity <= 0)
-            {
-                this.Recalculate();
-
-                return;
-            }
-
-            this._items.Add(new OrderItem(recipeIdentifier, existingItem.ItemName, existingItem.Quantity - quantity,
-                existingItem.Price));
-
-            this.Recalculate();
-        }
-
-        public void AddHistory(string description)
-        {
-            if (this._history == null)
-            {
-                this._history = new List<OrderHistory>(1);
-            }
-            
-            this._history.Add(new OrderHistory(description, DateTime.Now));
-        }
-
-        public void Recalculate()
-        {
-            this.TotalPrice = this._items.Sum(p => p.Quantity * p.Price);
-
-            if (this.OrderType == OrderType.Delivery)
-            {
-                this.TotalPrice += DefaultDeliveryPrice;
-            }
-        }
-
-        public void SubmitOrder(string correlationId = "")
-        {
-            if (!this._items.Any())
-            {
-                throw new ArgumentException("Cannot submit an order with no items");
-            }
-            
-            this.OrderSubmittedOn = DateTime.Now;
-            
-            this.AddHistory($"Submitted order.");
-
-            DomainEvents.Raise(new OrderSubmittedEvent(OrderIdentifier)
-            {
-                CorrelationId = correlationId
-            }).Wait();
-        }
-
-        public void IsAwaitingCollection(string correlationId = "")
-        {
-            this.AwaitingCollection = true;
-
-            this.AddHistory("Order awaiting collection");
-        }
-
-        public void CompleteOrder(string correlationId = "")
-        {
-            this.OrderCompletedOn = DateTime.Now;
-            this.AwaitingCollection = false;
-            
-            this.AddHistory($"Order completed.");
-
-            DomainEvents.Raise(new OrderCompletedEvent(this.OrderIdentifier)
-            {
-                CorrelationId = correlationId
-            });
-        }
+            CorrelationId = correlationId
+        });
     }
 }

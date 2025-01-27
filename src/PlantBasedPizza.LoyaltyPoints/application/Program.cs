@@ -39,30 +39,33 @@ app.MapGet("/health", () => "");
 app.MapPost("/loyalty", async ([FromBody] AddLoyaltyPointsCommand command) =>
 {
     command.AddToTrace();
-    
+
     return await addLoyaltyPointsHandler.Handle(command);
 });
 
 app.MapPost("/loyalty/spend", async ([FromBody] SpendLoyaltyPointsCommand command) =>
 {
     command.AddToTrace();
-    
+
     return await spendLoyaltyPointsHandler.Handle(command);
 });
 
 app.MapGet("/loyalty/{customerIdentifier}", async (string customerIdentifier) =>
 {
     Activity.Current?.AddTag("loyalty.customerId", customerIdentifier);
-    
+
     var loyalty = await loyaltyRepo.GetCurrentPointsFor(customerIdentifier);
 
-    if (loyalty == null)
-    {
-        return Results.NotFound(customerIdentifier);
-    }
+    if (loyalty == null) return Results.NotFound(customerIdentifier);
 
     return Results.Ok(new LoyaltyPointsDTO(loyalty));
 });
+
+app.MapPost("/order-completed", EventHandlers.HandleOrderCompletedEvent);
+
+app.MapSubscribeHandler()
+    .AllowAnonymous();
+app.UseCloudEvents();
 
 Console.WriteLine("running!");
 
