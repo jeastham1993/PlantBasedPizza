@@ -54,7 +54,7 @@ resource "azurerm_container_app" "orders-api" {
       }
       env {
         name = "Features__UseOrchestrator"
-        value = "true"
+        value = "false"
       }
       env {
         name = "Messaging__UseAsyncApi"
@@ -243,7 +243,7 @@ resource "azurerm_container_app" "orders-worker" {
       }
       env {
         name = "Features__UseOrchestrator"
-        value = "true"
+        value = "false"
       }
       env {
         name  = "OTEL_EXPORTER_OTLP_ENDPOINT"

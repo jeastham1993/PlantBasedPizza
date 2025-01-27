@@ -11,7 +11,7 @@ using Temporalio.Activities;
 namespace PlantBasedPizza.OrderManager.Infrastructure;
 
 public class OrderActivities(SubmitOrderCommandHandler submitOrderHandler,
-    ConfirmOrderCommandHandler collectOrderHandler,
+    ConfirmOrderCommandHandler confirmOrderHandler,
     CancelOrderCommandHandler cancelOrderHandler,
     OrderReadyForDeliveryCommandHandler orderReadyForDeliveryHandler,
     CollectOrderCommandHandler collectOrderCommandHandler,
@@ -43,7 +43,7 @@ public class OrderActivities(SubmitOrderCommandHandler submitOrderHandler,
     [Activity]
     public async Task ConfirmOrder(string orderIdentifier, decimal paymentAmount)
     {
-        await collectOrderHandler.Handle(new ConfirmOrderCommand()
+        await confirmOrderHandler.Handle(new ConfirmOrderCommand()
         {
             OrderIdentifier = orderIdentifier,
             PaymentAmount = paymentAmount,

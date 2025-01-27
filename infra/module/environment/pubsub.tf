@@ -1,5 +1,5 @@
 resource "azurerm_servicebus_namespace" "plant_based_pizza_public_service_bus" {
-  name                = "plant-based-pizza-public-${var.env}"
+  name                = "plant-based-pizza-pub-${var.env}"
   location            = azurerm_resource_group.plant_based_pizza_rg.location
   resource_group_name = azurerm_resource_group.plant_based_pizza_rg.name
   sku                 = "Standard"

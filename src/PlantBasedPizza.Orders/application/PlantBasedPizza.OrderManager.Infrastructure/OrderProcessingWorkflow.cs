@@ -173,6 +173,8 @@ public class OrderProcessingWorkflow : IOrderWorkflow
                 maxRetries--;
             }
         }
+        
+        if (!_kitchenConfirmed) await CancelOrder("Order cancelled due to kitchen not confirming order.");
     }
 
     public async Task WaitForKitchen()

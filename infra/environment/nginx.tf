@@ -5,7 +5,7 @@ resource "azurerm_user_assigned_identity" "app_identity" {
 }
 
 resource "azurerm_storage_account" "nginx_config" {
-  name                     = "plantbasedpizzanginx"
+  name                     = "plantbasedpizzanginx${var.env}"
   resource_group_name      = azurerm_resource_group.plant_based_pizza_rg.name
   location                 = azurerm_resource_group.plant_based_pizza_rg.location
   account_tier             = "Standard"

@@ -24,6 +24,7 @@ var logger = Log.Logger = new LoggerConfiguration()
     .Enrich.FromLogContext()
     .WriteTo.Console(new JsonFormatter())
     .CreateLogger();
+    
 builder.AddLoggerConfigs();
 
 var appLogger = new SerilogLoggerFactory(logger)
@@ -68,13 +69,15 @@ builder.Services.AddGrpcClient<Orders.OrdersClient>(o =>
 
 var app = builder.Build();
 
-app.MapGet("/payments/health", () => "Healthy");
-
 app.UseRouting();
 
-app.MapSubscribeHandler();
+app.MapSubscribeHandler()
+    .AllowAnonymous();
 app.UseCloudEvents();
-app.AddEventHandlers();
+
+app.MapGet("/payments/health", () => "Healthy");
+app.MapPost("/take-payment", EventHandlers.HandleTakePaymentCommand);
+app.MapPost("/refund-payment", EventHandlers.HandleRefundPaymentCommand);
 
 app.UseAsyncApi();
 
@@ -82,4 +85,4 @@ appLogger.LogInformation("Running!");
 
 await app.RunAsync();
 
-public partial class Program {}
+public partial class Program { }

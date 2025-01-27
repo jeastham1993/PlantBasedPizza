@@ -12,120 +12,118 @@ public static class EventHandlers
 {
     private const string TakePaymentCommandName = "payments.takepayment.v1";
     private const string RefundPaymentCommandName = "payments.refundpayment.v1";
-    
-    public static WebApplication AddEventHandlers(this WebApplication app)
+
+    [Topic("payments",
+        TakePaymentCommandName)]
+    public static async Task<IResult> HandleTakePaymentCommand([FromServices] TakePaymentCommandHandler handler, [FromServices] IConfiguration configuration, IDistributedCache cache, HttpContext ctx,
+                HttpContext context,
+                TakePaymentCommand command)
     {
-        app.MapPost("/take-payment",
-            [Topic("payments", TakePaymentCommandName)]
-            async ([FromServices] TakePaymentCommandHandler handler, [FromServices] IConfiguration configuration, IDistributedCache cache, HttpContext ctx,
-                TakePaymentCommand command) =>
+        try
+        {
+            var eventId = ctx.ExtractEventId();
+
+            using var processActivity = Activity.Current?.Source.StartActivityWithProcessSemanticConventions(
+                new SemanticConventions(
+                    EventType.PUBLIC,
+                    TakePaymentCommandName,
+                    eventId ?? "",
+                    "dapr",
+                    "public",
+                    configuration["ApplicationConfig:ApplicationName"] ?? "",
+                    command.OrderIdentifier
+                ));
+
+            var cachedEvent = await cache.GetStringAsync($"events_{eventId}");
+
+            processActivity?.AddTag("orderIdentifier", command.OrderIdentifier ?? "null");
+            processActivity?.AddTag("paymentAmount", command.PaymentAmount.ToString("n2"));
+
+            if (cachedEvent != null)
             {
-                try
-                {
-                    var eventId = ctx.ExtractEventId();
+                Activity.Current?.AddTag("events.idempotent", "true");
+                return Results.Ok();
+            }
 
-                    using var processActivity = Activity.Current?.Source.StartActivityWithProcessSemanticConventions(
-                        new SemanticConventions(
-                            EventType.PUBLIC,
-                            TakePaymentCommandName,
-                            eventId ?? "",
-                            "dapr",
-                            "public",
-                            configuration["ApplicationConfig:ApplicationName"] ?? "",
-                            command.OrderIdentifier
-                        ));
-                
-                    var cachedEvent = await cache.GetStringAsync($"events_{eventId}");
-                    
-                    processActivity?.AddTag("orderIdentifier", command.OrderIdentifier ?? "null");
-                    processActivity?.AddTag("paymentAmount", command.PaymentAmount.ToString("n2"));
+            var result = await handler.Handle(command);
+            processActivity?.AddTag("paymentStatus", result.Status.ToString());
 
-                    if (cachedEvent != null)
-                    {
-                        Activity.Current?.AddTag("events.idempotent", "true");
-                        return Results.Ok();
-                    }
-
-                    var result = await handler.Handle(command);
-                    processActivity?.AddTag("paymentStatus", result.Status.ToString());
-
-                    // Only return a bad request if there is an unknown error, this will force Dapr to retry.
-                    if (result.Status == TakePaymentStatus.UNEXPECTED_ERROR)
-                    {
-                        return Results.BadRequest();
-                    }
-
-                    await cache.SetStringAsync($"events_{eventId}", "processed", new DistributedCacheEntryOptions()
-                    {
-                        AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5),
-                    });
-
-                    return Results.Ok();
-                }
-                catch (ArgumentNullException ex)
-                {
-                    Activity.Current?.AddException(ex);
-                    
-                    return Results.BadRequest();
-                }
-                catch (Exception ex)
-                {
-                    Activity.Current?.AddException(ex);
-
-                    return Results.InternalServerError();
-                }
-            });
-        
-        app.MapPost("/refund-payment",
-            [Topic("payments", RefundPaymentCommandName)]
-            async ([FromServices] RefundPaymentCommandHandler handler, [FromServices] IConfiguration configuration, IDistributedCache cache, HttpContext ctx,
-                RefundPaymentCommand command) =>
+            // Only return a bad request if there is an unknown error, this will force Dapr to retry.
+            if (result.Status == TakePaymentStatus.UNEXPECTED_ERROR)
             {
-                try
-                {
-                    var eventId = ctx.ExtractEventId();
+                return Results.BadRequest();
+            }
 
-                    using var processActivity = Activity.Current?.Source.StartActivityWithProcessSemanticConventions(
-                        new SemanticConventions(
-                            EventType.PUBLIC,
-                            RefundPaymentCommandName,
-                            eventId,
-                            "dapr",
-                            "public",
-                            configuration["ApplicationConfig:ApplicationName"] ?? "",
-                            command.OrderIdentifier
-                        ));
-                
-                    var cachedEvent = await cache.GetStringAsync($"events_{eventId}");
-
-                    if (cachedEvent != null)
-                    {
-                        Activity.Current?.AddTag("events.idempotent", "true");
-                        return Results.Ok();
-                    }
-                
-                    var result = await handler.Handle(command);
-
-                    if (!result)
-                    {
-                        return Results.InternalServerError();
-                    }
-
-                    await cache.SetStringAsync($"events_{eventId}", "processed", new DistributedCacheEntryOptions()
-                    {
-                        AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5),
-                    });
-
-                    return Results.Ok();
-                }
-                catch (Exception ex)
-                {
-                    Activity.Current?.AddException(ex);
-                    
-                    return Results.InternalServerError();
-                }
+            await cache.SetStringAsync($"events_{eventId}", "processed", new DistributedCacheEntryOptions()
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5),
             });
 
-        return app;
+            return Results.Ok();
+        }
+        catch (ArgumentNullException ex)
+        {
+            Activity.Current?.AddException(ex);
+
+            return Results.BadRequest();
+        }
+        catch (Exception ex)
+        {
+            Activity.Current?.AddException(ex);
+
+            return Results.InternalServerError();
+        }
+    }
+
+
+    [Topic("payments",
+            RefundPaymentCommandName)]
+    public static async Task<IResult> HandleRefundPaymentCommand([FromServices] RefundPaymentCommandHandler handler, [FromServices] IConfiguration configuration, IDistributedCache cache, HttpContext ctx,
+                    HttpContext context,
+                    RefundPaymentCommand command)
+    {
+        try
+        {
+            var eventId = ctx.ExtractEventId();
+
+            using var processActivity = Activity.Current?.Source.StartActivityWithProcessSemanticConventions(
+                new SemanticConventions(
+                    EventType.PUBLIC,
+                    RefundPaymentCommandName,
+                    eventId,
+                    "dapr",
+                    "public",
+                    configuration["ApplicationConfig:ApplicationName"] ?? "",
+                    command.OrderIdentifier
+                ));
+
+            var cachedEvent = await cache.GetStringAsync($"events_{eventId}");
+
+            if (cachedEvent != null)
+            {
+                Activity.Current?.AddTag("events.idempotent", "true");
+                return Results.Ok();
+            }
+
+            var result = await handler.Handle(command);
+
+            if (!result)
+            {
+                return Results.InternalServerError();
+            }
+
+            await cache.SetStringAsync($"events_{eventId}", "processed", new DistributedCacheEntryOptions()
+            {
+                AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5),
+            });
+
+            return Results.Ok();
+        }
+        catch (Exception ex)
+        {
+            Activity.Current?.AddException(ex);
+
+            return Results.InternalServerError();
+        }
     }
 }
