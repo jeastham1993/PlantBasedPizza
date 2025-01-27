@@ -72,7 +72,7 @@ public class Order
     [JsonProperty] public DateTime? OrderCompletedOn { get; private set; }
 
     [JsonIgnore] public IReadOnlyCollection<OrderItem> Items => _items;
-    
+
     [JsonIgnore] public IReadOnlyCollection<IntegrationEvent> Events => _events;
 
     public IReadOnlyCollection<OrderHistory> History()
@@ -189,6 +189,13 @@ public class Order
         };
 
         DomainEvents.Raise(evt).GetAwaiter().GetResult();
+        addIntegrationEvent(evt);
+    }
+
+    private void addIntegrationEvent(IntegrationEvent evt)
+    {
+        if (_events is null) _events = new List<IntegrationEvent>();
+
         _events.Add(evt);
     }
 }
