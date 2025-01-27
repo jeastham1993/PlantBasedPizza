@@ -18,7 +18,7 @@ services:
       - 4318:4318
 
   local.api:
-    image: plant-based-pizza-api-mod-1
+    image: plant-based-pizza-monolith
     container_name: local.pizza-api
     ports:
       - "5051:8080"
@@ -28,8 +28,29 @@ services:
       - Environment=local
       - Services__Loyalty=http://local.loyalty-api:8080
 
+  api-dapr:
+    image: "daprio/daprd:edge"
+    command: [
+        "./daprd",
+        "--app-id",
+        "monolith",
+        "--app-port",
+        "8080",
+        "--placement-host-address",
+        "placement:50006", # Dapr's placement service can be reach via the docker DNS entry
+        "--dapr-grpc-port",
+        "5101",
+        "--resources-path",
+        "./components",
+      ]
+    volumes:
+      - "./components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
+    depends_on:
+      - "local.api"
+    network_mode: "service:local.api"
+
   local.loyalty-api:
-    image: loyalty-api-mod-1
+    image: plant-based-pizza-loyalty-service
     container_name: local.loyalty-api
     ports:
       - "5050:8080"
@@ -37,6 +58,27 @@ services:
       - DatabaseConnection=mongodb://mongodb:27017
       - OtlpEndpoint=http://jaeger:4317
       - Environment=local
+
+  loyalty-dapr:
+    image: "daprio/daprd:edge"
+    command: [
+        "./daprd",
+        "--app-id",
+        "loyalty",
+        "--app-port",
+        "8080",
+        "--placement-host-address",
+        "placement:50006", # Dapr's placement service can be reach via the docker DNS entry
+        "--dapr-grpc-port",
+        "5101",
+        "--resources-path",
+        "./components",
+      ]
+    volumes:
+      - "./components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
+    depends_on:
+      - "local.loyalty-api"
+    network_mode: "service:local.loyalty-api"
   
   # reverse-proxy:
   #   image: nginx:latest
@@ -47,3 +89,12 @@ services:
   #   depends_on:
   #     - local.api
   #     - local.loyalty-api
+
+  ############################
+  # Dapr placement service
+  ############################
+  placement:
+    image: "daprio/dapr"
+    command: ["./placement", "-port", "50006"]
+    ports:
+      - "50006:50006"

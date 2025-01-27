@@ -34,6 +34,8 @@ jobs:
           echo "IMAGE_TAG=$(git rev-parse --short "$GITHUB_SHA")" >> "$GITHUB_ENV"
       - name: Build images
         run: make build
+      - name: Build images
+        run: make build-loyalty
       - name: Tag With Commit Hash
         run: make tag-images
       - name: Push to DockerHub

@@ -71,6 +71,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.OrderManager.DataTransfer", "src\PlantBasedPizza.Api\modules\order-manager\PlantBasedPizza.OrderManager.DataTransfer\PlantBasedPizza.OrderManager.DataTransfer.csproj", "{2630CB86-018A-4EE6-9EF7-5E81551AD6C0}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "infra", "infra", "{E036394A-EB67-4FC8-9C66-3385053F69E9}"
+	ProjectSection(SolutionItems) = preProject
+		Makefile = Makefile
+		docker-compose.yml = docker-compose.yml
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "aws", "aws", "{B6E7DB2D-5CF0-4C43-B515-77A38E9FA1D5}"
 EndProject
