@@ -8,30 +8,40 @@ If you aren't familiar, Azure Container Apps is a serverless container orchestra
 
 The beauty of this combo, is that Dapr is fully integrated inside Azure Container Apps.
 
+## Prerequisites
+
+- [.NET9](https://dotnet.microsoft.com/en-us/download/dotnet/9.0)
+- Docker client
+- Make
+    - [For Windows](https://gnuwin32.sourceforge.net/packages/make.htm)
+    - [For Mac](https://formulae.brew.sh/formula/make)
+    - [Linux](https://askubuntu.com/questions/161104/how-do-i-install-make)
+
+
 ## Running Locally
 
-This repo allows you to run the entire PlantBasedPizza application locally. It is fully instrumented with OpenTelemetry and telemetry data is sent to [Jaeger](http://localhost:4317).
+There are several steps to running the application locally:
 
-To run the application locally, you first need to the container images for the individual microservices and then you can startup the application and all the required infrastructure using the [docker-compose.yml](./docker-compose.yml) file in the root of the repository.
+1. Build the container images for all services: `make build` or `make-build-arm` depending on your system CPU architecture
+2. Start the backend service containers and required infrastructure: `docker-compose up -d`, wait for all containers to start and then `docker compose -f docker-compose-services.yml up -d`
+3. Access the front-end on [http://localhost:3000](http://localhost:3000)
+4. Once up and running you can go and register a new user to start interacting with the system
+    - If you are trying to login to the [admin interface](http://localhost:3000/admin/login) a default user is created with credentials `admin@plantbasedpizza.com`:`AdminAccount!23`
 
-### Build
+## Starting an individual service
 
-There is a [Makefile](./Makefile) in the root of the repository that contains all of the required commands to get the application running. The easiest way to get started is to install Make, and then run either:
+All the individual microservices can run independently, and all follow the same structure inside their respective folder under [src](./src/):
 
-```sh
-make build # if you're running an x86 machine
-make build-arm # if you're running an ARM based machine
-```
+1. Start up required infrastructure: `docker-compose up -d`
+2. Start up the API component and Dapr sidecar, you'll need two separate terminal windows:
+    - `make local-api`
+    - `make dapr-api-sidecar`
+3. If the specific microservice has a worker component for handling events start them as well, you'll need two more terminal windows:
+    - `make local-worker`
+    - `make dapr-worker-sidecar`
+4. You can switch out either `make local-api` or `make local-worker` with starting the application inside your IDE in debug mode
 
-There are several microservices, so those build commands will take a little while. Go and grab yourself a cup of tea or coffee whilst you wait ☕️
-
-Once all the container images are built, you can run:
-
-```sh
-docker-compose up -d
-```
-
-This will start up the applications, infrastructure, Dapr and a frontend application locally on your machine.
+This will run the individual microservice locally.
 
 ## Deploy to Azure
 

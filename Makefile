@@ -22,7 +22,7 @@ build-payments:
 build-recipes:
 	cd src/PlantBasedPizza.Recipes;make build
 
-build: build-account build-delivery build-kitchen build-loyalty-points build-orders build-payments build-recipes
+build: build-account build-delivery build-kitchen build-loyalty-points build-orders build-payments build-recipes build-frontend
 
 build-account-arm:
 	cd src/PlantBasedPizza.Account;make build-arm
@@ -39,7 +39,10 @@ build-payments-arm:
 build-recipes-arm:
 	cd src/PlantBasedPizza.Recipes;make build-arm
 
-build-arm: build-account-arm build-delivery-arm build-kitchen-arm build-loyalty-points-arm build-orders-arm build-payments-arm build-recipes-arm
+build-arm: build-account-arm build-delivery-arm build-kitchen-arm build-loyalty-points-arm build-orders-arm build-payments-arm build-recipes-arm build-frontend
+
+build-frontend:
+	cd src/frontend;docker build -t frontend .
 
 redeploy-all: deploy-account deploy-delivery deploy-kitchen deploy-loyalty deploy-orders deploy-payments deploy-recipes
 	

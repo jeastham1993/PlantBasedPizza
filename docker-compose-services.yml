@@ -1,0 +1,582 @@
+services:
+  local.order-api:
+    image: order-api
+    container_name: "local.order-api"
+    depends_on:
+      - cache
+      - placement
+      - temporal
+    ports:
+      - "8080:8080"
+    networks:
+      - dapr
+    environment:
+      - DatabaseConnection=mongodb://mongodb:27017
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+      - Environment=local
+      - REDIS_CONNECTION_STRING=cache:6379
+      - CACHE_NAME=orders
+      - TEMPORAL_ENDPOINT=temporal:7233
+      - Features__UseOrchestrator=true
+      - Services__LoyaltyInternal=http://localhost:5101
+      - Services__Recipes=recipes
+      - Messaging__UseAsyncApi=Y
+      - Auth__Issuer=https://plantbasedpizza.com
+      - Auth__Audience=https://plantbasedpizza.com
+      - Auth__Key=This is a sample secret key - please don't use in production environment.'
+      - DAPR_HOST=host.docker.internal
+      - DAPR_GRPC_PORT=5101
+
+  orderapi-dapr:
+    image: "daprio/daprd:edge"
+    command: [
+        "./daprd",
+        "--app-id",
+        "orders",
+        "--app-port",
+        "8080",
+        "--placement-host-address",
+        "placement:50006", # Dapr's placement service can be reach via the docker DNS entry
+        "--dapr-grpc-port",
+        "5101",
+        "--resources-path",
+        "./components",
+      ]
+    volumes:
+      - "./components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
+    depends_on:
+      - "local.order-api"
+    network_mode: "service:local.order-api"
+
+  local.order-internal:
+    image: order-internal
+    container_name: "local.order-internal"
+    depends_on:
+      - cache
+      - placement
+    expose:
+      - "8080"
+    networks:
+      - dapr
+    environment:
+      - DatabaseConnection=mongodb://mongodb:27017
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+      - Environment=local
+      - REDIS_CONNECTION_STRING=cache:6379
+      - CACHE_NAME=orders
+      - Messaging__UseAsyncApi=Y
+      - Auth__Issuer=https://plantbasedpizza.com
+      - Auth__Audience=https://plantbasedpizza.com
+      - Auth__Key=This is a sample secret key - please don't use in production environment.'
+      - DAPR_HOST=host.docker.internal
+      - DAPR_GRPC_PORT=5101
+
+  orderinternal-dapr:
+    image: "daprio/daprd:edge"
+    command: [
+        "./daprd",
+        "--app-id",
+        "orders-internal",
+        "--app-port",
+        "8080",
+        "--placement-host-address",
+        "placement:50006", # Dapr's placement service can be reach via the docker DNS entry
+        "--dapr-grpc-port",
+        "5101",
+        "--resources-path",
+        "./components",
+        "--app-protocol",
+        "grpc",
+      ]
+    volumes:
+      - "./components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
+    depends_on:
+      - "local.order-internal"
+    network_mode: "service:local.order-internal"
+
+  local.orders-worker:
+    image: order-worker
+    container_name: local.orders-worker
+    depends_on:
+      - cache
+      - temporal
+    ports:
+      - "5090:8080"
+    environment:
+      - DatabaseConnection=mongodb://mongodb:27017
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+      - REDIS_CONNECTION_STRING=cache:6379
+      - CACHE_NAME=orders
+      - TEMPORAL_ENDPOINT=temporal:7233
+      - Features__UseOrchestrator=true
+      - Services__LoyaltyInternal=http://localhost:5101
+      - Services__Recipes=recipes
+      - Environment=local
+      - Auth__Issuer=https://plantbasedpizza.com
+      - Auth__Audience=https://plantbasedpizza.com
+      - Auth__Key=This is a sample secret key - please don't use in production environment.'
+      - DAPR_HOST=host.docker.internal
+      - DAPR_GRPC_PORT=5101
+    networks:
+      - dapr
+
+  ordersworker-dapr:
+    image: "daprio/daprd:edge"
+    command: [
+        "./daprd",
+        "--app-id",
+        "ordersworker",
+        "--app-port",
+        "8080",
+        "--placement-host-address",
+        "placement:50006", # Dapr's placement service can be reach via the docker DNS entry
+        "--dapr-grpc-port",
+        "5101",
+        "--resources-path",
+        "./components",
+      ]
+    volumes:
+      - "./components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
+    depends_on:
+      - "local.orders-worker"
+    network_mode: "service:local.orders-worker"
+
+  local.loyalty-api:
+    image: loyalty-api
+    container_name: local.loyalty-api
+    ports:
+      - "5050:8080"
+    environment:
+      - DatabaseConnection=mongodb://mongodb:27017
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+      - Environment=local
+      - Auth__Issuer=https://plantbasedpizza.com
+      - Auth__Audience=https://plantbasedpizza.com
+      - Auth__Key=This is a sample secret key - please don't use in production environment.'
+      - Messaging__UseAsyncApi=Y
+      - DAPR_HOST=host.docker.internal
+      - DAPR_GRPC_PORT=5101
+    networks:
+      - dapr
+
+  loyaltyapi-dapr:
+    image: "daprio/daprd:edge"
+    command: [
+        "./daprd",
+        "--app-id",
+        "loyalty",
+        "--app-port",
+        "8080",
+        "--placement-host-address",
+        "placement:50006", # Dapr's placement service can be reach via the docker DNS entry
+        "--dapr-grpc-port",
+        "5101",
+        "--resources-path",
+        "./components",
+      ]
+    volumes:
+      - "./components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
+    depends_on:
+      - "local.loyalty-api"
+
+    network_mode: "service:local.loyalty-api"
+
+  local.loyalty-internal-api:
+    image: loyalty-internal-api
+    container_name: local.loyalty-internal-api
+    expose:
+      - "8080"
+    environment:
+      - DatabaseConnection=mongodb://mongodb:27017
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+      - Environment=local
+      - DAPR_HOST=host.docker.internal
+      - DAPR_GRPC_PORT=5101
+    networks:
+      - dapr
+
+  loyaltyinternal-dapr:
+    image: "daprio/daprd:edge"
+    command: [
+        "./daprd",
+        "--app-id",
+        "loyaltyinternal",
+        "--app-port",
+        "8080",
+        "--placement-host-address",
+        "placement:50006", # Dapr's placement service can be reach via the docker DNS entry
+        "--dapr-grpc-port",
+        "5101",
+        "--resources-path",
+        "./components",
+        "--app-protocol",
+        "grpc",
+      ]
+    volumes:
+      - "./components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
+    depends_on:
+      - "local.loyalty-internal-api"
+
+    network_mode: "service:local.loyalty-internal-api"
+
+  local.loyalty-worker:
+    image: loyalty-worker
+    container_name: local.loyalty-worker
+    environment:
+      - DatabaseConnection=mongodb://mongodb:27017
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+      - Environment=local
+      - DAPR_HOST=host.docker.internal
+      - DAPR_GRPC_PORT=5101
+    networks:
+      - dapr
+
+  loyaltyworker-dapr:
+    image: "daprio/daprd:edge"
+    command: [
+        "./daprd",
+        "--app-id",
+        "loyaltyworker",
+        "--app-port",
+        "8080",
+        "--placement-host-address",
+        "placement:50006", # Dapr's placement service can be reach via the docker DNS entry
+        "--dapr-grpc-port",
+        "5101",
+        "--resources-path",
+        "./components",
+      ]
+    volumes:
+      - "./components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
+    depends_on:
+      - "local.loyalty-worker"
+
+    network_mode: "service:local.loyalty-worker"
+
+  local.kitchen-api:
+    image: kitchen-api
+    container_name: local.kitchen-api
+    ports:
+      - "8081:8080"
+    depends_on:
+      - cache
+    environment:
+      - DatabaseConnection=mongodb://mongodb:27017
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+      - Environment=local
+      - REDIS_CONNECTION_STRING=cache:6379
+      - CACHE_NAME=kitchen
+      - Services__Recipes=recipes
+      - Messaging__UseAsyncApi=Y
+      - Auth__Issuer=https://plantbasedpizza.com
+      - Auth__Audience=https://plantbasedpizza.com
+      - Auth__Key=This is a sample secret key - please don't use in production environment.'
+      - DAPR_HOST=host.docker.internal
+      - DAPR_GRPC_PORT=5101
+    networks:
+      - dapr
+
+  kitchenapi-dapr:
+    image: "daprio/daprd:edge"
+    command: [
+        "./daprd",
+        "--app-id",
+        "kitchen",
+        "--app-port",
+        "8080",
+        "--placement-host-address",
+        "placement:50006", # Dapr's placement service can be reach via the docker DNS entry
+        "--dapr-grpc-port",
+        "5101",
+        "--resources-path",
+        "./components",
+      ]
+    volumes:
+      - "./components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
+    depends_on:
+      - "local.kitchen-api"
+
+    network_mode: "service:local.kitchen-api"
+
+  local.kitchen-worker:
+    image: kitchen-worker
+    container_name: local.kitchen-worker
+    expose:
+      - "8080"
+    depends_on:
+      - cache
+    environment:
+      - DatabaseConnection=mongodb://mongodb:27017
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+      - Environment=local
+      - REDIS_CONNECTION_STRING=cache:6379
+      - CACHE_NAME=kitchen
+      - Services__Recipes=recipes
+      - Services__OrdersInternal=http://localhost:5101
+      - DAPR_HOST=host.docker.internal
+      - DAPR_GRPC_PORT=5101
+    networks:
+      - dapr
+
+  kitchenworker-dapr:
+    image: "daprio/daprd:edge"
+    command: [
+        "./daprd",
+        "--app-id",
+        "kitchenworker",
+        "--app-port",
+        "8080",
+        "--placement-host-address",
+        "placement:50006", # Dapr's placement service can be reach via the docker DNS entry
+        "--dapr-grpc-port",
+        "5101",
+        "--resources-path",
+        "./components",
+      ]
+    volumes:
+      - "./components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
+    depends_on:
+      - "local.kitchen-worker"
+
+    network_mode: "service:local.kitchen-worker"
+
+  local.payment-api:
+    image: payment-api
+    container_name: local.payment-api
+    ports:
+      - "8082:8080"
+    environment:
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+      - REDIS_CONNECTION_STRING=cache:6379
+      - CACHE_NAME=payments
+      - Messaging__UseAsyncApi=Y
+      - Environment=local
+      - Services__OrdersInternal=http://localhost:5101
+      - DAPR_HOST=host.docker.internal
+      - DAPR_GRPC_PORT=5101
+    networks:
+      - dapr
+
+  paymentapi-dapr:
+    image: "daprio/daprd:edge"
+    command: [
+        "./daprd",
+        "--app-id",
+        "payment",
+        "--app-port",
+        "8080",
+        "--placement-host-address",
+        "placement:50006",
+        "--dapr-grpc-port",
+        "5101",
+        "--resources-path",
+        "./components",
+      ]
+    volumes:
+      - "./components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
+    depends_on:
+      - "local.payment-api"
+    network_mode: "service:local.payment-api"
+
+  local.recipe-api:
+    image: recipe-api
+    container_name: local.recipe-api
+    ports:
+      - "8083:8080"
+    environment:
+      - DatabaseConnection=mongodb://mongodb:27017
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+      - Environment=local
+      - Messaging__UseAsyncApi=Y
+      - Auth__Issuer=https://plantbasedpizza.com
+      - Auth__Audience=https://plantbasedpizza.com
+      - Auth__Key=This is a sample secret key - please don't use in production environment.'
+      - DAPR_HOST=host.docker.internal
+      - DAPR_GRPC_PORT=5101
+    networks:
+      - dapr
+
+  recipeapi-dapr:
+    image: "daprio/daprd:edge"
+    command: [
+        "./daprd",
+        "--app-id",
+        "recipes",
+        "--app-port",
+        "8080",
+        "--placement-host-address",
+        "placement:50006", # Dapr's placement service can be reach via the docker DNS entry
+        "--dapr-grpc-port",
+        "5101",
+        "--resources-path",
+        "./components",
+      ]
+    volumes:
+      - "./components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
+    depends_on:
+      - "local.recipe-api"
+
+    network_mode: "service:local.recipe-api"
+
+  local.delivery-api:
+    image: delivery-api
+    container_name: local.delivery-api
+    expose:
+      - "8070:8080"
+    depends_on:
+      - cache
+    environment:
+      - DatabaseConnection=mongodb://mongodb:27017
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+      - Environment=local
+      - Messaging__UseAsyncApi=Y
+      - Auth__Issuer=https://plantbasedpizza.com
+      - Auth__Audience=https://plantbasedpizza.com
+      - Auth__Key=This is a sample secret key - please don't use in production environment.'
+      - DAPR_HOST=host.docker.internal
+      - DAPR_GRPC_PORT=5101
+    networks:
+      - dapr
+
+  deliveryapi-dapr:
+    image: "daprio/daprd:edge"
+    command: [
+        "./daprd",
+        "--app-id",
+        "delivery",
+        "--app-port",
+        "8080",
+        "--placement-host-address",
+        "placement:50006", # Dapr's placement service can be reach via the docker DNS entry
+        "--dapr-grpc-port",
+        "5101",
+        "--resources-path",
+        "./components",
+      ]
+    volumes:
+      - "./components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
+    depends_on:
+      - "local.delivery-api"
+
+    network_mode: "service:local.delivery-api"
+
+  local.delivery-worker:
+    image: delivery-worker
+    container_name: local.delivery-worker
+    depends_on:
+      - cache
+    environment:
+      - DatabaseConnection=mongodb://mongodb:27017
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+      - Environment=local
+      - DAPR_HOST=host.docker.internal
+      - DAPR_GRPC_PORT=5101
+    networks:
+      - dapr
+
+  deliveryworker-dapr:
+    image: "daprio/daprd:edge"
+    command: [
+        "./daprd",
+        "--app-id",
+        "deliveryworker",
+        "--app-port",
+        "8080",
+        "--placement-host-address",
+        "placement:50006", # Dapr's placement service can be reach via the docker DNS entry
+        "--dapr-grpc-port",
+        "5101",
+        "--resources-path",
+        "./components",
+      ]
+    volumes:
+      - "./components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
+    depends_on:
+      - "local.delivery-worker"
+
+    network_mode: "service:local.delivery-worker"
+
+  local.account-api:
+    image: account-api
+    container_name: local.account-api
+    expose:
+      - "8085:8080"
+    depends_on:
+      - cache
+    environment:
+      - DatabaseConnection=mongodb://mongodb:27017
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+      - Environment=local
+      - Messaging__UseAsyncApi=Y
+      - Auth__Issuer=https://plantbasedpizza.com
+      - Auth__Audience=https://plantbasedpizza.com
+      - Auth__Key=This is a sample secret key - please don't use in production environment.'
+      - DAPR_HOST=host.docker.internal
+      - DAPR_GRPC_PORT=5101
+    networks:
+      - dapr
+
+  accountapi-dapr:
+    image: "daprio/daprd:edge"
+    command: [
+        "./daprd",
+        "--app-id",
+        "account",
+        "--app-port",
+        "8080",
+        "--placement-host-address",
+        "placement:50006", # Dapr's placement service can be reach via the docker DNS entry
+        "--dapr-grpc-port",
+        "5101",
+        "--resources-path",
+        "./components",
+      ]
+    volumes:
+      - "./components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
+    depends_on:
+      - "local.account-api"
+
+    network_mode: "service:local.account-api"
+
+  reverse-proxy:
+    image: nginx:latest
+    ports:
+      - "5051:80"
+    networks:
+      - dapr
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - "local.delivery-api"
+      - "local.order-api"
+      - "local.kitchen-api"
+      - "local.recipe-api"
+      - "local.loyalty-api"
+      - "local.account-api"
+
+  frontend:
+    image: frontend
+    ports:
+      - "3000:3000"
+    networks:
+      - dapr
+
+  integration-test-dapr:
+    image: "daprio/daprd:edge"
+    command: [
+      "./daprd",
+      "--app-id",
+      "integration-tests",
+      "--placement-host-address",
+      "placement:50006", # Dapr's placement service can be reach via the docker DNS entry
+      "--dapr-grpc-port",
+      "5101",
+      "--resources-path",
+      "./components",
+    ]
+    ports:
+      - "5101:5101"
+    volumes:
+      - "./components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument
+    networks:
+      - dapr
