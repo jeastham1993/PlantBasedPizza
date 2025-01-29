@@ -2,10 +2,6 @@ services:
   local.order-api:
     image: order-api
     container_name: "local.order-api"
-    depends_on:
-      - cache
-      - placement
-      - temporal
     ports:
       - "8080:8080"
     networks:
@@ -51,9 +47,6 @@ services:
   local.order-internal:
     image: order-internal
     container_name: "local.order-internal"
-    depends_on:
-      - cache
-      - placement
     expose:
       - "8080"
     networks:
@@ -97,9 +90,6 @@ services:
   local.orders-worker:
     image: order-worker
     container_name: local.orders-worker
-    depends_on:
-      - cache
-      - temporal
     ports:
       - "5090:8080"
     environment:
@@ -258,8 +248,6 @@ services:
     container_name: local.kitchen-api
     ports:
       - "8081:8080"
-    depends_on:
-      - cache
     environment:
       - DatabaseConnection=mongodb://mongodb:27017
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
@@ -303,8 +291,6 @@ services:
     container_name: local.kitchen-worker
     expose:
       - "8080"
-    depends_on:
-      - cache
     environment:
       - DatabaseConnection=mongodb://mongodb:27017
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
@@ -423,8 +409,6 @@ services:
     container_name: local.delivery-api
     expose:
       - "8070:8080"
-    depends_on:
-      - cache
     environment:
       - DatabaseConnection=mongodb://mongodb:27017
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
@@ -463,8 +447,6 @@ services:
   local.delivery-worker:
     image: delivery-worker
     container_name: local.delivery-worker
-    depends_on:
-      - cache
     environment:
       - DatabaseConnection=mongodb://mongodb:27017
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
@@ -501,8 +483,6 @@ services:
     container_name: local.account-api
     expose:
       - "8085:8080"
-    depends_on:
-      - cache
     environment:
       - DatabaseConnection=mongodb://mongodb:27017
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
@@ -580,3 +560,6 @@ services:
       - "./components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument
     networks:
       - dapr
+
+networks:
+  dapr: null
