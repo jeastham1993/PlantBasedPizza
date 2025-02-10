@@ -1,4 +1,4 @@
-using PlantBasedPizza.OrderManager.Core.Entities;
+using PlantBasedPizza.OrderManager.Core.ExternalEvents;
 using PlantBasedPizza.OrderManager.Core.Services;
 using Saunter.Attributes;
 
@@ -12,7 +12,7 @@ public class KitchenConfirmedOrderEventHandler(
 {
     [Channel("kitchen.orderConfirmed.v1")]
     [PublishOperation(typeof(KitchenConfirmedOrderEventV1), OperationId = nameof(KitchenConfirmedOrderEventV1))]
-    public async Task Handle(KitchenConfirmedOrderEventV1 evt)
+    public async Task Handle(KitchenConfirmedOrder evt)
     {
         var order = await orderRepository.Retrieve(evt.OrderIdentifier);
             

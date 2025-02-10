@@ -1,10 +1,10 @@
-using PlantBasedPizza.OrderManager.Core.Entities;
+using PlantBasedPizza.OrderManager.Core.ExternalEvents;
 
 namespace PlantBasedPizza.OrderManager.Core.OrderDelivered;
 
 public class OrderDeliveredEventHandler(IOrderRepository orderRepository)
 {
-    public async Task<OrderDto?> Handle(OrderDeliveredEvent evt)
+    public async Task<OrderDto?> Handle(OrderDelivered evt)
     {
         var order = await orderRepository.Retrieve(evt.OrderIdentifier);
 

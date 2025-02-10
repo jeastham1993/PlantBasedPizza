@@ -2,7 +2,7 @@
 using System.Text.Json;
 using Microsoft.Extensions.Caching.Distributed;
 using MongoDB.Driver;
-using PlantBasedPizza.OrderManager.Core.Entities;
+using PlantBasedPizza.OrderManager.Core;
 
 namespace PlantBasedPizza.OrderManager.Infrastructure;
 

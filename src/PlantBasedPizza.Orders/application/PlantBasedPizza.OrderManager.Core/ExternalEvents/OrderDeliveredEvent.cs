@@ -1,4 +1,4 @@
-namespace PlantBasedPizza.OrderManager.Core.OrderDelivered
+namespace PlantBasedPizza.OrderManager.Core.ExternalEvents
 {
     public record OrderDeliveredEvent
     {

@@ -6,6 +6,7 @@ using Microsoft.Extensions.Caching.Distributed;
 using PlantBasedPizza.Events;
 using PlantBasedPizza.OrderManager.Core.DriverCollectedOrder;
 using PlantBasedPizza.OrderManager.Core.DriverDeliveredOrder;
+using PlantBasedPizza.OrderManager.Core.ExternalEvents;
 using PlantBasedPizza.OrderManager.Core.KitchenConfirmedOrder;
 using PlantBasedPizza.OrderManager.Core.OrderBaked;
 using PlantBasedPizza.OrderManager.Core.OrderPreparing;
@@ -57,7 +58,7 @@ public static class EventHandlers
 
             if (await idempotency.HasEventBeenProcessedWithId(eventId)) return Results.Ok();
 
-            await paymentSuccessEventHandler.Handle(evt);
+            await paymentSuccessEventHandler.Handle(new PaymentSuccess(evt.OrderIdentifier, evt.Amount));
 
             await idempotency.ProcessedSuccessfully(eventId);
 
@@ -98,7 +99,7 @@ public static class EventHandlers
 
             if (await idempotency.HasEventBeenProcessedWithId(eventId)) return Results.Ok();
 
-            await driverCollectedOrderEventHandler.Handle(evt);
+            await driverCollectedOrderEventHandler.Handle(new DriverCollectedOrder(evt.DriverName, evt.OrderIdentifier));
 
             await idempotency.ProcessedSuccessfully(eventId);
 
@@ -139,7 +140,7 @@ public static class EventHandlers
 
             if (await idempotency.HasEventBeenProcessedWithId(eventId)) return Results.Ok();
 
-            await driverDeliveredOrderEventHandler.Handle(evt);
+            await driverDeliveredOrderEventHandler.Handle(new DriverDeliveredOrder(evt.OrderIdentifier));
 
             await idempotency.ProcessedSuccessfully(eventId);
 
@@ -221,7 +222,7 @@ public static class EventHandlers
 
             if (await idempotency.HasEventBeenProcessedWithId(eventId)) return Results.Ok();
 
-            await kitchenConfirmedEventHandler.Handle(evt);
+            await kitchenConfirmedEventHandler.Handle(new KitchenConfirmedOrder(evt.OrderIdentifier));
 
             await idempotency.ProcessedSuccessfully(eventId);
 
@@ -262,7 +263,7 @@ public static class EventHandlers
 
             if (await idempotency.HasEventBeenProcessedWithId(eventId)) return Results.Ok();
 
-            await orderBakedHandler.Handle(evt);
+            await orderBakedHandler.Handle(new OrderBaked(evt.OrderIdentifier));
 
             await idempotency.ProcessedSuccessfully(eventId);
 
@@ -303,7 +304,7 @@ public static class EventHandlers
 
             if (await idempotency.HasEventBeenProcessedWithId(eventId)) return Results.Ok();
 
-            await orderPreparingEventHandler.Handle(evt);
+            await orderPreparingEventHandler.Handle(new OrderPreparing(evt.OrderIdentifier));
 
             await idempotency.ProcessedSuccessfully(eventId);
 
@@ -344,7 +345,7 @@ public static class EventHandlers
 
             if (await idempotency.HasEventBeenProcessedWithId(eventId)) return Results.Ok();
 
-            await orderPrepCompleteHandler.Handle(evt);
+            await orderPrepCompleteHandler.Handle(new OrderPrepComplete(evt.OrderIdentifier));
 
             await idempotency.ProcessedSuccessfully(eventId);
 
@@ -385,7 +386,7 @@ public static class EventHandlers
 
             if (await idempotency.HasEventBeenProcessedWithId(eventId)) return Results.Ok();
 
-            await orderQualityCheckedEventHandler.Handle(evt);
+            await orderQualityCheckedEventHandler.Handle(new OrderQualityChecked(evt.OrderIdentifier));
 
             await idempotency.ProcessedSuccessfully(eventId);
 

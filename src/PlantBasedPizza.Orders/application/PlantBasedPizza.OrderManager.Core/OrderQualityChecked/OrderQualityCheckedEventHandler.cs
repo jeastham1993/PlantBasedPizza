@@ -1,3 +1,4 @@
+using PlantBasedPizza.OrderManager.Core.ExternalEvents;
 using PlantBasedPizza.OrderManager.Core.OrderReadyForDelivery;
 using PlantBasedPizza.OrderManager.Core.Services;
 using Saunter.Attributes;
@@ -11,7 +12,7 @@ namespace PlantBasedPizza.OrderManager.Core.OrderQualityChecked
     {
         [Channel("kitchen.qualityChecked.v1")]
         [PublishOperation(typeof(OrderQualityCheckedEventV1), OperationId = nameof(OrderQualityCheckedEventV1))]
-        public async Task Handle(OrderQualityCheckedEventV1 evt)
+        public async Task Handle(OrderQualityChecked evt)
         {
             if (features.UseOrchestrator())
             {

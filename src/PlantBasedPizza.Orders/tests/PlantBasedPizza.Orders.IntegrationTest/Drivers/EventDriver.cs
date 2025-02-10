@@ -10,6 +10,7 @@ using PlantBasedPizza.OrderManager.Core.CollectOrder;
 using PlantBasedPizza.OrderManager.Core.CreateDeliveryOrder;
 using PlantBasedPizza.OrderManager.Core.CreatePickupOrder;
 using PlantBasedPizza.OrderManager.Core.DriverDeliveredOrder;
+using PlantBasedPizza.OrderManager.Core.ExternalEvents;
 using PlantBasedPizza.OrderManager.Core.OrderQualityChecked;
 using PlantBasedPizza.OrderManager.Core.PaymentSuccess;
 using PlantBasedPizza.OrderManager.Infrastructure;

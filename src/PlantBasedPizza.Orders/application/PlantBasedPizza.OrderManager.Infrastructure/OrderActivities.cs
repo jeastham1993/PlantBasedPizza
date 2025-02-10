@@ -1,7 +1,8 @@
+using PlantBasedPizza.OrderManager.Core;
 using PlantBasedPizza.OrderManager.Core.CancelOrder;
 using PlantBasedPizza.OrderManager.Core.CollectOrder;
 using PlantBasedPizza.OrderManager.Core.ConfirmOrder;
-using PlantBasedPizza.OrderManager.Core.Entities;
+using PlantBasedPizza.OrderManager.Core.ExternalEvents;
 using PlantBasedPizza.OrderManager.Core.OrderDelivered;
 using PlantBasedPizza.OrderManager.Core.OrderReadyForDelivery;
 using PlantBasedPizza.OrderManager.Core.Services;
@@ -81,9 +82,6 @@ public class OrderActivities(SubmitOrderCommandHandler submitOrderHandler,
     [Activity]
     public async Task OrderDelivered(string orderIdentifier)
     {
-        await orderDeliveredEventHandler.Handle(new OrderDeliveredEvent()
-        {
-            OrderIdentifier = orderIdentifier
-        });
+        await orderDeliveredEventHandler.Handle(new OrderDelivered(orderIdentifier));
     }
 }

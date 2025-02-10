@@ -1,5 +1,3 @@
-using PlantBasedPizza.OrderManager.Core.Entities;
-
 namespace PlantBasedPizza.OrderManager.Core.CollectOrder;
 
 public class CollectOrderCommandHandler(IOrderRepository orderRepository)

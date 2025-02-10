@@ -1,3 +1,4 @@
+using PlantBasedPizza.OrderManager.Core.ExternalEvents;
 using PlantBasedPizza.OrderManager.Core.OrderDelivered;
 using PlantBasedPizza.OrderManager.Core.Services;
 using Saunter.Attributes;
@@ -11,7 +12,7 @@ public class DriverDeliveredOrderEventHandler(
 {
     [Channel("delivery.driverDeliveredOrder.v1")]
     [PublishOperation(typeof(DriverDeliveredOrderEventV1), OperationId = nameof(DriverDeliveredOrderEventV1))]
-    public async Task Handle(DriverDeliveredOrderEventV1 evt)
+    public async Task Handle(DriverDeliveredOrder evt)
     {
         if (features.UseOrchestrator())
         {
@@ -19,9 +20,6 @@ public class DriverDeliveredOrderEventHandler(
             return;
         }
 
-        await eventHandler.Handle(new OrderDeliveredEvent
-        {
-            OrderIdentifier = evt.OrderIdentifier
-        });
+        await eventHandler.Handle(new OrderDelivered.OrderDelivered(evt.OrderIdentifier));
     }
 }

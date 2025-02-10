@@ -1,3 +1,3 @@
-namespace PlantBasedPizza.OrderManager.Core.DriverDeliveredOrder;
+namespace PlantBasedPizza.OrderManager.Core.KitchenConfirmedOrder;
 
-public record DriverDeliveredOrder(string DriverName, string OrderIdentifier);
+public record KitchenConfirmedOrder(string OrderIdentifier);

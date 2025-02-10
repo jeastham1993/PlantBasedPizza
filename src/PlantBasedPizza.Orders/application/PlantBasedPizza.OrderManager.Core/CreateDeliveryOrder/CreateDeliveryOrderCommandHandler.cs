@@ -1,5 +1,3 @@
-using PlantBasedPizza.OrderManager.Core.Entities;
-
 namespace PlantBasedPizza.OrderManager.Core.CreateDeliveryOrder;
 
 public class CreateDeliveryOrderCommandHandler

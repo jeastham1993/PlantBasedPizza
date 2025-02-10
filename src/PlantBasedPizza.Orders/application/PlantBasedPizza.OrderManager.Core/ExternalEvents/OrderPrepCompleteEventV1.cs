@@ -1,6 +1,6 @@
 using PlantBasedPizza.Events;
 
-namespace PlantBasedPizza.OrderManager.Core.OrderPrepComplete;
+namespace PlantBasedPizza.OrderManager.Core.ExternalEvents;
 
 public class OrderPrepCompleteEventV1 : IntegrationEvent
 {

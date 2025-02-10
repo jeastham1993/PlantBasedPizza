@@ -1,6 +1,6 @@
 using PlantBasedPizza.Events;
 
-namespace PlantBasedPizza.OrderManager.Core.OrderQualityChecked;
+namespace PlantBasedPizza.OrderManager.Core.ExternalEvents;
 
 public class OrderQualityCheckedEventV1 : IntegrationEvent
 {

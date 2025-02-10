@@ -1,5 +1,4 @@
 using System.Text.Json.Serialization;
-using PlantBasedPizza.OrderManager.Core.Entities;
 
 namespace PlantBasedPizza.OrderManager.Core.CreateDeliveryOrder
 {

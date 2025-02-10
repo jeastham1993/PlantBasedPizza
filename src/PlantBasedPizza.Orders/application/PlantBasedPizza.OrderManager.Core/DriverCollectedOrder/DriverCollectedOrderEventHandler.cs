@@ -1,4 +1,4 @@
-using PlantBasedPizza.OrderManager.Core.Entities;
+using PlantBasedPizza.OrderManager.Core.ExternalEvents;
 using PlantBasedPizza.OrderManager.Core.Services;
 using Saunter.Attributes;
 
@@ -17,7 +17,7 @@ namespace PlantBasedPizza.OrderManager.Core.DriverCollectedOrder
         
         [Channel("delivery.driverCollectedOrder.v1")]
         [PublishOperation(typeof(DriverCollectedOrderEventV1), OperationId = nameof(DriverCollectedOrderEventV1))]
-        public async Task Handle(DriverCollectedOrderEventV1 evt)
+        public async Task Handle(DriverCollectedOrder evt)
         {
             var order = await _orderRepository.Retrieve(evt.OrderIdentifier);
 

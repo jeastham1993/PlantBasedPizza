@@ -1,6 +1,6 @@
 using PlantBasedPizza.Events;
 
-namespace PlantBasedPizza.OrderManager.Core.OrderBaked;
+namespace PlantBasedPizza.OrderManager.Core.ExternalEvents;
 
 public class OrderBakedEventV1 : IntegrationEvent
 {

@@ -1,6 +1,6 @@
 using PlantBasedPizza.Events;
 
-namespace PlantBasedPizza.OrderManager.Core.KitchenConfirmedOrder;
+namespace PlantBasedPizza.OrderManager.Core.ExternalEvents;
 
 public class KitchenConfirmedOrderEventV1 : IntegrationEvent
 {

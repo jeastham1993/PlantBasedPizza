@@ -1,3 +1,3 @@
 namespace PlantBasedPizza.OrderManager.Core.OrderPrepComplete;
 
-public record DriverDeliveredOrder(string OrderIdentifier);
+public record OrderPrepComplete(string OrderIdentifier);

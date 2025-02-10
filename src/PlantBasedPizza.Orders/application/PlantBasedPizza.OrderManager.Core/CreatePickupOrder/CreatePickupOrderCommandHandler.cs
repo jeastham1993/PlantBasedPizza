@@ -1,5 +1,3 @@
-using PlantBasedPizza.OrderManager.Core.Entities;
-
 namespace PlantBasedPizza.OrderManager.Core.CreatePickupOrder;
 
 public class CreatePickupOrderCommandHandler(IOrderRepository orderRepository)

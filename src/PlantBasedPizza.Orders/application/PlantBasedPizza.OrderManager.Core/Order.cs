@@ -3,7 +3,7 @@ using PlantBasedPizza.Events;
 using PlantBasedPizza.OrderManager.Core.PublicEvents;
 using PlantBasedPizza.Shared.Guards;
 
-namespace PlantBasedPizza.OrderManager.Core.Entities
+namespace PlantBasedPizza.OrderManager.Core
 {
     public class Order
     {

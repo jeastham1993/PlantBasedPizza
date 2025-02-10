@@ -1,7 +1,7 @@
 using FluentAssertions;
 using NJsonSchema;
 using NJsonSchema.Validation;
-using PlantBasedPizza.OrderManager.Core.Entities;
+using PlantBasedPizza.OrderManager.Core;
 using PlantBasedPizza.OrderManager.Core.PublicEvents;
 using PlantBasedPizza.OrderManager.Core.SubmitOrder;
 

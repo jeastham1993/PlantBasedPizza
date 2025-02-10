@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Text.Json;
 using MongoDB.Driver;
-using PlantBasedPizza.OrderManager.Core.Entities;
+using PlantBasedPizza.OrderManager.Core;
 using PlantBasedPizza.OrderManager.Core.PublicEvents;
 using PlantBasedPizza.OrderManager.Infrastructure;
 

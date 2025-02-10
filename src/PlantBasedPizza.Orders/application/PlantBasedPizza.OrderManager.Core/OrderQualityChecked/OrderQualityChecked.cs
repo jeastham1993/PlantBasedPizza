@@ -1,3 +1,3 @@
 namespace PlantBasedPizza.OrderManager.Core.OrderQualityChecked;
 
-public record DriverDeliveredOrder(string OrderIdentifier);
+public record OrderQualityChecked(string OrderIdentifier);

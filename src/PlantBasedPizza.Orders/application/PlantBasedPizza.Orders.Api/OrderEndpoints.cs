@@ -1,11 +1,11 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using PlantBasedPizza.OrderManager.Core;
 using PlantBasedPizza.OrderManager.Core.AddItemToOrder;
 using PlantBasedPizza.OrderManager.Core.CancelOrder;
 using PlantBasedPizza.OrderManager.Core.CollectOrder;
 using PlantBasedPizza.OrderManager.Core.CreateDeliveryOrder;
 using PlantBasedPizza.OrderManager.Core.CreatePickupOrder;
-using PlantBasedPizza.OrderManager.Core.Entities;
 using PlantBasedPizza.OrderManager.Core.Services;
 using PlantBasedPizza.OrderManager.Core.SubmitOrder;
 using PlantBasedPizza.OrderManager.Infrastructure;

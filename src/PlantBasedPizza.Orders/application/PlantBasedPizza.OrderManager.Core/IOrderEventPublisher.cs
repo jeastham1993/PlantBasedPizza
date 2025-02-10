@@ -1,6 +1,6 @@
 using PlantBasedPizza.OrderManager.Core.PublicEvents;
 
-namespace PlantBasedPizza.OrderManager.Core.Entities;
+namespace PlantBasedPizza.OrderManager.Core;
 
 public interface IOrderEventPublisher
 {

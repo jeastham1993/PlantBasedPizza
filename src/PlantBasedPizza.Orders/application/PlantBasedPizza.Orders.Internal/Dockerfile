@@ -9,7 +9,7 @@ RUN dotnet restore PlantBasedPizza.Orders/application/PlantBasedPizza.Orders.Int
 RUN dotnet publish PlantBasedPizza.Orders/application/PlantBasedPizza.Orders.Internal/PlantBasedPizza.Orders.Internal.csproj -c Release -o out -r linux-arm64
 
 # Build runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:9.0
+FROM mcr.microsoft.com/dotnet/aspnet:9.0-noble-chiseled as runtime
 WORKDIR /App
 COPY --from=build-env /App/out .
 ENTRYPOINT ["dotnet", "PlantBasedPizza.Orders.Internal.dll"]

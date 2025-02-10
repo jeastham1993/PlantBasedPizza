@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
-namespace PlantBasedPizza.OrderManager.Core.Entities;
+
+namespace PlantBasedPizza.OrderManager.Core;
 
 public record DeliveryDetailsDto
 {

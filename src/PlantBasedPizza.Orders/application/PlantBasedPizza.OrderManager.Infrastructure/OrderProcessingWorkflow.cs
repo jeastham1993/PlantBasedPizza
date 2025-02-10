@@ -1,5 +1,5 @@
 using Microsoft.Extensions.Logging;
-using PlantBasedPizza.OrderManager.Core.Entities;
+using PlantBasedPizza.OrderManager.Core;
 using PlantBasedPizza.OrderManager.Core.Services;
 using Temporalio.Common;
 using Temporalio.Workflows;

@@ -2,7 +2,7 @@ using System.Diagnostics;
 using System.Text.Json;
 using Grpc.Core;
 using Microsoft.Extensions.Caching.Distributed;
-using PlantBasedPizza.OrderManager.Core.Entities;
+using PlantBasedPizza.OrderManager.Core;
 
 namespace PlantBasedPizza.Orders.Internal.Services;
 
