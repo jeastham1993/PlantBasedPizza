@@ -9,7 +9,7 @@ RUN dotnet restore PlantBasedPizza.Kitchen/application/PlantBasedPizza.Kitchen.W
 RUN dotnet publish PlantBasedPizza.Kitchen/application/PlantBasedPizza.Kitchen.Worker/PlantBasedPizza.Kitchen.Worker.csproj -c Release -o out -r linux-arm64
 
 # Build runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:9.0
+FROM mcr.microsoft.com/dotnet/aspnet:9.0-noble-chiseled as runtime
 WORKDIR /App
 COPY --from=build-env /App/out .
 ENTRYPOINT ["dotnet", "PlantBasedPizza.Kitchen.Worker.dll"]
