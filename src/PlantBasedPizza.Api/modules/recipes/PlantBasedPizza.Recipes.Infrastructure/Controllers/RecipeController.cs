@@ -6,17 +6,8 @@ using PlantBasedPizza.Shared.Logging;
 namespace PlantBasedPizza.Recipes.Infrastructure.Controllers
 {
     [Route("recipes")]
-    internal class RecipeController : ControllerBase
+    public class RecipeController(IRecipeRepository recipeRepository) : ControllerBase
     {
-        private readonly IRecipeRepository _recipeRepository;
-        private readonly IObservabilityService _observability;
-
-        public RecipeController(IRecipeRepository recipeRepository, IObservabilityService observability)
-        {
-            _recipeRepository = recipeRepository;
-            _observability = observability;
-        }
-
         /// <summary>
         /// List all recipes.
         /// </summary>
@@ -24,9 +15,7 @@ namespace PlantBasedPizza.Recipes.Infrastructure.Controllers
         [HttpGet("")]
         public async Task<IEnumerable<Recipe>> List()
         {
-            this._observability.Info("Retrieved request to list recipes");
-
-            return await this._recipeRepository.List();
+            return await recipeRepository.List();
         }
 
         /// <summary>
@@ -37,7 +26,7 @@ namespace PlantBasedPizza.Recipes.Infrastructure.Controllers
         [HttpGet("{recipeIdentifier}")]
         public async Task<Recipe> Get(string recipeIdentifier)
         {
-            return await this._recipeRepository.Retrieve(recipeIdentifier);
+            return await recipeRepository.Retrieve(recipeIdentifier);
         }
         
         /// <summary>
@@ -48,7 +37,7 @@ namespace PlantBasedPizza.Recipes.Infrastructure.Controllers
         [HttpPost("")]
         public async Task<Recipe> Create([FromBody] CreateRecipeCommand request)
         {
-            var existingRecipe = await this._recipeRepository.Retrieve(request.RecipeIdentifier);
+            var existingRecipe = await recipeRepository.Retrieve(request.RecipeIdentifier);
 
             if (existingRecipe != null)
             {
@@ -62,7 +51,7 @@ namespace PlantBasedPizza.Recipes.Infrastructure.Controllers
                 recipe.AddIngredient(item.Name, item.Quantity);
             }
 
-            await this._recipeRepository.Add(recipe);
+            await recipeRepository.Add(recipe);
 
             return recipe;
         }

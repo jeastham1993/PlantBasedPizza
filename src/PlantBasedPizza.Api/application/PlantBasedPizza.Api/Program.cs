@@ -18,13 +18,13 @@ var client = new MongoClient(builder.Configuration["DatabaseConnection"]);
 
 builder.Services.AddSingleton(client);
 
-builder.Services.AddOrderManagerInfrastructure(builder.Configuration);
-builder.Services.AddRecipeInfrastructure(builder.Configuration);
-builder.Services.AddKitchenInfrastructure(builder.Configuration);
-builder.Services.AddDeliveryModuleInfrastructure(builder.Configuration);
-builder.Services.AddSharedInfrastructure(builder.Configuration, "PlantBasedPizza");
-builder.Services.AddHttpClient();
-builder.Services.AddHostedService<OutboxWorker>();
+builder.Services.AddOrderManagerInfrastructure(builder.Configuration)
+    .AddRecipeInfrastructure(builder.Configuration)
+    .AddKitchenInfrastructure(builder.Configuration)
+    .AddDeliveryModuleInfrastructure(builder.Configuration)
+    .AddSharedInfrastructure(builder.Configuration, "PlantBasedPizza")
+    .AddHttpClient()
+    .AddHostedService<OutboxWorker>();
 
 builder.Services.AddControllers();
 

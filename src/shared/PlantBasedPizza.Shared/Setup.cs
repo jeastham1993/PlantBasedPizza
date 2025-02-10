@@ -26,7 +26,7 @@ namespace PlantBasedPizza.Shared
                 tracing.AddSource(applicationName);
                 tracing.AddOtlpExporter(otlpOptions =>
                 {
-                    otlpOptions.Endpoint = new Uri(configuration["OtlpEndpoint"] ?? OTEL_DEFAULT_GRPC_ENDPOINT);
+                    otlpOptions.Endpoint = new Uri(configuration["OTEL_EXPORTER_OTLP_ENDPOINT"] ?? OTEL_DEFAULT_GRPC_ENDPOINT);
                 });
             });
 

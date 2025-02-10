@@ -37,6 +37,13 @@ namespace PlantBasedPizza.OrderManager.Infrastructure
                 map.SetIgnoreExtraElementsIsInherited(true);
             });
             
+            BsonClassMap.RegisterClassMap<OutboxItem>(map =>
+            {
+                map.AutoMap();
+                map.SetIgnoreExtraElements(true);
+                map.SetIgnoreExtraElementsIsInherited(true);
+            });
+            
             BsonClassMap.RegisterClassMap<DeliveryDetails>(map =>
             {
                 map.AutoMap();
@@ -51,7 +58,6 @@ namespace PlantBasedPizza.OrderManager.Infrastructure
             services.AddSingleton<CreateDeliveryOrderCommandHandler>();
             services.AddSingleton<CreatePickupOrderCommandHandler>();
             services.AddSingleton<IRecipeService, RecipeService>();
-            services.AddSingleton<ILoyaltyPointService, LoyaltyPointService>();
             services.AddSingleton<OrderEventPublisher, DaprEventPublisher>();
             
             services.AddSingleton<Handles<OrderPreparingEvent>, OrderPreparingEventHandler>();
