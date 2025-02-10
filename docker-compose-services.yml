@@ -13,7 +13,7 @@ services:
       - REDIS_CONNECTION_STRING=cache:6379
       - CACHE_NAME=orders
       - TEMPORAL_ENDPOINT=temporal:7233
-      - Features__UseOrchestrator=true
+      - Features__UseOrchestrator=false
       - Services__LoyaltyInternal=http://localhost:5101
       - Services__Recipes=recipes
       - Messaging__UseAsyncApi=Y
@@ -98,7 +98,7 @@ services:
       - REDIS_CONNECTION_STRING=cache:6379
       - CACHE_NAME=orders
       - TEMPORAL_ENDPOINT=temporal:7233
-      - Features__UseOrchestrator=true
+      - Features__UseOrchestrator=false
       - Services__LoyaltyInternal=http://localhost:5101
       - Services__Recipes=recipes
       - Environment=local
