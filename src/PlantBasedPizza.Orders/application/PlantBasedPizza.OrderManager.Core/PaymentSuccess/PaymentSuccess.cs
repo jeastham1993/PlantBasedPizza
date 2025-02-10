@@ -7,7 +7,7 @@ public record PaymentSuccess
 
     public PaymentSuccess(string OrderIdentifier, decimal Amount)
     {
-        if (string.IsNullOrEmpty(OrderIdentifier) || Amount <= 0)
+        if (string.IsNullOrEmpty(OrderIdentifier) || Amount < 0)
         {
             throw new ArgumentException("OrderIdentifier and Amount must be provided.");
         }
