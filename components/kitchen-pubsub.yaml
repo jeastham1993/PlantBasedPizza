@@ -1,0 +1,15 @@
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: kitchen
+spec:
+  type: pubsub.redis
+  version: v1
+  metadata:
+    - name: redisHost
+      value: cache:6379
+    - name: redisPassword
+      value: ""
+scopes:
+  - kitchen-acl
+  - kitchenworker

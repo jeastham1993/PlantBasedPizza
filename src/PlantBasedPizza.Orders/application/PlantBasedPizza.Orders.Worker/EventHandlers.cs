@@ -64,6 +64,14 @@ public static class EventHandlers
 
             return Results.Ok();
         }
+        catch (ArgumentException ex)
+        {
+            Activity.Current?.AddException(ex);
+            Activity.Current?.AddTag("messaging.error", true);
+            Activity.Current?.AddTag("messaging.invalid", true);
+
+            return Results.InternalServerError();
+        }
         catch (Exception ex)
         {
             Activity.Current?.AddException(ex);

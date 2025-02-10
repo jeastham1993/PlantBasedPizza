@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
 using PlantBasedPizza.Events;
 
-namespace PlantBasedPizza.Kitchen.Core.OrderConfirmed;
+namespace PlantBasedPizza.Kitchen.ACL.Events;
 
 public class OrderConfirmedEventV1 : IntegrationEvent
 {

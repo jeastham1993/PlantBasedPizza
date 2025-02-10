@@ -4,23 +4,25 @@ using Dapr;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PlantBasedPizza.Events;
+using PlantBasedPizza.Kitchen.ACL.Events;
 using PlantBasedPizza.Kitchen.Core.OrderConfirmed;
 using PlantBasedPizza.Kitchen.Infrastructure;
 
-namespace PlantBasedPizza.Kitchen.Worker;
+namespace PlantBasedPizza.Kitchen.ACL;
 
 public static class EventHandlers
 {
     private const string OrderConfirmedEventName = "order.orderConfirmed.v1";
     private const string FailedMessagesEventName = "kitchen.failedMessages";
     
-    [Topic("kitchen", OrderConfirmedEventName,
+    [Topic("public", OrderConfirmedEventName,
         DeadLetterTopic = "kitchen.failedMessages")]
     public static async Task<IResult> HandleOrderConfirmedEvent([FromServices] OrderConfirmedEventHandler handler,
         [FromServices] Idempotency idempotency,
         [FromServices] IConfiguration configuration,
+        [FromServices] EventAdapter adapter,
         HttpContext httpContext,
-        OrderConfirmed evt)
+        OrderConfirmedEventV1 evt)
     {
         try
         {
@@ -31,7 +33,7 @@ public static class EventHandlers
                 OrderConfirmedEventName,
                 eventId,
                 "dapr",
-                "kitchen",
+                "public",
                 configuration["ApplicationConfig:ApplicationName"] ?? "",
                 evt.OrderIdentifier
             ));
@@ -41,7 +43,7 @@ public static class EventHandlers
                 return Results.Ok();
             }
 
-            await handler.Handle(evt);
+            await adapter.Translate(evt);
 
             await idempotency.ProcessedSuccessfully(eventId);
 
@@ -55,7 +57,7 @@ public static class EventHandlers
         }
     }
 
-    [Topic("kitchen", FailedMessagesEventName)]
+    [Topic("public", FailedMessagesEventName)]
     public static async Task<IResult> HandleDeadLetterMessage(
         [FromServices] IDeadLetterRepository deadLetterRepository,
         [FromServices] IConfiguration configuration,
@@ -69,7 +71,7 @@ public static class EventHandlers
             FailedMessagesEventName,
             eventData.EventId,
             "dapr",
-            "kitchen",
+            "public",
             configuration["ApplicationConfig:ApplicationName"] ?? ""
         ));
 

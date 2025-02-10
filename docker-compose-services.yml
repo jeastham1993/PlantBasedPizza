@@ -326,6 +326,46 @@ services:
 
     network_mode: "service:local.kitchen-worker"
 
+  local.kitchen-acl:
+    image: kitchen-acl
+    container_name: local.kitchen-acl
+    expose:
+      - "8080"
+    environment:
+      - DatabaseConnection=mongodb://mongodb:27017
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+      - Environment=local
+      - REDIS_CONNECTION_STRING=cache:6379
+      - CACHE_NAME=kitchen
+      - Services__Recipes=recipes
+      - Services__OrdersInternal=http://localhost:5101
+      - DAPR_HOST=host.docker.internal
+      - DAPR_GRPC_PORT=5101
+    networks:
+      - dapr
+
+  kitchenacl-dapr:
+    image: "daprio/daprd:edge"
+    command: [
+        "./daprd",
+        "--app-id",
+        "kitchen-acl",
+        "--app-port",
+        "8080",
+        "--placement-host-address",
+        "placement:50006", # Dapr's placement service can be reach via the docker DNS entry
+        "--dapr-grpc-port",
+        "5101",
+        "--resources-path",
+        "./components",
+      ]
+    volumes:
+      - "./components/:/components" # Mount our components folder for the runtime to use. The mounted location must match the --resources-path argument.
+    depends_on:
+      - "local.kitchen-acl"
+
+    network_mode: "service:local.kitchen-acl"
+
   local.payment-api:
     image: payment-api
     container_name: local.payment-api

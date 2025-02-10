@@ -13,9 +13,7 @@ namespace PlantBasedPizza.Kitchen.Core.OrderConfirmed
         IRecipeService recipeService,
         IOrderService orderService)
     {
-        [Channel("order.orderConfirmed.v1")]
-        [PublishOperation(typeof(OrderConfirmedEventV1), OperationId = nameof(OrderConfirmedEventV1))]
-        public async Task Handle(OrderConfirmedEventV1 evt)
+        public async Task Handle(OrderConfirmed evt)
         {
             Guard.AgainstNull(evt, nameof(evt));
 
