@@ -15,26 +15,31 @@ public static class EventHandlers
 
     [Topic("payments",
         TakePaymentCommandName)]
-    public static async Task<IResult> HandleTakePaymentCommand([FromServices] TakePaymentCommandHandler handler, [FromServices] IConfiguration configuration, IDistributedCache cache, HttpContext ctx,
-                HttpContext context,
-                TakePaymentCommand command)
+    public static async Task<IResult> HandleTakePaymentCommand([FromServices] TakePaymentCommandHandler handler,
+        [FromServices] IConfiguration configuration,
+        IDistributedCache cache,
+        HttpContext context,
+        TakePaymentCommand command)
     {
         try
         {
-            var eventId = ctx.ExtractEventId();
+            var eventData = context.ExtractEventData();
 
             using var processActivity = Activity.Current?.Source.StartActivityWithProcessSemanticConventions(
                 new SemanticConventions(
                     EventType.PUBLIC,
                     TakePaymentCommandName,
-                    eventId ?? "",
+                    eventData.EventId,
                     "dapr",
                     "public",
                     configuration["ApplicationConfig:ApplicationName"] ?? "",
                     command.OrderIdentifier
-                ));
+                ), new List<ActivityLink>(1)
+                {
+                    new(ActivityContext.Parse(eventData.TraceParent, null))
+                });
 
-            var cachedEvent = await cache.GetStringAsync($"events_{eventId}");
+            var cachedEvent = await cache.GetStringAsync($"events_{eventData.EventId}");
 
             processActivity?.AddTag("orderIdentifier", command.OrderIdentifier ?? "null");
             processActivity?.AddTag("paymentAmount", command.PaymentAmount.ToString("n2"));
@@ -54,7 +59,7 @@ public static class EventHandlers
                 return Results.BadRequest();
             }
 
-            await cache.SetStringAsync($"events_{eventId}", "processed", new DistributedCacheEntryOptions()
+            await cache.SetStringAsync($"events_{eventData.EventId}", "processed", new DistributedCacheEntryOptions()
             {
                 AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5),
             });
@@ -84,20 +89,23 @@ public static class EventHandlers
     {
         try
         {
-            var eventId = ctx.ExtractEventId();
+            var eventData = ctx.ExtractEventData();
 
             using var processActivity = Activity.Current?.Source.StartActivityWithProcessSemanticConventions(
                 new SemanticConventions(
                     EventType.PUBLIC,
                     RefundPaymentCommandName,
-                    eventId,
+                    eventData.EventId,
                     "dapr",
                     "public",
                     configuration["ApplicationConfig:ApplicationName"] ?? "",
                     command.OrderIdentifier
-                ));
+                ), new List<ActivityLink>(1)
+                {
+                    new(ActivityContext.Parse(eventData.TraceParent, null))
+                });
 
-            var cachedEvent = await cache.GetStringAsync($"events_{eventId}");
+            var cachedEvent = await cache.GetStringAsync($"events_{eventData.EventId}");
 
             if (cachedEvent != null)
             {
@@ -112,7 +120,7 @@ public static class EventHandlers
                 return Results.InternalServerError();
             }
 
-            await cache.SetStringAsync($"events_{eventId}", "processed", new DistributedCacheEntryOptions()
+            await cache.SetStringAsync($"events_{eventData.EventId}", "processed", new DistributedCacheEntryOptions()
             {
                 AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5),
             });

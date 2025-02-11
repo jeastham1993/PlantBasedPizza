@@ -1,32 +1,29 @@
 using System.Diagnostics;
 using System.Text.Json;
 using Dapr;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using PlantBasedPizza.Deliver.Core.OrderReadyForDelivery;
-using PlantBasedPizza.Deliver.Infrastructure;
 using PlantBasedPizza.Events;
+using PlantBasedPizza.LoyaltyPoints.Shared.Core;
 
-namespace PlantBasedPizza.Delivery.Worker;
+namespace PlantBasedPizza.LoyaltyPoints.Worker;
 
 public static class EventHandlers
 {
-    private const string ReadyForDeliveryEventName = "order.readyForDelivery.v1";
-    private const string FailedMessagesEventName = "delivery.failedMessages";
+    private const string OrderCompletedEventName = "order.orderCompleted.v1";
+    private const string FailedMessagesEventName = "loyalty.failedMessages";
     
-    [Topic("public", ReadyForDeliveryEventName,
-        DeadLetterTopic = "delivery.failedMessages")]
-    public static async Task<IResult> HandleOrderReadyForDeliveryEvent([FromServices]OrderReadyForDeliveryEventHandler handler,
-        [FromServices] Idempotency idempotency,
+    [Topic("public", OrderCompletedEventName,
+        DeadLetterTopic = FailedMessagesEventName)]
+    public static async Task<IResult> HandleOrderCompletedEvent([FromServices] AddLoyaltyPointsCommandHandler handler,
         [FromServices] IConfiguration configuration,
-        HttpContext httpContext,
-        OrderReadyForDeliveryEventV1 evt)
+        HttpContext context,
+        OrderCompletedEvent evt)
     {
-        var eventData = httpContext.ExtractEventData();
+        var eventData = context.ExtractEventData();
         
         using var processActivity = Activity.Current?.Source.StartActivityWithProcessSemanticConventions(new SemanticConventions(
             EventType.PUBLIC,
-            ReadyForDeliveryEventName,
+            OrderCompletedEventName,
             eventData.EventId,
             "dapr",
             "public",
@@ -36,16 +33,14 @@ public static class EventHandlers
         {
             new(ActivityContext.Parse(eventData.TraceParent, null))
         });
-
-        if (await idempotency.HasEventBeenProcessedWithId(eventData.EventId))
+                
+        await handler.Handle(new AddLoyaltyPointsCommand
         {
-            return Results.Ok();
-        }
-                
-        await handler.Handle(evt);
-                
-        await idempotency.ProcessedSuccessfully(eventData.EventId);
-                
+            CustomerIdentifier = evt.CustomerIdentifier,
+            OrderValue = evt.OrderValue,
+            OrderIdentifier = evt.OrderIdentifier
+        });
+
         return Results.Ok();
     }
 
@@ -65,7 +60,10 @@ public static class EventHandlers
             "dapr",
             "public",
             configuration["ApplicationConfig:ApplicationName"] ?? ""
-        ));
+        ), new List<ActivityLink>(1)
+        {
+            new(ActivityContext.Parse(eventData.TraceParent, null))
+        });
 
         await deadLetterRepository.StoreAsync(new DeadLetterMessage
         {

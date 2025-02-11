@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Globalization;
 using Microsoft.AspNetCore.Http;
 using OpenTelemetry.Trace;
+using Serilog;
 
 namespace PlantBasedPizza.Events;
 
@@ -141,12 +142,14 @@ public static class CloudEventExtensions
         return activity;
     }
     
-    public static Activity? StartActivityWithProcessSemanticConventions(this ActivitySource source, SemanticConventions semanticConventions)
+    public static Activity? StartActivityWithProcessSemanticConventions(this ActivitySource source, SemanticConventions semanticConventions, List<ActivityLink> links = null)
     {
-        var activity = source.StartActivity($"process {semanticConventions.EventName}");
+        var activity = source.StartActivity(ActivityKind.Consumer, parentContext: default, links: links,
+            name: $"process {semanticConventions.EventName}");
 
         if (activity is null)
         {
+            Log.Logger.Information("Activity is null");
             return activity;
         }
         

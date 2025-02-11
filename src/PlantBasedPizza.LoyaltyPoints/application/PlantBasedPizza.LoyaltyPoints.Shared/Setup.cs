@@ -28,7 +28,7 @@ public static class Setup
             map.SetIgnoreExtraElementsIsInherited(true);
         });
 
-        services.AddSharedInfrastructure(configuration, serviceName);
+        services.AddSharedInfrastructure(configuration, serviceName, disableContextPropagation: true);
         
         return services;
     }

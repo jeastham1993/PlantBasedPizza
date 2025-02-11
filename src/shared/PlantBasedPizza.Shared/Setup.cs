@@ -1,7 +1,10 @@
+using System.Diagnostics;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using OpenTelemetry;
+using OpenTelemetry.Context.Propagation;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using PlantBasedPizza.Shared.Logging;
@@ -15,7 +18,7 @@ namespace PlantBasedPizza.Shared
         private const string OTEL_DEFAULT_GRPC_ENDPOINT = "http://localhost:4317";
         
         public static IServiceCollection AddSharedInfrastructure(this IServiceCollection services,
-            IConfiguration configuration, string applicationName, string[]? additionalSources = null)
+            IConfiguration configuration, string applicationName, string[]? additionalSources = null, bool disableContextPropagation = false)
         {
             services.AddLogging();
             
@@ -29,7 +32,7 @@ namespace PlantBasedPizza.Shared
                 {
                     configure.AddDefaultOtelTags(configuration);
                 });
-                
+
                 tracing.AddAspNetCoreInstrumentation(options =>
                 {
                     options.Filter = new Func<HttpContext, bool>((httpContext) =>
@@ -48,7 +51,10 @@ namespace PlantBasedPizza.Shared
                             return true;
                         }
                     });
-                });
+                    
+                    
+                }); 
+                
                 tracing.AddGrpcClientInstrumentation();
                 tracing.AddHttpClientInstrumentation();
                 tracing.AddSource(applicationName);
@@ -66,6 +72,18 @@ namespace PlantBasedPizza.Shared
                     otlpOptions.Endpoint = new Uri(configuration["OTEL_EXPORTER_OTLP_ENDPOINT"] ?? OTEL_DEFAULT_GRPC_ENDPOINT);
                 });
             });
+
+            if (disableContextPropagation)
+            {
+                services.Remove(new ServiceDescriptor(
+                    typeof(DistributedContextPropagator),
+                    typeof(DistributedContextPropagator),
+                    ServiceLifetime.Singleton));
+                services.AddSingleton<DistributedContextPropagator, DisableAllContextPropagator>();
+                
+                Sdk.SetDefaultTextMapPropagator(new CompositeTextMapPropagator(
+                    new List<TextMapPropagator>()));
+            }
             
             services.AddHttpContextAccessor();
 

@@ -11,7 +11,7 @@ namespace PlantBasedPizza.Kitchen.Worker;
 
 public static class EventHandlers
 {
-    private const string OrderConfirmedEventName = "order.orderConfirmed.v1";
+    private const string OrderConfirmedEventName = "internal.kitchen.orderConfirmed.v1";
     private const string FailedMessagesEventName = "kitchen.failedMessages";
     
     [Topic("kitchen", OrderConfirmedEventName,

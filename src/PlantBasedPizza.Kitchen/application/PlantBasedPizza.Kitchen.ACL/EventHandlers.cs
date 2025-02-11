@@ -14,7 +14,7 @@ public static class EventHandlers
 {
     private const string OrderConfirmedEventName = "order.orderConfirmed.v1";
     private const string FailedMessagesEventName = "kitchen.failedMessages";
-    
+
     [Topic("public", OrderConfirmedEventName,
         DeadLetterTopic = "kitchen.failedMessages")]
     public static async Task<IResult> HandleOrderConfirmedEvent([FromServices] OrderConfirmedEventHandler handler,
@@ -26,33 +26,34 @@ public static class EventHandlers
     {
         try
         {
-            var eventId = httpContext.ExtractEventId();
-        
-            using var processActivity = Activity.Current?.Source.StartActivityWithProcessSemanticConventions(new SemanticConventions(
-                EventType.PUBLIC,
-                OrderConfirmedEventName,
-                eventId,
-                "dapr",
-                "public",
-                configuration["ApplicationConfig:ApplicationName"] ?? "",
-                evt.OrderIdentifier
-            ));
+            var eventData = httpContext.ExtractEventData();
 
-            if (await idempotency.HasEventBeenProcessedWithId(eventId))
-            {
-                return Results.Ok();
-            }
+            using var processActivity = Activity.Current?.Source.StartActivityWithProcessSemanticConventions(
+                new SemanticConventions(
+                    EventType.PUBLIC,
+                    OrderConfirmedEventName,
+                    eventData.EventId,
+                    "dapr",
+                    "public",
+                    configuration["ApplicationConfig:ApplicationName"] ?? "",
+                    evt.OrderIdentifier
+                ), new List<ActivityLink>(1)
+                {
+                    new(ActivityContext.Parse(eventData.TraceParent, null))
+                });
+
+            if (await idempotency.HasEventBeenProcessedWithId(eventData.EventId)) return Results.Ok();
 
             await adapter.Translate(evt);
 
-            await idempotency.ProcessedSuccessfully(eventId);
+            await idempotency.ProcessedSuccessfully(eventData.EventId);
 
             return Results.Ok();
         }
         catch (Exception ex)
         {
             Activity.Current?.AddException(ex);
-            
+
             return Results.InternalServerError();
         }
     }
@@ -65,15 +66,19 @@ public static class EventHandlers
         object data)
     {
         var eventData = httpContext.ExtractEventData();
-        
-        using var processActivity = Activity.Current?.Source.StartActivityWithProcessSemanticConventions(new SemanticConventions(
-            EventType.PUBLIC,
-            FailedMessagesEventName,
-            eventData.EventId,
-            "dapr",
-            "public",
-            configuration["ApplicationConfig:ApplicationName"] ?? ""
-        ));
+
+        using var processActivity = Activity.Current?.Source.StartActivityWithProcessSemanticConventions(
+            new SemanticConventions(
+                EventType.PUBLIC,
+                FailedMessagesEventName,
+                eventData.EventId,
+                "dapr",
+                "public",
+                configuration["ApplicationConfig:ApplicationName"] ?? ""
+            ), new List<ActivityLink>(1)
+            {
+                new(ActivityContext.Parse(eventData.TraceParent, null))
+            });
 
         await deadLetterRepository.StoreAsync(new DeadLetterMessage
         {

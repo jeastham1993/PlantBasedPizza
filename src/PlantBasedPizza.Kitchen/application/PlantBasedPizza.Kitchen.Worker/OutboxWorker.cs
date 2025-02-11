@@ -94,7 +94,7 @@ public class OutboxWorker : BackgroundService
             try
             {
                 var context = ActivityContext.Parse(outboxItem.TraceId, null);
-                var messageProcessingActivity = _source.StartActivity("process", ActivityKind.Internal, context);
+                var messageProcessingActivity = _source.StartActivity($"process {outboxItem.EventType}", ActivityKind.Internal, context);
                 
                 return messageProcessingActivity;
             }

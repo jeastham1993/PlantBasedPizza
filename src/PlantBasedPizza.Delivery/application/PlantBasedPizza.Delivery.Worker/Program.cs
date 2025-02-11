@@ -13,7 +13,7 @@ builder.AddLoggerConfigs();
 builder.Services.AddDaprClient();
 
 builder.Services
-    .AddSharedInfrastructure(builder.Configuration, ApplicationDefaults.ServiceName)
+    .AddSharedInfrastructure(builder.Configuration, ApplicationDefaults.ServiceName, disableContextPropagation: true)
     .AddDeliveryInfrastructure(builder.Configuration)
     .AddHostedService<OutboxWorker>();
 

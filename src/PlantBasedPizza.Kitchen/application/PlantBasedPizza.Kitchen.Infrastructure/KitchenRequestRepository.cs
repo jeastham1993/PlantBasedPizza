@@ -28,7 +28,7 @@ public class KitchenRequestRepository : IKitchenRequestRepository
             {
                 EventData = evt.AsString(),
                 EventType = evt.GetType().Name,
-                Processed = false
+                Processed = false,
             });
         }
     }

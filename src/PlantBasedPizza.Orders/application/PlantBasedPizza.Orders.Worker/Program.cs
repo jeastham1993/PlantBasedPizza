@@ -41,7 +41,7 @@ builder.Services
         TracingInterceptor.ClientSource.Name,
         TracingInterceptor.WorkflowsSource.Name,
         TracingInterceptor.ActivitiesSource.Name
-    })
+    }, disableContextPropagation: true)
     .AddOrderManagerInfrastructure(builder.Configuration)
     .ConfigureAuth(builder.Configuration)
     .AddAuthorization()

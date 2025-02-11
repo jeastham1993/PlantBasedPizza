@@ -43,24 +43,27 @@ public static class EventHandlers
     {
         try
         {
-            var eventId = httpContext.ExtractEventId();
+            var eventData = httpContext.ExtractEventData();
 
             using var processActivity = Activity.Current?.Source.StartActivityWithProcessSemanticConventions(
                 new SemanticConventions(
                     EventType.PUBLIC,
                     PaymentSuccessfulEventName,
-                    eventId,
+                    eventData.EventId,
                     "dapr",
                     "public",
                     configuration["ApplicationConfig:ApplicationName"] ?? "",
                     evt.OrderIdentifier
-                ));
+                ), new List<ActivityLink>(1)
+                {
+                    new(ActivityContext.Parse(eventData.TraceParent, null))
+                });
 
-            if (await idempotency.HasEventBeenProcessedWithId(eventId)) return Results.Ok();
+            if (await idempotency.HasEventBeenProcessedWithId(eventData.EventId)) return Results.Ok();
 
             await paymentSuccessEventHandler.Handle(new PaymentSuccess(evt.OrderIdentifier, evt.Amount));
 
-            await idempotency.ProcessedSuccessfully(eventId);
+            await idempotency.ProcessedSuccessfully(eventData.EventId);
 
             return Results.Ok();
         }
@@ -92,24 +95,27 @@ public static class EventHandlers
     {
         try
         {
-            var eventId = httpContext.ExtractEventId();
+            var eventData = httpContext.ExtractEventData();
 
             using var processActivity = Activity.Current?.Source.StartActivityWithProcessSemanticConventions(
                 new SemanticConventions(
                     EventType.PUBLIC,
                     DriverCollectedOrderEventName,
-                    eventId,
+                    eventData.EventId,
                     "dapr",
                     "public",
                     configuration["ApplicationConfig:ApplicationName"] ?? "",
                     evt.OrderIdentifier
-                ));
+                ), new List<ActivityLink>(1)
+                {
+                    new(ActivityContext.Parse(eventData.TraceParent, null))
+                });
 
-            if (await idempotency.HasEventBeenProcessedWithId(eventId)) return Results.Ok();
+            if (await idempotency.HasEventBeenProcessedWithId(eventData.EventId)) return Results.Ok();
 
             await driverCollectedOrderEventHandler.Handle(new DriverCollectedOrder(evt.DriverName, evt.OrderIdentifier));
 
-            await idempotency.ProcessedSuccessfully(eventId);
+            await idempotency.ProcessedSuccessfully(eventData.EventId);
 
             return Results.Ok();
         }
@@ -133,24 +139,27 @@ public static class EventHandlers
     {
         try
         {
-            var eventId = httpContext.ExtractEventId();
+            var eventData = httpContext.ExtractEventData();
 
             using var processActivity = Activity.Current?.Source.StartActivityWithProcessSemanticConventions(
                 new SemanticConventions(
                     EventType.PUBLIC,
                     DriverDeliveredOrderEventName,
-                    eventId,
+                    eventData.EventId,
                     "dapr",
                     "public",
                     configuration["ApplicationConfig:ApplicationName"] ?? "",
                     evt.OrderIdentifier
-                ));
+                ), new List<ActivityLink>(1)
+                {
+                    new(ActivityContext.Parse(eventData.TraceParent, null))
+                });
 
-            if (await idempotency.HasEventBeenProcessedWithId(eventId)) return Results.Ok();
+            if (await idempotency.HasEventBeenProcessedWithId(eventData.EventId)) return Results.Ok();
 
             await driverDeliveredOrderEventHandler.Handle(new DriverDeliveredOrder(evt.OrderIdentifier));
 
-            await idempotency.ProcessedSuccessfully(eventId);
+            await idempotency.ProcessedSuccessfully(eventData.EventId);
 
             return Results.Ok();
         }
@@ -174,24 +183,27 @@ public static class EventHandlers
     {
         try
         {
-            var eventId = httpContext.ExtractEventId();
+            var eventData = httpContext.ExtractEventData();
 
             using var processActivity = Activity.Current?.Source.StartActivityWithProcessSemanticConventions(
                 new SemanticConventions(
                     EventType.PUBLIC,
                     LoyaltyPointsUpdatedEventName,
-                    eventId,
+                    eventData.EventId,
                     "dapr",
                     "public",
                     configuration["ApplicationConfig:ApplicationName"] ?? ""
-                ));
+                ), new List<ActivityLink>(1)
+                {
+                    new(ActivityContext.Parse(eventData.TraceParent, null))
+                });
 
-            if (await idempotency.HasEventBeenProcessedWithId(eventId)) return Results.Ok();
+            if (await idempotency.HasEventBeenProcessedWithId(eventData.EventId)) return Results.Ok();
 
             await cache.SetStringAsync(evt.CustomerIdentifier.ToUpper(),
                 evt.TotalLoyaltyPoints.ToString("n0"));
 
-            await idempotency.ProcessedSuccessfully(eventId);
+            await idempotency.ProcessedSuccessfully(eventData.EventId);
 
             return Results.Ok();
         }
@@ -215,24 +227,27 @@ public static class EventHandlers
     {
         try
         {
-            var eventId = httpContext.ExtractEventId();
+            var eventData = httpContext.ExtractEventData();
 
             using var processActivity = Activity.Current?.Source.StartActivityWithProcessSemanticConventions(
                 new SemanticConventions(
                     EventType.PUBLIC,
-                    OrderBakedEventName,
-                    eventId,
+                    KitchenOrderConfirmedEventName,
+                    eventData.EventId,
                     "dapr",
                     "public",
                     configuration["ApplicationConfig:ApplicationName"] ?? "",
                     evt.OrderIdentifier
-                ));
+                ), new List<ActivityLink>(1)
+                {
+                    new(ActivityContext.Parse(eventData.TraceParent, null))
+                });
 
-            if (await idempotency.HasEventBeenProcessedWithId(eventId)) return Results.Ok();
+            if (await idempotency.HasEventBeenProcessedWithId(eventData.EventId)) return Results.Ok();
 
             await kitchenConfirmedEventHandler.Handle(new KitchenConfirmedOrder(evt.OrderIdentifier));
 
-            await idempotency.ProcessedSuccessfully(eventId);
+            await idempotency.ProcessedSuccessfully(eventData.EventId);
 
             return Results.Ok();
         }
@@ -256,24 +271,27 @@ public static class EventHandlers
     {
         try
         {
-            var eventId = httpContext.ExtractEventId();
+            var eventData = httpContext.ExtractEventData();
 
             using var processActivity = Activity.Current?.Source.StartActivityWithProcessSemanticConventions(
                 new SemanticConventions(
                     EventType.PUBLIC,
                     OrderBakedEventName,
-                    eventId,
+                    eventData.EventId,
                     "dapr",
                     "public",
                     configuration["ApplicationConfig:ApplicationName"] ?? "",
                     evt.OrderIdentifier
-                ));
+                ), new List<ActivityLink>(1)
+                {
+                    new(ActivityContext.Parse(eventData.TraceParent, null))
+                });
 
-            if (await idempotency.HasEventBeenProcessedWithId(eventId)) return Results.Ok();
+            if (await idempotency.HasEventBeenProcessedWithId(eventData.EventId)) return Results.Ok();
 
             await orderBakedHandler.Handle(new OrderBaked(evt.OrderIdentifier));
 
-            await idempotency.ProcessedSuccessfully(eventId);
+            await idempotency.ProcessedSuccessfully(eventData.EventId);
 
             return Results.Ok();
         }
@@ -297,24 +315,27 @@ public static class EventHandlers
     {
         try
         {
-            var eventId = httpContext.ExtractEventId();
+            var eventData = httpContext.ExtractEventData();
 
             using var processActivity = Activity.Current?.Source.StartActivityWithProcessSemanticConventions(
                 new SemanticConventions(
                     EventType.PUBLIC,
                     OrderPreparingEventName,
-                    eventId,
+                    eventData.EventId,
                     "dapr",
                     "public",
                     configuration["ApplicationConfig:ApplicationName"] ?? "",
                     evt.OrderIdentifier
-                ));
+                ), new List<ActivityLink>(1)
+                {
+                    new(ActivityContext.Parse(eventData.TraceParent, null))
+                });
 
-            if (await idempotency.HasEventBeenProcessedWithId(eventId)) return Results.Ok();
+            if (await idempotency.HasEventBeenProcessedWithId(eventData.EventId)) return Results.Ok();
 
             await orderPreparingEventHandler.Handle(new OrderPreparing(evt.OrderIdentifier));
 
-            await idempotency.ProcessedSuccessfully(eventId);
+            await idempotency.ProcessedSuccessfully(eventData.EventId);
 
             return Results.Ok();
         }
@@ -338,24 +359,27 @@ public static class EventHandlers
     {
         try
         {
-            var eventId = httpContext.ExtractEventId();
+            var eventData = httpContext.ExtractEventData();
 
             using var processActivity = Activity.Current?.Source.StartActivityWithProcessSemanticConventions(
                 new SemanticConventions(
                     EventType.PUBLIC,
                     OrderPrepCompleteEventName,
-                    eventId,
+                    eventData.EventId,
                     "dapr",
                     "public",
                     configuration["ApplicationConfig:ApplicationName"] ?? "",
                     evt.OrderIdentifier
-                ));
+                ), new List<ActivityLink>(1)
+                {
+                    new(ActivityContext.Parse(eventData.TraceParent, null))
+                });
 
-            if (await idempotency.HasEventBeenProcessedWithId(eventId)) return Results.Ok();
+            if (await idempotency.HasEventBeenProcessedWithId(eventData.EventId)) return Results.Ok();
 
             await orderPrepCompleteHandler.Handle(new OrderPrepComplete(evt.OrderIdentifier));
 
-            await idempotency.ProcessedSuccessfully(eventId);
+            await idempotency.ProcessedSuccessfully(eventData.EventId);
 
             return Results.Ok();
         }
@@ -379,24 +403,27 @@ public static class EventHandlers
     {
         try
         {
-            var eventId = httpContext.ExtractEventId();
+            var eventData = httpContext.ExtractEventData();
 
             using var processActivity = Activity.Current?.Source.StartActivityWithProcessSemanticConventions(
                 new SemanticConventions(
                     EventType.PUBLIC,
                     OrderQualityCheckedEventName,
-                    eventId,
+                    eventData.EventId,
                     "dapr",
                     "public",
                     configuration["ApplicationConfig:ApplicationName"] ?? "",
                     evt.OrderIdentifier
-                ));
+                ), new List<ActivityLink>(1)
+                {
+                    new(ActivityContext.Parse(eventData.TraceParent, null))
+                });
 
-            if (await idempotency.HasEventBeenProcessedWithId(eventId)) return Results.Ok();
+            if (await idempotency.HasEventBeenProcessedWithId(eventData.EventId)) return Results.Ok();
 
             await orderQualityCheckedEventHandler.Handle(new OrderQualityChecked(evt.OrderIdentifier));
 
-            await idempotency.ProcessedSuccessfully(eventId);
+            await idempotency.ProcessedSuccessfully(eventData.EventId);
 
             return Results.Ok();
         }
@@ -413,10 +440,25 @@ public static class EventHandlers
     public static async Task<IResult> HandleDeadLetterMessage(
         [FromServices] ILogger<PaymentSuccessfulEventV1> logger,
         [FromServices] IDeadLetterRepository deadLetterRepository,
+        [FromServices] IConfiguration configuration,
         HttpContext httpContext,
         object data)
     {
         var eventData = httpContext.ExtractEventData();
+
+        using var processActivity = Activity.Current?.Source.StartActivityWithProcessSemanticConventions(
+            new SemanticConventions(
+                EventType.PUBLIC,
+                OrderQualityCheckedEventName,
+                eventData.EventId,
+                "dapr",
+                "public",
+                configuration["ApplicationConfig:ApplicationName"] ?? "",
+                ""
+            ), new List<ActivityLink>(1)
+            {
+                new(ActivityContext.Parse(eventData.TraceParent, null))
+            });
 
         await deadLetterRepository.StoreAsync(new DeadLetterMessage
         {

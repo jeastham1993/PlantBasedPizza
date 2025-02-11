@@ -34,7 +34,7 @@ var appLogger = new SerilogLoggerFactory(logger)
 builder.Services.AddGrpc();
 
 builder.Services
-    .AddSharedInfrastructure(builder.Configuration, "PaymentApi")
+    .AddSharedInfrastructure(builder.Configuration, "PaymentApi", disableContextPropagation: true)
     .AddAsyncApiDocs(builder.Configuration, [typeof(PaymentEventPublisher), typeof(RefundPaymentCommandHandler), typeof(TakePaymentCommandHandler)], "PaymentApi")
     .AddCaching(builder.Configuration);
 
