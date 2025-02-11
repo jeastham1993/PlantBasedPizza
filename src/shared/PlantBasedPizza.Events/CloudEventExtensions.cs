@@ -84,7 +84,7 @@ public static class CloudEventExtensions
 
         Activity.Current?.AddTag("messaging.operation.type", "process");
 
-        return new EventData(cloudEventId, cloudEventType, traceParent);
+        return new EventData(cloudEventId ?? "", cloudEventType ?? "", traceParent ?? "");
     }
 
     private static string? ExtractValueFromHeader(HttpContext httpContext, string headerName)

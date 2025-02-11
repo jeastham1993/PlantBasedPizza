@@ -34,11 +34,8 @@ public static class EventHandlers
                     "public",
                     configuration["ApplicationConfig:ApplicationName"] ?? "",
                     command.OrderIdentifier
-                ), new List<ActivityLink>(1)
-                {
-                    new(ActivityContext.Parse(eventData.TraceParent, null))
-                });
-
+                ), eventData.TraceParent.Length == 0 ? new List<ActivityLink>() : new List<ActivityLink>(1));
+            
             var cachedEvent = await cache.GetStringAsync($"events_{eventData.EventId}");
 
             processActivity?.AddTag("orderIdentifier", command.OrderIdentifier ?? "null");
