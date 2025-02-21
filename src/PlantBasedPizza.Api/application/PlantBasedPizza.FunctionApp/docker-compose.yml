@@ -1,0 +1,13 @@
+version: "3.7"
+services:
+   service:
+     image: plantpowerjames/plantbasedpizza-function-app:latest
+     environment:
+       - DD_API_KEY=${DD_API_KEY}
+       - DD_SITE=${DD_SITE}
+       - DD_SERVICE=func-test
+       - DD_ENV=local
+       - DD_VERSION=latest
+     ports:
+       - 8080:80
+  
