@@ -46,6 +46,6 @@
     "jwt-decode": "^4.0.0",
     "source-map-support": "^0.5.21",
     "uninstall": "*",
-    "uuid": "^9.0.1"
+    "uuid": "^11.1.0"
   }
 }
