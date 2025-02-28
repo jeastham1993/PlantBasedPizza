@@ -16,7 +16,7 @@ resource "azurerm_role_assignment" "storage_blob_access_role" {
   scope                = data.azurerm_subscription.primary.id
 }
 
-resource "azurerm_role_assignment" "storage_blob_access_role" {
+resource "azurerm_role_assignment" "reader_role" {
   principal_id         = azurerm_user_assigned_identity.deployment_identity.principal_id
   role_definition_name = "Reader"
   scope                = data.azurerm_subscription.primary.id
