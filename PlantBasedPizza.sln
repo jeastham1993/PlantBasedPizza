@@ -153,6 +153,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Kitchen.ACL
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Payments.DeveloperTests", "src\PlantBasedPizza.Payments\tests\PlantBasedPizza.Payments.DeveloperTests\PlantBasedPizza.Payments.DeveloperTests.csproj", "{E27BFB3B-06DF-47FC-96CD-91278F0681F0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Payments.Management", "src\PlantBasedPizza.Payments\tests\PlantBasedPizza.Payments.Management\PlantBasedPizza.Payments.Management.csproj", "{BCA48C22-D26A-4DE1-B7E9-FF34A87BBC57}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -209,6 +211,7 @@ Global
 		{59F8B475-8A5F-47DB-A2EA-8A3DEDA51B5A} = {A9C2D680-B17C-4D0F-AAF6-3BFAC457487E}
 		{EB5DA242-19BB-41CC-92B9-77864C351A64} = {495A86CC-F261-407B-B8E2-6918107129C2}
 		{E27BFB3B-06DF-47FC-96CD-91278F0681F0} = {F8DC95A1-59E3-4317-A307-2AB2D30D96C1}
+		{BCA48C22-D26A-4DE1-B7E9-FF34A87BBC57} = {F8DC95A1-59E3-4317-A307-2AB2D30D96C1}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{179E35BF-4F04-4660-8F82-413DA572E7F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -375,5 +378,9 @@ Global
 		{E27BFB3B-06DF-47FC-96CD-91278F0681F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E27BFB3B-06DF-47FC-96CD-91278F0681F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E27BFB3B-06DF-47FC-96CD-91278F0681F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BCA48C22-D26A-4DE1-B7E9-FF34A87BBC57}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BCA48C22-D26A-4DE1-B7E9-FF34A87BBC57}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BCA48C22-D26A-4DE1-B7E9-FF34A87BBC57}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BCA48C22-D26A-4DE1-B7E9-FF34A87BBC57}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
