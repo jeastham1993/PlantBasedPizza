@@ -1,0 +1,30 @@
+name: TF Deploy Sample
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+  pull-requests: write
+
+env:
+  ARM_CLIENT_ID: ${{ secrets.PAYMENTS_AZURE_CLIENT_ID }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+  ARM_USE_AZUREAD: true
+
+jobs:
+  terraform-plan:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./infra/payments
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+      - name: Terraform Init
+        id: init
+        run: terraform init -backend-config="key=payments-test.tfstate" -backend-config="use_oidc=true"

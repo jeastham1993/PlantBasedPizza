@@ -1,0 +1,41 @@
+name: Monolith CICD
+
+on:
+    push:
+      branches:
+        - microservices-module-1
+      paths:
+        - src/**
+    workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "9"
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Declare some variables
+        shell: bash
+        run: |
+          echo "IMAGE_TAG=$(git rev-parse --short "$GITHUB_SHA")" >> "$GITHUB_ENV"
+      - name: Build images
+        run: make build
+      - name: Tag With Commit Hash
+        run: make tag-images
+      - name: Push to DockerHub
+        run: make push
+          
