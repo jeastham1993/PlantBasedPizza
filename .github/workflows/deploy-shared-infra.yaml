@@ -15,18 +15,38 @@ permissions:
 
 jobs:
   deploy-dev:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/tf-deploy-base.yaml@azure
-    with:
-      infrastructure-root-folder: "./infra/environment"
-      tf-state-backend-key: plantbasedpizza.tfstate
-      resource-group-name: plant-based-pizza-dev
-      env: dev
-      public-service-bus-namespace: plant-based-pizza-pub-dev
-      additional-arguments: " -var temporal_db_user_name=\"\" --var temporal_db_password=\"\""
-    secrets:
-      AZURE_CLIENT_ID: ${{secrets.DEV_AZURE_CLIENT_ID}}
-      AZURE_TENANT_ID: ${{secrets.AZURE_TENANT_ID}}
-      AZURE_SUBSCRIPTION_ID: ${{secrets.AZURE_SUBSCRIPTION_ID}}
-      DD_API_KEY: ${{secrets.ACA_DD_API_KEY}}
-      DB_CONNECTION_STRING: ${{secrets.DB_CONNECTION_STRING}}
-      MOMENTO_API_KEY: ${{secrets.MOMENTO_API_KEY}}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: "infra/environment"
+    steps:
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2
+    - name: Azure login
+      uses: azure/login@v2
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+    - name: Terraform Init
+      id: init
+      run: terraform init -backend-config="key=${{inputs.tf-state-backend-key}}" -backend-config="use_oidc=true"
+    - name: Declare some variables
+      shell: bash
+      run: |
+        echo "IMAGE_TAG=$(git rev-parse --short "$GITHUB_SHA")" >> "$GITHUB_ENV"
+    - name: Terraform apply
+      id: apply
+      env:
+        AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        DD_API_KEY: ${{ secrets.DD_API_KEY }}
+        MOMENTO_API_KEY: ${{ secrets.MOMENTO_API_KEY }}
+        DB_CONNECTION_STRING: ${{ secrets.DB_CONNECTION_STRING }}
+      run: |
+        terraform apply -var subscription_id="${AZURE_SUBSCRIPTION_ID}" \
+            -var env="${{inputs.env}}" \
+            -var dd_api_key="${DD_API_KEY}" \
+            -var dd_site="datadoghq.eu" \
+            -var temporal_db_user_name=\"\" \
+            -var temporal_db_password=\"\" \
+            -auto-approve
