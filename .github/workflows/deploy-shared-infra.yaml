@@ -22,6 +22,7 @@ jobs:
       resource-group-name: plant-based-pizza-dev
       env: dev
       public-service-bus-namespace: plant-based-pizza-pub-dev
+      additional-arguments: " -var temporal_db_user_name=\"\" --var temporal_db_password=\"\""
     secrets:
       AZURE_CLIENT_ID: ${{secrets.DEV_AZURE_CLIENT_ID}}
       AZURE_TENANT_ID: ${{secrets.AZURE_TENANT_ID}}
