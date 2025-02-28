@@ -23,7 +23,7 @@ build-acl-arm:
 tag-images:
 	docker tag kitchen-api plantpowerjames/plant-based-pizza-kitchen-api:${IMAGE_TAG}
 	docker tag kitchen-worker plantpowerjames/plant-based-pizza-kitchen-worker:${IMAGE_TAG}
-	docker tag kitchen-worker plantpowerjames/plant-based-pizza-kitchen-acl:${IMAGE_TAG}
+	docker tag kitchen-acl plantpowerjames/plant-based-pizza-kitchen-acl:${IMAGE_TAG}
 
 push:
 	docker push plantpowerjames/plant-based-pizza-kitchen-api:${IMAGE_TAG}
