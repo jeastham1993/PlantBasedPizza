@@ -26,6 +26,7 @@ public class Order
         OrderNumber = orderNumber;
         _items = new List<OrderItem>();
         _history = new List<OrderHistory>();
+        _events = new List<IntegrationEvent>();
     }
 
     public static Order Create(string orderIdentifier, OrderType type, string customerIdentifier,
@@ -73,7 +74,7 @@ public class Order
 
     [JsonIgnore] public IReadOnlyCollection<OrderItem> Items => _items;
 
-    [JsonIgnore] public IReadOnlyCollection<IntegrationEvent> Events => _events;
+    [JsonIgnore] public IReadOnlyCollection<IntegrationEvent> Events => (_events ??  new());
 
     public IReadOnlyCollection<OrderHistory> History()
     {

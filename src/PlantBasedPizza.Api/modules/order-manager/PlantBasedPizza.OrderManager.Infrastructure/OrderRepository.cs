@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 using PlantBasedPizza.OrderManager.Core.Entities;
 
@@ -6,12 +7,14 @@ namespace PlantBasedPizza.OrderManager.Infrastructure;
 
 public class OrderRepository : IOrderRepository
 {
+    private readonly ILogger<OrderRepository> _logger;
     private readonly IMongoCollection<Order> _orders;
 
     private readonly IMongoCollection<OutboxItem> _outboxItems;
 
-    public OrderRepository(MongoClient client)
+    public OrderRepository(MongoClient client, ILogger<OrderRepository> logger)
     {
+        _logger = logger;
         var database = client.GetDatabase("PlantBasedPizza_Monolith");
         _orders = database.GetCollection<Order>("orders");
         _outboxItems = database.GetCollection<OutboxItem>("orders_outboxitems");
@@ -62,5 +65,17 @@ public class OrderRepository : IOrderRepository
         var queryBuilder = Builders<Order>.Filter.Eq(ord => ord.OrderIdentifier, order.OrderIdentifier);
 
         await _orders.ReplaceOneAsync(queryBuilder, order);
+        
+        foreach (var evt in order.Events)
+        {
+            this._logger.LogInformation("Writing {evt} to outbox", evt.GetType().Name);
+            
+            await _outboxItems.InsertOneAsync(new OutboxItem()
+            {
+                EventData = evt.AsString(),
+                EventType = evt.GetType().Name,
+                Processed = false
+            });
+        }
     }
 }
