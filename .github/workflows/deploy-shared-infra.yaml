@@ -1,4 +1,4 @@
-name: Account Services CICD
+name: Deploy Shared Infra
 
 on:
   push:
