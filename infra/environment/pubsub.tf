@@ -22,6 +22,7 @@ resource "azurerm_container_app_environment_dapr_component" "public_pubsub" {
     "loyaltyworker",
     "kitchen",
     "kitchen-worker",
+    "kitchen-acl",
     "delivery",
     "delivery-worker",
     "recipes",

@@ -16,6 +16,12 @@ resource "azurerm_role_assignment" "storage_blob_access_role" {
   scope                = data.azurerm_subscription.primary.id
 }
 
+resource "azurerm_role_assignment" "reader_role" {
+  principal_id         = azurerm_user_assigned_identity.deployment_identity.principal_id
+  role_definition_name = "Reader"
+  scope                = azurerm_resource_group.plant_based_pizza_rg.id
+}
+
 resource "azurerm_federated_identity_credential" "deployment_identity_credentials" {
   name                = "${var.env}-deploy-creds"
   resource_group_name = azurerm_resource_group.plant_based_pizza_rg.name
