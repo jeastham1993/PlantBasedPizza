@@ -19,6 +19,7 @@ public class OrderRepository : IOrderRepository
 
     public async Task Add(Order order)
     {
+        // TODO: This should be wrapped in a transaction
         await _orders.InsertOneAsync(order).ConfigureAwait(false);
         
         foreach (var evt in order.Events)
