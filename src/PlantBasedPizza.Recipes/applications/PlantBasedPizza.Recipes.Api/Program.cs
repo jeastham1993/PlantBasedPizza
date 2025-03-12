@@ -42,7 +42,7 @@ builder.Services.AddSharedInfrastructure(builder.Configuration, applicationName)
 
 builder.Services.AddHttpClient();
 builder.Services.AddHealthChecks()
-    .AddMongoDb(builder.Configuration["DatabaseConnection"]);
+    .AddMongoDb();
 builder.Services.AddControllers();
 
 var app = builder.Build();

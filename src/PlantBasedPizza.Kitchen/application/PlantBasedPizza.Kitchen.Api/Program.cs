@@ -35,7 +35,7 @@ var applicationName = "KitchenApi";
 builder.Services.AddSharedInfrastructure(builder.Configuration, applicationName)
     .AddKitchenInfrastructure(builder.Configuration)
     .AddHealthChecks()
-    .AddMongoDb(builder.Configuration["DatabaseConnection"]);
+    .AddMongoDb();
 
 builder.Services.AddAsyncApiDocs(builder.Configuration,
     [typeof(KitchenEventPublisher), typeof(OrderConfirmedEventHandler)], "KitchenService");
