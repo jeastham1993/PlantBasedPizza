@@ -112,7 +112,9 @@ public class AccountTests
         A.CallTo(() => userRepo.CreateAccount(A<UserAccount>.Ignored)).Returns(
             Task.FromResult(new UserAccount()
             {
-                AccountId = testAccountId, AccountType = AccountType.User, EmailAddress = testEmailAddress,
+                AccountId = testAccountId,
+                AccountType = AccountType.User,
+                EmailAddress = testEmailAddress,
                 Password = testPassword
             }));
 

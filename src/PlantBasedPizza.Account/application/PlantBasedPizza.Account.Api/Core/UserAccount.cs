@@ -27,6 +27,11 @@ public class UserAccount
             throw new InvalidUserException("Invalid password");
         }
         
+        if ((accountType == AccountType.Admin || accountType == AccountType.Staff) && !emailAddress.EndsWith("@plantbasedpizza.com"))
+        {
+            throw new InvalidUserException("Not a valid staff email");
+        }
+        
         return new UserAccount()
         {
             AccountId = Guid.NewGuid().ToString(),

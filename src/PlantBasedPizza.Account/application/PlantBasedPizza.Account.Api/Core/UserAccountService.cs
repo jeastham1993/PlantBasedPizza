@@ -45,7 +45,7 @@ public class UserAccountService
             var tokenHandler = new JwtSecurityTokenHandler();
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
-            return new LoginResponse { Token = tokenHandler.WriteToken(token) };
+            return new LoginResponse { AuthToken = tokenHandler.WriteToken(token) };
         }
         catch (LoginFailedException)
         {
