@@ -9,7 +9,7 @@ COPY . ./
 RUN dotnet restore PlantBasedPizza.Orders/application/PlantBasedPizza.Orders.Api/PlantBasedPizza.Orders.Api.csproj
 RUN dotnet publish PlantBasedPizza.Orders/application/PlantBasedPizza.Orders.Api/PlantBasedPizza.Orders.Api.csproj -o out -c Release -r linux-arm64
 
-FROM mcr.microsoft.com/dotnet/aspnet:8.0-noble-chiseled as runtime
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 as runtime
 
 # Copy the tracer from build target
 COPY --from=build /tmp/datadog-dotnet-apm.deb /tmp/datadog-dotnet-apm.deb
