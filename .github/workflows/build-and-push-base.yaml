@@ -99,14 +99,14 @@ jobs:
           tags: ${{ inputs.image-name }}:latest
           context: ./src
           file: ${{ inputs.dockerfile }}
-      - name: docker-compose up
-        run: docker-compose -f ${{ inputs.integration-test-compose-file }} up -d
+      - name: docker compose up
+        run: docker compose -f ${{ inputs.integration-test-compose-file }} up -d
       - name: Wait for docker to start
         run: sleep 20
       - name: Run Integration Tests
         run: dotnet test ${{ inputs.integration-test-folder }}
       - name: Teardown
-        run: docker-compose -f ${{ inputs.integration-test-compose-file }} down
+        run: docker compose -f ${{ inputs.integration-test-compose-file }} down
       - name: Tag With Commit Hash
         run: docker tag ${{inputs.image-name}} ${{secrets.ecr-registry}}/${{inputs.image-name}}:${{ env.sha_short }}
       - uses: aws-actions/amazon-ecr-login@v2

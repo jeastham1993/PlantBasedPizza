@@ -77,11 +77,11 @@ jobs:
         run: |
           cd ${{ inputs.test-infrastructure-folder }}
           cdk deploy --region eu-west-1 --require-approval never
-      - name: docker-compose up
+      - name: docker compose up
         env:
           DD_API_KEY: ${{secrets.dd_api_key}}
           DD_SITE: datadoghq.eu
-        run: docker-compose -f ${{ inputs.integration-test-compose-file }} up -d
+        run: docker compose -f ${{ inputs.integration-test-compose-file }} up -d
       - name: Check running images
         shell: bash
         run: |
@@ -102,7 +102,7 @@ jobs:
         run: |
           docker ps
       - name: Teardown
-        run: docker-compose -f ${{ inputs.integration-test-compose-file }} down
+        run: docker compose -f ${{ inputs.integration-test-compose-file }} down
       - name: Tear down test infrastructure
         if: always()
         shell: bash
