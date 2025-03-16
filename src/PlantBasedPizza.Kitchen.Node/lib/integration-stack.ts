@@ -1,7 +1,7 @@
 import { CfnOutput, RemovalPolicy, Stack, StackProps } from "aws-cdk-lib";
 import { Secret } from "aws-cdk-lib/aws-secretsmanager";
 import { Construct } from "constructs";
-import { Datadog } from "datadog-cdk-constructs-v2";
+import { DatadogLambda } from "datadog-cdk-constructs-v2";
 import { EventBus } from "aws-cdk-lib/aws-events";
 import { StringParameter } from "aws-cdk-lib/aws-ssm";
 import { SharedProps } from "./constructs/sharedFunctionProps";
@@ -19,14 +19,14 @@ export class IntegrationTestStack extends Stack {
     const version = process.env.VERSION ?? "latest";
     const ddSecretName = process.env.DD_API_KEY_SECRET_NAME ?? "";
 
-    var datadogConfiguration: Datadog | undefined = undefined;
+    var datadogConfiguration: DatadogLambda | undefined = undefined;
 
     if (ddSecretName.length > 0){
       const ddApiKey = Secret.fromSecretNameV2(this, "DDApiKeySecret", ddSecretName);
 
-      datadogConfiguration = new Datadog(this, "Datadog", {
-        nodeLayerVersion: 112,
-        extensionLayerVersion: 59,
+      datadogConfiguration = new DatadogLambda(this, "Datadog", {
+        nodeLayerVersion: 121,
+        extensionLayerVersion: 74,
         site: "datadoghq.eu",
         apiKeySecret: ddApiKey,
         service: "KitchenService",
@@ -34,8 +34,6 @@ export class IntegrationTestStack extends Stack {
         env: environment,
         enableColdStartTracing: true,
         captureLambdaPayload: environment == "prod" ? false : true,
-        enableProfiling: true,
-        enableDatadogASM: true
       });
     }
 

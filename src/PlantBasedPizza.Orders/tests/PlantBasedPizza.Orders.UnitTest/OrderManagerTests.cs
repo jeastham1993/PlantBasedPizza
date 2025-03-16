@@ -1,11 +1,4 @@
-using System.Net.Mime;
-using System.Text;
-using System.Text.Json;
-using BackgroundWorkers.IntegrationEvents;
-using CloudNative.CloudEvents;
-using CloudNative.CloudEvents.SystemTextJson;
 using FluentAssertions;
-using PlantBasedPizza.Events;
 using PlantBasedPizza.OrderManager.Core.Entities;
 
 namespace PlantBasedPizza.Orders.UnitTest;

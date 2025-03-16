@@ -17,29 +17,24 @@ public class UserAccountRepository : IUserAccountRepository
 
     public async Task<UserAccount> CreateAccount(UserAccount userAccount)
     {
-        var queryBuilder = Builders<UserAccount>.Filter.Eq(p => p.EmailAddress, userAccount.EmailAddress);
+        var filter = Builders<UserAccount>.Filter.Eq(p => p.EmailAddress, userAccount.EmailAddress);
+        var existingAccount = await _accounts.Find(filter).FirstOrDefaultAsync().ConfigureAwait(false);
 
-        var existingAccount = await this._accounts.Find(queryBuilder).FirstOrDefaultAsync().ConfigureAwait(false);
-        
-        if (existingAccount is not null)
+        if (existingAccount != null)
         {
             throw new UserExistsException();
         }
-        
-        await _accounts.InsertOneAsync(userAccount).ConfigureAwait(false);
 
+        await _accounts.InsertOneAsync(userAccount).ConfigureAwait(false);
         return userAccount;
     }
 
     public async Task<UserAccount> ValidateCredentials(string emailAddress, string password)
     {
-        var queryBuilder = Builders<UserAccount>
-            .Filter;
+        var filter = Builders<UserAccount>.Filter.Eq(account => account.EmailAddress, emailAddress) &
+                     Builders<UserAccount>.Filter.Eq(account => account.Password, UserAccount.HashPassword(password));
 
-        var filter = queryBuilder.Eq(account => account.EmailAddress, emailAddress) &
-                     queryBuilder.Eq(account => account.Password, UserAccount.HashPassword(password));
-
-        var account = await this._accounts.Find(filter).FirstOrDefaultAsync().ConfigureAwait(false);
+        var account = await _accounts.Find(filter).FirstOrDefaultAsync().ConfigureAwait(false);
 
         if (account == null)
         {
@@ -55,6 +50,6 @@ public class UserAccountRepository : IUserAccountRepository
         {
             await CreateAccount(UserAccount.Create("admin@plantbasedpizza.com", "AdminAccount!23", AccountType.Admin));
         }
-        catch (UserExistsException){}
+        catch (UserExistsException) { }
     }
 }

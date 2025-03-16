@@ -86,7 +86,6 @@ app.MapPost("/account/login", [AllowAnonymous] async (LoginCommand login) =>
     try
     {
         var loginResponse = await userAccountService.Login(login);
-
         return Results.Ok(loginResponse);
     }
     catch (LoginFailedException)
@@ -100,11 +99,7 @@ app.MapPost("/account/register", [AllowAnonymous] async (RegisterUserCommand reg
     try
     {
         var userAccount = await userAccountService.Register(register, AccountType.User);
-        
-        return Results.Ok(new RegisterResponse()
-        {
-            AccountId = userAccount.AccountId
-        });
+        return Results.Ok(new RegisterResponse { AccountId = userAccount.AccountId });
     }
     catch (UserExistsException)
     {
@@ -117,17 +112,13 @@ app.MapPost("/account/driver/register", [AllowAnonymous] async (RegisterUserComm
     try
     {
         var userAccount = await userAccountService.Register(register, AccountType.Driver);
-        
-        return Results.Ok(new RegisterResponse()
-        {
-            AccountId = userAccount.AccountId
-        });
+        return Results.Ok(new RegisterResponse { AccountId = userAccount.AccountId });
     }
     catch (UserExistsException)
     {
         return Results.BadRequest("User exists");
     }
-}).RequireAuthorization(policyBuilder => policyBuilder.RequireRole(["staff","admin"])).RequireCors("CorsPolicy");
+}).RequireCors("CorsPolicy");
 
 app.MapPost("/account/staff/register", [AllowAnonymous] async (RegisterUserCommand register) =>
 {

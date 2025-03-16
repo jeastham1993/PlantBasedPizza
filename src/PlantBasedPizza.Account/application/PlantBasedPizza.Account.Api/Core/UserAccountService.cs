@@ -23,82 +23,41 @@ public class UserAccountService
         try
         {
             var account = await _userAccountRepository.ValidateCredentials(request.EmailAddress, request.Password);
-    
-            var issuer = _configuration.Issuer;
-            var audience = _configuration.Audience;
-            var key = Encoding.ASCII.GetBytes
-                (_configuration.Key);
+
             var claims = new[]
             {
                 new Claim(JwtRegisteredClaimNames.Sub, account.AccountId),
                 new Claim(JwtRegisteredClaimNames.Email, account.EmailAddress),
                 new Claim(ClaimTypes.Role, account.AsAuthenticatedRole())
             };
-        
+
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
                 Expires = DateTime.UtcNow.AddMinutes(60),
-                Issuer = issuer,
-                Audience = audience,
-                SigningCredentials = new SigningCredentials
-                (new SymmetricSecurityKey(key),
+                Issuer = _configuration.Issuer,
+                Audience = _configuration.Audience,
+                SigningCredentials = new SigningCredentials(
+                    new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_configuration.Key)),
                     SecurityAlgorithms.HmacSha512Signature)
             };
+
             var tokenHandler = new JwtSecurityTokenHandler();
             var token = tokenHandler.CreateToken(tokenDescriptor);
-        
-            var stringToken = tokenHandler.WriteToken(token);
 
-            return new LoginResponse()
-            {
-                AuthToken = stringToken
-            };
+            return new LoginResponse { Token = tokenHandler.WriteToken(token) };
         }
-        catch (LoginFailedException ex)
+        catch (LoginFailedException)
         {
-            Activity.Current?.AddTag("login.failed", true);
-
             throw;
         }
     }
 
     public async Task<RegisterResponse> Register(RegisterUserCommand request, AccountType accountType)
     {
-        try
-        {
-            UserAccount? userAccount = null;
-            
-            switch (accountType)
-            {
-                case AccountType.User:
-                    userAccount = UserAccount.Create(request.EmailAddress, request.Password, AccountType.User);
-                    break;
-                case AccountType.Driver:
-                    userAccount = UserAccount.Create(request.EmailAddress, request.Password, AccountType.Driver);
-                    break;
-                case AccountType.Staff:
-                    if (!request.EmailAddress.EndsWith("@plantbasedpizza.com"))
-                    {
-                        throw new InvalidUserException("Not a valid staff email");
-                    }
-                    
-                    userAccount = UserAccount.Create(request.EmailAddress, request.Password, AccountType.Staff);
-                    break;
-            }
+        var userAccount = UserAccount.Create(request.EmailAddress, request.Password, accountType);
+        await _userAccountRepository.CreateAccount(userAccount);
 
-            await this._userAccountRepository.CreateAccount(userAccount);
-            
-            return new RegisterResponse()
-            {
-                AccountId = userAccount.AccountId
-            };
-        }
-        catch (UserExistsException)
-        {
-            Activity.Current?.AddTag("user.exists", true);
-
-            throw;
-        }
+        return new RegisterResponse { AccountId = userAccount.AccountId };
     }
 }

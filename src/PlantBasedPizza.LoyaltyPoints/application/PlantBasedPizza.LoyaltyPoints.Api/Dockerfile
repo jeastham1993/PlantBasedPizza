@@ -14,7 +14,7 @@ RUN dotnet restore PlantBasedPizza.LoyaltyPoints/application/PlantBasedPizza.Loy
 RUN dotnet publish PlantBasedPizza.LoyaltyPoints/application/PlantBasedPizza.LoyaltyPoints.Api/PlantBasedPizza.LoyaltyPoints.csproj -c Release -o out -r linux-arm64
 
 # Build runtime image
-FROM mcr.microsoft.com/dotnet/aspnet:8.0
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-noble-chiseled
 
 # Copy the tracer from build target
 COPY --from=build-env /tmp/datadog-dotnet-apm.deb /tmp/datadog-dotnet-apm.deb

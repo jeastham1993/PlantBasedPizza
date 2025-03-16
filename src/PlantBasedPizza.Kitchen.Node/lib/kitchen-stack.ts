@@ -1,7 +1,7 @@
 import { Stack, StackProps } from "aws-cdk-lib";
 import { Secret } from "aws-cdk-lib/aws-secretsmanager";
 import { Construct } from "constructs";
-import { Datadog } from "datadog-cdk-constructs-v2";
+import { DatadogLambda } from "datadog-cdk-constructs-v2";
 import { ApplicationListener } from "aws-cdk-lib/aws-elasticloadbalancingv2";
 import { EventBus } from "aws-cdk-lib/aws-events";
 import { StringParameter } from "aws-cdk-lib/aws-ssm";
@@ -32,9 +32,9 @@ export class KitchenStack extends Stack {
 
     const eventBridge = EventBus.fromEventBusName(this, "SharedEventBus", "PlantBasedPizzaEvents");
 
-    const datadogConfiguration = new Datadog(this, "Datadog", {
-      nodeLayerVersion: 113,
-      extensionLayerVersion: 61,
+    const datadogConfiguration = new DatadogLambda(this, "Datadog", {
+      nodeLayerVersion: 121,
+      extensionLayerVersion: 74,
       site: "datadoghq.eu",
       apiKeySecret: ddApiKey,
       service: "KitchenService",

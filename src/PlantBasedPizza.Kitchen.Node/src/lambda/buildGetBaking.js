@@ -25,7 +25,8 @@ esbuild.build({
     'graphql/language/visitor',
     'graphql/language/printer',
     'graphql/utilities',
-    '@aws-sdk/client-sqs'
+    '@aws-sdk/client-sqs',
+    '@aws-sdk/client-secrets-manager'
   ]
 }).catch((err) => {
   console.error(err)

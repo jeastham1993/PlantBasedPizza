@@ -6,8 +6,8 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
     
-    <ItemGroup><PackageReference Include="Amazon.CDK.AWS.Lambda.DotNet" Version="0.0.4" /><PackageReference Include="Amazon.CDK.Lib" Version="2.139.1" />
-        <PackageReference Include="Constructs" Version="[10.0.5,11.0.0)" />
+    <ItemGroup><PackageReference Include="Amazon.CDK.AWS.Lambda.DotNet" Version="0.0.6" /><PackageReference Include="Amazon.CDK.Lib" Version="2.184.1" />
+        <PackageReference Include="Constructs" Version="10.4.2" />
     </ItemGroup>
 
 </Project>

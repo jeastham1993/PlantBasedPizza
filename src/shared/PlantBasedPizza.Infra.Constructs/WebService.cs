@@ -66,7 +66,7 @@ public class WebService : Construct
             { "DD_RUNTIME_METRICS_ENABLED", "true"},
             { "DD_PROFILING_ENABLED", "true"},
             { "DD_LOGS_INJECTION", "true"},
-            { "DD_IAST_ENABLED": "true"}
+            { "DD_IAST_ENABLED", "true"}
         };
         var baseSecrets = new Dictionary<string, Secret>()
         {

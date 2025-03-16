@@ -11,14 +11,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AWSSDK.EventBridge" Version="3.7.302.51" />
-    <PackageReference Include="AWSSDK.SQS" Version="3.7.301" />
+    <PackageReference Include="AWSSDK.EventBridge" Version="3.7.402.55" />
+    <PackageReference Include="AWSSDK.SQS" Version="3.7.400.113" />
     <PackageReference Include="Amazon.Lambda.SQSEvents" Version="2.2.0" />
-    <PackageReference Include="AWSSDK.SSOOIDC" Version="3.7.301.80" />
-    <PackageReference Include="CloudNative.CloudEvents" Version="2.7.1" />
-    <PackageReference Include="CloudNative.CloudEvents.AspNetCore" Version="2.7.1" />
-    <PackageReference Include="CloudNative.CloudEvents.NewtonsoftJson" Version="2.7.1" />
-    <PackageReference Include="CloudNative.CloudEvents.SystemTextJson" Version="2.7.1" />
+    <PackageReference Include="AWSSDK.SSOOIDC" Version="3.7.400.114" />
+    <PackageReference Include="CloudNative.CloudEvents" Version="2.8.0" />
+    <PackageReference Include="CloudNative.CloudEvents.AspNetCore" Version="2.8.0" />
+    <PackageReference Include="CloudNative.CloudEvents.NewtonsoftJson" Version="2.8.0" />
+    <PackageReference Include="CloudNative.CloudEvents.SystemTextJson" Version="2.8.0" />
   </ItemGroup>
 
 </Project>
