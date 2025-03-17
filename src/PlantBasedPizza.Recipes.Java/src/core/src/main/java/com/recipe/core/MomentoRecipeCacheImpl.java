@@ -32,7 +32,7 @@ public class MomentoRecipeCacheImpl implements RecipeCache {
                 CredentialProvider.fromEnvVar("MOMENTO_API_KEY"),
                 Configurations.InRegion.v1(),
                 Duration.ofSeconds(300),
-                Duration.ofSeconds(10)
+                Duration.ofSeconds(30)
         );
     }
 
@@ -64,6 +64,7 @@ public class MomentoRecipeCacheImpl implements RecipeCache {
             }
         }
         catch (Exception e) {
+            log.info("Cache miss...");
             // Cache failures should not prevent the application from working
             log.warn(e);
         }
@@ -112,9 +113,13 @@ public class MomentoRecipeCacheImpl implements RecipeCache {
             span.setTag("cache.store", true);
         } else if (setResponse instanceof SetResponse.Error error) {
             span.setTag("cache.error", true);
-            throw new RuntimeException(
-                    String.format("An error occurred while attempting to store key '%s' in cache '%s': %s - %s", key, cacheName, error.getErrorCode(), error.getMessage()),
-                    error);
+            span.setTag("cache.errorMessage", error.getMessage());
+            span.setTag("cache.errorCode", error.getErrorCode().name());
+            span.setTag("cache.errorLocalMessage", error.getLocalizedMessage());
+
+            if (error.getTransportErrorDetails().isPresent()) {
+                span.setTag("cache.transportError", error.getTransportErrorDetails().get().toString());
+            }
         }
     }
 
@@ -130,10 +135,15 @@ public class MomentoRecipeCacheImpl implements RecipeCache {
             return Optional.empty();
         } else if (getResponse instanceof GetResponse.Error error) {
             span.setTag("cache.error", true);
-            throw new RuntimeException(
-                    "An error occurred while attempting to get from cache: "
-                            + error.getErrorCode(),
-                    error);
+            span.setTag("cache.errorMessage", error.getMessage());
+            span.setTag("cache.errorCode", error.getErrorCode().name());
+            span.setTag("cache.errorLocalMessage", error.getLocalizedMessage());
+
+            if (error.getTransportErrorDetails().isPresent()) {
+                span.setTag("cache.transportError", error.getTransportErrorDetails().get().toString());
+            }
+
+            return Optional.empty();
         }
         else {
             return Optional.empty();

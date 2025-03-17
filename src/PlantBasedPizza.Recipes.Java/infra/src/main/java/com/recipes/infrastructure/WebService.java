@@ -1,7 +1,6 @@
 package com.recipes.infrastructure;
 
 import org.jetbrains.annotations.NotNull;
-import software.amazon.awscdk.App;
 import software.amazon.awscdk.Duration;
 import software.amazon.awscdk.aws_apigatewayv2_integrations.HttpServiceDiscoveryIntegration;
 import software.amazon.awscdk.aws_apigatewayv2_integrations.HttpServiceDiscoveryIntegrationProps;
@@ -17,7 +16,6 @@ import software.amazon.awscdk.services.ecr.IRepository;
 import software.amazon.awscdk.services.ecr.Repository;
 import software.amazon.awscdk.services.ecs.*;
 import software.amazon.awscdk.services.ecs.Protocol;
-import software.amazon.awscdk.services.elasticloadbalancingv2.*;
 import software.amazon.awscdk.services.iam.*;
 import software.amazon.awscdk.services.servicediscovery.DnsRecordType;
 import software.amazon.awscdk.services.servicediscovery.Service;
@@ -181,6 +179,7 @@ public class WebService extends Construct {
                         .taskDefinition(taskDefinition)
                         .desiredCount(1)
                         .assignPublicIp(!props.isDeployInPrivateSubnet())
+                        .enableExecuteCommand(true)
                         .vpcSubnets(SubnetSelection.builder()
                                 .subnets(props.isDeployInPrivateSubnet() ? props.getVpc().getPrivateSubnets() : props.getVpc().getPublicSubnets())
                                 .build())

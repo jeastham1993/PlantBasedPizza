@@ -26,6 +26,7 @@ services:
     environment:
       - DB_CONNECTION_STRING=${DB_CONNECTION_STRING}
       - MOMENTO_API_KEY=${MOMENTO_API_KEY}
+      - CACHE_NAME=${CACHE_NAME}
       - DD_ENV=dev
       - DD_SERVICE=RecipeServiceJava
       - DD_VERSION=0.0.1
