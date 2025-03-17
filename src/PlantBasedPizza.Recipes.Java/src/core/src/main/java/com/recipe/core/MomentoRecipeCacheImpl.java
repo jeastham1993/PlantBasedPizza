@@ -13,6 +13,7 @@ import momento.sdk.responses.cache.GetResponse;
 import momento.sdk.responses.cache.SetResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.Cache;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -27,10 +28,12 @@ public class MomentoRecipeCacheImpl implements RecipeCache {
     Logger log = LogManager.getLogger(MomentoRecipeCacheImpl.class);
     public MomentoRecipeCacheImpl(){
         this.objectMapper = new ObjectMapper();
-        cacheClient = new CacheClient(
+        cacheClient = CacheClient.create(
                 CredentialProvider.fromEnvVar("MOMENTO_API_KEY"),
-                Configurations.InRegion.latest(),
-                Duration.ofSeconds(300));
+                Configurations.InRegion.v1(),
+                Duration.ofSeconds(300),
+                Duration.ofSeconds(10)
+        );
     }
 
     @Override
