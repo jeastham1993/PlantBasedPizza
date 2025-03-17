@@ -1,7 +1,7 @@
+using Amazon.CDK.AWS.Apigatewayv2;
 using Amazon.CDK.AWS.EC2;
-using Amazon.CDK.AWS.ElasticLoadBalancingV2;
 using Amazon.CDK.AWS.Events;
 
 namespace PlantBasedPizza.Infra.Constructs;
 
-public record SharedInfrastructureProps(IVpc Vpc, IEventBus Bus, IApplicationLoadBalancer? InternalAlb, string ServiceName, string CommitHash, string Environment);
+public record SharedInfrastructureProps(IVpc Vpc, IEventBus Bus, IHttpApi? InternalApi, string ServiceName, string CommitHash, string Environment);

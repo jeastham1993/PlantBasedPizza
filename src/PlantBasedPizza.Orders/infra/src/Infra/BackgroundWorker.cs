@@ -28,7 +28,6 @@ public class BackgroundWorker : Construct
         {
             { "Messaging__BusName", props.SharedProps.Bus.EventBusName },
             { "RedisConnectionString", "" },
-            { "Services__PaymentInternal", "http://localhost:1234" },
             { "Services__Recipes", $"https://api.{props.SharedProps.Environment}.plantbasedpizza.net"},
             { "Auth__PaymentApiKey", "12345" },
             { "DatabaseSettings__TableName", props.Persistence.TableName}

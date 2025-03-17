@@ -1,7 +1,6 @@
 import "source-map-support/register";
 import * as cdk from "aws-cdk-lib";
 import { KitchenStack } from "../lib/kitchen-stack";
-import { IntegrationTestStack } from "../lib/integration-stack";
 import { AwsSolutionsChecks, NagSuppressions } from "cdk-nag";
 const app = new cdk.App();
 
@@ -18,17 +17,9 @@ cdk.Tags.of(app).add("service", serviceName);
 cdk.Tags.of(app).add("version", version);
 
 const mStack = new KitchenStack(app, "KitchenStack", {
+  stackName: `${serviceName}-${environment}`,
   env: {
     account: process.env["CDK_DEFAULT_ACCOUNT"],
     region: process.env["CDK_DEFAULT_REGION"],
   },
 });
-
-const integrationTestStack = new IntegrationTestStack(app, `KitchenTestStack-${version}`, {
-  env: {
-    account: process.env["CDK_DEFAULT_ACCOUNT"],
-    region: process.env["CDK_DEFAULT_REGION"],
-  },
-});
-
-cdk.Tags.of(integrationTestStack).add("plantbasedpizza:eng:integration-test", "true");

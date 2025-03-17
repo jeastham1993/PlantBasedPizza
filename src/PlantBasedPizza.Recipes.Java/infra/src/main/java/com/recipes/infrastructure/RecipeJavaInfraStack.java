@@ -1,5 +1,6 @@
 package com.recipes.infrastructure;
 
+import software.amazon.awscdk.services.apigatewayv2.*;
 import software.amazon.awscdk.services.ec2.*;
 import software.amazon.awscdk.services.ecs.Cluster;
 import software.amazon.awscdk.services.ecs.ClusterProps;
@@ -7,6 +8,9 @@ import software.amazon.awscdk.services.ecs.Secret;
 import software.amazon.awscdk.services.events.EventBus;
 import software.amazon.awscdk.services.events.IEventBus;
 import software.amazon.awscdk.services.secretsmanager.ISecret;
+import software.amazon.awscdk.services.servicediscovery.IPrivateDnsNamespace;
+import software.amazon.awscdk.services.servicediscovery.PrivateDnsNamespace;
+import software.amazon.awscdk.services.servicediscovery.PrivateDnsNamespaceAttributes;
 import software.amazon.awscdk.services.ssm.IStringParameter;
 import software.amazon.awscdk.services.ssm.SecureStringParameterAttributes;
 import software.amazon.awscdk.services.ssm.StringParameter;
@@ -26,14 +30,44 @@ public class RecipeJavaInfraStack extends Stack {
         super(scope, id, props);
 
         String vpcId = StringParameter.valueFromLookup(this, "/shared/vpc-id");
-        String albArn = StringParameter.valueFromLookup(this, "/shared/alb-arn");
-        String albListenerArn = StringParameter.valueFromLookup(this, "/shared/alb-listener");
-        String internalAlbArn = StringParameter.valueFromLookup(this, "/shared/internal-alb-arn");
-        String internalAlbListenerArn = StringParameter.valueFromLookup(this, "/shared/internal-alb-listener");
+        String namespaceId = StringParameter.valueFromLookup(this, "/shared/namespace-id");
+        String namespaceName = StringParameter.valueFromLookup(this, "/shared/namespace-name");
+        String namespaceArn = StringParameter.valueFromLookup(this, "/shared/namespace-arn");
+        String httpApiId = StringParameter.valueFromLookup(this, "/shared/api-id");
+        String internalHttpApiId = StringParameter.valueFromLookup(this, "/shared/internal-api-id");
+        String vpcLinkId = StringParameter.valueFromLookup(this, "/shared/vpc-link-id");
+        String vpcLinkSecurityGroupId = StringParameter.valueForStringParameter(this, "/shared/vpc-link-sg-id");
+
         String serviceName = "RecipeService";
         String environment = System.getenv("ENV") != null ? System.getenv("ENV") : "dev";
         String commitHash = System.getenv("COMMIT_HASH") != null ? System.getenv("COMMIT_HASH") : "latest";
         SharedProps sharedProps = new SharedProps(environment, serviceName, commitHash);
+
+        // Lookup an existing VPC
+        IVpc vpc = Vpc.fromLookup(this, "MainVpc", VpcLookupOptions.builder()
+                .vpcId(vpcId)
+                .build());
+
+        IPrivateDnsNamespace serviceDiscoveryNamespace = PrivateDnsNamespace.fromPrivateDnsNamespaceAttributes(this, "DNSNamespace",
+                PrivateDnsNamespaceAttributes.builder()
+                        .namespaceId(namespaceId)
+                        .namespaceArn(namespaceArn)
+                        .namespaceName(namespaceName)
+                        .build());
+
+        IHttpApi httpApi = HttpApi.fromHttpApiAttributes(this, "HttpApi", HttpApiAttributes.builder()
+                .httpApiId(httpApiId)
+                .build());
+
+        IHttpApi internalHttpApi = HttpApi.fromHttpApiAttributes(this, "InternalHttpApi", HttpApiAttributes.builder()
+                .httpApiId(internalHttpApiId)
+                .build());
+
+        IVpcLink vpcLink = VpcLink.fromVpcLinkAttributes(this, "HttpApiVpcLink",
+                VpcLinkAttributes.builder()
+                        .vpcLinkId(vpcLinkId)
+                        .vpc(vpc)
+                        .build());
         
         SecureStringParameterAttributes ddApiKeyParameters = SecureStringParameterAttributes.builder()
                 .parameterName("/shared/dd-api-key")
@@ -43,11 +77,6 @@ public class RecipeJavaInfraStack extends Stack {
         ISecret ddApiKeySecret = software.amazon.awscdk.services.secretsmanager.Secret.fromSecretNameV2(this, "DDApiKeySecret", "DdApiKeySecret-EAtKjZYFq40D");
         
         IEventBus bus = EventBus.fromEventBusName(this, "SharedEventBus", "PlantBasedPizzaEvents");
-
-        // Lookup an existing VPC
-        IVpc vpc = Vpc.fromLookup(this, "MainVpc", VpcLookupOptions.builder()
-                .vpcId(vpcId)
-                .build());
 
         Cluster cluster = new Cluster(this, "RecipeJavaCluster", ClusterProps.builder()
                 .vpc(vpc)
@@ -75,6 +104,11 @@ public class RecipeJavaInfraStack extends Stack {
 
         WebService javaWebService = new WebService(this, "JavaRecipeService", new WebServiceProps(
                 vpc,
+                vpcLink,
+                vpcLinkSecurityGroupId,
+                serviceDiscoveryNamespace,
+                "recipe.api",
+                httpApi,
                 cluster,
                 serviceName,
                 environment,
@@ -85,13 +119,8 @@ public class RecipeJavaInfraStack extends Stack {
                 8080,
                 envVariables,
                 secretVariables,
-                albArn,
-                albListenerArn,
                 "/recipes/health",
-                "/recipes/*",
-                122,
-                internalAlbArn,
-                internalAlbListenerArn,
+                "/recipes/{proxy+}",
                 true
                 ));
         

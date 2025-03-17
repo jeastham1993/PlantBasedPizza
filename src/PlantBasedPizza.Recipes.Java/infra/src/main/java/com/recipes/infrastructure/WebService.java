@@ -3,6 +3,15 @@ package com.recipes.infrastructure;
 import org.jetbrains.annotations.NotNull;
 import software.amazon.awscdk.App;
 import software.amazon.awscdk.Duration;
+import software.amazon.awscdk.aws_apigatewayv2_integrations.HttpServiceDiscoveryIntegration;
+import software.amazon.awscdk.aws_apigatewayv2_integrations.HttpServiceDiscoveryIntegrationProps;
+import software.amazon.awscdk.services.apigatewayv2.HttpMethod;
+import software.amazon.awscdk.services.apigatewayv2.HttpRoute;
+import software.amazon.awscdk.services.apigatewayv2.HttpRouteKey;
+import software.amazon.awscdk.services.apigatewayv2.HttpRouteProps;
+import software.amazon.awscdk.services.ec2.ISecurityGroup;
+import software.amazon.awscdk.services.ec2.Peer;
+import software.amazon.awscdk.services.ec2.Port;
 import software.amazon.awscdk.services.ec2.SubnetSelection;
 import software.amazon.awscdk.services.ecr.IRepository;
 import software.amazon.awscdk.services.ecr.Repository;
@@ -10,6 +19,9 @@ import software.amazon.awscdk.services.ecs.*;
 import software.amazon.awscdk.services.ecs.Protocol;
 import software.amazon.awscdk.services.elasticloadbalancingv2.*;
 import software.amazon.awscdk.services.iam.*;
+import software.amazon.awscdk.services.servicediscovery.DnsRecordType;
+import software.amazon.awscdk.services.servicediscovery.Service;
+import software.amazon.awscdk.services.servicediscovery.ServiceProps;
 import software.amazon.awscdk.services.ssm.IStringParameter;
 import software.amazon.awscdk.services.ssm.SecureStringParameterAttributes;
 import software.amazon.awscdk.services.ssm.StringParameter;
@@ -21,7 +33,6 @@ public class WebService extends Construct {
 
     public final IRole executionRole;
     public final IRole taskRole;
-    public IApplicationLoadBalancer loadBalancer;
 
     public WebService(@NotNull Construct scope, @NotNull String id, @NotNull WebServiceProps props) {
         super(scope, id);
@@ -155,6 +166,13 @@ public class WebService extends Construct {
                                 .build())
                 .build());
 
+        Service cloudMapService = new Service(this, "CloudMapService", ServiceProps.builder()
+                .namespace(props.getServiceDiscoveryNamespace())
+                .name(props.getServiceDiscoveryName())
+                .dnsTtl(Duration.seconds(60))
+                .dnsRecordType(DnsRecordType.SRV)
+                .build());
+
         // Fargate Service
         FargateService service = new FargateService(this, "FargateWebService",
                 FargateServiceProps
@@ -167,49 +185,26 @@ public class WebService extends Construct {
                                 .subnets(props.isDeployInPrivateSubnet() ? props.getVpc().getPrivateSubnets() : props.getVpc().getPublicSubnets())
                                 .build())
                 .build());
+        service.associateCloudMapService(AssociateCloudMapServiceOptions.builder()
+                .service(cloudMapService)
+                .build());
 
-        if (props.getSharedListenerArn() != null && props.getSharedLoadBalancerArn() != null){
-            ArrayList<IApplicationLoadBalancerTarget> targets = new ArrayList<IApplicationLoadBalancerTarget>(1);
-            targets.add(service);
-
-            ApplicationTargetGroup targetGroup = new ApplicationTargetGroup(this, String.format("%sTargetGroup", props.getServiceName()), ApplicationTargetGroupProps.builder()
-                    .port(8080)
-                    .targets(targets)
-                    .healthCheck(software.amazon.awscdk.services.elasticloadbalancingv2.HealthCheck.builder()
-                            .port(String.valueOf(props.getPort()))
-                            .path(props.getHealthCheckPath())
-                            .healthyHttpCodes("200-499")
-                            .interval(Duration.seconds(120))
-                            .timeout(Duration.seconds(10))
-                            .unhealthyThresholdCount(5)
-                            .healthyThresholdCount(2)
-                            .build())
-                    .vpc(props.getVpc())
-                    .build());
-
-            IApplicationListener sharedListener = ApplicationListener.fromLookup(this, "SharedHttpListener", ApplicationListenerLookupOptions.builder()
-                            .loadBalancerArn(props.getSharedLoadBalancerArn())
-                            .listenerArn(props.getSharedListenerArn())
-                            .listenerPort(80)
-                    .build());
-
-            ArrayList<ApplicationTargetGroup> targetGroups = new ArrayList<ApplicationTargetGroup>(1);
-            targetGroups.add(targetGroup);
-
-            ArrayList<String> pathPatterns = new ArrayList<>();
-            pathPatterns.add(props.getPathPattern());
-//            ArrayList<String> headerValues = new ArrayList<>();
-//            pathPatterns.add("thisisacustomheader");
-
-            ArrayList<ListenerCondition> conditions = new ArrayList<>(1);
-            conditions.add(ListenerCondition.pathPatterns(pathPatterns));
-            //conditions.add(ListenerCondition.httpHeader("CloudFrontForwarded", headerValues));
-
-            sharedListener.addTargetGroups("ECS", AddApplicationTargetGroupsProps.builder()
-                            .priority(props.getPriority())
-                            .targetGroups(targetGroups)
-                            .conditions(conditions)
-                    .build());
+        for (ISecurityGroup securityGroup : service.getConnections().getSecurityGroups()) {
+            securityGroup.addIngressRule(Peer.securityGroupId(props.getVpcLinkSecurityGroupId()), Port.tcp(props.getPort()));
         }
+
+        HttpServiceDiscoveryIntegration serviceDiscoveryIntegration = new HttpServiceDiscoveryIntegration("ApplicationServiceDiscovery",
+                cloudMapService,
+                HttpServiceDiscoveryIntegrationProps.builder()
+                        .method(HttpMethod.ANY)
+                        .vpcLink(props.getVpcLink())
+                        .build());
+
+        HttpRoute route = new HttpRoute(this, "ProxyRoute", HttpRouteProps.builder()
+                .httpApi(props.getHttpApi())
+                .routeKey(HttpRouteKey.with(props.getPathPattern(), HttpMethod.ANY))
+                .integration(serviceDiscoveryIntegration)
+                .build());
+
     }
 }

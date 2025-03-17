@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
 
 @SpringBootApplication(scanBasePackages = "com.recipe")
 public class RecipeApiApplication {
@@ -13,6 +14,7 @@ public class RecipeApiApplication {
     }
 
     @Bean
+    @Primary
     public ObjectMapper getObjectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);

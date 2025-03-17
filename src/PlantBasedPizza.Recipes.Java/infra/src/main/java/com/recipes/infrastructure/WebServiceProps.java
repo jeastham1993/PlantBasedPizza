@@ -1,14 +1,22 @@
 package com.recipes.infrastructure;
 
+import software.amazon.awscdk.services.apigatewayv2.IHttpApi;
+import software.amazon.awscdk.services.apigatewayv2.IVpcLink;
 import software.amazon.awscdk.services.ec2.IVpc;
 import software.amazon.awscdk.services.ecs.ICluster;
 import software.amazon.awscdk.services.ecs.Secret;
+import software.amazon.awscdk.services.servicediscovery.INamespace;
 
 import java.util.Map;
 
 public class WebServiceProps{
     private final IVpc vpc;
+    private final IVpcLink vpcLink;
+    private final String vpcLinkSecurityGroupId;
     private final ICluster cluster;
+    private final String serviceDiscoveryName;
+    private final INamespace serviceDiscoveryNamespace;
+    private final IHttpApi httpApi;
     private final String serviceName;
     private final String environment;
     private final String dataDogApiKeyParameterName;
@@ -18,17 +26,17 @@ public class WebServiceProps{
     private final int port;
     private final Map<String, String> environmentVariables;
     private final Map<String, Secret> secrets;
-    private final String sharedLoadBalancerArn;
-    private final String sharedListenerArn;
     private final String healthCheckPath;
     private final String pathPattern;
-    private final int priority;
-    private final String internalSharedLoadBalancerArn;
-    private final String internalSharedListenerArn;
     private final boolean deployInPrivateSubnet;
 
-    public WebServiceProps(IVpc vpc, ICluster cluster, String serviceName, String environment, String dataDogApiKeyParameterName, String jwtKeyParameterName, String repositoryName, String tag, int port, Map<String, String> environmentVariables, Map<String, Secret> secrets, String sharedLoadBalancerArn, String sharedListenerArn, String healthCheckPath, String pathPattern, int priority, String internalSharedLoadBalancerArn, String internalSharedListenerArn, boolean deployInPrivateSubnet) {
+    public WebServiceProps(IVpc vpc, IVpcLink vpcLink, String vpcLinkSecurityGroupId, INamespace serviceDiscoveryNamespace, String serviceDiscoveryName, IHttpApi httpApi, ICluster cluster, String serviceName, String environment, String dataDogApiKeyParameterName, String jwtKeyParameterName, String repositoryName, String tag, int port, Map<String, String> environmentVariables, Map<String, Secret> secrets, String healthCheckPath, String pathPattern, boolean deployInPrivateSubnet) {
         this.vpc = vpc;
+        this.vpcLink = vpcLink;
+        this.vpcLinkSecurityGroupId = vpcLinkSecurityGroupId;
+        this.serviceDiscoveryName = serviceDiscoveryName;
+        this.serviceDiscoveryNamespace = serviceDiscoveryNamespace;
+        this.httpApi = httpApi;
         this.cluster = cluster;
         this.serviceName = serviceName;
         this.environment = environment;
@@ -39,30 +47,13 @@ public class WebServiceProps{
         this.port = port;
         this.environmentVariables = environmentVariables;
         this.secrets = secrets;
-        this.sharedLoadBalancerArn = sharedLoadBalancerArn;
-        this.sharedListenerArn = sharedListenerArn;
         this.healthCheckPath = healthCheckPath;
         this.pathPattern = pathPattern;
-        this.priority = priority;
-        this.internalSharedLoadBalancerArn = internalSharedLoadBalancerArn;
-        this.internalSharedListenerArn = internalSharedListenerArn;
         this.deployInPrivateSubnet = deployInPrivateSubnet;
     }
 
     public boolean isDeployInPrivateSubnet() {
         return deployInPrivateSubnet;
-    }
-
-    public String getInternalSharedListenerArn() {
-        return internalSharedListenerArn;
-    }
-
-    public String getInternalSharedLoadBalancerArn() {
-        return internalSharedLoadBalancerArn;
-    }
-
-    public int getPriority() {
-        return priority;
     }
 
     public String getPathPattern() {
@@ -71,14 +62,6 @@ public class WebServiceProps{
 
     public String getHealthCheckPath() {
         return healthCheckPath;
-    }
-
-    public String getSharedListenerArn() {
-        return sharedListenerArn;
-    }
-
-    public String getSharedLoadBalancerArn() {
-        return sharedLoadBalancerArn;
     }
 
     public Map<String, Secret> getSecrets() {
@@ -123,5 +106,25 @@ public class WebServiceProps{
 
     public IVpc getVpc() {
         return vpc;
+    }
+
+    public IVpcLink getVpcLink() {
+        return vpcLink;
+    }
+
+    public IHttpApi getHttpApi() {
+        return httpApi;
+    }
+
+    public INamespace getServiceDiscoveryNamespace() {
+        return serviceDiscoveryNamespace;
+    }
+
+    public String getServiceDiscoveryName() {
+        return serviceDiscoveryName;
+    }
+
+    public String getVpcLinkSecurityGroupId() {
+        return vpcLinkSecurityGroupId;
     }
 }

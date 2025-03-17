@@ -9,6 +9,7 @@ import { SharedProps } from "./sharedFunctionProps";
 import { IStringParameter } from "aws-cdk-lib/aws-ssm";
 import { HttpLambdaIntegration } from "aws-cdk-lib/aws-apigatewayv2-integrations";
 import { HttpMethod } from "aws-cdk-lib/aws-events";
+import { HttpRoute, HttpRouteKey } from "aws-cdk-lib/aws-apigatewayv2";
 
 export class InstrumentedApiLambdaFunctionProps {
   sharedProps: SharedProps;
@@ -16,7 +17,7 @@ export class InstrumentedApiLambdaFunctionProps {
   buildDef: string;
   outDir: string;
   path: string;
-  methods: string[];
+  method: string;
   priority: number;
   functionName: string;
   jwtKey: IStringParameter;
@@ -41,7 +42,7 @@ export class InstrumentedApiLambdaFunction extends Construct {
       environment: {
         TABLE_NAME: props.sharedProps.table.tableName,
         JWT_SSM_PARAM: props.jwtKey.parameterName,
-        INTEGRATION_TEST_RUN: process.env.INTEGRATION_TEST ?? ""
+        INTEGRATION_TEST_RUN: process.env.INTEGRATION_TEST ?? "",
       },
       bundling: {
         externalModules: ["graphql/language/visitor", "graphql/language/printer", "graphql/utilities"],
@@ -54,59 +55,37 @@ export class InstrumentedApiLambdaFunction extends Construct {
 
     props.jwtKey.grantRead(this.function);
 
-    // TODO: Check to make sure this value is set IF NOT an integration test run
-    if (props.sharedProps.apiProps.albListener !== undefined) {
-      const getNewLambdaTarget = new LambdaTarget(this.function);
+    const lambdaIntegration = new HttpLambdaIntegration(`LambdaIntegration${props.functionName}`, this.function);
 
-      const targetGroup = new ApplicationTargetGroup(this, `${id}TargetGroup`, {
-        targetType: TargetType.LAMBDA,
-      });
-      targetGroup.addTarget(getNewLambdaTarget);
+    const route = new HttpRoute(this, `Route${props.functionName}`, {
+      httpApi: props.sharedProps.apiProps.apiGateway,
+      routeKey: HttpRouteKey.with(props.path, this.getHttpMethodFromString(props.method)),
+      integration: lambdaIntegration
+    });
 
-      props.sharedProps.apiProps.albListener.addTargetGroups(`${id}LambdaTargetGroup`, {
-        targetGroups: [targetGroup],
-        conditions: [ListenerCondition.pathPatterns([props.path]), ListenerCondition.httpRequestMethods(props.methods)],
-        priority: props.priority,
-      });
-    }
-
-    if (props.sharedProps.apiProps.apiGateway !== undefined) {
-      const lambdaIntegration = new HttpLambdaIntegration(`LambdaIntegration${props.functionName}`, this.function);
-
-      props.sharedProps.apiProps.apiGateway.addRoutes({
-        path: props.path,
-        methods: this.getHttpMethodFromString(props.methods),
-        integration: lambdaIntegration,
-      });
-    }
-
-    if (props.sharedProps.datadogConfiguration !== undefined){
+    if (props.sharedProps.datadogConfiguration !== undefined) {
       props.sharedProps.datadogConfiguration.addLambdaFunctions([this.function]);
     }
   }
 
-  getHttpMethodFromString(methods: String[]): HttpMethod[] {
-    const httpMethods = methods.map((method) => {
-      switch (method.toUpperCase()) {
-        case "GET":
-          return HttpMethod.GET;
-        case "POST":
-          return HttpMethod.POST;
-        case "PUT":
-          return HttpMethod.PUT;
-        case "DELETE":
-          return HttpMethod.DELETE;
-        case "HEAD":
-          return HttpMethod.HEAD;
-        case "OPTIONS":
-          return HttpMethod.OPTIONS;
-        case "PATCH":
-          return HttpMethod.PATCH;
-        default:
-          throw `Unknown method ${method}`;
-      }
-    });
-
-    return httpMethods;
+  getHttpMethodFromString(method: string): HttpMethod {
+    switch (method.toUpperCase()) {
+      case "GET":
+        return HttpMethod.GET;
+      case "POST":
+        return HttpMethod.POST;
+      case "PUT":
+        return HttpMethod.PUT;
+      case "DELETE":
+        return HttpMethod.DELETE;
+      case "HEAD":
+        return HttpMethod.HEAD;
+      case "OPTIONS":
+        return HttpMethod.OPTIONS;
+      case "PATCH":
+        return HttpMethod.PATCH;
+      default:
+        throw `Unknown method ${method}`;
+    }
   }
 }

@@ -24,7 +24,7 @@ export class Api extends Construct {
       outDir: './out/getNew',
       functionName: "GetNewFunction",
       path: "/kitchen/new",
-      methods: ["GET"],
+      method: "GET",
       priority: 36,
       jwtKey: props.jwtKey
     });
@@ -35,7 +35,7 @@ export class Api extends Construct {
       outDir: './out/getPreparing',
       functionName: "GetPrepCompleteFunction",
       path: "/kitchen/prep",
-      methods: ["GET"],
+      method: "GET",
       priority: 33,
       jwtKey: props.jwtKey
     });
@@ -46,7 +46,7 @@ export class Api extends Construct {
       outDir: './out/getBaking',
       functionName: "GetBakingFunction",
       path: "/kitchen/baking",
-      methods: ["GET"],
+      method: "GET",
       priority: 34,
       jwtKey: props.jwtKey
     });
@@ -57,7 +57,7 @@ export class Api extends Construct {
       outDir: './out/getAwaitingQualityCheck',
       functionName: "GetAwaitingQualityCheckFunction",
       path: "/kitchen/quality-check",
-      methods: ["GET"],
+      method: "GET",
       priority: 35,
       jwtKey: props.jwtKey
     });
@@ -68,7 +68,7 @@ export class Api extends Construct {
       outDir: './out/setPreparing',
       functionName: "SetPreparingFunction",
       path: "/kitchen/preparing",
-      methods: ["POST"],
+      method: "POST",
       priority: 30,
       jwtKey: props.jwtKey
     });
@@ -79,7 +79,7 @@ export class Api extends Construct {
       outDir: './out/setBaking',
       functionName: "SetBakingFunction",
       path: "/kitchen/prep-complete",
-      methods: ["POST"],
+      method: "POST",
       priority: 31,
       jwtKey: props.jwtKey
     });
@@ -90,7 +90,7 @@ export class Api extends Construct {
       outDir: './out/setQualityChecking',
       functionName: "SetQualityCheckingFunction",
       path: "/kitchen/bake-complete",
-      methods: ["POST"],
+      method: "POST",
       priority: 32,
       jwtKey: props.jwtKey
     });
@@ -101,7 +101,7 @@ export class Api extends Construct {
       outDir: './out/setComplete',
       functionName: "SetCompleteFunction",
       path: "/kitchen/quality-check",
-      methods: ["POST"],
+      method: "POST",
       priority: 37,
       jwtKey: props.jwtKey
     });

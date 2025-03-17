@@ -20,7 +20,7 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
-            <version>3.3.0</version>
+            <version>3.4.3</version>
         </dependency>
         <dependency>
             <groupId>io.opentracing</groupId>
@@ -32,11 +32,6 @@
             <artifactId>opentracing-util</artifactId>
             <version>0.33.0</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.boot</groupId>-->
-<!--            <artifactId>spring-boot-starter-validation</artifactId>-->
-<!--            <version>3.3.0</version>-->
-<!--        </dependency>-->
         <dependency>
             <groupId>jakarta.validation</groupId>
             <artifactId>jakarta.validation-api</artifactId>
@@ -122,7 +117,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>3.3.0</version>
+                <version>3.4.3</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

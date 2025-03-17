@@ -9,13 +9,12 @@ import { SharedProps } from "./constructs/sharedFunctionProps";
 import { AttributeType, BillingMode, ProjectionType, Table, TableClass } from "aws-cdk-lib/aws-dynamodb";
 import { Api } from "./api";
 import { BackgroundWorker } from "./backgroundWorkers";
+import { HttpApi } from "aws-cdk-lib/aws-apigatewayv2";
 
 export class KitchenStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const albArnParam = StringParameter.valueFromLookup(this, "/shared/alb-arn");
-    const albListenerParam = StringParameter.valueFromLookup(this, "/shared/alb-listener");
     const environment = process.env.ENV ?? "test";
     const serviceName = "KitchenService";
     const version = process.env.VERSION ?? "latest";
@@ -29,6 +28,10 @@ export class KitchenStack extends Stack {
         parameterName: "/shared/jwt-key",
       },
     );
+    const httpApiId = StringParameter.valueForStringParameter(this, "/shared/api-id");
+    const httpApi = HttpApi.fromHttpApiAttributes(this, "HttpApi", {
+      httpApiId: httpApiId,
+    });
 
     const eventBridge = EventBus.fromEventBusName(this, "SharedEventBus", "PlantBasedPizzaEvents");
 
@@ -42,11 +45,6 @@ export class KitchenStack extends Stack {
       env: environment,
       enableColdStartTracing: true,
       captureLambdaPayload: process.env.ENV == "prod" ? false : true
-    });
-
-    const albListener = ApplicationListener.fromLookup(this, "SharedHttpListener", {
-      loadBalancerArn: albArnParam,
-      listenerArn: albListenerParam,
     });
 
     const table = new Table(this, "KitchenDataTable", {
@@ -75,8 +73,7 @@ export class KitchenStack extends Stack {
       environment,
       version,
       apiProps: {
-        albListener,
-        apiGateway: undefined
+        apiGateway: httpApi
       },
       datadogConfiguration,
       table
