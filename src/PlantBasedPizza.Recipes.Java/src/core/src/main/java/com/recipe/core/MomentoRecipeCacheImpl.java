@@ -29,7 +29,7 @@ public class MomentoRecipeCacheImpl implements RecipeCache {
         this.objectMapper = new ObjectMapper();
         cacheClient = new CacheClient(
                 CredentialProvider.fromEnvVar("MOMENTO_API_KEY"),
-                Configurations.InRegion.v1(),
+                Configurations.InRegion.latest(),
                 Duration.ofSeconds(300));
     }
 
@@ -39,8 +39,9 @@ public class MomentoRecipeCacheImpl implements RecipeCache {
             log.info("Updating cache...");
             this.Set("all-recipes", this.objectMapper.writeValueAsString(recipes));
         }
-        catch (JsonProcessingException ex){
-            log.error(ex);
+        catch (Exception e) {
+            // Cache failures should not prevent the application from working
+            log.warn(e);
         }
     }
 
@@ -59,8 +60,9 @@ public class MomentoRecipeCacheImpl implements RecipeCache {
                 return Optional.empty();
             }
         }
-        catch (JsonProcessingException e) {
-            log.error(e);
+        catch (Exception e) {
+            // Cache failures should not prevent the application from working
+            log.warn(e);
         }
 
         return Optional.empty();
@@ -72,8 +74,9 @@ public class MomentoRecipeCacheImpl implements RecipeCache {
             log.info("Updating cache...");
             this.Set(String.valueOf(recipe.getId()), this.objectMapper.writeValueAsString(recipe));
         }
-        catch (JsonProcessingException ex){
-            log.error(ex);
+        catch (Exception e) {
+            // Cache failures should not prevent the application from working
+            log.warn(e);
         }
     }
 
@@ -89,8 +92,9 @@ public class MomentoRecipeCacheImpl implements RecipeCache {
                 return Optional.of(recipe);
             }
         }
-        catch (JsonProcessingException e) {
-            log.error(e);
+        catch (Exception e) {
+            // Cache failures should not prevent the application from working
+            log.warn(e);
         }
 
         return Optional.empty();

@@ -85,7 +85,7 @@ public class RecipeJavaInfraStack extends Stack {
 
         HashMap<String, String> envVariables = new HashMap<>(1);
         envVariables.put("EVENT_BUS_NAME", bus.getEventBusName());
-        envVariables.put("CACHE_NAME", "plant-based-pizza-recipes");
+        envVariables.put("CACHE_NAME", "plantbasedpizza.recipes");
 
         HashMap<String, Secret> secretVariables = new HashMap<>(1);
 
