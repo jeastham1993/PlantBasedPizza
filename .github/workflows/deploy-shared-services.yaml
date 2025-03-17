@@ -1,23 +1,47 @@
 name: Deploy Shared Services
 
 on:
-    push:
-      branches:
-        - main
-      paths:
-        - shared-infrastructure/*
-    workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - shared-infrastructure/*
+  workflow_dispatch:
 
 permissions:
   id-token: write
   contents: read
-
 jobs:
   deploy-to-dev:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/cdk-deploy-base.yaml@main
-    with:
-      cdk-folder: "shared-infrastructure"
-      environment: "dev"
-    secrets:
-      deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
-      dd-api-key: ${{secrets.DD_API_KEY}}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: eu-west-1
+          role-to-assume: ${{secrets.DEPLOYMENT_ROLE_NAME}}
+          role-session-name: GitHubActionsSession
+      - name: Set Commit Hash Environment Variables
+        shell: bash
+        run: |
+          echo "sha_short=$(git rev-parse --short "$GITHUB_SHA")" >> "$GITHUB_ENV"
+      - name: Install cdk
+        shell: bash
+        run: |
+          npm install -g aws-cdk
+      - name: Deploy
+        shell: bash
+        env:
+          COMMIT_HASH: ${{ env.sha_short }}
+          ENV: "dev"
+          DD_API_KEY: ${{secrets.DD_API_KEY}}
+          DNS_NAME: ${{secrets.DNS_NAME}}
+          API_DNS_NAME: ${{secrets.API_DNS_NAME}}
+          CERT_ARN: ${{secrets.CERT_ARN}}
+          HOSTED_ZONE_ID: ${{secrets.HOSTED_ZONE_ID}}
+          NAT_INSTANCE_ID: ${{secrets.NAT_INSTANCE_ID}}
+        run: |
+          cd shared-infrastructure
+          cdk deploy --region eu-west-1 --require-approval never

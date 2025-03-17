@@ -16,11 +16,10 @@ export class Network extends Construct {
   vpc: IVpc;
   noInboundAllOutboundSecurityGroup: SecurityGroup;
 
-  constructor(scope: Construct, id: string) {
+  constructor(scope: Construct, id: string, natInstanceId: string) {
     super(scope, id);
-
     this.vpc = new Vpc(this, "PlantBasedPizzaNetwork", {
-      natGateways: 2,
+      natGateways: 0,
       vpcName: "PlantBasedPizza",
       subnetConfiguration: [
         {
@@ -42,6 +41,16 @@ export class Network extends Construct {
     this.vpc.addGatewayEndpoint("s3Endpoint", {
       service: GatewayVpcEndpointAwsService.S3,
     });
+
+    this.vpc.privateSubnets.forEach(
+      ({ routeTable: { routeTableId } }, index) => {
+        new CfnRoute(this, "PrivateSubnetOutboundToNatInstance" + index, {
+          destinationCidrBlock: "0.0.0.0/0",
+          routeTableId,
+          instanceId: natInstanceId,
+        });
+      }
+    );
 
     this.noInboundAllOutboundSecurityGroup = new SecurityGroup(
       this,
@@ -68,9 +77,13 @@ export class Network extends Construct {
       parameterName: "/shared/vpc-id",
     });
 
-    const vpcLinkSgParameter = new StringParameter(this, "VPCLinkSecurityGroupParameter", {
-      stringValue: this.noInboundAllOutboundSecurityGroup.securityGroupId,
-      parameterName: "/shared/vpc-link-sg-id",
-    });
+    const vpcLinkSgParameter = new StringParameter(
+      this,
+      "VPCLinkSecurityGroupParameter",
+      {
+        stringValue: this.noInboundAllOutboundSecurityGroup.securityGroupId,
+        parameterName: "/shared/vpc-link-sg-id",
+      }
+    );
   }
 }
