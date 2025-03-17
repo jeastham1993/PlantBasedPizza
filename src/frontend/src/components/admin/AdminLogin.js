@@ -24,7 +24,7 @@ function AdminLogin() {
     event.preventDefault();
     try {
       const response = await axios.post(
-        "https://app.dev.plantbasedpizza.net/account/login",
+        "https://api.dev.plantbasedpizza.net/account/login",
         { emailAddress, password }
       );
       const token = response.data.authToken;

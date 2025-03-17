@@ -2,21 +2,21 @@
 import axios from 'axios';
 
 export const recipeApi = axios.create({
-  baseURL: 'https://app.dev.plantbasedpizza.net/recipes',
+  baseURL: 'https://api.dev.plantbasedpizza.net/recipes',
 });
 
 export const ordersApi = axios.create({
-    baseURL: 'https://app.dev.plantbasedpizza.net/order',
+    baseURL: 'https://api.dev.plantbasedpizza.net/order',
     //baseURL: 'http://localhost:5004/order',
   });
 
   export const ordersAdminApi = axios.create({
-      baseURL: 'https://app.dev.plantbasedpizza.net/order',
+      baseURL: 'https://api.dev.plantbasedpizza.net/order',
       //baseURL: 'http://localhost:5004/order',
     });
 
   export const kitchenApi = axios.create({
-    baseURL: 'https://app.dev.plantbasedpizza.net/kitchen',
+    baseURL: 'https://api.dev.plantbasedpizza.net/kitchen',
     //baseURL: 'http://localhost:5004/order',
   });
 

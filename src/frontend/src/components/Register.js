@@ -24,7 +24,7 @@ function Register() {
     event.preventDefault();
     try {
       const response = await axios.post(
-        "https://app.dev.plantbasedpizza.net/account/register",
+        "https://api.dev.plantbasedpizza.net/account/register",
         { emailAddress, password }
       );
       navigate("/login"); // Navigate to the home page after successful register
