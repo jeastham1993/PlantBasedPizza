@@ -86,7 +86,7 @@ resource "azurerm_container_app" "recipes-functions-aca" {
     max_replicas = 1
     container {
       name   = "application"
-      image  = "plantpowerjames/plantpowerjames/plant-based-pizza-recipe-functions:${var.app_version}"
+      image  = "plantpowerjames/plant-based-pizza-recipe-functions:${var.app_version}"
       cpu    = 0.25
       memory = "0.5Gi"
       env {
