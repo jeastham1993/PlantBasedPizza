@@ -26,6 +26,13 @@ resource "azurerm_linux_function_app" "function_app" {
 
   site_config {}
   app_settings = {
+    "FUNCTIONS_EXTENSION_VERSION" : "~4"
+    "FUNCTIONS_WORKER_RUNTIME" : "DOTNET-ISOLATED"
+    "SCM_DO_BUILD_DURING_DEPLOYMENT" : 0,
+    "AzureWebJobsStorage": azurerm_storage_account.functions_storage_account.primary_connection_string
+    "AzureWebJobsDashboard": azurerm_storage_account.functions_storage_account.primary_connection_string
+    "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": azurerm_storage_account.functions_storage_account.primary_connection_string
+
     "DatabaseConnection"                  = var.db_connection_string
     "Environment"                         = var.env
     "DOMAIN"                              = "recipes"

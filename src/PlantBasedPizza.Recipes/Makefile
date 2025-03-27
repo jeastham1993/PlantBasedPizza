@@ -1,14 +1,18 @@
 build:
 	docker build -f applications/PlantBasedPizza.Recipes.Api/Dockerfile-x86 -t recipe-api ../
+	docker build -f applications/PlantBasedPizza.Recipes.Functions/Dockerfile-x86 -t recipe-functions ../
 
 build-arm:
 	docker build -f applications/PlantBasedPizza.Recipes.Api/Dockerfile -t recipe-api ../
+	docker build -f applications/PlantBasedPizza.Recipes.Functions/Dockerfile -t recipe-functions ../
 
 tag-images:
 	docker tag recipe-api plantpowerjames/plant-based-pizza-recipe-api:${IMAGE_TAG}
+	docker tag recipe-functions plantpowerjames/plant-based-pizza-recipe-functions:${IMAGE_TAG}
 
 push:
 	docker push plantpowerjames/plant-based-pizza-recipe-api:${IMAGE_TAG}
+	docker push plantpowerjames/plant-based-pizza-recipe-functions:${IMAGE_TAG}
 
 unit-test:
 	dotnet test tests/PlantBasedPizza.Recipes.UnitTests
