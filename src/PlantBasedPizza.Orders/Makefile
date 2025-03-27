@@ -8,7 +8,7 @@ build-internal:
 	docker build -f application/PlantBasedPizza.Orders.Internal/Dockerfile-x86 -t order-internal ../
 
 build-arm: build-api-arm build-worker-arm build-internal-arm
-	
+
 build-worker-arm:
 	docker build -f application/PlantBasedPizza.Orders.Worker/Dockerfile -t order-worker ../
 build-api-arm:

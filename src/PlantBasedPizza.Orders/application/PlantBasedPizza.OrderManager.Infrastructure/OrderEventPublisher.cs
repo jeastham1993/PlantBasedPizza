@@ -1,5 +1,7 @@
 using System.Diagnostics;
+using System.Text.Json;
 using Dapr.Client;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using PlantBasedPizza.Events;
 using PlantBasedPizza.OrderManager.Core;
@@ -9,11 +11,16 @@ using Saunter.Attributes;
 namespace PlantBasedPizza.OrderManager.Infrastructure;
 
 [AsyncApi]
-public class OrderEventPublisher(DaprClient daprClient, IConfiguration configuration) : IOrderEventPublisher
+public class OrderEventPublisher(
+    DaprClient daprClient,
+    IConfiguration configuration,
+    IOrderRepository repository,
+    IDistributedCache cache) : IOrderEventPublisher
 {
-    private const string SOURCE = "orders";
-    private const string PUB_SUB_NAME = "public";
-    private const string DATE_FORMAT = "yyyy-MM-ddTHH:mm:ssZ";
+    private const string Source = "orders";
+    private const string PubSubName = "public";
+    private const string DateFormat = "yyyy-MM-ddTHH:mm:ssZ";
+    private readonly string _clientId = configuration["ApplicationConfig:ApplicationName"] ?? "";
 
     [Channel("order.orderSubmitted.v1")]
     [SubscribeOperation(typeof(OrderSubmittedEventV1), OperationId = nameof(OrderSubmittedEventV1),
@@ -28,19 +35,19 @@ public class OrderEventPublisher(DaprClient daprClient, IConfiguration configura
             eventType,
             eventId,
             "dapr",
-            "public",
-            configuration["ApplicationConfig:ApplicationName"] ?? "",
+            PubSubName,
+            configuration[_clientId] ?? "",
             evt.OrderIdentifier
         ));
 
         var eventMetadata = new Dictionary<string, string>(3)
         {
-            { EventConstants.EVENT_SOURCE_HEADER_KEY, SOURCE },
+            { EventConstants.EVENT_SOURCE_HEADER_KEY, Source },
             { EventConstants.EVENT_TYPE_HEADER_KEY, eventType },
             { EventConstants.EVENT_ID_HEADER_KEY, eventId },
-            { EventConstants.EVENT_TIME_HEADER_KEY, DateTime.UtcNow.ToString(DATE_FORMAT) }
+            { EventConstants.EVENT_TIME_HEADER_KEY, DateTime.UtcNow.ToString(DateFormat) }
         };
-        await daprClient.PublishEventAsync(PUB_SUB_NAME, eventType, evt, eventMetadata);
+        await daprClient.PublishEventAsync(PubSubName, eventType, evt, eventMetadata);
     }
 
     [Channel("order.orderCompleted.v1")]
@@ -57,19 +64,20 @@ public class OrderEventPublisher(DaprClient daprClient, IConfiguration configura
             eventType,
             eventId,
             "dapr",
-            "public",
-            configuration["ApplicationConfig:ApplicationName"] ?? "",
+            PubSubName,
+            configuration[_clientId] ?? "",
             evt.OrderIdentifier
         ));
 
         var eventMetadata = new Dictionary<string, string>(3)
         {
-            { EventConstants.EVENT_SOURCE_HEADER_KEY, SOURCE },
+            { EventConstants.EVENT_SOURCE_HEADER_KEY, Source },
             { EventConstants.EVENT_TYPE_HEADER_KEY, eventType },
             { EventConstants.EVENT_ID_HEADER_KEY, eventId },
-            { EventConstants.EVENT_TIME_HEADER_KEY, DateTime.UtcNow.ToString(DATE_FORMAT) }
+            { EventConstants.EVENT_TIME_HEADER_KEY, DateTime.UtcNow.ToString(DateFormat) }
         };
-        await daprClient.PublishEventAsync(PUB_SUB_NAME, eventType, evt, eventMetadata);
+        await CacheOrder(evt.OrderIdentifier);
+        await daprClient.PublishEventAsync(PubSubName, eventType, evt, eventMetadata);
     }
 
     [Channel("order.orderCompleted.v2")]
@@ -85,19 +93,20 @@ public class OrderEventPublisher(DaprClient daprClient, IConfiguration configura
             eventType,
             eventId,
             "dapr",
-            "public",
-            configuration["ApplicationConfig:ApplicationName"] ?? "",
+            PubSubName,
+            configuration[_clientId] ?? "",
             evt.OrderIdentifier
         ));
 
         var eventMetadata = new Dictionary<string, string>(3)
         {
-            { EventConstants.EVENT_SOURCE_HEADER_KEY, SOURCE },
+            { EventConstants.EVENT_SOURCE_HEADER_KEY, Source },
             { EventConstants.EVENT_TYPE_HEADER_KEY, eventType },
             { EventConstants.EVENT_ID_HEADER_KEY, eventId },
-            { EventConstants.EVENT_TIME_HEADER_KEY, DateTime.UtcNow.ToString(DATE_FORMAT) }
+            { EventConstants.EVENT_TIME_HEADER_KEY, DateTime.UtcNow.ToString(DateFormat) }
         };
-        await daprClient.PublishEventAsync(PUB_SUB_NAME, eventType, evt, eventMetadata);
+        await CacheOrder(evt.OrderIdentifier);
+        await daprClient.PublishEventAsync(PubSubName, eventType, evt, eventMetadata);
     }
 
     [Channel("order.readyForDelivery.v1")]
@@ -114,19 +123,20 @@ public class OrderEventPublisher(DaprClient daprClient, IConfiguration configura
             eventType,
             eventId,
             "dapr",
-            "public",
-            configuration["ApplicationConfig:ApplicationName"] ?? "",
+            PubSubName,
+            configuration[_clientId] ?? "",
             evt.OrderIdentifier
         ));
 
         var eventMetadata = new Dictionary<string, string>(3)
         {
-            { EventConstants.EVENT_SOURCE_HEADER_KEY, SOURCE },
+            { EventConstants.EVENT_SOURCE_HEADER_KEY, Source },
             { EventConstants.EVENT_TYPE_HEADER_KEY, eventType },
             { EventConstants.EVENT_ID_HEADER_KEY, eventId },
-            { EventConstants.EVENT_TIME_HEADER_KEY, DateTime.UtcNow.ToString(DATE_FORMAT) }
+            { EventConstants.EVENT_TIME_HEADER_KEY, DateTime.UtcNow.ToString(DateFormat) }
         };
-        await daprClient.PublishEventAsync(PUB_SUB_NAME, eventType, evt, eventMetadata);
+        await CacheOrder(evt.OrderIdentifier);
+        await daprClient.PublishEventAsync(PubSubName, eventType, evt, eventMetadata);
     }
 
     [Channel("order.orderConfirmed.v1")]
@@ -142,19 +152,20 @@ public class OrderEventPublisher(DaprClient daprClient, IConfiguration configura
             eventType,
             eventId,
             "dapr",
-            "public",
-            configuration["ApplicationConfig:ApplicationName"] ?? "",
+            PubSubName,
+            configuration[_clientId] ?? "",
             evt.OrderIdentifier
         ));
 
         var eventMetadata = new Dictionary<string, string>(3)
         {
-            { EventConstants.EVENT_SOURCE_HEADER_KEY, SOURCE },
+            { EventConstants.EVENT_SOURCE_HEADER_KEY, Source },
             { EventConstants.EVENT_TYPE_HEADER_KEY, eventType },
             { EventConstants.EVENT_ID_HEADER_KEY, eventId },
-            { EventConstants.EVENT_TIME_HEADER_KEY, DateTime.UtcNow.ToString(DATE_FORMAT) }
+            { EventConstants.EVENT_TIME_HEADER_KEY, DateTime.UtcNow.ToString(DateFormat) }
         };
-        await daprClient.PublishEventAsync(PUB_SUB_NAME, eventType, evt, eventMetadata);
+        await CacheOrder(evt.OrderIdentifier);
+        await daprClient.PublishEventAsync(PubSubName, eventType, evt, eventMetadata);
     }
 
     [Channel("order.orderCreated.v1")]
@@ -170,19 +181,20 @@ public class OrderEventPublisher(DaprClient daprClient, IConfiguration configura
             eventType,
             eventId,
             "dapr",
-            "public",
-            configuration["ApplicationConfig:ApplicationName"] ?? "",
+            PubSubName,
+            configuration[_clientId] ?? "",
             evt.OrderIdentifier
         ));
 
         var eventMetadata = new Dictionary<string, string>(3)
         {
-            { EventConstants.EVENT_SOURCE_HEADER_KEY, SOURCE },
+            { EventConstants.EVENT_SOURCE_HEADER_KEY, Source },
             { EventConstants.EVENT_TYPE_HEADER_KEY, eventType },
             { EventConstants.EVENT_ID_HEADER_KEY, eventId },
-            { EventConstants.EVENT_TIME_HEADER_KEY, DateTime.UtcNow.ToString(DATE_FORMAT) }
+            { EventConstants.EVENT_TIME_HEADER_KEY, DateTime.UtcNow.ToString(DateFormat) }
         };
-        await daprClient.PublishEventAsync(PUB_SUB_NAME, eventType, evt, eventMetadata);
+        await CacheOrder(evt.OrderIdentifier);
+        await daprClient.PublishEventAsync(PubSubName, eventType, evt, eventMetadata);
     }
 
     [Channel("order.orderCancelled.v1")]
@@ -198,19 +210,20 @@ public class OrderEventPublisher(DaprClient daprClient, IConfiguration configura
             eventType,
             eventId,
             "dapr",
-            "public",
-            configuration["ApplicationConfig:ApplicationName"] ?? "",
+            PubSubName,
+            configuration[_clientId] ?? "",
             evt.OrderIdentifier
         ));
 
         var eventMetadata = new Dictionary<string, string>(3)
         {
-            { EventConstants.EVENT_SOURCE_HEADER_KEY, SOURCE },
+            { EventConstants.EVENT_SOURCE_HEADER_KEY, Source },
             { EventConstants.EVENT_TYPE_HEADER_KEY, eventType },
             { EventConstants.EVENT_ID_HEADER_KEY, eventId },
-            { EventConstants.EVENT_TIME_HEADER_KEY, DateTime.UtcNow.ToString(DATE_FORMAT) }
+            { EventConstants.EVENT_TIME_HEADER_KEY, DateTime.UtcNow.ToString(DateFormat) }
         };
-        await daprClient.PublishEventAsync(PUB_SUB_NAME, eventType, evt, eventMetadata);
+        await CacheOrder(evt.OrderIdentifier);
+        await daprClient.PublishEventAsync(PubSubName, eventType, evt, eventMetadata);
     }
 
     public async Task PublishOrderCreatedEventV2(OrderCreatedEventV2 evt)
@@ -223,18 +236,26 @@ public class OrderEventPublisher(DaprClient daprClient, IConfiguration configura
             eventType,
             eventId,
             "dapr",
-            "public",
-            configuration["ApplicationConfig:ApplicationName"] ?? "",
+            PubSubName,
+            configuration[_clientId] ?? "",
             evt.OrderId
         ));
 
         var eventMetadata = new Dictionary<string, string>(3)
         {
-            { EventConstants.EVENT_SOURCE_HEADER_KEY, SOURCE },
+            { EventConstants.EVENT_SOURCE_HEADER_KEY, Source },
             { EventConstants.EVENT_TYPE_HEADER_KEY, eventType },
             { EventConstants.EVENT_ID_HEADER_KEY, eventId },
-            { EventConstants.EVENT_TIME_HEADER_KEY, DateTime.UtcNow.ToString(DATE_FORMAT) }
+            { EventConstants.EVENT_TIME_HEADER_KEY, DateTime.UtcNow.ToString(DateFormat) }
         };
-        await daprClient.PublishEventAsync(PUB_SUB_NAME, eventType, evt, eventMetadata);
+        await CacheOrder(evt.OrderId);
+        await daprClient.PublishEventAsync(PubSubName, eventType, evt, eventMetadata);
+    }
+
+    private async Task CacheOrder(string orderIdentifier)
+    {
+        var order = await repository.Retrieve(orderIdentifier);
+
+        await cache.SetStringAsync(order.OrderIdentifier, JsonSerializer.Serialize(new OrderDto(order)));
     }
 }

@@ -59,7 +59,7 @@ builder.Services.AddHttpClient()
     .AddCheck<LoyaltyServiceHealthChecks>("LoyaltyService")
     .AddCheck<RecipeServiceHealthCheck>("RecipeService")
     .AddCheck<DeadLetterQueueChecks>("DeadLetterQueue")
-    .AddMongoDb(builder.Configuration["DatabaseConnection"]);
+    .AddMongoDb();
 
 var app = builder.Build();
 

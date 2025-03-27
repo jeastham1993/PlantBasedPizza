@@ -41,7 +41,7 @@ var serviceName = "LoyaltyApi";
 builder.Services
     .AddLoyaltyServices(builder.Configuration, serviceName)
     .AddHealthChecks()
-    .AddMongoDb(builder.Configuration["DatabaseConnection"]);
+    .AddMongoDb();
 
 var app = builder.Build();
 
