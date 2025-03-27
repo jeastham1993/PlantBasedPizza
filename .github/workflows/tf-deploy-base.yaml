@@ -67,7 +67,7 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       - name: Terraform Init
         id: init
-        run: terraform init -backend-config="key=${{inputs.tf-state-backend-key}}" -backend-config="use_oidc=true"
+        run: terraform init -backend-config="key=${{inputs.tf-state-backend-key}}" -backend-config="use_oidc=true" -upgrade
       - name: Declare some variables
         shell: bash
         run: |
