@@ -22,16 +22,20 @@ resource "azurerm_linux_function_app" "function_app" {
   storage_account_name       = azurerm_storage_account.functions_storage_account.name
   storage_account_access_key = azurerm_storage_account.functions_storage_account.primary_access_key
   service_plan_id            = azurerm_service_plan.functions_app_service_plan.id
+  https_only                 = true
 
-
-  site_config {}
+  site_config {
+    application_stack {
+      use_dotnet_isolated_runtime = true
+    }
+  }
   app_settings = {
     "FUNCTIONS_EXTENSION_VERSION" : "~4"
     "FUNCTIONS_WORKER_RUNTIME" : "DOTNET-ISOLATED"
     "SCM_DO_BUILD_DURING_DEPLOYMENT" : 0,
-    "AzureWebJobsStorage": azurerm_storage_account.functions_storage_account.primary_connection_string
-    "AzureWebJobsDashboard": azurerm_storage_account.functions_storage_account.primary_connection_string
-    "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING": azurerm_storage_account.functions_storage_account.primary_connection_string
+    "AzureWebJobsStorage" : azurerm_storage_account.functions_storage_account.primary_connection_string
+    "AzureWebJobsDashboard" : azurerm_storage_account.functions_storage_account.primary_connection_string
+    "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING" : azurerm_storage_account.functions_storage_account.primary_connection_string
 
     "DatabaseConnection"                  = var.db_connection_string
     "Environment"                         = var.env
