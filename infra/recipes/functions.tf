@@ -26,21 +26,22 @@ resource "azurerm_linux_function_app" "function_app" {
 
   site_config {}
   app_settings = {
-    "DatabaseConnection"                 = var.db_connection_string
-    "Environment"                        = var.env
-    "DOMAIN"                             = "recipes"
-    "ApplicationConfig__TeamName"        = "recipes"
-    "ApplicationConfig__ApplicationName" = "recipes-api"
-    "ApplicationConfig__Environment"     = var.env
-    "ApplicationConfig__Version"         = var.app_version
-    "ApplicationConfig__DeployedAt"      = var.app_version
-    "ApplicationConfig__MemoryMb"        = "500"
-    "ApplicationConfig__CpuCount"        = "0.25"
-    "ApplicationConfig__CloudRegion"     = "europe-west2"
-    "Auth__Issuer"                       = "https://plantbasedpizza.com"
-    "Auth__Audience"                     = "https://plantbasedpizza.com"
-    "Auth__Key"                          = "This is a sample secret key - please don't use in production environment."
-    "MOMENTO_API_KEY"                    = var.momento_api_key
-    "CACHE_NAME"                         = var.cache_name
+    "DatabaseConnection"                  = var.db_connection_string
+    "Environment"                         = var.env
+    "DOMAIN"                              = "recipes"
+    "ApplicationConfig__TeamName"         = "recipes"
+    "ApplicationConfig__ApplicationName"  = "recipes-api"
+    "ApplicationConfig__Environment"      = var.env
+    "ApplicationConfig__Version"          = var.app_version
+    "ApplicationConfig__DeployedAt"       = var.app_version
+    "ApplicationConfig__MemoryMb"         = "500"
+    "ApplicationConfig__CpuCount"         = "0.25"
+    "ApplicationConfig__CloudRegion"      = "europe-west2"
+    "Auth__Issuer"                        = "https://plantbasedpizza.com"
+    "Auth__Audience"                      = "https://plantbasedpizza.com"
+    "Auth__Key"                           = "This is a sample secret key - please don't use in production environment."
+    "MOMENTO_API_KEY"                     = var.momento_api_key
+    "CACHE_NAME"                          = var.cache_name
+    "AZURE_SERVICE_BUS_CONNECTION_STRING" = data.azurerm_servicebus_namespace.example.default_primary_connection_string
   }
 }
