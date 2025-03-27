@@ -1,12 +1,11 @@
 using System.Text.Json.Serialization;
 
-namespace PlantBasedPizza.Recipes.Core.Commands
+namespace PlantBasedPizza.Recipes.Core.CreateRecipe
 {
     public record CreateRecipeCommand
     {
         [JsonPropertyName("recipeIdentifier")]
         public string RecipeIdentifier { get; init; } = "";
-        
         
         [JsonPropertyName("category")]
         public string Category { get; init; } = "";

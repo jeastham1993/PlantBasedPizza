@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace PlantBasedPizza.Recipes.Core.Entities;
+namespace PlantBasedPizza.Recipes.Core;
 
 public enum RecipeCategory
 {

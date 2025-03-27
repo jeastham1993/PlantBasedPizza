@@ -1,0 +1,80 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "applications", "applications", "{69C19294-AD53-47F5-8EBA-DD7E8FC95874}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Recipes.Api", "applications\PlantBasedPizza.Recipes.Api\PlantBasedPizza.Recipes.Api.csproj", "{E377FBA1-74CF-4137-AF4F-8BE1CDD5697C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Recipes.Core", "applications\PlantBasedPizza.Recipes.Core\PlantBasedPizza.Recipes.Core.csproj", "{FD86046C-6924-40B1-80C0-D44E7364F6B2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Recipes.Infrastructure", "applications\PlantBasedPizza.Recipes.Infrastructure\PlantBasedPizza.Recipes.Infrastructure.csproj", "{80A0C575-0BF7-4325-88AB-1D044EBD343E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{EDFB4F19-CC76-4D9F-A937-D594F0C55138}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Recipes.IntegrationTests", "tests\PlantBasedPizza.Recipes.IntegrationTests\PlantBasedPizza.Recipes.IntegrationTests.csproj", "{574AD4B8-E06E-4E22-BCFA-29CE25BE4479}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Recipes.UnitTests", "tests\PlantBasedPizza.Recipes.UnitTests\PlantBasedPizza.Recipes.UnitTests.csproj", "{CD6427AA-7DD4-4B5C-B903-20D64314601C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "shared", "shared", "{698AA4BD-E7AC-4C90-88BA-1C8110637E9E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Shared", "..\shared\PlantBasedPizza.Shared\PlantBasedPizza.Shared.csproj", "{A242E13A-2FA2-4695-A800-146B52324111}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Events", "..\shared\PlantBasedPizza.Events\PlantBasedPizza.Events.csproj", "{316F5D05-FB20-4A0D-9522-E3BD20DD13C8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Recipes.Functions", "applications\PlantBasedPizza.Recipes.Functions\PlantBasedPizza.Recipes.Functions.csproj", "{895FAFB0-69F8-4EDC-9228-D42A6CBAB520}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E377FBA1-74CF-4137-AF4F-8BE1CDD5697C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E377FBA1-74CF-4137-AF4F-8BE1CDD5697C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E377FBA1-74CF-4137-AF4F-8BE1CDD5697C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E377FBA1-74CF-4137-AF4F-8BE1CDD5697C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD86046C-6924-40B1-80C0-D44E7364F6B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD86046C-6924-40B1-80C0-D44E7364F6B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD86046C-6924-40B1-80C0-D44E7364F6B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD86046C-6924-40B1-80C0-D44E7364F6B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{80A0C575-0BF7-4325-88AB-1D044EBD343E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{80A0C575-0BF7-4325-88AB-1D044EBD343E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{80A0C575-0BF7-4325-88AB-1D044EBD343E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{80A0C575-0BF7-4325-88AB-1D044EBD343E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{574AD4B8-E06E-4E22-BCFA-29CE25BE4479}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{574AD4B8-E06E-4E22-BCFA-29CE25BE4479}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{574AD4B8-E06E-4E22-BCFA-29CE25BE4479}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{574AD4B8-E06E-4E22-BCFA-29CE25BE4479}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD6427AA-7DD4-4B5C-B903-20D64314601C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD6427AA-7DD4-4B5C-B903-20D64314601C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD6427AA-7DD4-4B5C-B903-20D64314601C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD6427AA-7DD4-4B5C-B903-20D64314601C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A242E13A-2FA2-4695-A800-146B52324111}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A242E13A-2FA2-4695-A800-146B52324111}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A242E13A-2FA2-4695-A800-146B52324111}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A242E13A-2FA2-4695-A800-146B52324111}.Release|Any CPU.Build.0 = Release|Any CPU
+		{316F5D05-FB20-4A0D-9522-E3BD20DD13C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{316F5D05-FB20-4A0D-9522-E3BD20DD13C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{316F5D05-FB20-4A0D-9522-E3BD20DD13C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{316F5D05-FB20-4A0D-9522-E3BD20DD13C8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{895FAFB0-69F8-4EDC-9228-D42A6CBAB520}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{895FAFB0-69F8-4EDC-9228-D42A6CBAB520}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{895FAFB0-69F8-4EDC-9228-D42A6CBAB520}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{895FAFB0-69F8-4EDC-9228-D42A6CBAB520}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{E377FBA1-74CF-4137-AF4F-8BE1CDD5697C} = {69C19294-AD53-47F5-8EBA-DD7E8FC95874}
+		{FD86046C-6924-40B1-80C0-D44E7364F6B2} = {69C19294-AD53-47F5-8EBA-DD7E8FC95874}
+		{80A0C575-0BF7-4325-88AB-1D044EBD343E} = {69C19294-AD53-47F5-8EBA-DD7E8FC95874}
+		{574AD4B8-E06E-4E22-BCFA-29CE25BE4479} = {EDFB4F19-CC76-4D9F-A937-D594F0C55138}
+		{CD6427AA-7DD4-4B5C-B903-20D64314601C} = {EDFB4F19-CC76-4D9F-A937-D594F0C55138}
+		{A242E13A-2FA2-4695-A800-146B52324111} = {698AA4BD-E7AC-4C90-88BA-1C8110637E9E}
+		{316F5D05-FB20-4A0D-9522-E3BD20DD13C8} = {698AA4BD-E7AC-4C90-88BA-1C8110637E9E}
+		{895FAFB0-69F8-4EDC-9228-D42A6CBAB520} = {69C19294-AD53-47F5-8EBA-DD7E8FC95874}
+	EndGlobalSection
+EndGlobal

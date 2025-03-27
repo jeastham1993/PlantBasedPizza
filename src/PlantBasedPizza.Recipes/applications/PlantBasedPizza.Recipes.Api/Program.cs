@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Tokens;
-using PlantBasedPizza.Recipes.Core.Entities;
+using PlantBasedPizza.Recipes.Core;
 using PlantBasedPizza.Recipes.Infrastructure;
 using PlantBasedPizza.Shared;
 using PlantBasedPizza.Shared.Logging;

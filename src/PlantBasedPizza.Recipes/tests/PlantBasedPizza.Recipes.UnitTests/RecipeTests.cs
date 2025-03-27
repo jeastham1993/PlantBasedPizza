@@ -1,5 +1,5 @@
 using FluentAssertions;
-using PlantBasedPizza.Recipes.Core.Entities;
+using PlantBasedPizza.Recipes.Core;
 
 namespace PlantBasedPizza.Recipes.UnitTests;
 
