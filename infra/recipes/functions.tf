@@ -14,17 +14,6 @@ resource "azurerm_service_plan" "functions_app_service_plan" {
   sku_name            = "Y1"
 }
 
-data "azurerm_servicebus_topic" "order_completed_topic" {
-  name         = "order.orderCompleted.v2"
-  namespace_id = data.azurerm_servicebus_namespace.public_service_bus.id
-}
-
-resource "azurerm_servicebus_subscription" "order_completed_topic_subscription" {
-  name               = "recipe-service"
-  topic_id           = data.azurerm_servicebus_topic.order_completed_topic.id
-  max_delivery_count = 1
-}
-
 resource "azurerm_linux_function_app" "function_app" {
   name                = "plantbasedpizza-recipes-function-app"
   resource_group_name = data.azurerm_resource_group.plant_based_pizza_rg.name
