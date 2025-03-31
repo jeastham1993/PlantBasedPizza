@@ -16,7 +16,7 @@ resource "azurerm_service_plan" "functions_app_service_plan" {
 
 data "azurerm_servicebus_topic" "order_completed_topic" {
   name         = "order.orderCompleted.v2"
-  namespace_id = var.public_service_bus_namespace
+  namespace_id = data.azurerm_servicebus_namespace.public_service_bus.id
 }
 
 resource "azurerm_servicebus_subscription" "order_completed_topic_subscription" {
