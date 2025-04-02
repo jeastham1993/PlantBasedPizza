@@ -27,7 +27,7 @@ resource "azurerm_linux_function_app" "function_app" {
   site_config {
     application_stack {
       use_dotnet_isolated_runtime = true
-      dotnet_version = "9.0"
+      dotnet_version              = "9.0"
     }
   }
   app_settings = {
@@ -38,6 +38,49 @@ resource "azurerm_linux_function_app" "function_app" {
     "AzureWebJobsDashboard" : azurerm_storage_account.functions_storage_account.primary_connection_string
     "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING" : azurerm_storage_account.functions_storage_account.primary_connection_string
 
+    "DatabaseConnection"                  = var.db_connection_string
+    "Environment"                         = var.env
+    "DOMAIN"                              = "recipes"
+    "ApplicationConfig__TeamName"         = "recipes"
+    "ApplicationConfig__ApplicationName"  = "recipes-api"
+    "ApplicationConfig__Environment"      = var.env
+    "ApplicationConfig__Version"          = var.app_version
+    "ApplicationConfig__DeployedAt"       = var.app_version
+    "ApplicationConfig__MemoryMb"         = "500"
+    "ApplicationConfig__CpuCount"         = "0.25"
+    "ApplicationConfig__CloudRegion"      = "europe-west2"
+    "Auth__Issuer"                        = "https://plantbasedpizza.com"
+    "Auth__Audience"                      = "https://plantbasedpizza.com"
+    "Auth__Key"                           = "This is a sample secret key - please don't use in production environment."
+    "MOMENTO_API_KEY"                     = var.momento_api_key
+    "CACHE_NAME"                          = var.cache_name
+    "AZURE_SERVICE_BUS_CONNECTION_STRING" = data.azurerm_servicebus_namespace.example.default_primary_connection_string
+  }
+}
+
+resource "azurerm_service_plan" "flex_consumption_plan" {
+  name                = "plantbasedpizza-recipes-flex-consumption-plan"
+  resource_group_name = data.azurerm_resource_group.plant_based_pizza_rg.name
+  location            = data.azurerm_resource_group.plant_based_pizza_rg.location
+  sku_name            = "FC1"
+  os_type             = "Linux"
+}
+
+resource "azurerm_function_app_flex_consumption" "example" {
+  name                = "plantbasedpizza-recipes-function-flex"
+  resource_group_name = data.azurerm_resource_group.plant_based_pizza_rg.name
+  location            = data.azurerm_resource_group.plant_based_pizza_rg.location
+  service_plan_id     = azurerm_service_plan.flex_consumption_plan.id
+
+  storage_container_type      = "blobContainer"
+  storage_container_endpoint  = "${azurerm_storage_account.functions_storage_account.primary_blob_endpoint}${azurerm_storage_container.functions_storage_account.name}"
+  storage_authentication_type = "StorageAccountConnectionString"
+  storage_access_key          = azurerm_storage_account.functions_storage_account.primary_access_key
+  runtime_name                = "dotnet-isolated"
+  runtime_version             = "9.0"
+  maximum_instance_count      = 5
+  instance_memory_in_mb       = 2048
+  app_settings = {
     "DatabaseConnection"                  = var.db_connection_string
     "Environment"                         = var.env
     "DOMAIN"                              = "recipes"
