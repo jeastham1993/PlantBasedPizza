@@ -6,6 +6,12 @@ resource "azurerm_storage_account" "functions_storage_account" {
   account_replication_type = "LRS"
 }
 
+resource "azurerm_storage_container" "functions_storage_container" {
+  name                  = "recipes-flexcontainer"
+  storage_account_id    = azurerm_storage_account.functions_storage_account.id
+  container_access_type = "private"
+}
+
 resource "azurerm_service_plan" "functions_app_service_plan" {
   name                = "plantbasedpizza-recipes-app-service-plan"
   resource_group_name = data.azurerm_resource_group.plant_based_pizza_rg.name
@@ -73,7 +79,7 @@ resource "azurerm_function_app_flex_consumption" "example" {
   service_plan_id     = azurerm_service_plan.flex_consumption_plan.id
 
   storage_container_type      = "blobContainer"
-  storage_container_endpoint  = "${azurerm_storage_account.functions_storage_account.primary_blob_endpoint}${azurerm_storage_container.functions_storage_account.name}"
+  storage_container_endpoint  = "${azurerm_storage_account.functions_storage_account.primary_blob_endpoint}${azurerm_storage_container.functions_storage_container.name}"
   storage_authentication_type = "StorageAccountConnectionString"
   storage_access_key          = azurerm_storage_account.functions_storage_account.primary_access_key
   runtime_name                = "dotnet-isolated"
