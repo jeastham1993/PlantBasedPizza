@@ -84,7 +84,7 @@ resource "azurerm_function_app_flex_consumption" "recipes_function_flex" {
   storage_access_key          = azurerm_storage_account.functions_storage_account.primary_access_key
   runtime_name                = "dotnet-isolated"
   runtime_version             = "9.0"
-  maximum_instance_count      = 5
+  maximum_instance_count      = 40
   instance_memory_in_mb       = 2048
   site_config {}
   app_settings = {
