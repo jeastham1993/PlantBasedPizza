@@ -72,7 +72,7 @@ resource "azurerm_service_plan" "flex_consumption_plan" {
   os_type             = "Linux"
 }
 
-resource "azurerm_function_app_flex_consumption" "example" {
+resource "azurerm_function_app_flex_consumption" "recipes_function_flex" {
   name                = "plantbasedpizza-recipes-function-flex"
   resource_group_name = data.azurerm_resource_group.plant_based_pizza_rg.name
   location            = data.azurerm_resource_group.plant_based_pizza_rg.location
@@ -86,6 +86,12 @@ resource "azurerm_function_app_flex_consumption" "example" {
   runtime_version             = "9.0"
   maximum_instance_count      = 5
   instance_memory_in_mb       = 2048
+  site_config {
+    application_stack {
+      use_dotnet_isolated_runtime = true
+      dotnet_version              = "9.0"
+    }
+  }
   app_settings = {
     "DatabaseConnection"                  = var.db_connection_string
     "Environment"                         = var.env
