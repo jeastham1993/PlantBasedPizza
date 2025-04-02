@@ -86,12 +86,7 @@ resource "azurerm_function_app_flex_consumption" "recipes_function_flex" {
   runtime_version             = "9.0"
   maximum_instance_count      = 5
   instance_memory_in_mb       = 2048
-  site_config {
-    application_stack {
-      use_dotnet_isolated_runtime = true
-      dotnet_version              = "9.0"
-    }
-  }
+  site_config {}
   app_settings = {
     "DatabaseConnection"                  = var.db_connection_string
     "Environment"                         = var.env
