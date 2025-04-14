@@ -6,6 +6,7 @@ using MongoDB.Driver;
 using PlantBasedPizza.Recipes.Core;
 using PlantBasedPizza.Recipes.Core.CreateRecipe;
 using PlantBasedPizza.Recipes.Core.IntegrationEvents;
+using PlantBasedPizza.Recipes.Core.OrderCompletedHandler;
 
 namespace PlantBasedPizza.Recipes.Infrastructure;
 
@@ -38,6 +39,7 @@ public static class Setup
 
         services.AddSingleton<IRecipeRepository, RecipeRepository>();
         services.AddSingleton<CreateRecipeCommandHandler>();
+        services.AddSingleton<OrderCompletedHandler>();
 
         if (!string.IsNullOrEmpty(configuration["DAPR_PUB_SUB_NAME"]))
             services.AddSingleton<IEventPublisher, DaprEventPublisher>();

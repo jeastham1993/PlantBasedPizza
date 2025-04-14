@@ -39,6 +39,9 @@ public class Recipe
     [JsonPropertyName("name")]
     public string Name { get; private set; }
         
+    [JsonPropertyName("orderCount")]
+    public int OrderCount { get; private set; }
+        
     [JsonPropertyName("price")]
     public decimal Price { get; private set; }
 
@@ -53,5 +56,10 @@ public class Recipe
         }
             
         _ingredients.Add(new Ingredient(name, quantity));
+    }
+
+    public void RecipeOrdered()
+    {
+        OrderCount++;
     }
 }

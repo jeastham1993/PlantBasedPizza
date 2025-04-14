@@ -1,9 +1,11 @@
 using System.Text;
 using System.Text.Json;
+using Azure.Messaging.ServiceBus;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.IdentityModel.Tokens;
+using PlantBasedPizza.Recipes.Api;
 using PlantBasedPizza.Recipes.Core;
 using PlantBasedPizza.Recipes.Infrastructure;
 using PlantBasedPizza.Shared;
@@ -39,6 +41,13 @@ var applicationName = "RecipesApi";
 
 builder.Services.AddRecipeInfrastructure(builder.Configuration);
 builder.Services.AddSharedInfrastructure(builder.Configuration, applicationName);
+
+if (!string.IsNullOrEmpty(builder.Configuration.GetValue<string>("AZURE_SERVICE_BUS_QUEUE_NAME")))
+{
+    builder.Services.AddSingleton(provider => 
+        new ServiceBusClient(builder.Configuration["AZURE_SERVICE_BUS_CONNECTION_STRING"]));
+    builder.Services.AddHostedService<BackgroundWorker>();
+}
 
 builder.Services.AddHttpClient();
 builder.Services.AddHealthChecks()
