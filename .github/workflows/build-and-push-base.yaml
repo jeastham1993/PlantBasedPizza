@@ -1,4 +1,4 @@
-name: Build & Push Base Workflow
+name: Build & Push Base
 
 on:
   workflow_call:
