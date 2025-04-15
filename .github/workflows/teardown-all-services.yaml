@@ -99,3 +99,31 @@ jobs:
       DD_API_KEY: ${{secrets.ACA_DD_API_KEY}}
       DB_CONNECTION_STRING: ${{secrets.DB_CONNECTION_STRING}}
       MOMENTO_API_KEY: ${{secrets.MOMENTO_API_KEY}}
+  teardown-shared-services:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: "infra/environment"
+    needs: 
+      - teardown-loyalty
+      - teardown-payments
+      - teardown-orders
+      - teardown-delivery
+      - teardown-kitchen
+      - teardown-receipe
+    steps:
+    - name: Teardown Shared Services
+      id: apply
+      env:
+        AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        DD_API_KEY: ${{ secrets.DD_API_KEY }}
+        MOMENTO_API_KEY: ${{ secrets.MOMENTO_API_KEY }}
+        DB_CONNECTION_STRING: ${{ secrets.DB_CONNECTION_STRING }}
+      run: |
+        terraform destroy -var subscription_id="${AZURE_SUBSCRIPTION_ID}" \
+            -var env="dev" \
+            -var dd_api_key="${DD_API_KEY}" \
+            -var dd_site="datadoghq.eu" \
+            -var temporal_db_user_name=\"\" \
+            -var temporal_db_password=\"\" \
+            -auto-approve
