@@ -90,3 +90,21 @@ jobs:
               -var db_connection_string="${DB_CONNECTION_STRING}" \
               -var public_service_bus_namespace="${{inputs.public-service-bus-namespace}}" \
               ${{inputs.additional-arguments}}-auto-approve
+      - name: Terraform destroy
+        id: destroy
+        env:
+          AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          DD_API_KEY: ${{ secrets.DD_API_KEY }}
+          MOMENTO_API_KEY: ${{ secrets.MOMENTO_API_KEY }}
+          DB_CONNECTION_STRING: ${{ secrets.DB_CONNECTION_STRING }}
+        run: |
+          terraform destroy -var subscription_id="${AZURE_SUBSCRIPTION_ID}" \
+              -var resource_group_name="${{inputs.resource-group-name}}" \
+              -var env="${{inputs.env}}" \
+              -var app_version="${IMAGE_TAG}" \
+              -var dd_api_key="${DD_API_KEY}" \
+              -var dd_site="datadoghq.eu" \
+              -var momento_api_key="${MOMENTO_API_KEY}" \
+              -var db_connection_string="${DB_CONNECTION_STRING}" \
+              -var public_service_bus_namespace="${{inputs.public-service-bus-namespace}}" \
+              ${{inputs.additional-arguments}}-auto-approve
