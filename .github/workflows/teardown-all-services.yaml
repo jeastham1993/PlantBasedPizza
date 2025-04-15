@@ -38,3 +38,64 @@ jobs:
       DD_API_KEY: ${{secrets.ACA_DD_API_KEY}}
       DB_CONNECTION_STRING: ${{secrets.DB_CONNECTION_STRING}}
       MOMENTO_API_KEY: ${{secrets.MOMENTO_API_KEY}}
+  teardown-orders:
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/tf-teardown.yaml@azure
+    with:
+      infrastructure-root-folder: "./infra/orders"
+      tf-state-backend-key: orders.tfstate
+      resource-group-name: plant-based-pizza-dev
+      env: dev
+      public-service-bus-namespace: plant-based-pizza-pub-dev
+      additional-arguments: " -var temporal_server_endpoint=\"temporal.wonderfulforest-17ef98b4.westeurope.azurecontainerapps.io:443\" "
+    secrets:
+      AZURE_CLIENT_ID: ${{secrets.DEV_AZURE_CLIENT_ID}}
+      AZURE_TENANT_ID: ${{secrets.AZURE_TENANT_ID}}
+      AZURE_SUBSCRIPTION_ID: ${{secrets.AZURE_SUBSCRIPTION_ID}}
+      DD_API_KEY: ${{secrets.ACA_DD_API_KEY}}
+      DB_CONNECTION_STRING: ${{secrets.DB_CONNECTION_STRING}}
+      MOMENTO_API_KEY: ${{secrets.MOMENTO_API_KEY}}
+  teardown-delivery:
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/tf-teardown.yaml@azure
+    with:
+      infrastructure-root-folder: "./infra/delivery"
+      tf-state-backend-key: delivery.tfstate
+      resource-group-name: plant-based-pizza-dev
+      env: dev
+      public-service-bus-namespace: plant-based-pizza-pub-dev
+    secrets:
+      AZURE_CLIENT_ID: ${{secrets.DEV_AZURE_CLIENT_ID}}
+      AZURE_TENANT_ID: ${{secrets.AZURE_TENANT_ID}}
+      AZURE_SUBSCRIPTION_ID: ${{secrets.AZURE_SUBSCRIPTION_ID}}
+      DD_API_KEY: ${{secrets.ACA_DD_API_KEY}}
+      DB_CONNECTION_STRING: ${{secrets.DB_CONNECTION_STRING}}
+      MOMENTO_API_KEY: ${{secrets.MOMENTO_API_KEY}}
+  teardown-kitchen:
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/tf-teardown.yaml@azure
+    with:
+      infrastructure-root-folder: "./infra/kitchen"
+      tf-state-backend-key: kitchen.tfstate
+      resource-group-name: plant-based-pizza-dev
+      env: dev
+      public-service-bus-namespace: plant-based-pizza-pub-dev
+    secrets:
+      AZURE_CLIENT_ID: ${{secrets.DEV_AZURE_CLIENT_ID}}
+      AZURE_TENANT_ID: ${{secrets.AZURE_TENANT_ID}}
+      AZURE_SUBSCRIPTION_ID: ${{secrets.AZURE_SUBSCRIPTION_ID}}
+      DD_API_KEY: ${{secrets.ACA_DD_API_KEY}}
+      DB_CONNECTION_STRING: ${{secrets.DB_CONNECTION_STRING}}
+      MOMENTO_API_KEY: ${{secrets.MOMENTO_API_KEY}}
+  teardown-receipe:
+    uses: jeastham1993/PlantBasedPizza/.github/workflows/tf-teardown.yaml@azure
+    with:
+      infrastructure-root-folder: "./infra/recipes"
+      tf-state-backend-key: recipes.tfstate
+      resource-group-name: plant-based-pizza-dev
+      env: dev
+      public-service-bus-namespace: plant-based-pizza-pub-dev
+    secrets:
+      AZURE_CLIENT_ID: ${{secrets.DEV_AZURE_CLIENT_ID}}
+      AZURE_TENANT_ID: ${{secrets.AZURE_TENANT_ID}}
+      AZURE_SUBSCRIPTION_ID: ${{secrets.AZURE_SUBSCRIPTION_ID}}
+      DD_API_KEY: ${{secrets.ACA_DD_API_KEY}}
+      DB_CONNECTION_STRING: ${{secrets.DB_CONNECTION_STRING}}
+      MOMENTO_API_KEY: ${{secrets.MOMENTO_API_KEY}}
