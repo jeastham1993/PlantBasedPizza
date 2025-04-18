@@ -3,7 +3,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace PlantBasedPizza.Account.Api.Core;
+namespace PlantBasedPizza.Account.Core;
 
 public enum AccountType
 {
@@ -67,7 +67,7 @@ public class UserAccount
     }
     
     // Note: This hashing algorithm may not be suitable for production scenarios with real user data
-    internal static string HashPassword(string password)
+    public static string HashPassword(string password)
     {
         // Create a new instance of the SHA512 hash algorithm
         using SHA512 sha512Hash = SHA512.Create();

@@ -1,4 +1,4 @@
-namespace PlantBasedPizza.Account.Api.Core;
+namespace PlantBasedPizza.Account.Core;
 
 public interface IUserAccountRepository
 {

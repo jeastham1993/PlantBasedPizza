@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Options;
+using PlantBasedPizza.Account.Core;
 
 namespace PlantBasedPizza.Account.UnitTests;
 

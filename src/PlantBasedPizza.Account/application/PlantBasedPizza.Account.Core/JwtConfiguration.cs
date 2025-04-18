@@ -1,4 +1,4 @@
-namespace PlantBasedPizza.Account.Api;
+namespace PlantBasedPizza.Account.Core;
 
 public class JwtConfiguration
 {
