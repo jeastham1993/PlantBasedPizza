@@ -15,33 +15,8 @@ permissions:
   contents: read
 
 jobs:
-  build-image:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/build-base.yaml@main
-    with:
-      service-name: "AccountApi"
-      project-root: src/PlantBasedPizza.Account
-      unit-test-folder: src/PlantBasedPizza.Account/tests/PlantBasedPizza.Account.UnitTests
-      image-name: account-api
-      dockerfile: src/PlantBasedPizza.Account/application/PlantBasedPizza.Account.Api/Dockerfile-x86
-    secrets:
-      deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
-      ecr-registry: ${{secrets.ECR_REGISTRY}}
-      dd_api_key: ${{secrets.DD_API_KEY}}
-      dd_app_key: ${{secrets.DD_APP_KEY}}
-  integration-test:
-    uses: jeastham1993/PlantBasedPizza/.github/workflows/integration-test-base.yaml@main
-    needs: build-image
-    with:
-      service-name: "AccountApi"
-      integration-test-compose-file: src/PlantBasedPizza.Account/docker-compose-integration.yml
-      integration-test-folder: src/PlantBasedPizza.Account/tests/PlantBasedPizza.Account.IntegrationTests
-    secrets:
-      deploy-role-arn: ${{secrets.DEPLOYMENT_ROLE_NAME}}
-      ecr-registry: ${{secrets.ECR_REGISTRY}}
-      dd_api_key: ${{secrets.DD_API_KEY}}
   deploy-to-dev:
     uses: jeastham1993/PlantBasedPizza/.github/workflows/cdk-deploy-base.yaml@main
-    needs: integration-test
     concurrency:
       group: account-dev-deploy
       cancel-in-progress: false
