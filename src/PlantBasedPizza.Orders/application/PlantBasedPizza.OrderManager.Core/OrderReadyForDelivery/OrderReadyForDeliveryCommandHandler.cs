@@ -1,3 +1,4 @@
+using PlantBasedPizza.OrderManager.Core.PublicEvents;
 using PlantBasedPizza.OrderManager.Core.Services;
 
 namespace PlantBasedPizza.OrderManager.Core.OrderReadyForDelivery;

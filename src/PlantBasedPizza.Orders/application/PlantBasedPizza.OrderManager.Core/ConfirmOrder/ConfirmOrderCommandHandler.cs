@@ -1,3 +1,5 @@
+using PlantBasedPizza.OrderManager.Core.PublicEvents;
+
 namespace PlantBasedPizza.OrderManager.Core.ConfirmOrder;
 
 public class ConfirmOrderCommandHandler(IOrderRepository orderRepository)
@@ -12,7 +14,6 @@ public class ConfirmOrderCommandHandler(IOrderRepository orderRepository)
             order.Confirm(command.PaymentAmount);
 
             await orderRepository.Update(order);
-
             return new OrderDto(order);
         }
         catch (OrderNotFoundException)

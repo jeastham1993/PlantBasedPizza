@@ -1,11 +1,9 @@
-using Dapr.Client;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PlantBasedPizza.Recipes.Core;
 using PlantBasedPizza.Recipes.Core.CreateRecipe;
-using PlantBasedPizza.Recipes.Core.IntegrationEvents;
 
-namespace PlantBasedPizza.Recipes.Infrastructure.Controllers
+namespace PlantBasedPizza.Recipes.Api.Controllers
 {
     [Route("recipes")]
     public class RecipeController(
