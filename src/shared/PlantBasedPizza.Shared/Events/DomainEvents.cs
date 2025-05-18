@@ -36,14 +36,17 @@ namespace PlantBasedPizza.Shared.Events
                 Activity.Current?.SetTag("correlationId", evt.CorrelationId);
                 
                 var observability = Container.GetService<IObservabilityService>();
-                
-                observability?.Info($"[EVENT MANAGER] Raising event {evt.EventName}");
-
-                foreach (var handler in Container.GetServices<Handles<T>>())
+                var serviceScopeFactory = Container.GetService<IServiceScopeFactory>();
+                using (var serviceScope = serviceScopeFactory.CreateScope())
                 {
-                    observability?.Info($"[EVENT MANAGER] Handling event with handler {handler.GetType().Name}");
+                    observability?.Info($"[EVENT MANAGER] Raising event {evt.EventName}");
+
+                    foreach (var handler in serviceScope.ServiceProvider.GetServices<Handles<T>>())
+                    {
+                        observability?.Info($"[EVENT MANAGER] Handling event with handler {handler.GetType().Name}");
                     
-                    await handler.Handle(evt);
+                        await handler.Handle(evt);
+                    }   
                 }
             }
 

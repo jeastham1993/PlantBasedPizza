@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using FakeItEasy;
 using FluentAssertions;
 using PlantBasedPizza.LoyaltyPoints.Core;

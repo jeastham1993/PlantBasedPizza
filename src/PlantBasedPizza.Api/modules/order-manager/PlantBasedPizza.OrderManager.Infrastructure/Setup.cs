@@ -1,4 +1,4 @@
-using System.Collections.Immutable;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PlantBasedPizza.Events;
@@ -14,60 +14,35 @@ using PlantBasedPizza.Shared.Events;
 
 namespace PlantBasedPizza.OrderManager.Infrastructure
 {
-    using MongoDB.Bson.Serialization;
-
     public static class Setup
     {
         public static IServiceCollection AddOrderManagerInfrastructure(this IServiceCollection services,
-            IConfiguration configuration)
+            IConfiguration configuration, string? overrideConnectionString = null)
+
         {
-            BsonClassMap.RegisterClassMap<Order>(map =>
-            {
-                map.AutoMap();
-                map.MapField("_items");
-                map.MapField("_history");
-                map.SetIgnoreExtraElements(true);
-                map.SetIgnoreExtraElementsIsInherited(true);
-            });
-            
-            BsonClassMap.RegisterClassMap<OrderItem>(map =>
-            {
-                map.AutoMap();
-                map.SetIgnoreExtraElements(true);
-                map.SetIgnoreExtraElementsIsInherited(true);
-            });
-            
-            BsonClassMap.RegisterClassMap<OutboxItem>(map =>
-            {
-                map.AutoMap();
-                map.SetIgnoreExtraElements(true);
-                map.SetIgnoreExtraElementsIsInherited(true);
-            });
-            
-            BsonClassMap.RegisterClassMap<DeliveryDetails>(map =>
-            {
-                map.AutoMap();
-                map.SetIgnoreExtraElements(true);
-                map.SetIgnoreExtraElementsIsInherited(true);
-            });
-            
-            services.AddSingleton<OrderManagerDataTransferService>();
-            services.AddSingleton<IOrderRepository, OrderRepository>();
-            services.AddSingleton<CollectOrderCommandHandler>();
-            services.AddSingleton<AddItemToOrderHandler>();
-            services.AddSingleton<CreateDeliveryOrderCommandHandler>();
-            services.AddSingleton<CreatePickupOrderCommandHandler>();
-            services.AddSingleton<IRecipeService, RecipeService>();
-            services.AddSingleton<OrderEventPublisher, DaprEventPublisher>();
-            
-            services.AddSingleton<Handles<OrderPreparingEvent>, OrderPreparingEventHandler>();
-            services.AddSingleton<Handles<OrderPrepCompleteEvent>, OrderPrepCompleteEventHandler>();
-            services.AddSingleton<Handles<OrderBakedEvent>, OrderBakedEventHandler>();
-            services.AddSingleton<Handles<OrderQualityCheckedEvent>, OrderQualityCheckedEventHandler>();
-            services.AddSingleton<Handles<OrderDeliveredEvent>, DriverDeliveredOrderEventHandler>();
-            services.AddSingleton<Handles<DriverCollectedOrderEvent>, DriverCollectedOrderEventHandler>();
-            
-            services.AddDaprClient();    
+            // Register DbContext
+            services.AddDbContext<OrderManagerDbContext>(options =>
+                options.UseNpgsql(
+                    overrideConnectionString ?? configuration.GetConnectionString("OrderManagerPostgresConnection"),
+                    b => b.MigrationsAssembly("PlantBasedPizza.OrderManager.Infrastructure")));
+
+            services.AddTransient<OrderManagerDataTransferService>();
+            services.AddScoped<IOrderRepository, OrderRepositoryPostgres>();
+            services.AddTransient<CollectOrderCommandHandler>();
+            services.AddTransient<AddItemToOrderHandler>();
+            services.AddTransient<CreateDeliveryOrderCommandHandler>();
+            services.AddTransient<CreatePickupOrderCommandHandler>();
+            services.AddTransient<IRecipeService, RecipeService>();
+            services.AddTransient<OrderEventPublisher, DaprEventPublisher>();
+
+            services.AddTransient<Handles<OrderPreparingEvent>, OrderPreparingEventHandler>();
+            services.AddTransient<Handles<OrderPrepCompleteEvent>, OrderPrepCompleteEventHandler>();
+            services.AddTransient<Handles<OrderBakedEvent>, OrderBakedEventHandler>();
+            services.AddTransient<Handles<OrderQualityCheckedEvent>, OrderQualityCheckedEventHandler>();
+            services.AddTransient<Handles<OrderDeliveredEvent>, DriverDeliveredOrderEventHandler>();
+            services.AddTransient<Handles<DriverCollectedOrderEvent>, DriverCollectedOrderEventHandler>();
+
+            services.AddDaprClient();
 
             return services;
         }

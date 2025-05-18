@@ -1,0 +1,13 @@
+config:
+  target: "{{ $processEnvironment.API_URL }}"
+  http:
+    timeout : 60
+  phases:
+    - duration: 60
+      arrivalRate: 100
+
+scenarios:
+  - name: "List recipes"
+    flow:
+      - get:
+          url: "/recipes"

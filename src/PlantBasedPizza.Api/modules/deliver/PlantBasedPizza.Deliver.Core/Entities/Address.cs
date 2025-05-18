@@ -23,6 +23,9 @@ namespace PlantBasedPizza.Deliver.Core.Entities
             Postcode = postcode;
         }
 
+        [JsonPropertyName("addressId")]
+        public int AddressId { get; private set; }
+
         [JsonPropertyName("addressLine1")]
         public string AddressLine1 { get; private set; } = "";
         

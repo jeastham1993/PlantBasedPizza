@@ -1,6 +1,5 @@
 using PlantBasedPizza.Events;
 using PlantBasedPizza.OrderManager.Core.Entities;
-using PlantBasedPizza.OrderManager.Core.Services;
 using PlantBasedPizza.Shared.Events;
 using Saunter.Attributes;
 

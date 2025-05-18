@@ -1,9 +1,7 @@
-using System;
 using Serilog;
 using Serilog.Context;
 using Serilog.Core;
 using Serilog.Events;
-using Serilog.Formatting.Compact;
 using Serilog.Formatting.Json;
 
 namespace PlantBasedPizza.Shared.Logging

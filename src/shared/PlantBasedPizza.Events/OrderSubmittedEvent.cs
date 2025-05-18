@@ -10,7 +10,7 @@ namespace PlantBasedPizza.Events
         public OrderSubmittedEvent(string orderIdentifier)
         {
             this._eventId = Guid.NewGuid().ToString();
-            this.EventDate = DateTime.Now;
+            this.EventDate = DateTime.Now.ToUniversalTime();
             this.OrderIdentifier = orderIdentifier;
             this.CorrelationId = CorrelationContext.GetCorrelationId();
         }

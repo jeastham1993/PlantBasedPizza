@@ -1,6 +1,4 @@
-using System;
 using System.Text.Json.Serialization;
-using Newtonsoft.Json;
 using PlantBasedPizza.Shared.Events;
 using PlantBasedPizza.Shared.Logging;
 using JsonSerializer = System.Text.Json.JsonSerializer;
@@ -14,7 +12,7 @@ namespace PlantBasedPizza.Events
         public OrderCompletedEvent(string customerIdentifier, string orderIdentifier, decimal orderValue)
         {
             this._eventId = Guid.NewGuid().ToString();
-            this.EventDate = DateTime.Now;
+            this.EventDate = DateTime.Now.ToUniversalTime();
             this.CustomerIdentifier = customerIdentifier;
             this.OrderIdentifier = orderIdentifier;
             OrderValue = orderValue;

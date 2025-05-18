@@ -1,7 +1,5 @@
-using System;
 using PlantBasedPizza.Shared.Events;
 using PlantBasedPizza.Shared.Logging;
-using Saunter.Attributes;
 
 namespace PlantBasedPizza.Events
 {
@@ -10,7 +8,7 @@ namespace PlantBasedPizza.Events
         public DriverCollectedOrderEvent(string orderIdentifier, string driverName)
         {
             this.EventId = Guid.NewGuid().ToString();
-            this.EventDate = DateTime.Now;
+            this.EventDate = DateTime.Now.ToUniversalTime();
             this.OrderIdentifier = orderIdentifier;
             this.DriverName = driverName;
             this.CorrelationId = CorrelationContext.GetCorrelationId();

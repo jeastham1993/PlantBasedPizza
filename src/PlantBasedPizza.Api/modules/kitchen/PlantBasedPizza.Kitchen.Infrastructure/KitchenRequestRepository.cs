@@ -1,7 +1,7 @@
 ﻿using MongoDB.Driver;
 using PlantBasedPizza.Kitchen.Core.Entities;
 using PlantBasedPizza.Shared.Logging;
-
+ 
 namespace PlantBasedPizza.Kitchen.Infrastructure;
 
 public class KitchenRequestRepository : IKitchenRequestRepository

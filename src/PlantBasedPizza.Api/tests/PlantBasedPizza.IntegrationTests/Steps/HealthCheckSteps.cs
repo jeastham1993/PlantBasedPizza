@@ -1,11 +1,7 @@
-using System.Net;
 using System.Threading.Tasks;
 using FluentAssertions;
 using PlantBasedPizza.IntegrationTests.Drivers;
 using TechTalk.SpecFlow;
-using WireMock.RequestBuilders;
-using WireMock.ResponseBuilders;
-using WireMock.Server;
 
 namespace PlantBasedPizza.IntegrationTests.Steps;
 

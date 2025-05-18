@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PlantBasedPizza.Events;
@@ -8,24 +9,21 @@ using PlantBasedPizza.Shared.Events;
 
 namespace PlantBasedPizza.Kitchen.Infrastructure
 {
-    using MongoDB.Bson.Serialization;
-
     public static class Setup
     {
         public static IServiceCollection AddKitchenInfrastructure(this IServiceCollection services,
-            IConfiguration configuration)
+            IConfiguration configuration, string? overrideConnectionString = null)
         {
-            BsonClassMap.RegisterClassMap<KitchenRequest>(map =>
-            {
-                map.AutoMap();
-                map.SetIgnoreExtraElements(true);
-                map.SetIgnoreExtraElementsIsInherited(true);
-            });
-            
-            services.AddSingleton<IRecipeService, RecipeService>();
-            services.AddSingleton<IOrderManagerService, OrderManagerService>();
-            services.AddSingleton<Handles<OrderSubmittedEvent>, OrderSubmittedEventHandler>();
-            services.AddSingleton<IKitchenRequestRepository, KitchenRequestRepository>();
+            // Register DbContext
+            services.AddDbContext<KitchenDbContext>(options =>
+                options.UseNpgsql(
+                    overrideConnectionString ?? configuration.GetConnectionString("KitchenPostgresConnection"),
+                    b => b.MigrationsAssembly("PlantBasedPizza.Kitchen.Infrastructure")));
+
+            services.AddTransient<IRecipeService, RecipeService>();
+            services.AddTransient<IOrderManagerService, OrderManagerService>();
+            services.AddTransient<Handles<OrderSubmittedEvent>, OrderSubmittedEventHandler>();
+            services.AddScoped<IKitchenRequestRepository, KitchenRequestRepositoryPostgres>();
 
             return services;
         }

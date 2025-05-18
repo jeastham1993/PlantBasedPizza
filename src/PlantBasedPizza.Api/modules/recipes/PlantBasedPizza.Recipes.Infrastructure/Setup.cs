@@ -1,36 +1,31 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PlantBasedPizza.Recipes.Core.Entities;
 using PlantBasedPizza.Recipes.DataTransfer;
 
-namespace PlantBasedPizza.Recipes.Infrastructure
+namespace PlantBasedPizza.Recipes.Infrastructure;
+
+public static class Setup
 {
-    using MongoDB.Bson.Serialization;
-
-    public static class Setup
+    public static IServiceCollection AddRecipeInfrastructure(this IServiceCollection services,
+        IConfiguration configuration, Serilog.ILogger logger, string? overrideConnectionString = null)
     {
-        public static IServiceCollection AddRecipeInfrastructure(this IServiceCollection services,
-            IConfiguration configuration)
-        {         
-            BsonClassMap.RegisterClassMap<Recipe>(map =>
-            {
-                map.AutoMap();
-                map.MapField("_ingredients");
-                map.SetIgnoreExtraElements(true);
-                map.SetIgnoreExtraElementsIsInherited(true);
-            });
-            
-            BsonClassMap.RegisterClassMap<Ingredient>(map =>
-            {
-                map.AutoMap();
-                map.SetIgnoreExtraElements(true);
-                map.SetIgnoreExtraElementsIsInherited(true);
-            });
+        // Register DbContext
+        services.AddDbContext<RecipesDbContext>(options =>
+            options.UseNpgsql(
+                    overrideConnectionString ?? configuration.GetConnectionString("RecipesPostgresConnection"),
+                    b =>
+                        b.MigrationsAssembly("PlantBasedPizza.Recipes.Infrastructure")
+                            .EnableRetryOnFailure(
+                                2,
+                                TimeSpan.FromSeconds(2),
+                                null))
+                .LogTo(logger.Information));
 
-            services.AddSingleton<RecipeDataTransferService>();
-            services.AddSingleton<IRecipeRepository, RecipeRepository>();
+        services.AddTransient<RecipeDataTransferService>();
+        services.AddScoped<IRecipeRepository, RecipeRepositoryPostgres>();
 
-            return services;
-        }
+        return services;
     }
 }

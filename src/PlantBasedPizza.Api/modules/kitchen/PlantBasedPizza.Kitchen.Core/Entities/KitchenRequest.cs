@@ -20,7 +20,7 @@ namespace PlantBasedPizza.Kitchen.Core.Entities
             
             this.KitchenRequestId = Guid.NewGuid().ToString();
             this.OrderIdentifier = orderIdentifier;
-            this.OrderReceivedOn = DateTime.Now;
+            this.OrderReceivedOn = DateTime.Now.ToUniversalTime();
             this.OrderState = OrderState.NEW;
             this.Recipes = recipes;
         }
@@ -63,7 +63,7 @@ namespace PlantBasedPizza.Kitchen.Core.Entities
         {
             this.OrderState = OrderState.BAKING;
             
-            this.PrepCompleteOn = DateTime.Now;
+            this.PrepCompleteOn = DateTime.Now.ToUniversalTime();
             
             DomainEvents.Raise(new OrderPrepCompleteEvent(this.OrderIdentifier)
             {
@@ -75,7 +75,7 @@ namespace PlantBasedPizza.Kitchen.Core.Entities
         {
             this.OrderState = OrderState.QUALITYCHECK;
             
-            this.BakeCompleteOn = DateTime.Now;
+            this.BakeCompleteOn = DateTime.Now.ToUniversalTime();
             
             DomainEvents.Raise(new OrderBakedEvent(this.OrderIdentifier)
             {
@@ -87,7 +87,7 @@ namespace PlantBasedPizza.Kitchen.Core.Entities
         {
             this.OrderState = OrderState.DONE;
             
-            this.QualityCheckCompleteOn = DateTime.Now;
+            this.QualityCheckCompleteOn = DateTime.Now.ToUniversalTime();
 
             await DomainEvents.Raise(new OrderQualityCheckedEvent(this.OrderIdentifier)
             {

@@ -45,7 +45,7 @@ public class CustomerLoyaltyPoints
         this.History.Add(new LoyaltyPointsHistory()
         {
             OrderIdentifier = orderIdentifier,
-            DateTime = DateTime.Now,
+            DateTime = DateTime.Now.ToUniversalTime(),
             OrderValue = orderValue,
             PointsAdded = points
         });

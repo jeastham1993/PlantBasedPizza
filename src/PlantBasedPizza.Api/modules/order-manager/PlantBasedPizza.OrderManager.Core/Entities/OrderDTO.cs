@@ -19,7 +19,7 @@ public record OrderDto
             Quantity = item.Quantity,
             RecipeIdentifier = item.RecipeIdentifier
         }).ToList();
-        this.History = order.History().Select(history => new OrderHistoryDto()
+        this.History = order.History.Select(history => new OrderHistoryDto()
         {
             Description = history.Description,
             HistoryDate = history.HistoryDate

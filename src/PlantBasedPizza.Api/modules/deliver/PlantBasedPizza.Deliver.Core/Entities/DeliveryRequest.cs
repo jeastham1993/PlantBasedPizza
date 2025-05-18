@@ -20,6 +20,8 @@ namespace PlantBasedPizza.Deliver.Core.Entities
         [JsonPropertyName("orderIdentifier")]
         public string OrderIdentifier { get; private set; } = "";
         
+        public int AddressId { get; set; }
+        
         [JsonPropertyName("driver")]
         public string Driver { get; private set; } = "";
         
@@ -37,7 +39,7 @@ namespace PlantBasedPizza.Deliver.Core.Entities
         public async Task ClaimDelivery(string driverName, string correlationId = "")
         {
             this.Driver = driverName;
-            this.DriverCollectedOn = DateTime.Now;
+            this.DriverCollectedOn = DateTime.Now.ToUniversalTime();
 
             await DomainEvents.Raise(new DriverCollectedOrderEvent(this.OrderIdentifier, driverName)
             {
@@ -47,7 +49,7 @@ namespace PlantBasedPizza.Deliver.Core.Entities
 
         public async Task Deliver(string correlationId = "")
         {
-            this.DeliveredOn = DateTime.Now;
+            this.DeliveredOn = DateTime.Now.ToUniversalTime();
 
             await DomainEvents.Raise(new OrderDeliveredEvent(this.OrderIdentifier)
             {

@@ -1,5 +1,3 @@
-using System;
-
 namespace PlantBasedPizza.Shared.Events
 {
     public interface IDomainEvent

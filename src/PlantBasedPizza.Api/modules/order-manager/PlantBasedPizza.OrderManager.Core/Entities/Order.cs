@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using Newtonsoft.Json;
 using PlantBasedPizza.Events;
 using PlantBasedPizza.Shared.Events;
@@ -10,7 +11,9 @@ public class Order
 {
     private const decimal DefaultDeliveryPrice = 3.50M;
 
-    [JsonIgnore] private List<IntegrationEvent> _events = new();
+    [JsonIgnore]
+    [NotMapped]
+    private List<IntegrationEvent> _events = new();
 
     [JsonProperty("items")] private List<OrderItem> _items;
 
@@ -46,7 +49,7 @@ public class Order
             OrderType = type,
             OrderIdentifier = orderIdentifier,
             CustomerIdentifier = customerIdentifier,
-            OrderDate = DateTime.Now,
+            OrderDate = DateTime.Now.ToUniversalTime(),
             DeliveryDetails = deliveryDetails
         };
 
@@ -74,14 +77,15 @@ public class Order
 
     [JsonIgnore] public IReadOnlyCollection<OrderItem> Items => _items;
 
-    [JsonIgnore] public IReadOnlyCollection<IntegrationEvent> Events => (_events ??  new());
+    [JsonIgnore]
+    [NotMapped]
+    public IReadOnlyCollection<IntegrationEvent> Events => (_events ??  new());
 
-    public IReadOnlyCollection<OrderHistory> History()
-    {
-        return _history.OrderBy(p => p.HistoryDate).ToList();
-    }
+    [JsonIgnore]
+    public IReadOnlyCollection<OrderHistory> History => _history.OrderBy(p => p.HistoryDate).ToList();
 
-    [JsonProperty] public OrderType OrderType { get; private set; }
+    [JsonProperty]
+    public OrderType OrderType { get; private set; }
 
     [JsonProperty] public string CustomerIdentifier { get; private set; }
 
@@ -146,7 +150,7 @@ public class Order
     {
         if (_history == null) _history = new List<OrderHistory>(1);
 
-        _history.Add(new OrderHistory(description, DateTime.Now));
+        _history.Add(new OrderHistory(description, DateTime.Now.ToUniversalTime()));
     }
 
     public void Recalculate()
@@ -160,7 +164,7 @@ public class Order
     {
         if (!_items.Any()) throw new ArgumentException("Cannot submit an order with no items");
 
-        OrderSubmittedOn = DateTime.Now;
+        OrderSubmittedOn = DateTime.Now.ToUniversalTime();
 
         AddHistory($"Submitted order.");
 
@@ -179,7 +183,7 @@ public class Order
 
     public void CompleteOrder(string correlationId = "")
     {
-        OrderCompletedOn = DateTime.Now;
+        OrderCompletedOn = DateTime.Now.ToUniversalTime();
         AwaitingCollection = false;
 
         AddHistory($"Order completed.");

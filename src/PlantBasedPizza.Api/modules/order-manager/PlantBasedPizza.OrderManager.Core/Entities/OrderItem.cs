@@ -20,6 +20,9 @@ namespace PlantBasedPizza.OrderManager.Core.Entities
         }
         
         [JsonProperty]
+        public int OrderItemId { get; private set; }
+        
+        [JsonProperty]
         public string RecipeIdentifier { get; private set; }
         
         [JsonProperty]

@@ -15,6 +15,8 @@ namespace PlantBasedPizza.OrderManager.Core.Entities
             this.Postcode = "";
         }
         
+        public int DeliveryDetailsId { get; set; }
+        
         [JsonProperty]
         public string AddressLine1 { get; init; }
         

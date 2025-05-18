@@ -17,6 +17,9 @@ namespace PlantBasedPizza.OrderManager.Core.Entities
         }
         
         [JsonProperty]
+        public int OrderHistoryId { get; private set; }
+        
+        [JsonProperty]
         public string Description { get; private set; }
         
         [JsonProperty]

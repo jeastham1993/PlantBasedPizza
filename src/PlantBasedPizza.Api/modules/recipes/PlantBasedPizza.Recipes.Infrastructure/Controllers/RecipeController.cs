@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using PlantBasedPizza.Recipes.Core.Commands;
 using PlantBasedPizza.Recipes.Core.Entities;
-using PlantBasedPizza.Shared.Logging;
 
 namespace PlantBasedPizza.Recipes.Infrastructure.Controllers
 {
@@ -13,7 +12,7 @@ namespace PlantBasedPizza.Recipes.Infrastructure.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("")]
-        public async Task<IEnumerable<Recipe>> List()
+        public async Task<IEnumerable<Recipe?>> List()
         {
             return await recipeRepository.List();
         }
@@ -24,7 +23,7 @@ namespace PlantBasedPizza.Recipes.Infrastructure.Controllers
         /// <param name="recipeIdentifier">The identifier of the recipe to get.</param>
         /// <returns></returns>
         [HttpGet("{recipeIdentifier}")]
-        public async Task<Recipe> Get(string recipeIdentifier)
+        public async Task<Recipe?> Get(string recipeIdentifier)
         {
             return await recipeRepository.Retrieve(recipeIdentifier);
         }
@@ -35,7 +34,7 @@ namespace PlantBasedPizza.Recipes.Infrastructure.Controllers
         /// <param name="request">The <see cref="CreateRecipeCommand"/> request.</param>
         /// <returns></returns>
         [HttpPost("")]
-        public async Task<Recipe> Create([FromBody] CreateRecipeCommand request)
+        public async Task<Recipe?> Create([FromBody] CreateRecipeCommand request)
         {
             var existingRecipe = await recipeRepository.Retrieve(request.RecipeIdentifier);
 

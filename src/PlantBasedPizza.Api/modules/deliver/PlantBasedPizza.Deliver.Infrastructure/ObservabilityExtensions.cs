@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using PlantBasedPizza.Deliver.Core.Commands;
-using PlantBasedPizza.Events;
 
 namespace PlantBasedPizza.Deliver.Infrastructure;
 

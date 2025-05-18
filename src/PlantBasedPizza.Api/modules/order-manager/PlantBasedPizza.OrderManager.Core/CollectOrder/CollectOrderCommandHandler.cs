@@ -1,6 +1,4 @@
-using PlantBasedPizza.Events;
 using PlantBasedPizza.OrderManager.Core.Entities;
-using PlantBasedPizza.OrderManager.Core.Services;
 
 namespace PlantBasedPizza.OrderManager.Core.CollectOrder;
 

@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 using PlantBasedPizza.OrderManager.Core.Entities;
-
+ 
 namespace PlantBasedPizza.OrderManager.Infrastructure;
 
 public class OrderRepository : IOrderRepository

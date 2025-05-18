@@ -1,4 +1,3 @@
-using System;
 using PlantBasedPizza.Shared.Events;
 using PlantBasedPizza.Shared.Logging;
 
@@ -9,7 +8,7 @@ namespace PlantBasedPizza.Events
         public OrderQualityCheckedEvent(string orderIdentifier)
         {
             this.EventId = Guid.NewGuid().ToString();
-            this.EventDate = DateTime.Now;
+            this.EventDate = DateTime.Now.ToUniversalTime();
             this.OrderIdentifier = orderIdentifier;
             this.CorrelationId = CorrelationContext.GetCorrelationId();
         }

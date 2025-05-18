@@ -1,4 +1,3 @@
-using System;
 using PlantBasedPizza.Shared.Events;
 using PlantBasedPizza.Shared.Logging;
 
@@ -9,7 +8,7 @@ namespace PlantBasedPizza.Events
         public OrderReadyForDeliveryEvent(string orderIdentifier, string addressLine1, string addressLine2, string addressLine3, string addressLine4, string addressLine5, string postcode)
         {
             this.EventId = Guid.NewGuid().ToString();
-            this.EventDate = DateTime.Now;
+            this.EventDate = DateTime.Now.ToUniversalTime();
             this.OrderIdentifier = orderIdentifier;
             this.DeliveryAddressLine1 = addressLine1;
             this.DeliveryAddressLine2 = addressLine2;

@@ -8,7 +8,6 @@ using Pulumi.AzureNative.Authorization;
 using Pulumi.AzureNative.ManagedIdentity;
 using Pulumi.AzureNative.ServiceBus;
 using Pulumi.AzureNative.ServiceBus.Inputs;
-using SkuName = Pulumi.AzureNative.App.SkuName;
 
 return await Pulumi.Deployment.RunAsync(() =>
 {
@@ -30,8 +29,8 @@ return await Pulumi.Deployment.RunAsync(() =>
         NamespaceName = "monolithServiceBus",
         Sku = new SBSkuArgs()
         {
-            Name = "Standard",
-            Tier = "Standard"
+            Name = SkuName.Standard,
+            Tier = SkuTier.Standard,
         }
     });
 
@@ -40,7 +39,7 @@ return await Pulumi.Deployment.RunAsync(() =>
         AuthorizationRuleName = "publicServiceBusAccessRule",
         NamespaceName = serviceBusNamespace.Name,
         ResourceGroupName = resourceGroup.Name,
-        Rights = new InputList<Union<string, AccessRights>>()
+        Rights = new InputList<AccessRights>()
         {
             AccessRights.Manage,
             AccessRights.Listen,
@@ -89,10 +88,6 @@ return await Pulumi.Deployment.RunAsync(() =>
         Location = resourceGroup.Location,
         ResourceGroupName = resourceGroup.Name,
         EnvironmentName = "dev-pulumi",
-        Sku = new EnvironmentSkuPropertiesArgs
-        {
-            Name = SkuName.Consumption
-        }
     });
 
     var daprComponent = new DaprComponent("pubSubDaprComponent", new DaprComponentArgs

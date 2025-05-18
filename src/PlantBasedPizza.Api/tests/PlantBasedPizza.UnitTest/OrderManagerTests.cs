@@ -41,7 +41,7 @@ public class OrderManagerTests
 
         order.AddHistory("Bake complete");
 
-        order.History().Count.Should().Be(2);
+        order.History.Count.Should().Be(2);
     }
     
     [Fact]
@@ -51,7 +51,7 @@ public class OrderManagerTests
 
         order.IsAwaitingCollection();
 
-        order.History().Count.Should().Be(2);
+        order.History.Count.Should().Be(2);
         order.AwaitingCollection.Should().BeTrue();
     }
     

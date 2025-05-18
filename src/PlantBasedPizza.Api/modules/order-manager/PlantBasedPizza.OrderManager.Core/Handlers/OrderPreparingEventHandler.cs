@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using PlantBasedPizza.Events;
 using PlantBasedPizza.OrderManager.Core.Entities;

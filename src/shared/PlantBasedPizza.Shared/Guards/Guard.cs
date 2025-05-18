@@ -1,5 +1,3 @@
-using System;
-
 namespace PlantBasedPizza.Shared.Guards
 {
     public static class Guard
