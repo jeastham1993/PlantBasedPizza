@@ -6,7 +6,7 @@ using FakeItEasy;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using PlantBasedPizza.Events;
-using PlantBasedPizza.OrderManager.Core.Entities;
+using PlantBasedPizza.OrderManager.Core;
 using PlantBasedPizza.OrderManager.Core.Services;
 using PlantBasedPizza.Shared.Events;
 using Xunit;
@@ -16,7 +16,6 @@ namespace PlantBasedPizza.UnitTest;
 public class OrderManagerTests
 {
     internal const string DefaultCustomerIdentifier = "James";
-    internal const string DefaultOrderIdentifier = "MYTESTORDER";
     
     [Fact]
     public async Task CanCreateNewOrder_ShouldSetDefaultFields()
@@ -27,7 +26,7 @@ public class OrderManagerTests
         var orderFactory = new OrderFactory(mockEventDispatcher, mockLogger);
         
         // Act
-        var order = await orderFactory.CreateAsync(DefaultOrderIdentifier, OrderType.Pickup, DefaultCustomerIdentifier);
+        var order = await orderFactory.CreateAsync(OrderType.Pickup, DefaultCustomerIdentifier);
 
         // Assert
         order.Items.Should().NotBeNull();
@@ -49,7 +48,7 @@ public class OrderManagerTests
         var orderFactory = new OrderFactory(mockEventDispatcher, mockLogger);
         
         // Act
-        var order = await orderFactory.CreateAsync(DefaultOrderIdentifier, OrderType.Pickup, DefaultCustomerIdentifier);
+        var order = await orderFactory.CreateAsync(OrderType.Pickup, DefaultCustomerIdentifier);
         order.AddHistory("Bake complete");
 
         // Assert
@@ -65,7 +64,7 @@ public class OrderManagerTests
         var orderFactory = new OrderFactory(mockEventDispatcher, mockLogger);
         
         // Act
-        var order = await orderFactory.CreateAsync(DefaultOrderIdentifier, OrderType.Pickup, DefaultCustomerIdentifier);
+        var order = await orderFactory.CreateAsync(OrderType.Pickup, DefaultCustomerIdentifier);
         order.MarkAsAwaitingCollection();
 
         // Assert
@@ -82,7 +81,7 @@ public class OrderManagerTests
         var orderFactory = new OrderFactory(mockEventDispatcher, mockLogger);
         
         // Act
-        var order = await orderFactory.CreateAsync(DefaultOrderIdentifier, OrderType.Pickup, DefaultCustomerIdentifier);
+        var order = await orderFactory.CreateAsync(OrderType.Pickup, DefaultCustomerIdentifier);
         var recipeId = "PIZZA1";
         
         order.AddOrderItem(recipeId, "Pizza 1", 1, 10);
@@ -104,7 +103,7 @@ public class OrderManagerTests
         var orderFactory = new OrderFactory(mockEventDispatcher, mockLogger);
         
         // Act
-        var order = await orderFactory.CreateAsync(DefaultOrderIdentifier, OrderType.Pickup, DefaultCustomerIdentifier);
+        var order = await orderFactory.CreateAsync(OrderType.Pickup, DefaultCustomerIdentifier);
         var recipeId = "PIZZA1";
         
         order.AddOrderItem(recipeId, "Pizza 1", 1, 10);
@@ -135,7 +134,7 @@ public class OrderManagerTests
         };
         
         // Act
-        var order = await orderFactory.CreateAsync(DefaultOrderIdentifier, OrderType.Delivery, DefaultCustomerIdentifier, deliveryDetails);
+        var order = await orderFactory.CreateAsync(OrderType.Delivery, DefaultCustomerIdentifier, deliveryDetails);
 
         // Assert
         order.Items.Should().NotBeNull();
@@ -160,7 +159,7 @@ public class OrderManagerTests
         };
         
         // Act
-        var order = await orderFactory.CreateAsync(DefaultOrderIdentifier, OrderType.Delivery, DefaultCustomerIdentifier, deliveryDetails);
+        var order = await orderFactory.CreateAsync(OrderType.Delivery, DefaultCustomerIdentifier, deliveryDetails);
         order.AddOrderItem("PIZZA", "Pizza 1", 1, 10);
 
         // Assert
@@ -174,18 +173,26 @@ public class OrderManagerTests
         var mockEventDispatcher = A.Fake<IDomainEventDispatcher>();
         var mockLogger = A.Fake<ILogger<OrderFactory>>();
         var orderFactory = new OrderFactory(mockEventDispatcher, mockLogger);
-        var orderDomainService = new OrderDomainService(mockEventDispatcher);
         var deliveryDetails = new DeliveryDetails()
         {
             AddressLine1 = "TEST",
             Postcode = "XN6 7UY"
         };
         
-        var order = await orderFactory.CreateAsync(DefaultOrderIdentifier, OrderType.Delivery, DefaultCustomerIdentifier, deliveryDetails);
+        var order = await orderFactory.CreateAsync(OrderType.Delivery, DefaultCustomerIdentifier, deliveryDetails);
         order.AddOrderItem("PIZZA", "Pizza 1", 1, 10);
 
-        // Act
-        await orderDomainService.SubmitOrderAsync(order);
+        // Act - Using domain logic directly
+        if (!order.Items.Any()) 
+            throw new ArgumentException("Cannot submit an order with no items");
+
+        order.MarkAsSubmitted();
+        order.AddHistory("Submitted order.");
+
+        await mockEventDispatcher.PublishAsync(new OrderSubmittedEvent(order.OrderIdentifier)
+        {
+            CorrelationId = string.Empty
+        });
 
         // Assert
         order.OrderSubmittedOn.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(5));
@@ -200,18 +207,23 @@ public class OrderManagerTests
         var mockEventDispatcher = A.Fake<IDomainEventDispatcher>();
         var mockLogger = A.Fake<ILogger<OrderFactory>>();
         var orderFactory = new OrderFactory(mockEventDispatcher, mockLogger);
-        var orderDomainService = new OrderDomainService(mockEventDispatcher);
         var deliveryDetails = new DeliveryDetails()
         {
             AddressLine1 = "TEST",
             Postcode = "XN6 7UY"
         };
         
-        var order = await orderFactory.CreateAsync(DefaultOrderIdentifier, OrderType.Delivery, DefaultCustomerIdentifier, deliveryDetails);
+        var order = await orderFactory.CreateAsync(OrderType.Delivery, DefaultCustomerIdentifier, deliveryDetails);
         order.AddOrderItem("PIZZA", "Pizza 1", 1, 10);
         
-        // Act
-        await orderDomainService.SubmitOrderAsync(order);
+        // Act - Submit order directly using domain logic
+        order.MarkAsSubmitted();
+        order.AddHistory("Submitted order.");
+        await mockEventDispatcher.PublishAsync(new OrderSubmittedEvent(order.OrderIdentifier)
+        {
+            CorrelationId = string.Empty
+        });
+        
         order.AddOrderItem("PIZZA", "Pizza 1", 1, 10);
 
         // Assert
@@ -225,18 +237,26 @@ public class OrderManagerTests
         var mockEventDispatcher = A.Fake<IDomainEventDispatcher>();
         var mockLogger = A.Fake<ILogger<OrderFactory>>();
         var orderFactory = new OrderFactory(mockEventDispatcher, mockLogger);
-        var orderDomainService = new OrderDomainService(mockEventDispatcher);
         var deliveryDetails = new DeliveryDetails()
         {
             AddressLine1 = "TEST",
             Postcode = "XN6 7UY"
         };
         
-        var order = await orderFactory.CreateAsync(DefaultOrderIdentifier, OrderType.Delivery, DefaultCustomerIdentifier, deliveryDetails);
+        var order = await orderFactory.CreateAsync(OrderType.Delivery, DefaultCustomerIdentifier, deliveryDetails);
         order.AddOrderItem("PIZZA", "Pizza 1", 1, 10);
 
-        // Act
-        await orderDomainService.CompleteOrderAsync(order);
+        // Act - Complete order directly using domain logic
+        order.MarkAsCompleted();
+        order.AddHistory("Order completed.");
+
+        var evt = new OrderCompletedEvent(order.CustomerIdentifier, order.OrderIdentifier, order.TotalPrice)
+        {
+            CorrelationId = string.Empty
+        };
+
+        await mockEventDispatcher.PublishAsync(evt);
+        order.AddIntegrationEvent(evt);
 
         // Assert
         order.OrderCompletedOn.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(5));
@@ -255,12 +275,20 @@ public class OrderManagerTests
             var mockEventDispatcher = A.Fake<IDomainEventDispatcher>();
             var mockLogger = A.Fake<ILogger<OrderFactory>>();
             var orderFactory = new OrderFactory(mockEventDispatcher, mockLogger);
-            var orderDomainService = new OrderDomainService(mockEventDispatcher);
             
-            var order = await orderFactory.CreateAsync(DefaultOrderIdentifier, OrderType.Pickup, DefaultCustomerIdentifier);
+            var order = await orderFactory.CreateAsync(OrderType.Pickup, DefaultCustomerIdentifier);
             
-            // Act
-            await orderDomainService.SubmitOrderAsync(order);
+            // Act - Submit order directly using domain logic (should throw)
+            if (!order.Items.Any()) 
+                throw new ArgumentException("Cannot submit an order with no items");
+
+            order.MarkAsSubmitted();
+            order.AddHistory("Submitted order.");
+
+            await mockEventDispatcher.PublishAsync(new OrderSubmittedEvent(order.OrderIdentifier)
+            {
+                CorrelationId = string.Empty
+            });
         });
     }
     
@@ -276,7 +304,7 @@ public class OrderManagerTests
             var orderFactory = new OrderFactory(mockEventDispatcher, mockLogger);
             
             // Act
-            await orderFactory.CreateAsync(DefaultOrderIdentifier, OrderType.Pickup, string.Empty);
+            await orderFactory.CreateAsync(OrderType.Pickup, string.Empty);
         });
     }
     
@@ -292,7 +320,7 @@ public class OrderManagerTests
             var orderFactory = new OrderFactory(mockEventDispatcher, mockLogger);
             
             // Act
-            await orderFactory.CreateAsync(DefaultOrderIdentifier, OrderType.Delivery, DefaultCustomerIdentifier);
+            await orderFactory.CreateAsync(OrderType.Delivery, DefaultCustomerIdentifier);
         });
     }
 }

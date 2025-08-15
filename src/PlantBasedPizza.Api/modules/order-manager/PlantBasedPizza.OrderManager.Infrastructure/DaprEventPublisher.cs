@@ -4,7 +4,7 @@
 
 using Dapr.Client;
 using PlantBasedPizza.Events;
-using PlantBasedPizza.OrderManager.Core.Entities;
+using PlantBasedPizza.OrderManager.Core;
 
 namespace PlantBasedPizza.OrderManager.Infrastructure;
 

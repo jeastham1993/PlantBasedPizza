@@ -1,10 +1,10 @@
-using Microsoft.Azure.Functions.Worker;
-using Microsoft.Extensions.Logging;
+using Datadog.Trace;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Datadog.Trace;
+using Microsoft.Azure.Functions.Worker;
+using Microsoft.Extensions.Logging;
 
-namespace PlantBasedPizza.FunctionApp
+namespace PlantBasedPizza_FunctionApp
 {
     public class HttpExample
     {

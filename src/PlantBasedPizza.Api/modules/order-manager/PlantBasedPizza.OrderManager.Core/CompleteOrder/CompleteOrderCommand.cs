@@ -2,11 +2,10 @@
 // This product includes software developed at Datadog (https://www.datadoghq.com/).
 // Copyright 2025 Datadog, Inc.
 
-using PlantBasedPizza.Payment.DataTransfer;
+namespace PlantBasedPizza.OrderManager.Core.CompleteOrder;
 
-namespace PlantBasedPizza.OrderManager.Core.Services;
-
-public interface IPaymentService
+public record CompleteOrderCommand
 {
-    public Task<PaymentResultDTO> TakePaymentFor(Order order);
+    public string OrderIdentifier { get; init; } = string.Empty;
+    public string CorrelationId { get; init; } = string.Empty;
 }

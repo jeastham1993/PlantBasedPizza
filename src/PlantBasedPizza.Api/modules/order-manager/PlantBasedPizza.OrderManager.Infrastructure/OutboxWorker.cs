@@ -4,8 +4,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using MongoDB.Driver;
 using PlantBasedPizza.Events;
-using PlantBasedPizza.OrderManager.Core.Entities;
- 
+using PlantBasedPizza.OrderManager.Core;
+
 namespace PlantBasedPizza.OrderManager.Infrastructure;
 
 public class OutboxWorker : BackgroundService

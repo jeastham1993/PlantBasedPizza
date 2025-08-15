@@ -2,12 +2,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PlantBasedPizza.Events;
+using PlantBasedPizza.OrderManager.Core;
 using PlantBasedPizza.OrderManager.Core.AddItemToOrder;
 using PlantBasedPizza.OrderManager.Core.CollectOrder;
+using PlantBasedPizza.OrderManager.Core.CompleteOrder;
 using PlantBasedPizza.OrderManager.Core.CreateDeliveryOrder;
 using PlantBasedPizza.OrderManager.Core.CreatePickupOrder;
-using PlantBasedPizza.OrderManager.Core.Entities;
 using PlantBasedPizza.OrderManager.Core.Handlers;
+using PlantBasedPizza.OrderManager.Core.MarkAwaitingCollection;
 using PlantBasedPizza.OrderManager.Core.Services;
 using PlantBasedPizza.OrderManager.Core.SubmitOrder;
 using PlantBasedPizza.OrderManager.DataTransfer;
@@ -31,6 +33,8 @@ public static class Setup
         services.AddTransient<CollectOrderCommandHandler>();
         services.AddTransient<AddItemToOrderHandler>();
         services.AddTransient<SubmitOrderCommandHandler>();
+        services.AddTransient<CompleteOrderCommandHandler>();
+        services.AddTransient<MarkAwaitingCollectionCommandHandler>();
         services.AddTransient<CreateDeliveryOrderCommandHandler>();
         services.AddTransient<CreatePickupOrderCommandHandler>();
         services.AddTransient<IRecipeService, RecipeService>();
@@ -38,8 +42,7 @@ public static class Setup
         services.AddTransient<OrderEventPublisher, DaprEventPublisher>();
         
         // Domain services and factories
-        services.AddTransient<IOrderFactory, PlantBasedPizza.OrderManager.Core.Services.OrderFactory>();
-        services.AddTransient<IOrderDomainService, PlantBasedPizza.OrderManager.Core.Services.OrderDomainService>();
+        services.AddTransient<IOrderFactory, OrderFactory>();
 
         services.AddTransient<Handles<OrderPreparingEvent>, OrderPreparingEventHandler>();
         services.AddTransient<Handles<OrderPrepCompleteEvent>, OrderPrepCompleteEventHandler>();

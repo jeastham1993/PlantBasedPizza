@@ -1,4 +1,3 @@
-using PlantBasedPizza.OrderManager.Core.Entities;
 using PlantBasedPizza.OrderManager.Core.Services;
 using PlantBasedPizza.Shared.Logging;
 
@@ -17,15 +16,7 @@ public class CreateDeliveryOrderCommandHandler
 
     public async Task<OrderDto?> Handle(CreateDeliveryOrderCommand request)
     {
-        try
-        {
-            var existingOrder = await _orderRepository.Retrieve(request.OrderIdentifier);
-
-            return null;
-        }
-        catch (OrderNotFoundException){}
-
-        var order = await _orderFactory.CreateAsync(request.OrderIdentifier, request.OrderType, request.CustomerIdentifier,
+        var order = await _orderFactory.CreateAsync(request.OrderType, request.CustomerIdentifier,
             new DeliveryDetails
             {
                 AddressLine1 = request.AddressLine1,

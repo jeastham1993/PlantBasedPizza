@@ -1,4 +1,3 @@
-using PlantBasedPizza.OrderManager.Core.Entities;
 using PlantBasedPizza.OrderManager.Core.Services;
 using PlantBasedPizza.Shared.Logging;
 
@@ -17,14 +16,7 @@ public class CreatePickupOrderCommandHandler
 
     public async Task<OrderDto?> Handle(CreatePickupOrderCommand request)
     {
-        try {
-            await this._orderRepository.Retrieve(request.OrderIdentifier);
-            
-            return null;
-        }
-        catch (OrderNotFoundException){}
-            
-        var order = await _orderFactory.CreateAsync(request.OrderIdentifier, request.OrderType, request.CustomerIdentifier, null, CorrelationContext.GetCorrelationId());
+        var order = await _orderFactory.CreateAsync(request.OrderType, request.CustomerIdentifier, null, CorrelationContext.GetCorrelationId());
 
         await this._orderRepository.Add(order);
 

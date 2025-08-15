@@ -3,7 +3,7 @@
 // Copyright 2025 Datadog, Inc.
 
 using Microsoft.EntityFrameworkCore;
-using PlantBasedPizza.OrderManager.Core.Entities;
+using PlantBasedPizza.OrderManager.Core;
 
 namespace PlantBasedPizza.OrderManager.Infrastructure;
 

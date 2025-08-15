@@ -2,7 +2,7 @@
 // This product includes software developed at Datadog (https://www.datadoghq.com/).
 // Copyright 2025 Datadog, Inc.
 
-using PlantBasedPizza.OrderManager.Core.Entities;
+using PlantBasedPizza.OrderManager.Core;
 using PlantBasedPizza.OrderManager.Core.Services;
 using PlantBasedPizza.Payment.Core;
 using PlantBasedPizza.Payment.DataTransfer;

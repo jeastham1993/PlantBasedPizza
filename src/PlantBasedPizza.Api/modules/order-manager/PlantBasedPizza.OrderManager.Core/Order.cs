@@ -2,11 +2,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
 using System.Text.Json.Serialization;
 using PlantBasedPizza.Events;
-using PlantBasedPizza.Shared.Events;
 using PlantBasedPizza.Shared.Guards;
-using PlantBasedPizza.Shared.Logging;
 
-namespace PlantBasedPizza.OrderManager.Core.Entities;
+namespace PlantBasedPizza.OrderManager.Core;
 
 public class Order
 {

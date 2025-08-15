@@ -1,7 +1,6 @@
 ﻿using Amazon.CDK;
-using AwsInfrastructure;
 
-namespace Aws
+namespace AwsInfrastructure
 {
     sealed class Program
     {

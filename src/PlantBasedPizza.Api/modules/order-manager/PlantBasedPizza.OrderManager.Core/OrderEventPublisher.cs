@@ -4,7 +4,7 @@
 
 using PlantBasedPizza.Events;
 
-namespace PlantBasedPizza.OrderManager.Core.Entities;
+namespace PlantBasedPizza.OrderManager.Core;
 
 public interface OrderEventPublisher
 {

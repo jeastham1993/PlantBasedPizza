@@ -1,9 +1,9 @@
-using PlantBasedPizza.OrderManager.Core.Entities;
+using PlantBasedPizza.OrderManager.Core.CompleteOrder;
 using PlantBasedPizza.OrderManager.Core.Services;
 
 namespace PlantBasedPizza.OrderManager.Core.CollectOrder;
 
-public class CollectOrderCommandHandler(IOrderRepository orderRepository, IOrderDomainService orderDomainService)
+public class CollectOrderCommandHandler(IOrderRepository orderRepository, CompleteOrderCommandHandler completeOrderCommandHandler)
 {
     public async Task<OrderDto?> Handle(CollectOrderRequest command)
     {
@@ -16,9 +16,11 @@ public class CollectOrderCommandHandler(IOrderRepository orderRepository, IOrder
                 return new OrderDto(existingOrder);
             }
 
-            await orderDomainService.CompleteOrderAsync(existingOrder);
-
-            await orderRepository.Update(existingOrder).ConfigureAwait(false);
+            await completeOrderCommandHandler.Handle(new CompleteOrderCommand 
+            { 
+                OrderIdentifier = command.OrderIdentifier,
+                CorrelationId = string.Empty
+            });
 
             return new OrderDto(existingOrder);
         }

@@ -1,5 +1,5 @@
 using System.Text.Json.Serialization;
-using PlantBasedPizza.OrderManager.Core.Entities;
+using PlantBasedPizza.OrderManager.Core;
 
 namespace PlantBasedPizza.OrderManager.Infrastructure;
 

@@ -36,7 +36,7 @@ ProjectSection(SolutionItems) = preProject
 	commit.sh = commit.sh
 EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "applications", "applications", "{3A26A029-7C47-4975-AA1F-52384C345FCD}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "host", "host", "{3A26A029-7C47-4975-AA1F-52384C345FCD}"
 	ProjectSection(SolutionItems) = preProject
 		docker-compose.yml = docker-compose.yml
 		src\PlantBasedPizza.Api\application\PlantBasedPizza.Api\Dockerfile = src\PlantBasedPizza.Api\application\PlantBasedPizza.Api\Dockerfile

@@ -1,5 +1,3 @@
-using PlantBasedPizza.OrderManager.Core.ViewModels;
-
 namespace PlantBasedPizza.OrderManager.Core.Services
 {
     public interface IRecipeService
