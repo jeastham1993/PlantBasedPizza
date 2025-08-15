@@ -9,10 +9,12 @@ namespace PlantBasedPizza.OrderManager.Core.Handlers
     public class OrderQualityCheckedEventHandler : Handles<OrderQualityCheckedEvent>
     {
         private readonly IOrderRepository _orderRepository;
+        private readonly IDomainEventDispatcher _eventDispatcher;
 
-        public OrderQualityCheckedEventHandler(IOrderRepository orderRepository)
+        public OrderQualityCheckedEventHandler(IOrderRepository orderRepository, IDomainEventDispatcher eventDispatcher)
         {
             _orderRepository = orderRepository;
+            _eventDispatcher = eventDispatcher;
         }
 
         [Channel("kitchen.quality-checked")] // Creates a Channel
@@ -27,14 +29,14 @@ namespace PlantBasedPizza.OrderManager.Core.Handlers
             {
                 order.AddHistory("Sending for delivery");
 
-                await DomainEvents.Raise(new OrderReadyForDeliveryEvent(order.OrderIdentifier,
+                await _eventDispatcher.PublishAsync(new OrderReadyForDeliveryEvent(order.OrderIdentifier,
                     order.DeliveryDetails.AddressLine1, order.DeliveryDetails.AddressLine2,
                     order.DeliveryDetails.AddressLine3, order.DeliveryDetails.AddressLine4,
                     order.DeliveryDetails.AddressLine5, order.DeliveryDetails.Postcode));
             }
             else
             {
-                order.IsAwaitingCollection();
+                order.MarkAsAwaitingCollection();
             }
 
             await this._orderRepository.Update(order).ConfigureAwait(false);

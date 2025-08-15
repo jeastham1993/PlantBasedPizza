@@ -36,6 +36,10 @@ public static class Setup
         services.AddTransient<IRecipeService, RecipeService>();
         services.AddTransient<IPaymentService, PaymentService>();
         services.AddTransient<OrderEventPublisher, DaprEventPublisher>();
+        
+        // Domain services and factories
+        services.AddTransient<IOrderFactory, PlantBasedPizza.OrderManager.Core.Services.OrderFactory>();
+        services.AddTransient<IOrderDomainService, PlantBasedPizza.OrderManager.Core.Services.OrderDomainService>();
 
         services.AddTransient<Handles<OrderPreparingEvent>, OrderPreparingEventHandler>();
         services.AddTransient<Handles<OrderPrepCompleteEvent>, OrderPrepCompleteEventHandler>();

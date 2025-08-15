@@ -1,13 +1,13 @@
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace PlantBasedPizza.IntegrationTests.ViewModels
 {
     public class AssignDriverRequest
     {
-        [JsonProperty("orderIdentifier")]
+        [JsonPropertyName("orderIdentifier")]
         public string OrderIdentifier { get; set; }
         
-        [JsonProperty("driverName")]
+        [JsonPropertyName("driverName")]
         public string DriverName { get; set; }
     }
 }

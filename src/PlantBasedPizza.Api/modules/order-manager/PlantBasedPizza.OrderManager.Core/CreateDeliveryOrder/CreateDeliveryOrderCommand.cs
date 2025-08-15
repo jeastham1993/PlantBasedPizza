@@ -3,7 +3,7 @@ using PlantBasedPizza.OrderManager.Core.Entities;
 
 namespace PlantBasedPizza.OrderManager.Core.CreateDeliveryOrder
 {
-    public class CreateDeliveryOrder
+    public class CreateDeliveryOrderCommand
     {
         [JsonPropertyName("orderIdentifier")]
         public string OrderIdentifier { get; init; } = "";

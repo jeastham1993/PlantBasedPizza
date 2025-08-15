@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace PlantBasedPizza.OrderManager.Core.Entities
 {
@@ -17,22 +17,22 @@ namespace PlantBasedPizza.OrderManager.Core.Entities
         
         public int DeliveryDetailsId { get; set; }
         
-        [JsonProperty]
+        [JsonPropertyName("addressLine1")]
         public string AddressLine1 { get; init; }
         
-        [JsonProperty]
+        [JsonPropertyName("addressLine2")]
         public string AddressLine2 { get; init; }
         
-        [JsonProperty]
+        [JsonPropertyName("addressLine3")]
         public string AddressLine3 { get; init; }
         
-        [JsonProperty]
+        [JsonPropertyName("addressLine4")]
         public string AddressLine4 { get; init; }
         
-        [JsonProperty]
+        [JsonPropertyName("addressLine5")]
         public string AddressLine5 { get; init; }
         
-        [JsonProperty]
+        [JsonPropertyName("postcode")]
         public string Postcode { get; init; }
     }
 }

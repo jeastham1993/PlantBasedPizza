@@ -100,8 +100,6 @@ Amazon.Lambda.Core.SnapshotRestore.RegisterBeforeSnapshot(async () =>
 
 app.UseCors("AllowAll");
 
-DomainEvents.Container = app.Services;
-
 app.Map("/health", async () =>
 {
     logger.Information("Health check requested");

@@ -25,7 +25,7 @@ namespace PlantBasedPizza.Recipes.Core.Entities
             this.Price = price;
             this._ingredients = new List<Ingredient>();
 
-            DomainEvents.Raise(new RecipeCreatedEvent(this, CorrelationContext.GetCorrelationId()));
+            // Domain event will be raised by RecipeFactory
         }
         
         [JsonPropertyName("recipeIdentifier")]

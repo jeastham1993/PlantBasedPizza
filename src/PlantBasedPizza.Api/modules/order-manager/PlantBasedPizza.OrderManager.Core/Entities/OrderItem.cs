@@ -1,4 +1,4 @@
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace PlantBasedPizza.OrderManager.Core.Entities
 {
@@ -19,19 +19,19 @@ namespace PlantBasedPizza.OrderManager.Core.Entities
             this.Price = price;
         }
         
-        [JsonProperty]
+        [JsonPropertyName("orderItemId")]
         public int OrderItemId { get; private set; }
         
-        [JsonProperty]
+        [JsonPropertyName("recipeIdentifier")]
         public string RecipeIdentifier { get; private set; }
         
-        [JsonProperty]
+        [JsonPropertyName("itemName")]
         public string ItemName { get; private set; }
         
-        [JsonProperty]
+        [JsonPropertyName("quantity")]
         public int Quantity { get; private set; }
         
-        [JsonProperty]
+        [JsonPropertyName("price")]
         public decimal Price { get; private set; }
     }
 }

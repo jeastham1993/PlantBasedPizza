@@ -22,7 +22,7 @@ namespace PlantBasedPizza.UnitTest
             request.OrderIdentifier.Should().Be(OrderIdentifier);
             request.OrderState.Should().Be(OrderState.NEW);
             request.BakeCompleteOn.Should().BeNull();
-            request.OrderReceivedOn.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(5));
+            request.OrderReceivedOn.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(5));
             request.PrepCompleteOn.Should().BeNull();
             request.QualityCheckCompleteOn.Should().BeNull();
             request.KitchenRequestId.Should().NotBeNull();
@@ -45,10 +45,10 @@ namespace PlantBasedPizza.UnitTest
         {
             var request = new KitchenRequestBuilder().AddRecipe("Pizza").Build();
             
-            request.Preparing();
-            request.PrepComplete();
+            request.StartPreparing();
+            request.CompletePreparing();
 
-            request.PrepCompleteOn.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(5));
+            request.PrepCompleteOn.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(5));
         }
 
         [Fact]
@@ -56,24 +56,24 @@ namespace PlantBasedPizza.UnitTest
         {
             var request = new KitchenRequestBuilder().AddRecipe("Pizza").Build();
             
-            request.Preparing();
-            request.PrepComplete();
-            request.BakeComplete();
+            request.StartPreparing();
+            request.CompletePreparing();
+            request.CompleteBaking();
 
-            request.BakeCompleteOn.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(5));
+            request.BakeCompleteOn.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(5));
         }
 
         [Fact]
-        public async Task CanCreateAndMarkQualityChecked_ShouldSetQualityCheckedOn()
+        public void CanCreateAndMarkQualityChecked_ShouldSetQualityCheckedOn()
         {
             var request = new KitchenRequestBuilder().AddRecipe("Pizza").Build();
             
-            request.Preparing();
-            request.PrepComplete();
-            request.BakeComplete();
-            await request.QualityCheckComplete();
+            request.StartPreparing();
+            request.CompletePreparing();
+            request.CompleteBaking();
+            request.CompleteQualityCheck();
 
-            request.QualityCheckCompleteOn.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(5));
+            request.QualityCheckCompleteOn.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(5));
         }
     }
 }

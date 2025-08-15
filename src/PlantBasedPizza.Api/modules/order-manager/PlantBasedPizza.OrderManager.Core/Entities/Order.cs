@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
-using Newtonsoft.Json;
+using System.Diagnostics;
+using System.Text.Json.Serialization;
 using PlantBasedPizza.Events;
 using PlantBasedPizza.Shared.Events;
 using PlantBasedPizza.Shared.Guards;
@@ -15,9 +16,9 @@ public class Order
     [NotMapped]
     private List<IntegrationEvent> _events = new();
 
-    [JsonProperty("items")] private List<OrderItem> _items;
+    [JsonPropertyName("items")] private List<OrderItem> _items = new();
 
-    [JsonProperty("history")] private List<OrderHistory> _history;
+    [JsonPropertyName("history")] private List<OrderHistory> _history = new();
 
     [JsonConstructor]
     internal Order(string? orderNumber = null)
@@ -27,53 +28,43 @@ public class Order
         OrderIdentifier = "";
         CustomerIdentifier = "";
         OrderNumber = orderNumber;
-        _items = new List<OrderItem>();
-        _history = new List<OrderHistory>();
+        // Collections already initialized above
         _events = new List<IntegrationEvent>();
     }
 
-    public static Order Create(string orderIdentifier, OrderType type, string customerIdentifier,
-        DeliveryDetails? deliveryDetails = null, string correlationId = "")
+    // Internal constructor for factory
+    internal Order(string orderIdentifier, OrderType orderType, string customerIdentifier, DeliveryDetails? deliveryDetails = null)
     {
-        Guard.AgainstNullOrEmpty(customerIdentifier, nameof(customerIdentifier));
         Guard.AgainstNullOrEmpty(orderIdentifier, nameof(orderIdentifier));
+        Guard.AgainstNullOrEmpty(customerIdentifier, nameof(customerIdentifier));
 
-        if (type == OrderType.Delivery && deliveryDetails == null)
-            throw new ArgumentException("If order type is delivery a delivery address must be specified",
-                nameof(deliveryDetails));
+        if (orderType == OrderType.Delivery && deliveryDetails == null)
+            throw new ArgumentException("Delivery details are required for delivery orders");
 
-        ApplicationLogger.Info($"Creating a new order with type {type}");
-
-        var order = new Order()
-        {
-            OrderType = type,
-            OrderIdentifier = orderIdentifier,
-            CustomerIdentifier = customerIdentifier,
-            OrderDate = DateTime.Now.ToUniversalTime(),
-            DeliveryDetails = deliveryDetails
-        };
-
-        order.AddHistory("Order created");
-
-        DomainEvents.Raise(new OrderCreatedEvent(orderIdentifier)
-        {
-            CorrelationId = correlationId
-        });
-
-        return order;
+        OrderIdentifier = orderIdentifier;
+        OrderType = orderType;
+        CustomerIdentifier = customerIdentifier;
+        OrderDate = DateTime.UtcNow;
+        OrderNumber = Guid.NewGuid().ToString();
+        DeliveryDetails = deliveryDetails;
+        _events = new List<IntegrationEvent>();
+        
+        AddHistory("Order created.");
     }
 
-    [JsonProperty] public string OrderIdentifier { get; private set; }
+    // Static Create method removed - use IOrderFactory instead
 
-    [JsonProperty] public string OrderNumber { get; private set; }
+    [JsonPropertyName("orderIdentifier")] public string OrderIdentifier { get; private set; }
 
-    [JsonProperty] public DateTime OrderDate { get; private set; }
+    [JsonPropertyName("orderNumber")] public string OrderNumber { get; private set; }
 
-    [JsonProperty] public bool AwaitingCollection { get; private set; }
+    [JsonPropertyName("orderDate")] public DateTime OrderDate { get; private set; }
 
-    [JsonProperty] public DateTime? OrderSubmittedOn { get; private set; }
+    [JsonPropertyName("awaitingCollection")] public bool AwaitingCollection { get; private set; }
 
-    [JsonProperty] public DateTime? OrderCompletedOn { get; private set; }
+    [JsonPropertyName("orderSubmittedOn")] public DateTime? OrderSubmittedOn { get; private set; }
+
+    [JsonPropertyName("orderCompletedOn")] public DateTime? OrderCompletedOn { get; private set; }
 
     [JsonIgnore] public IReadOnlyCollection<OrderItem> Items => _items;
 
@@ -84,21 +75,20 @@ public class Order
     [JsonIgnore]
     public IReadOnlyCollection<OrderHistory> History => _history.OrderBy(p => p.HistoryDate).ToList();
 
-    [JsonProperty]
+    [JsonPropertyName("orderType")]
     public OrderType OrderType { get; private set; }
 
-    [JsonProperty] public string CustomerIdentifier { get; private set; }
+    [JsonPropertyName("customerIdentifier")] public string CustomerIdentifier { get; private set; }
 
-    [JsonProperty] public decimal TotalPrice { get; private set; }
+    [JsonPropertyName("totalPrice")] public decimal TotalPrice { get; private set; }
 
-    [JsonProperty] public DeliveryDetails? DeliveryDetails { get; private set; }
+    [JsonPropertyName("deliveryDetails")] public DeliveryDetails? DeliveryDetails { get; private set; }
 
     public void AddOrderItem(string recipeIdentifier, string itemName, int quantity, decimal price)
     {
         if (OrderSubmittedOn.HasValue)
         {
-            ApplicationLogger.Warn(
-                "Attempting to add an order item to an order that has already been submitted, skipping");
+            Activity.Current?.AddTag("order.submitted", true);
             return;
         }
 
@@ -150,7 +140,7 @@ public class Order
     {
         if (_history == null) _history = new List<OrderHistory>(1);
 
-        _history.Add(new OrderHistory(description, DateTime.Now.ToUniversalTime()));
+        _history.Add(new OrderHistory(description, DateTime.UtcNow));
     }
 
     public void Recalculate()
@@ -160,47 +150,27 @@ public class Order
         if (OrderType == OrderType.Delivery) TotalPrice += DefaultDeliveryPrice;
     }
 
-    public async Task SubmitOrderAsync(string correlationId = "")
+    public void MarkAsSubmitted()
     {
-        if (!_items.Any()) throw new ArgumentException("Cannot submit an order with no items");
-
         OrderSubmittedOn = DateTime.UtcNow;
-
-        AddHistory($"Submitted order.");
-
-        await DomainEvents.Raise(new OrderSubmittedEvent(OrderIdentifier)
-        {
-            CorrelationId = correlationId
-        });
     }
 
-    public void IsAwaitingCollection(string correlationId = "")
+    public void MarkAsAwaitingCollection()
     {
         AwaitingCollection = true;
-
-        AddHistory("Order awaiting collection");
+        AddHistory("Order is awaiting collection.");
     }
 
-    public async Task CompleteOrderAsync(string correlationId = "")
+    public void MarkAsCompleted()
     {
         OrderCompletedOn = DateTime.UtcNow;
         AwaitingCollection = false;
-
-        AddHistory($"Order completed.");
-
-        var evt = new OrderCompletedEvent(CustomerIdentifier, OrderIdentifier, TotalPrice)
-        {
-            CorrelationId = correlationId
-        };
-
-        await DomainEvents.Raise(evt);
-        addIntegrationEvent(evt);
     }
 
-    private void addIntegrationEvent(IntegrationEvent evt)
+    public void AddIntegrationEvent(IntegrationEvent evt)
     {
         if (_events is null) _events = new List<IntegrationEvent>();
-
         _events.Add(evt);
     }
+
 }

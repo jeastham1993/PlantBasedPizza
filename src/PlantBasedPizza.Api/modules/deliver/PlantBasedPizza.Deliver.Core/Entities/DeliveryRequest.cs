@@ -36,25 +36,15 @@ namespace PlantBasedPizza.Deliver.Core.Entities
         [JsonPropertyName("deliveredOn")]
         public DateTime? DeliveredOn { get; private set; }
 
-        public async Task ClaimDelivery(string driverName, string correlationId = "")
+        public void AssignDriver(string driverName)
         {
             this.Driver = driverName;
-            this.DriverCollectedOn = DateTime.Now.ToUniversalTime();
-
-            await DomainEvents.Raise(new DriverCollectedOrderEvent(this.OrderIdentifier, driverName)
-            {
-                CorrelationId = correlationId
-            });
+            this.DriverCollectedOn = DateTime.UtcNow;
         }
 
-        public async Task Deliver(string correlationId = "")
+        public void MarkAsDelivered()
         {
-            this.DeliveredOn = DateTime.Now.ToUniversalTime();
-
-            await DomainEvents.Raise(new OrderDeliveredEvent(this.OrderIdentifier)
-            {
-                CorrelationId = correlationId
-            });
+            this.DeliveredOn = DateTime.UtcNow;
         }
     }
 }

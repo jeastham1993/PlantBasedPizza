@@ -25,6 +25,10 @@ public static class Setup
 
         services.AddTransient<RecipeDataTransferService>();
         services.AddScoped<IRecipeRepository, RecipeRepositoryPostgres>();
+        
+        // Domain services and factories
+        services.AddTransient<PlantBasedPizza.Recipes.Core.Services.IRecipeFactory, PlantBasedPizza.Recipes.Core.Services.RecipeFactory>();
+        services.AddTransient<PlantBasedPizza.Recipes.Core.Services.IRecipeDomainService, PlantBasedPizza.Recipes.Core.Services.RecipeDomainService>();
 
         return services;
     }

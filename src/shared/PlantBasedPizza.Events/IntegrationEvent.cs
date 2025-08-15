@@ -2,21 +2,18 @@
 // This product includes software developed at Datadog (https://www.datadoghq.com/).
 // Copyright 2025 Datadog, Inc.
 
-using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace PlantBasedPizza.Events;
 
 public abstract class IntegrationEvent
 {
-    [System.Text.Json.Serialization.JsonIgnore]
     [JsonIgnore]
     public abstract string EventName { get; }
     
-    [System.Text.Json.Serialization.JsonIgnore]
     [JsonIgnore]
     public abstract string EventVersion { get; }
     
-    [System.Text.Json.Serialization.JsonIgnore]
     [JsonIgnore]
     public abstract Uri Source { get; }
     

@@ -49,50 +49,27 @@ namespace PlantBasedPizza.Kitchen.Core.Entities
         [JsonPropertyName("recipes")]
         public List<RecipeAdapter> Recipes { get; private set; }
 
-        public void Preparing(string correlationId = "")
+        public void StartPreparing()
         {
             this.OrderState = OrderState.PREPARING;
-
-            DomainEvents.Raise(new OrderPreparingEvent(this.OrderIdentifier)
-            {
-                CorrelationId = correlationId
-            });
         }
 
-        public void PrepComplete(string correlationId = "")
+        public void CompletePreparing()
         {
             this.OrderState = OrderState.BAKING;
-            
-            this.PrepCompleteOn = DateTime.Now.ToUniversalTime();
-            
-            DomainEvents.Raise(new OrderPrepCompleteEvent(this.OrderIdentifier)
-            {
-                CorrelationId = correlationId
-            });
+            this.PrepCompleteOn = DateTime.UtcNow;
         }
 
-        public void BakeComplete(string correlationId = "")
+        public void CompleteBaking()
         {
             this.OrderState = OrderState.QUALITYCHECK;
-            
-            this.BakeCompleteOn = DateTime.Now.ToUniversalTime();
-            
-            DomainEvents.Raise(new OrderBakedEvent(this.OrderIdentifier)
-            {
-                CorrelationId = correlationId
-            });
+            this.BakeCompleteOn = DateTime.UtcNow;
         }
 
-        public async Task QualityCheckComplete(string correlationId = "")
+        public void CompleteQualityCheck()
         {
             this.OrderState = OrderState.DONE;
-            
-            this.QualityCheckCompleteOn = DateTime.Now.ToUniversalTime();
-
-            await DomainEvents.Raise(new OrderQualityCheckedEvent(this.OrderIdentifier)
-            {
-                CorrelationId = correlationId
-            });
+            this.QualityCheckCompleteOn = DateTime.UtcNow;
         }
     }
 }

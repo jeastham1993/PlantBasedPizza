@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using PlantBasedPizza.Kitchen.Core.Entities;
 using PlantBasedPizza.Kitchen.Infrastructure.DataTransfer;
 using PlantBasedPizza.Shared.Logging;
@@ -8,7 +9,7 @@ namespace PlantBasedPizza.Kitchen.Infrastructure.Controllers
     [Route("kitchen")]
     public class KitchenController(
         IKitchenRequestRepository kitchenRequestRepository,
-        IObservabilityService observabilityService)
+        ILogger<KitchenController> logger)
         : ControllerBase
     {
         /// <summary>
@@ -26,7 +27,7 @@ namespace PlantBasedPizza.Kitchen.Infrastructure.Controllers
             }
             catch (Exception ex)
             {
-                observabilityService.Error(ex, "Error processing");
+                logger.LogError(ex, "Error processing");
                 return new List<KitchenRequestDTO>();
             }
         }
@@ -39,11 +40,11 @@ namespace PlantBasedPizza.Kitchen.Infrastructure.Controllers
         [HttpPut("{orderIdentifier}/preparing")]
         public KitchenRequest Preparing(string orderIdentifier)
         {
-            ApplicationLogger.Info("Received request to prepare order");
+            logger.LogInformation("Received request to prepare order");
 
             var kitchenRequest = kitchenRequestRepository.Retrieve(orderIdentifier).Result;
 
-            kitchenRequest.Preparing(this.Request.Headers["CorrelationId"].ToString());
+            kitchenRequest.StartPreparing();
 
             kitchenRequestRepository.Update(kitchenRequest).Wait();
 
@@ -65,7 +66,7 @@ namespace PlantBasedPizza.Kitchen.Infrastructure.Controllers
             }
             catch (Exception ex)
             {
-                observabilityService.Error(ex, "Error processing");
+                logger.LogError(ex, "Error processing");
                 return new List<KitchenRequestDTO>();
             }
         }
@@ -80,7 +81,7 @@ namespace PlantBasedPizza.Kitchen.Infrastructure.Controllers
         {
             var kitchenRequest = kitchenRequestRepository.Retrieve(orderIdentifier).Result;
 
-            kitchenRequest.PrepComplete(this.Request.Headers["CorrelationId"].ToString());
+            kitchenRequest.CompletePreparing();
 
             kitchenRequestRepository.Update(kitchenRequest).Wait();
 
@@ -102,7 +103,7 @@ namespace PlantBasedPizza.Kitchen.Infrastructure.Controllers
             }
             catch (Exception ex)
             {
-                observabilityService.Error(ex, "Error processing");
+                logger.LogError(ex, "Error processing");
                 return new List<KitchenRequestDTO>();
             }
         }
@@ -117,7 +118,7 @@ namespace PlantBasedPizza.Kitchen.Infrastructure.Controllers
         {
             var kitchenRequest = kitchenRequestRepository.Retrieve(orderIdentifier).Result;
 
-            kitchenRequest.BakeComplete(this.Request.Headers["CorrelationId"].ToString());
+            kitchenRequest.CompleteBaking();
 
             kitchenRequestRepository.Update(kitchenRequest).Wait();
 
@@ -130,13 +131,13 @@ namespace PlantBasedPizza.Kitchen.Infrastructure.Controllers
         /// <param name="orderIdentifier">The order identifier.</param>
         /// <returns></returns>
         [HttpPut("{orderIdentifier}/quality-check")]
-        public KitchenRequest QualityCheckComplete(string orderIdentifier)
+        public async Task<KitchenRequest> QualityCheckComplete(string orderIdentifier)
         {
             var kitchenRequest = kitchenRequestRepository.Retrieve(orderIdentifier).Result;
 
-            kitchenRequest.QualityCheckComplete(this.Request.Headers["CorrelationId"].ToString()).Wait();
+            kitchenRequest.CompleteQualityCheck();
 
-            kitchenRequestRepository.Update(kitchenRequest).Wait();
+            await kitchenRequestRepository.Update(kitchenRequest);
 
             return kitchenRequest;
         }
@@ -156,7 +157,7 @@ namespace PlantBasedPizza.Kitchen.Infrastructure.Controllers
             }
             catch (Exception ex)
             {
-                observabilityService.Error(ex, "Error processing");
+                logger.LogError(ex, "Error processing");
                 return new List<KitchenRequestDTO>();
             }
         }

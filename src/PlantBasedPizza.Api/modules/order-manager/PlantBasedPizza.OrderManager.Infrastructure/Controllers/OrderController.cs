@@ -64,7 +64,7 @@ public class OrderController : ControllerBase
     /// <param name="request">The <see cref="CreatePickupOrderCommand"/> command contents.</param>
     /// <returns></returns>
     [HttpPost("pickup")]
-    public async Task<OrderDto?> Create([FromBody] CreatePickupOrderCommand request)
+    public async Task<OrderDto?> CreatePickupOrder([FromBody] CreatePickupOrderCommand request)
     {
         return await _createPickupOrderCommandHandler.Handle(request);
     }
@@ -75,7 +75,7 @@ public class OrderController : ControllerBase
     /// <param name="request">The <see cref="CreateDeliveryOrder"/> request.</param>
     /// <returns></returns>
     [HttpPost("deliver")]
-    public async Task<OrderDto?> Create([FromBody] CreateDeliveryOrder request)
+    public async Task<OrderDto?> CreateDeliveryOrder([FromBody] CreateDeliveryOrderCommand request)
     {
         return await _createDeliveryOrderCommandHandler.Handle(request);
     }

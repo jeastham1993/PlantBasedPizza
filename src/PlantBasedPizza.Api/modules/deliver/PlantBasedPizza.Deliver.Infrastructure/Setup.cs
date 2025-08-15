@@ -23,6 +23,10 @@ namespace PlantBasedPizza.Deliver.Infrastructure
             services.AddScoped<IDeliveryRequestRepository, DeliveryRequestRepositoryPostgres>();
             services.AddTransient<Handles<OrderReadyForDeliveryEvent>, OrderReadyForDeliveryEventHandler>();
             services.AddTransient<GetDeliveryQueryHandler>();
+            
+            // Domain services and factories
+            services.AddTransient<PlantBasedPizza.Deliver.Core.Services.IDeliveryRequestFactory, PlantBasedPizza.Deliver.Core.Services.DeliveryRequestFactory>();
+            services.AddTransient<PlantBasedPizza.Deliver.Core.Services.IDeliveryDomainService, PlantBasedPizza.Deliver.Core.Services.DeliveryDomainService>();
 
             return services;
         }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
+using System.Text.Json;
 using PlantBasedPizza.IntegrationTests.ViewModels;
 
 namespace PlantBasedPizza.IntegrationTests.Drivers
@@ -13,6 +13,12 @@ namespace PlantBasedPizza.IntegrationTests.Drivers
         private static string BaseUrl = TestConstants.DefaultTestUrl;
 
         private readonly HttpClient _httpClient;
+        private readonly JsonSerializerOptions _jsonSerializerOptions = new JsonSerializerOptions()
+        {
+            PropertyNameCaseInsensitive = true,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            WriteIndented = true
+        };
 
         public KitchenDriver()
         {
@@ -23,7 +29,7 @@ namespace PlantBasedPizza.IntegrationTests.Drivers
         {
             var result = await this._httpClient.GetAsync(new Uri($"{BaseUrl}/kitchen/new")).ConfigureAwait(false);
 
-            var kitchenRequests = JsonConvert.DeserializeObject<List<KitchenRequest>>(await result.Content.ReadAsStringAsync());
+            var kitchenRequests = JsonSerializer.Deserialize<List<KitchenRequest>>(await result.Content.ReadAsStringAsync(), _jsonSerializerOptions);
 
             return kitchenRequests;
         }
@@ -32,7 +38,7 @@ namespace PlantBasedPizza.IntegrationTests.Drivers
         {
             var result = await this._httpClient.GetAsync(new Uri($"{BaseUrl}/kitchen/prep")).ConfigureAwait(false);
 
-            var kitchenRequests = JsonConvert.DeserializeObject<List<KitchenRequest>>(await result.Content.ReadAsStringAsync());
+            var kitchenRequests = JsonSerializer.Deserialize<List<KitchenRequest>>(await result.Content.ReadAsStringAsync(), _jsonSerializerOptions);
 
             return kitchenRequests;
         }
@@ -41,7 +47,7 @@ namespace PlantBasedPizza.IntegrationTests.Drivers
         {
             var result = await this._httpClient.GetAsync(new Uri($"{BaseUrl}/kitchen/baking")).ConfigureAwait(false);
 
-            var kitchenRequests = JsonConvert.DeserializeObject<List<KitchenRequest>>(await result.Content.ReadAsStringAsync());
+            var kitchenRequests = JsonSerializer.Deserialize<List<KitchenRequest>>(await result.Content.ReadAsStringAsync(), _jsonSerializerOptions);
 
             return kitchenRequests;
         }
@@ -50,7 +56,7 @@ namespace PlantBasedPizza.IntegrationTests.Drivers
         {
             var result = await this._httpClient.GetAsync(new Uri($"{BaseUrl}/kitchen/quality-check")).ConfigureAwait(false);
 
-            var kitchenRequests = JsonConvert.DeserializeObject<List<KitchenRequest>>(await result.Content.ReadAsStringAsync());
+            var kitchenRequests = JsonSerializer.Deserialize<List<KitchenRequest>>(await result.Content.ReadAsStringAsync(), _jsonSerializerOptions);
 
             return kitchenRequests;
         }

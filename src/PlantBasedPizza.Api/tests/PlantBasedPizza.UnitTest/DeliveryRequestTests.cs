@@ -1,9 +1,11 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
-using Moq;
+using FakeItEasy;
 using PlantBasedPizza.Deliver.Core.Entities;
 using PlantBasedPizza.Deliver.Core.Handlers;
+using PlantBasedPizza.Deliver.Core.Services;
 using PlantBasedPizza.Events;
 using PlantBasedPizza.Shared.Events;
 using PlantBasedPizza.Shared.Logging;
@@ -27,58 +29,54 @@ namespace PlantBasedPizza.UnitTest
         }
         
         [Fact]
-        public void CanCreateNewDeliveryRequestAddAddDriver_ShouldAddDriverAndRaiseEvent()
+        public async Task CanCreateNewDeliveryRequestAddAddDriver_ShouldAddDriverAndRaiseEvent()
         {
-            var driverName = "";
-            
-            DomainEvents.Register<DriverCollectedOrderEvent>((evt) =>
-            {
-                driverName = evt.DriverName;
-            });
-            
+            // Arrange
+            var mockEventDispatcher = A.Fake<IDomainEventDispatcher>();
+            var deliveryService = new DeliveryDomainService(mockEventDispatcher);
             var request = new DeliveryRequest(OrderIdentifier, new Address("Address line 1", "TY6 7UI"));
 
-            request.ClaimDelivery("James");
+            // Act
+            await deliveryService.ClaimDeliveryAsync(request, "James");
 
+            // Assert
             request.Driver.Should().Be("James");
-            request.DriverCollectedOn.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(5));
-
-            driverName.Should().Be("James");
+            request.DriverCollectedOn.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(5));
+            A.CallTo(() => mockEventDispatcher.PublishAsync(A<DriverCollectedOrderEvent>._, A<CancellationToken>._))
+                .MustHaveHappenedOnceExactly();
         }
         
         [Fact]
         public async Task OrderReadyForDeliveryHandler_ShouldStoreNewDeliveryRequest()
         {
-            var mockRepo = new Mock<IDeliveryRequestRepository>();
-            mockRepo.Setup(p => p.AddNewDeliveryRequest(It.IsAny<DeliveryRequest>()))
-                .Verifiable();
-            var mockLogger = new Mock<IObservabilityService>();
+            var mockRepo = A.Fake<IDeliveryRequestRepository>();
+            // Set up the repository to return null, indicating no existing delivery request
+            A.CallTo(() => mockRepo.GetDeliveryStatusForOrder(A<string>._)).Returns((DeliveryRequest)null);
+            var mockLogger = A.Fake<IObservabilityService>();
 
-            var handler = new OrderReadyForDeliveryEventHandler(mockRepo.Object, mockLogger.Object);
+            var handler = new OrderReadyForDeliveryEventHandler(mockRepo, mockLogger);
 
             await handler.Handle(new OrderReadyForDeliveryEvent(OrderIdentifier, "Address line 1", string.Empty,
                 string.Empty, string.Empty, string.Empty, "TY6 7UI"));
             
-            mockRepo.Verify(p => p.AddNewDeliveryRequest(It.IsAny<DeliveryRequest>()), Times.Once);
+            A.CallTo(() => mockRepo.AddNewDeliveryRequest(A<DeliveryRequest>._)).MustHaveHappenedOnceExactly();
         }
         
         [Fact]
         public async Task OrderReadyForDeliveryHandlerImmutabilityCheck_ShouldSkipIfOrderAlreadyFound()
         {
-            var mockRepo = new Mock<IDeliveryRequestRepository>();
-            mockRepo.Setup(p => p.AddNewDeliveryRequest(It.IsAny<DeliveryRequest>()))
-                .Verifiable();
-            mockRepo.Setup(p => p.GetDeliveryStatusForOrder(It.IsAny<string>()))
-                .ReturnsAsync(new DeliveryRequest(OrderIdentifier, new Address("Address line 1", "TY6 7UI")));
+            var mockRepo = A.Fake<IDeliveryRequestRepository>();
+            A.CallTo(() => mockRepo.GetDeliveryStatusForOrder(A<string>._))
+                .Returns(new DeliveryRequest(OrderIdentifier, new Address("Address line 1", "TY6 7UI")));
             
-            var mockLogger = new Mock<IObservabilityService>();
+            var mockLogger = A.Fake<IObservabilityService>();
 
-            var handler = new OrderReadyForDeliveryEventHandler(mockRepo.Object, mockLogger.Object);
+            var handler = new OrderReadyForDeliveryEventHandler(mockRepo, mockLogger);
 
             await handler.Handle(new OrderReadyForDeliveryEvent(OrderIdentifier, "Address line 1", string.Empty,
                 string.Empty, string.Empty, string.Empty, "TY6 7UI"));
             
-            mockRepo.Verify(p => p.AddNewDeliveryRequest(It.IsAny<DeliveryRequest>()), Times.Never);
+            A.CallTo(() => mockRepo.AddNewDeliveryRequest(A<DeliveryRequest>._)).MustNotHaveHappened();
         }
     }
 }

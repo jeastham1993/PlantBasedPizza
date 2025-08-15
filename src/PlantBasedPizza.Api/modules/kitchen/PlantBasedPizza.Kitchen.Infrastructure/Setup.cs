@@ -24,6 +24,10 @@ namespace PlantBasedPizza.Kitchen.Infrastructure
             services.AddTransient<IOrderManagerService, OrderManagerService>();
             services.AddTransient<Handles<OrderSubmittedEvent>, OrderSubmittedEventHandler>();
             services.AddScoped<IKitchenRequestRepository, KitchenRequestRepositoryPostgres>();
+            
+            // Domain services and factories - TODO: Complete implementation
+            // services.AddTransient<IKitchenRequestFactory, PlantBasedPizza.Kitchen.Core.Services.KitchenRequestFactory>();
+            // services.AddTransient<IKitchenRequestDomainService, PlantBasedPizza.Kitchen.Core.Services.KitchenRequestDomainService>();
 
             return services;
         }

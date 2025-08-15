@@ -7,7 +7,7 @@ using PlantBasedPizza.OrderManager.Core.Services;
 
 namespace PlantBasedPizza.OrderManager.Core.SubmitOrder;
 
-public class SubmitOrderCommandHandler(IOrderRepository orderRepository, IPaymentService paymentService)
+public class SubmitOrderCommandHandler(IOrderRepository orderRepository, IPaymentService paymentService, IOrderDomainService orderDomainService)
 {
     public async Task<OrderDto?> Handle(SubmitOrderCommand request)
     {
@@ -22,7 +22,7 @@ public class SubmitOrderCommandHandler(IOrderRepository orderRepository, IPaymen
                 return null;
             }
 
-            await order.SubmitOrderAsync();
+            await orderDomainService.SubmitOrderAsync(order);
 
             await orderRepository.Update(order);
 
