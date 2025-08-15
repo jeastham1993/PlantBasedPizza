@@ -1,8 +1,11 @@
 using System.Diagnostics;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using PlantBasedPizza.OrderManager.Core;
 using PlantBasedPizza.OrderManager.Core.AddItemToOrder;
 using PlantBasedPizza.OrderManager.Core.CollectOrder;
+using PlantBasedPizza.OrderManager.Core.Configuration;
 using PlantBasedPizza.OrderManager.Core.CreateDeliveryOrder;
 using PlantBasedPizza.OrderManager.Core.CreatePickupOrder;
 using PlantBasedPizza.OrderManager.Core.SubmitOrder;
@@ -18,12 +21,20 @@ public class OrderController : ControllerBase
     private readonly CreateDeliveryOrderCommandHandler _createDeliveryOrderCommandHandler;
     private readonly CreatePickupOrderCommandHandler _createPickupOrderCommandHandler;
     private readonly SubmitOrderCommandHandler _submitOrderCommandHandler;
+    private readonly IValidator<CreatePickupOrderCommand> _createPickupOrderValidator;
+    private readonly IValidator<CreateDeliveryOrderCommand> _createDeliveryOrderValidator;
+    private readonly IValidator<AddItemToOrderCommand> _addItemToOrderValidator;
+    private readonly OrderOptions _orderOptions;
 
     public OrderController(IOrderRepository orderRepository, CollectOrderCommandHandler collectOrderCommandHandler,
         AddItemToOrderHandler addItemToOrderHandler,
         CreateDeliveryOrderCommandHandler createDeliveryOrderCommandHandler,
         CreatePickupOrderCommandHandler createPickupOrderCommandHandler,
-        SubmitOrderCommandHandler submitOrderCommandHandler)
+        SubmitOrderCommandHandler submitOrderCommandHandler,
+        IValidator<CreatePickupOrderCommand> createPickupOrderValidator,
+        IValidator<CreateDeliveryOrderCommand> createDeliveryOrderValidator,
+        IValidator<AddItemToOrderCommand> addItemToOrderValidator,
+        IOptions<OrderOptions> orderOptions)
     {
         _orderRepository = orderRepository;
         _collectOrderCommandHandler = collectOrderCommandHandler;
@@ -31,6 +42,10 @@ public class OrderController : ControllerBase
         _createDeliveryOrderCommandHandler = createDeliveryOrderCommandHandler;
         _createPickupOrderCommandHandler = createPickupOrderCommandHandler;
         _submitOrderCommandHandler = submitOrderCommandHandler;
+        _createPickupOrderValidator = createPickupOrderValidator ?? throw new ArgumentNullException(nameof(createPickupOrderValidator));
+        _createDeliveryOrderValidator = createDeliveryOrderValidator ?? throw new ArgumentNullException(nameof(createDeliveryOrderValidator));
+        _addItemToOrderValidator = addItemToOrderValidator ?? throw new ArgumentNullException(nameof(addItemToOrderValidator));
+        _orderOptions = orderOptions?.Value ?? throw new ArgumentNullException(nameof(orderOptions));
     }
 
     /// <summary>
@@ -64,9 +79,22 @@ public class OrderController : ControllerBase
     /// <param name="request">The <see cref="CreatePickupOrderCommand"/> command contents.</param>
     /// <returns></returns>
     [HttpPost("pickup")]
-    public async Task<OrderDto?> CreatePickupOrder([FromBody] CreatePickupOrderCommand request)
+    public async Task<ActionResult<OrderDto>> CreatePickupOrder([FromBody] CreatePickupOrderCommand request)
     {
-        return await _createPickupOrderCommandHandler.Handle(request);
+        var validationResult = await _createPickupOrderValidator.ValidateAsync(request);
+        
+        if (!validationResult.IsValid)
+        {
+            var problemDetails = new ValidationProblemDetails();
+            foreach (var error in validationResult.Errors)
+            {
+                problemDetails.Errors.Add(error.PropertyName, new[] { error.ErrorMessage });
+            }
+            return BadRequest(problemDetails);
+        }
+        
+        var result = await _createPickupOrderCommandHandler.Handle(request);
+        return result is not null ? Ok(result) : BadRequest("Failed to create pickup order");
     }
 
     /// <summary>
@@ -75,9 +103,22 @@ public class OrderController : ControllerBase
     /// <param name="request">The <see cref="CreateDeliveryOrder"/> request.</param>
     /// <returns></returns>
     [HttpPost("deliver")]
-    public async Task<OrderDto?> CreateDeliveryOrder([FromBody] CreateDeliveryOrderCommand request)
+    public async Task<ActionResult<OrderDto>> CreateDeliveryOrder([FromBody] CreateDeliveryOrderCommand request)
     {
-        return await _createDeliveryOrderCommandHandler.Handle(request);
+        var validationResult = await _createDeliveryOrderValidator.ValidateAsync(request);
+        
+        if (!validationResult.IsValid)
+        {
+            var problemDetails = new ValidationProblemDetails();
+            foreach (var error in validationResult.Errors)
+            {
+                problemDetails.Errors.Add(error.PropertyName, new[] { error.ErrorMessage });
+            }
+            return BadRequest(problemDetails);
+        }
+        
+        var result = await _createDeliveryOrderCommandHandler.Handle(request);
+        return result is not null ? Ok(result) : BadRequest("Failed to create delivery order");
     }
 
     /// <summary>
@@ -86,15 +127,25 @@ public class OrderController : ControllerBase
     /// <param name="request">the <see cref="AddItemToOrderCommand"/> request.</param>
     /// <returns></returns>
     [HttpPost("{orderIdentifier}/items")]
-    public async Task<OrderDto?> AddItemToOrder([FromBody] AddItemToOrderCommand request)
+    public async Task<ActionResult<OrderDto>> AddItemToOrder([FromBody] AddItemToOrderCommand request)
     {
+        var validationResult = await _addItemToOrderValidator.ValidateAsync(request);
+        
+        if (!validationResult.IsValid)
+        {
+            var problemDetails = new ValidationProblemDetails();
+            foreach (var error in validationResult.Errors)
+            {
+                problemDetails.Errors.Add(error.PropertyName, new[] { error.ErrorMessage });
+            }
+            return BadRequest(problemDetails);
+        }
+
         request.AddToTelemetry();
 
         var order = await _addItemToOrderHandler.Handle(request);
 
-        if (order is null) Response.StatusCode = 404;
-
-        return order;
+        return order is not null ? Ok(order) : NotFound();
     }
 
     /// <summary>
