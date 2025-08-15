@@ -3,12 +3,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentAssertions;
 using FakeItEasy;
+using Microsoft.Extensions.Logging;
 using PlantBasedPizza.Deliver.Core.Entities;
 using PlantBasedPizza.Deliver.Core.Handlers;
 using PlantBasedPizza.Deliver.Core.Services;
 using PlantBasedPizza.Events;
 using PlantBasedPizza.Shared.Events;
-using PlantBasedPizza.Shared.Logging;
 using Xunit;
 
 namespace PlantBasedPizza.UnitTest
@@ -52,7 +52,7 @@ namespace PlantBasedPizza.UnitTest
             var mockRepo = A.Fake<IDeliveryRequestRepository>();
             // Set up the repository to return null, indicating no existing delivery request
             A.CallTo(() => mockRepo.GetDeliveryStatusForOrder(A<string>._)).Returns((DeliveryRequest)null);
-            var mockLogger = A.Fake<IObservabilityService>();
+            var mockLogger = A.Fake<ILogger<OrderReadyForDeliveryEventHandler>>();
 
             var handler = new OrderReadyForDeliveryEventHandler(mockRepo, mockLogger);
 
@@ -69,7 +69,7 @@ namespace PlantBasedPizza.UnitTest
             A.CallTo(() => mockRepo.GetDeliveryStatusForOrder(A<string>._))
                 .Returns(new DeliveryRequest(OrderIdentifier, new Address("Address line 1", "TY6 7UI")));
             
-            var mockLogger = A.Fake<IObservabilityService>();
+            var mockLogger = A.Fake<ILogger<OrderReadyForDeliveryEventHandler>>();
 
             var handler = new OrderReadyForDeliveryEventHandler(mockRepo, mockLogger);
 

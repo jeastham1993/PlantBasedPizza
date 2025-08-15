@@ -35,7 +35,6 @@ namespace PlantBasedPizza.Shared.Events
                 Activity.Current?.SetTag("events.eventVersion", evt.EventVersion);
                 Activity.Current?.SetTag("correlationId", evt.CorrelationId);
                 
-                var observability = Container.GetService<IObservabilityService>();
                 var serviceScopeFactory = Container.GetService<IServiceScopeFactory>();
 
                 if (serviceScopeFactory is null)

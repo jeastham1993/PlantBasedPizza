@@ -147,7 +147,7 @@ app.MapGet("/utils/__migrate", async (
 
 app.Use(async (context, next) =>
 {
-    var observability = app.Services.GetService<IObservabilityService>();
+    var logger = app.Services.GetRequiredService<ILogger<Program>>();
 
     var correlationId = string.Empty;
 
@@ -164,7 +164,7 @@ app.Use(async (context, next) =>
 
     CorrelationContext.SetCorrelationId(correlationId);
 
-    observability?.Info($"Request received to {context.Request.Path.Value}");
+    logger.LogInformation($"Request received to {context.Request.Path.Value}");
 
     context.Response.Headers.Append(CorrelationContext.DefaultRequestHeaderName, correlationId);
 
