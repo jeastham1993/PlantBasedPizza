@@ -11,6 +11,7 @@ var application = builder.AddProject<Projects.PlantBasedPizza_Api>("api")
     .WithEnvironment("ConnectionStrings__OrderManagerPostgresConnection", db)
     .WithEnvironment("ConnectionStrings__KitchenPostgresConnection", db)
     .WithEnvironment("ConnectionStrings__DeliveryPostgresConnection", db)
+    .WithEnvironment("ASPNETCORE_URLS", "http://localhost:8080")
     .WaitFor(db);
 
 builder.Build().Run();

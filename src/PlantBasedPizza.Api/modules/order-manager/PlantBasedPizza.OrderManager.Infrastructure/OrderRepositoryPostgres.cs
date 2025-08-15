@@ -24,17 +24,17 @@ public class OrderRepositoryPostgres : IOrderRepository
         {
             await _context.Orders.AddAsync(order);
             await _context.SaveChangesAsync();
-            
+
+
             foreach (var evt in order.Events)
-            {
                 await _context.OutboxItems.AddAsync(new OutboxItem
                 {
                     EventData = evt.AsString(),
-                    EventType = evt.GetType().Name,
-                    Processed = false
+                    EventType = evt.GetType()
+                        .Name,
+                    Processed = false,
+                    Failed = false,
                 });
-            }
-            
             await _context.SaveChangesAsync();
             await transaction.CommitAsync();
         }
@@ -79,19 +79,21 @@ public class OrderRepositoryPostgres : IOrderRepository
         {
             _context.Orders.Update(order);
             await _context.SaveChangesAsync();
-            
+
             foreach (var evt in order.Events)
             {
                 _logger.LogInformation("Writing {evt} to outbox", evt.GetType().Name);
-                
+
                 await _context.OutboxItems.AddAsync(new OutboxItem
                 {
                     EventData = evt.AsString(),
-                    EventType = evt.GetType().Name,
-                    Processed = false
+                    EventType = evt.GetType()
+                        .Name,
+                    Processed = false,
+                    Failed = false,
                 });
             }
-            
+
             await _context.SaveChangesAsync();
             await transaction.CommitAsync();
         }
@@ -101,4 +103,4 @@ public class OrderRepositoryPostgres : IOrderRepository
             throw;
         }
     }
-} 
+}

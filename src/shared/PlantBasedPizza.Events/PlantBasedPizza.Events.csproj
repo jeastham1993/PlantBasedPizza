@@ -14,7 +14,7 @@
     <PackageReference Include="CloudNative.CloudEvents" Version="2.8.0" />
     <PackageReference Include="CloudNative.CloudEvents.AspNetCore" Version="2.8.0" />
     <PackageReference Include="CloudNative.CloudEvents.NewtonsoftJson" Version="2.8.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.8" />
     <PackageReference Include="Saunter" Version="0.13.0" />
   </ItemGroup>
 

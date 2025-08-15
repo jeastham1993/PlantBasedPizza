@@ -6,6 +6,7 @@ using PlantBasedPizza.Api;
 using PlantBasedPizza.Deliver.Infrastructure;
 using PlantBasedPizza.Kitchen.Infrastructure;
 using PlantBasedPizza.OrderManager.Infrastructure;
+using PlantBasedPizza.Payment.Infrastructure;
 using PlantBasedPizza.Recipes.Infrastructure;
 using PlantBasedPizza.Shared;
 using PlantBasedPizza.Shared.Events;
@@ -44,7 +45,7 @@ if (!string.IsNullOrEmpty(connectionStringParameterName))
         WithDecryption = true
     });
     overrideConnectionString = parameter.Parameter.Value;
-    logger.Information($"Overriding connection string to: {overrideConnectionString}");
+    logger.Information("Connection string overridden from SSM parameter: {ParameterName}", connectionStringParameterName);
 }
 
 builder.Services.AddLambda(logger);
@@ -54,6 +55,7 @@ builder.Services.AddOrderManagerInfrastructure(builder.Configuration, overrideCo
     .AddRecipeInfrastructure(builder.Configuration, logger, overrideConnectionString)
     .AddKitchenInfrastructure(builder.Configuration, overrideConnectionString)
     .AddDeliveryModuleInfrastructure(builder.Configuration, overrideConnectionString)
+    .AddPaymentInfrastructure()
     .AddSharedInfrastructure(builder.Configuration, "PlantBasedPizza")
     .AddHttpClient();
 
@@ -104,13 +106,17 @@ app.Map("/health", async () =>
 {
     logger.Information("Health check requested");
     
-    var ordersDbContext = app.Services.GetRequiredService<OrderManagerDbContext>();
+    var serviceScopeFactory = app.Services.GetRequiredService<IServiceScopeFactory>();
+    
+    using var scope = serviceScopeFactory.CreateScope();
+    
+    var ordersDbContext = scope.ServiceProvider.GetRequiredService<OrderManagerDbContext>();
     var ordersConnectionState = await ordersDbContext.Database.CanConnectAsync();
-    var recipesDbContext = app.Services.GetRequiredService<RecipesDbContext>();
+    var recipesDbContext = scope.ServiceProvider.GetRequiredService<RecipesDbContext>();
     var recipesConnectionState = await recipesDbContext.Database.CanConnectAsync();
-    var deliveryDbContext = app.Services.GetRequiredService<DeliveryDbContext>();
+    var deliveryDbContext = scope.ServiceProvider.GetRequiredService<DeliveryDbContext>();
     var deliveryConnectionState = await deliveryDbContext.Database.CanConnectAsync();
-    var kitchenDbContext = app.Services.GetRequiredService<KitchenDbContext>();
+    var kitchenDbContext = scope.ServiceProvider.GetRequiredService<KitchenDbContext>();
     var kitchenConnectionState = await kitchenDbContext.Database.CanConnectAsync();
     
     logger.Information("Healthcheck complete: statuses are {ordersState}, {recipesState}, {deliveryState}, {kitchenState}",

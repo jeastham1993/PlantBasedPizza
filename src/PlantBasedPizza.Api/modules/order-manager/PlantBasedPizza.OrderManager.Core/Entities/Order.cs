@@ -160,18 +160,18 @@ public class Order
         if (OrderType == OrderType.Delivery) TotalPrice += DefaultDeliveryPrice;
     }
 
-    public void SubmitOrder(string correlationId = "")
+    public async Task SubmitOrderAsync(string correlationId = "")
     {
         if (!_items.Any()) throw new ArgumentException("Cannot submit an order with no items");
 
-        OrderSubmittedOn = DateTime.Now.ToUniversalTime();
+        OrderSubmittedOn = DateTime.UtcNow;
 
         AddHistory($"Submitted order.");
 
-        DomainEvents.Raise(new OrderSubmittedEvent(OrderIdentifier)
+        await DomainEvents.Raise(new OrderSubmittedEvent(OrderIdentifier)
         {
             CorrelationId = correlationId
-        }).Wait();
+        });
     }
 
     public void IsAwaitingCollection(string correlationId = "")
@@ -181,9 +181,9 @@ public class Order
         AddHistory("Order awaiting collection");
     }
 
-    public void CompleteOrder(string correlationId = "")
+    public async Task CompleteOrderAsync(string correlationId = "")
     {
-        OrderCompletedOn = DateTime.Now.ToUniversalTime();
+        OrderCompletedOn = DateTime.UtcNow;
         AwaitingCollection = false;
 
         AddHistory($"Order completed.");
@@ -193,7 +193,7 @@ public class Order
             CorrelationId = correlationId
         };
 
-        DomainEvents.Raise(evt).GetAwaiter().GetResult();
+        await DomainEvents.Raise(evt);
         addIntegrationEvent(evt);
     }
 

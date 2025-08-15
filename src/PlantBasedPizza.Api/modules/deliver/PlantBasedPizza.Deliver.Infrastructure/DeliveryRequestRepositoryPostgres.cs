@@ -15,6 +15,10 @@ namespace PlantBasedPizza.Deliver.Infrastructure
         
         public async Task AddNewDeliveryRequest(DeliveryRequest request)
         {
+            var address = await _context.Address.AddAsync(request.DeliveryAddress);
+            await _context.SaveChangesAsync();
+            
+            request.AddressId = address.Entity.AddressId;
             await _context.DeliveryRequests.AddAsync(request);
             await _context.SaveChangesAsync();
         }

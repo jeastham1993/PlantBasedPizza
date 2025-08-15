@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using FluentAssertions;
 using PlantBasedPizza.Events;
 using PlantBasedPizza.OrderManager.Core.Entities;
@@ -123,14 +124,14 @@ public class OrderManagerTests
     }
     
     [Fact]
-    public void CanCreateAndSubmitOrder_ShouldBeSubmitted()
+    public async Task CanCreateAndSubmitOrder_ShouldBeSubmitted()
     {
         string submittedOrder = null;
         
         DomainEvents.Register<OrderSubmittedEvent>((evt) =>
         {
             submittedOrder = evt.OrderIdentifier;
-            evt.EventDate.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(5));
+            evt.EventDate.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(5));
         });
         
         var order = Order.Create(DefaultOrderIdentifier, OrderType.Delivery, DefaultCustomerIdentifier, new DeliveryDetails()
@@ -141,14 +142,14 @@ public class OrderManagerTests
         
         order.AddOrderItem("PIZZA", "Pizza 1", 1, 10);
 
-        order.SubmitOrder();
+        await order.SubmitOrderAsync();
 
-        order.OrderSubmittedOn.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(5));
+        order.OrderSubmittedOn.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(5));
         submittedOrder.Should().NotBeNull();
     }
     
     [Fact]
-    public void AddItemsToASubmittedOrder_ShouldNotAdd()
+    public async Task AddItemsToASubmittedOrder_ShouldNotAdd()
     {
         var order = Order.Create(DefaultOrderIdentifier, OrderType.Delivery, DefaultCustomerIdentifier, new DeliveryDetails()
         {
@@ -158,7 +159,7 @@ public class OrderManagerTests
         
         order.AddOrderItem("PIZZA", "Pizza 1", 1, 10);
 
-        order.SubmitOrder();
+        await order.SubmitOrderAsync();
         
         order.AddOrderItem("PIZZA", "Pizza 1", 1, 10);
 
@@ -166,7 +167,7 @@ public class OrderManagerTests
     }
     
     [Fact]
-    public void CanCreateAndCompletetOrder_ShouldBeCompleted()
+    public async Task CanCreateAndCompletetOrder_ShouldBeCompleted()
     {
         string completedOrder = null;
         
@@ -183,9 +184,9 @@ public class OrderManagerTests
         
         order.AddOrderItem("PIZZA", "Pizza 1", 1, 10);
 
-        order.CompleteOrder();
+        await order.CompleteOrderAsync();
 
-        order.OrderCompletedOn.Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(5));
+        order.OrderCompletedOn.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(5));
         order.AwaitingCollection.Should().BeFalse();
 
         completedOrder.Should().NotBeNull();
@@ -193,13 +194,13 @@ public class OrderManagerTests
     
     
     [Fact]
-    public void SubmitOrderWithNoItems_ShouldError()
+    public async Task SubmitOrderWithNoItems_ShouldError()
     {
-        Assert.Throws<ArgumentException>(() =>
+        await Assert.ThrowsAsync<ArgumentException>(async () =>
         {
             var order = Order.Create(DefaultOrderIdentifier, OrderType.Pickup, DefaultCustomerIdentifier);
             
-            order.SubmitOrder();
+            await order.SubmitOrderAsync();
         });
     }
     

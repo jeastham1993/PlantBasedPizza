@@ -19,8 +19,8 @@ namespace PlantBasedPizza.Deliver.Core.Entities
         
         [JsonPropertyName("orderIdentifier")]
         public string OrderIdentifier { get; private set; } = "";
-        
-        public int AddressId { get; set; }
+
+        public int AddressId { get; set; } = -1;
         
         [JsonPropertyName("driver")]
         public string Driver { get; private set; } = "";

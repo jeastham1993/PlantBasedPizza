@@ -98,6 +98,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza_FunctionApp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Aspire", "src\PlantBasedPizza.Aspire\PlantBasedPizza.Aspire.csproj", "{FA2CC564-1D56-4422-99AB-BF9A0EEA9482}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "payment", "payment", "{C5ADB470-AE21-4D15-9179-70C05C340663}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Payment.Core", "src\PlantBasedPizza.Api\modules\payment\PlantBasedPizza.Payment.Core\PlantBasedPizza.Payment.Core.csproj", "{F886BA31-A5B9-49A9-A4DB-E5A0BB45027A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Payment.Infrastructure", "src\PlantBasedPizza.Api\modules\payment\PlantBasedPizza.Payment.Infrastructure\PlantBasedPizza.Payment.Infrastructure.csproj", "{E379E05C-0CE7-4305-8594-21B4681165C9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlantBasedPizza.Payment.DataTransfer", "src\PlantBasedPizza.Api\modules\payment\PlantBasedPizza.Payment.DataTransfer\PlantBasedPizza.Payment.DataTransfer.csproj", "{1339F108-0781-43F6-9DFB-9AE618BD8452}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -138,6 +146,10 @@ Global
 		{D4DB374A-50CC-4457-89F0-F0475C97D982} = {E036394A-EB67-4FC8-9C66-3385053F69E9}
 		{717275F9-74C1-471A-8A20-282C5638C308} = {D4DB374A-50CC-4457-89F0-F0475C97D982}
 		{4ABE5D7B-FE8F-4776-913A-153F62CEFFA9} = {3A26A029-7C47-4975-AA1F-52384C345FCD}
+		{C5ADB470-AE21-4D15-9179-70C05C340663} = {682A9C61-5D3D-466E-9EAF-C1ABF01F99D8}
+		{F886BA31-A5B9-49A9-A4DB-E5A0BB45027A} = {C5ADB470-AE21-4D15-9179-70C05C340663}
+		{E379E05C-0CE7-4305-8594-21B4681165C9} = {C5ADB470-AE21-4D15-9179-70C05C340663}
+		{1339F108-0781-43F6-9DFB-9AE618BD8452} = {C5ADB470-AE21-4D15-9179-70C05C340663}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{179E35BF-4F04-4660-8F82-413DA572E7F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -228,5 +240,17 @@ Global
 		{FA2CC564-1D56-4422-99AB-BF9A0EEA9482}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FA2CC564-1D56-4422-99AB-BF9A0EEA9482}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FA2CC564-1D56-4422-99AB-BF9A0EEA9482}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F886BA31-A5B9-49A9-A4DB-E5A0BB45027A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F886BA31-A5B9-49A9-A4DB-E5A0BB45027A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F886BA31-A5B9-49A9-A4DB-E5A0BB45027A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F886BA31-A5B9-49A9-A4DB-E5A0BB45027A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E379E05C-0CE7-4305-8594-21B4681165C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E379E05C-0CE7-4305-8594-21B4681165C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E379E05C-0CE7-4305-8594-21B4681165C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E379E05C-0CE7-4305-8594-21B4681165C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1339F108-0781-43F6-9DFB-9AE618BD8452}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1339F108-0781-43F6-9DFB-9AE618BD8452}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1339F108-0781-43F6-9DFB-9AE618BD8452}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1339F108-0781-43F6-9DFB-9AE618BD8452}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

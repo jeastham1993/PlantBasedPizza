@@ -2,8 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using PlantBasedPizza.IntegrationTests.Requests;
 using PlantBasedPizza.IntegrationTests.ViewModels;
 
@@ -15,6 +15,13 @@ namespace PlantBasedPizza.IntegrationTests.Drivers
 
         private readonly HttpClient _httpClient;
 
+        private readonly JsonSerializerOptions _jsonSerializerOptions = new JsonSerializerOptions()
+        {
+            PropertyNameCaseInsensitive = true,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+            WriteIndented = true
+        };
+
         public OrderManagerDriver()
         {
             this._httpClient = new HttpClient();
@@ -23,7 +30,7 @@ namespace PlantBasedPizza.IntegrationTests.Drivers
         public async Task AddNewDeliveryOrder(string orderIdentifier)
         {
             await this._httpClient.PostAsync(new Uri($"{BaseUrl}/order/deliver"), new StringContent(
-                JsonConvert.SerializeObject(new CreateDeliveryOrder()
+                JsonSerializer.Serialize(new CreateDeliveryOrder()
                 {
                     OrderIdentifier = orderIdentifier,
                     CustomerIdentifier = "James",
@@ -33,17 +40,17 @@ namespace PlantBasedPizza.IntegrationTests.Drivers
                     AddressLine4 = string.Empty,
                     AddressLine5 = string.Empty,
                     Postcode = "TYi9PO"
-                }), Encoding.UTF8, "application/json")).ConfigureAwait(false);
+                }, _jsonSerializerOptions), Encoding.UTF8, "application/json")).ConfigureAwait(false);
         }
 
         public async Task AddNewOrder(string orderIdentifier)
         {
             await this._httpClient.PostAsync(new Uri($"{BaseUrl}/order/pickup"), new StringContent(
-                JsonConvert.SerializeObject(new CreatePickupOrderCommand()
+                JsonSerializer.Serialize(new CreatePickupOrderCommand()
                 {
                     OrderIdentifier = orderIdentifier,
                     CustomerIdentifier = "James"
-                }), Encoding.UTF8, "application/json")).ConfigureAwait(false);
+                },_jsonSerializerOptions), Encoding.UTF8, "application/json")).ConfigureAwait(false);
         }
 
         public async Task AddItemToOrder(string orderIdentifier, string recipeIdentifier, int quantity)
@@ -52,27 +59,32 @@ namespace PlantBasedPizza.IntegrationTests.Drivers
 
             await this._httpClient.PostAsync(new Uri($"{BaseUrl}/order/{orderIdentifier}/items"),
                 new StringContent(
-                    JsonConvert.SerializeObject(new AddItemToOrderCommand()
+                    JsonSerializer.Serialize(new AddItemToOrderCommand()
                     {
                         OrderIdentifier = orderIdentifier,
                         RecipeIdentifier = recipeIdentifier,
                         Quantity = quantity
-                    }), Encoding.UTF8, "application/json")).ConfigureAwait(false);
+                    },_jsonSerializerOptions), Encoding.UTF8, "application/json")).ConfigureAwait(false);
         }
 
         public async Task SubmitOrder(string orderIdentifier)
         {
+            var body = JsonSerializer.Serialize(new
+            {
+                OrderIdentifier = orderIdentifier,
+                CustomerIdentifier = "James"
+            },_jsonSerializerOptions);
             await this._httpClient.PostAsync(new Uri($"{BaseUrl}/order/{orderIdentifier}/submit"),
-                new StringContent(string.Empty, Encoding.UTF8, "application/json")).ConfigureAwait(false);
+                new StringContent(body, Encoding.UTF8, "application/json")).ConfigureAwait(false);
         }
 
         public async Task CollectOrder(string orderIdentifier)
         {
             var res = await this._httpClient.PostAsync(new Uri($"{BaseUrl}/order/collected"), new StringContent(
-                JsonConvert.SerializeObject(new CollectOrderRequest()
+                JsonSerializer.Serialize(new CollectOrderRequest()
                 {
                     OrderIdentifier = orderIdentifier
-                }), Encoding.UTF8, "application/json")).ConfigureAwait(false);
+                },_jsonSerializerOptions), Encoding.UTF8, "application/json")).ConfigureAwait(false);
 
             if (!res.IsSuccessStatusCode)
             {
@@ -85,7 +97,7 @@ namespace PlantBasedPizza.IntegrationTests.Drivers
             var result = await this._httpClient.GetAsync(new Uri($"{BaseUrl}/order/{orderIdentifier}/detail"))
                 .ConfigureAwait(false);
 
-            var order = JsonConvert.DeserializeObject<Order>(await result.Content.ReadAsStringAsync());
+            var order = JsonSerializer.Deserialize<Order>(await result.Content.ReadAsStringAsync(),_jsonSerializerOptions);
 
             return order;
         }
@@ -93,7 +105,7 @@ namespace PlantBasedPizza.IntegrationTests.Drivers
         private async Task checkRecipeExists(string recipeIdentifier)
         {
             await this._httpClient.PostAsync($"{BaseUrl}/recipes", new StringContent(
-                JsonConvert.SerializeObject(new CreateRecipeCommand()
+                JsonSerializer.Serialize(new CreateRecipeCommand()
                 {
                     RecipeIdentifier = recipeIdentifier,
                     Name = recipeIdentifier,
@@ -106,7 +118,7 @@ namespace PlantBasedPizza.IntegrationTests.Drivers
                             Quantity = 1
                         }
                     }
-                }), Encoding.UTF8, "application/json"));
+                },_jsonSerializerOptions), Encoding.UTF8, "application/json"));
         }
     }
 }

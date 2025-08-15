@@ -37,16 +37,46 @@ namespace PlantBasedPizza.Shared.Events
                 
                 var observability = Container.GetService<IObservabilityService>();
                 var serviceScopeFactory = Container.GetService<IServiceScopeFactory>();
-                using (var serviceScope = serviceScopeFactory.CreateScope())
-                {
-                    observability?.Info($"[EVENT MANAGER] Raising event {evt.EventName}");
 
-                    foreach (var handler in serviceScope.ServiceProvider.GetServices<Handles<T>>())
-                    {
-                        observability?.Info($"[EVENT MANAGER] Handling event with handler {handler.GetType().Name}");
+                if (serviceScopeFactory is null)
+                {
+                    throw new Exception("Cannot raise domain events, service scope factory is not registered.");
+                }
+                
+                var activitySource = Container.GetService<ActivitySource>();
+
+                using var serviceScope = serviceScopeFactory.CreateScope();
+                
+                using var sendSpan = activitySource?.StartActivity($"send {evt.EventName}", ActivityKind.Producer);
                     
+                var hasErrors = false;
+
+                foreach (var handler in serviceScope.ServiceProvider.GetServices<Handles<T>>())
+                {
+                    using var span = activitySource?.StartActivity($"process {evt.EventName}", ActivityKind.Consumer);
+                        
+                    span?.AddTag("messaging.operation.name", "process");
+                    span?.AddTag("messaging.system", "in_memory");
+                    span?.AddTag("messaging.consumer.group.name", $"{handler.GetType().Namespace}.{handler.GetType().Name}");
+                    span?.AddTag("messaging.message.id", evt.EventId);
+                    span?.AddTag("messaging.message.body.size", evt.ToString()?.Length ?? 0);
+                    span?.AddTag("messaging.message.conversation_id", evt.CorrelationId);
+
+                    try
+                    {
                         await handler.Handle(evt);
-                    }   
+                    }
+                    catch (Exception ex)
+                    {
+                        hasErrors = true;
+                        span?.AddTag("error.type", ex.GetType().Name);
+                        span?.AddException(ex);
+                    }
+                }
+
+                if (hasErrors)
+                {
+                    throw new Exception("One or more event handlers failed to process the event.");
                 }
             }
 

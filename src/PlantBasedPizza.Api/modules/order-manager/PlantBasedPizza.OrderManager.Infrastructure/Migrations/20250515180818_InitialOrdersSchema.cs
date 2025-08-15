@@ -59,7 +59,7 @@ namespace PlantBasedPizza.OrderManager.Infrastructure.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_orders_outboxitems", x => x.EventType);
+                    table.PrimaryKey("PK_orders_outboxitems", x => x.ItemId);
                 });
 
             migrationBuilder.CreateTable(

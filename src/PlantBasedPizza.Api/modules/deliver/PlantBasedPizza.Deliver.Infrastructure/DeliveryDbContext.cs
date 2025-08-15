@@ -14,6 +14,8 @@ public class DeliveryDbContext : DbContext
     }
 
     public DbSet<DeliveryRequest> DeliveryRequests { get; set; }
+    
+    public DbSet<Address> Address { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -28,6 +30,6 @@ public class DeliveryDbContext : DbContext
             .HasOne<Address>()
             .WithOne()
             .HasForeignKey<DeliveryRequest>(a => a.AddressId) // Specify the entity type and use a lambda
-            .OnDelete(DeleteBehavior.Cascade);;
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

@@ -15,7 +15,7 @@ public class CollectOrderCommandHandler(IOrderRepository orderRepository)
                 return new OrderDto(existingOrder);
             }
 
-            existingOrder.CompleteOrder();
+            await existingOrder.CompleteOrderAsync();
 
             await orderRepository.Update(existingOrder).ConfigureAwait(false);
 

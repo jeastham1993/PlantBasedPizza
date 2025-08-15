@@ -14,7 +14,7 @@ public class AddItemToOrderHandler
         _recipeService = recipeService;
     }
     
-    public async Task<Order?> Handle(AddItemToOrderCommand command)
+    public async Task<OrderDto?> Handle(AddItemToOrderCommand command)
     {
         try
         {
@@ -26,7 +26,7 @@ public class AddItemToOrderHandler
 
             await this._orderRepository.Update(order);
 
-            return order;
+            return new  OrderDto(order);
         }
         catch (OrderNotFoundException)
         {

@@ -14,7 +14,7 @@ namespace PlantBasedPizza.OrderManager.Core.Handlers
         {
             var order = await orderRepository.Retrieve(evt.OrderIdentifier);
 
-            order.CompleteOrder();
+            await order.CompleteOrderAsync();
             
             await orderRepository.Update(order).ConfigureAwait(false);
         }
