@@ -1,9 +1,0 @@
-{
-    "request": {
-      "method": "POST",
-      "urlPath": "/loyalty"
-    },
-    "response": {
-      "status": 200
-    }
-  }
